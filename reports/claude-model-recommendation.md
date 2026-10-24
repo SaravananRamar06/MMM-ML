@@ -37,14 +37,16 @@ C_L requires separate aerodynamic information (questionnaire Q01–Q04). This is
 
 All 73 `STR_STR.OUT` files were parsed. Every curve was resampled onto 120 strain points between 0.0002 and 0.0999, using `src/data.py`. Each case then counts equally, whatever its row count: 1,000, 10,000 or 100,000 rows, depending on strain rate.
 
-**Factor effects.** For each factor, I compared pairs of cases that differ only in that factor, by one level. The measure is the mean, over all such pairs, of the largest stress difference along the curve.
+**Factor effects.** For each factor, I compared pairs of cases that differ only in that factor, by exactly one level. The measure is the mean, over all such pairs, of the largest stress difference along the curve. The script is `src/factor_effects.py`, and the results are in `runs/factor_effects.json`.
 
-| Factor varied by one level | Mean max \|Δσ\| | Largest |
-|---|---|---|
-| Temperature | 29.8 MPa | 94.0 MPa |
-| log10 strain rate | 21.2 MPa | 72.7 MPa |
-| Shear modulus G (3 % or 5 % steps) | 4.5 MPa | 10.6 MPa |
-| Density (3 % or 5 % steps) | **0.25 MPa** | 0.59 MPa |
+| Factor varied by one level | Pairs | Mean max \|Δσ\| (SCAU11) | Largest (SCAU11) | Mean (Svm) |
+|---|---|---|---|---|
+| Temperature | 46 | 22.0 MPa | 82.8 MPa | 22.1 MPa |
+| log10 strain rate | 46 | 17.4 MPa | 57.6 MPa | 17.5 MPa |
+| Shear modulus G (3 % or 5 % steps) | 48 | 3.4 MPa | 6.6 MPa | 3.4 MPa |
+| Density (3 % or 5 % steps) | 48 | **0.19 MPa** | 0.37 MPa | 0.19 MPa |
+
+*Correction, 24 Oct 15:20 UTC:* an earlier version of this table gave 29.8 / 21.2 / 4.5 / 0.25 MPa. Those figures came from a scratchpad calculation that also included pairs **two** levels apart (e.g. 30 vs 200 °C), so they overstated the one-level effect. The ranking and the conclusions are unchanged.
 
 Density is almost inert in the generating solver. Over its whole range, from 2700 down to 2488 (a candidate "porosity" of 0–7.85 %), stress changes by about 0.2 %. If porosity matters to the project, the only visible lever in this data is G, and even that effect is small.
 

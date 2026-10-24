@@ -1,0 +1,46 @@
+{
+ "SCAU11": {
+  "temperature": {
+   "pairs": 46,
+   "mean_max_abs_diff": 22.0317044439167,
+   "largest": 82.77666442016807
+  },
+  "log10_strain_rate": {
+   "pairs": 46,
+   "mean_max_abs_diff": 17.36283050968213,
+   "largest": 57.61832588235291
+  },
+  "density": {
+   "pairs": 48,
+   "mean_max_abs_diff": 0.18690981442577068,
+   "largest": 0.36633000000000493
+  },
+  "shear_modulus": {
+   "pairs": 48,
+   "mean_max_abs_diff": 3.38859168592437,
+   "largest": 6.5606547058823566
+  }
+ },
+ "Svm": {
+  "temperature": {
+   "pairs": 46,
+   "mean_max_abs_diff": 22.114635833028863,
+   "largest": 82.09132831932774
+  },
+  "log10_strain_rate": {
+   "pairs": 46,
+   "mean_max_abs_diff": 17.45138229448301,
+   "largest": 57.64280823529409
+  },
+  "density": {
+   "pairs": 48,
+   "mean_max_abs_diff": 0.18806016281512697,
+   "largest": 0.3683600000000027
+  },
+  "shear_modulus": {
+   "pairs": 48,
+   "mean_max_abs_diff": 3.3989656390056027,
+   "largest": 6.589050672268911
+  }
+ }
+}

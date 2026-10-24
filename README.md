@@ -81,9 +81,9 @@ The selection rule was written down before the last candidates were scored. The 
 
 ## What the data taught us
 
-- **Temperature and strain rate drive the curve.** Changing either one level moves the stress by 20–30 MPa.
-- **Shear modulus matters a little,** about 4 MPa per level.
-- **Density barely matters,** about 0.25 MPa across its whole range. In these simulations, lower density, often used as a stand-in for porosity, hardly changes the stress at all.
+- **Temperature and strain rate drive the curve.** Changing either one by one level moves the stress by about 17–22 MPa on average, and by up to 83 MPa.
+- **Shear modulus matters a little,** about 3.4 MPa per level.
+- **Density barely matters,** about 0.2 MPa per level and 0.37 MPa at most. In these simulations, lower density, often used as a stand-in for porosity, hardly changes the stress at all. (Source: `runs/factor_effects.json`.)
 - **The curves start at full flow stress and soften.** They have no elastic part, so stiffness can't be learned from them. G enters only as a supplied input.
 - **Case 60 is odd:** the only 200 °C / 1e-5 simulation, and its stress collapses unevenly. Every model struggles with it.
 
