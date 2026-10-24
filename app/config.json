@@ -1,0 +1,11 @@
+{
+ "status": "final: query MLP on Svm, selected by src/score.py (runs/score/SELECTED_Svm.json), test-scored once",
+ "target_label": "von Mises stress (Svm)",
+ "primary": "mlp",
+ "models": [
+  {"key": "mlp", "label": "Query MLP (final, 5-net ensemble)", "short": "MLP",
+   "artifact": "runs/score/final_Svm/model.joblib", "test_rmse": "0.059", "unseen_rmse": "7.5"},
+  {"key": "gp", "label": "PCA + Gaussian process (reference)", "short": "GP",
+   "artifact": "runs/selected_Svm/PCA_plus_GP.joblib", "test_rmse": "0.057", "unseen_rmse": "8.8"}
+ ]
+}

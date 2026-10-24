@@ -1,0 +1,459 @@
+{
+ "candidate": "mlp",
+ "target": "Svm",
+ "cv_mean_rmse": 1.1582632139842857,
+ "cv_median_rmse": 0.20187663844386433,
+ "cv_worst_rmse": 25.996305150479984,
+ "cv_worst_case": 60,
+ "loco_mean_rmse": 6.793602548421109,
+ "loco_by_condition": {
+  "100C_1e-3": 1.2609868331961849,
+  "100C_1e-4": 5.207714589852649,
+  "100C_1e-5": 6.121277165028661,
+  "200C_1e-3": 8.260869260419643,
+  "200C_1e-4": 9.083715677090753,
+  "200C_1e-5": 23.525128683227813,
+  "30C_1e-3": 4.9324063840284476,
+  "30C_1e-4": 0.8053840465736994,
+  "30C_1e-5": 1.9449402963721283
+ },
+ "per_case": {
+  "cv": [
+   {
+    "id": 2,
+    "fold": "0",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 0.29508856832711683
+   },
+   {
+    "id": 3,
+    "fold": "0",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 0.09662752724062088
+   },
+   {
+    "id": 29,
+    "fold": "0",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 0.303614627526602
+   },
+   {
+    "id": 33,
+    "fold": "0",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 1.1257986251447356
+   },
+   {
+    "id": 34,
+    "fold": "0",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 2.215557088530965
+   },
+   {
+    "id": 41,
+    "fold": "0",
+    "condition_of_case": "100C_1e-4",
+    "rmse": 0.1456021583985862
+   },
+   {
+    "id": 43,
+    "fold": "0",
+    "condition_of_case": "100C_1e-4",
+    "rmse": 0.28531529801730976
+   },
+   {
+    "id": 49,
+    "fold": "0",
+    "condition_of_case": "100C_1e-3",
+    "rmse": 0.23091896675709309
+   },
+   {
+    "id": 52,
+    "fold": "0",
+    "condition_of_case": "100C_1e-3",
+    "rmse": 0.4815145098447614
+   },
+   {
+    "id": 53,
+    "fold": "0",
+    "condition_of_case": "100C_1e-3",
+    "rmse": 0.6711364706995872
+   },
+   {
+    "id": 65,
+    "fold": "0",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 0.9137178573884571
+   },
+   {
+    "id": 66,
+    "fold": "0",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 0.28070176375449585
+   },
+   {
+    "id": 8,
+    "fold": "1",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 0.07635317884569598
+   },
+   {
+    "id": 21,
+    "fold": "1",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 1.7818247106353706
+   },
+   {
+    "id": 22,
+    "fold": "1",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 0.04225121505842966
+   },
+   {
+    "id": 26,
+    "fold": "1",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 0.6318115485008993
+   },
+   {
+    "id": 27,
+    "fold": "1",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 1.8581187677250375
+   },
+   {
+    "id": 30,
+    "fold": "1",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 0.04584113011489558
+   },
+   {
+    "id": 40,
+    "fold": "1",
+    "condition_of_case": "100C_1e-4",
+    "rmse": 0.03777381772764863
+   },
+   {
+    "id": 46,
+    "fold": "1",
+    "condition_of_case": "100C_1e-3",
+    "rmse": 0.09166672976275934
+   },
+   {
+    "id": 64,
+    "fold": "1",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 0.25426260438726056
+   },
+   {
+    "id": 72,
+    "fold": "1",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 0.2071396293578848
+   },
+   {
+    "id": 78,
+    "fold": "1",
+    "condition_of_case": "200C_1e-3",
+    "rmse": 0.1857430966701903
+   },
+   {
+    "id": 80,
+    "fold": "1",
+    "condition_of_case": "200C_1e-3",
+    "rmse": 0.25731014313742684
+   },
+   {
+    "id": 5,
+    "fold": "2",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 0.046425690745646724
+   },
+   {
+    "id": 6,
+    "fold": "2",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 0.05693171488342873
+   },
+   {
+    "id": 18,
+    "fold": "2",
+    "condition_of_case": "30C_1e-4",
+    "rmse": 2.090881624000352
+   },
+   {
+    "id": 19,
+    "fold": "2",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 0.04709277266451579
+   },
+   {
+    "id": 25,
+    "fold": "2",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 0.0450334771556885
+   },
+   {
+    "id": 28,
+    "fold": "2",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 0.06362010024539227
+   },
+   {
+    "id": 38,
+    "fold": "2",
+    "condition_of_case": "100C_1e-4",
+    "rmse": 0.1343592015904832
+   },
+   {
+    "id": 60,
+    "fold": "2",
+    "condition_of_case": "200C_1e-5",
+    "rmse": 25.996305150479984
+   },
+   {
+    "id": 69,
+    "fold": "2",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 0.1463987598244278
+   },
+   {
+    "id": 70,
+    "fold": "2",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 0.1966136475298439
+   },
+   {
+    "id": 76,
+    "fold": "2",
+    "condition_of_case": "200C_1e-3",
+    "rmse": 0.1813905729277555
+   },
+   {
+    "id": 81,
+    "fold": "2",
+    "condition_of_case": "200C_1e-3",
+    "rmse": 0.17673295783293858
+   }
+  ],
+  "loco": [
+   {
+    "id": 46,
+    "condition": "100C_1e-3",
+    "condition_of_case": "100C_1e-3",
+    "rmse": 1.3239098115111592
+   },
+   {
+    "id": 49,
+    "condition": "100C_1e-3",
+    "condition_of_case": "100C_1e-3",
+    "rmse": 1.3039396206574836
+   },
+   {
+    "id": 52,
+    "condition": "100C_1e-3",
+    "condition_of_case": "100C_1e-3",
+    "rmse": 1.2726431109999374
+   },
+   {
+    "id": 53,
+    "condition": "100C_1e-3",
+    "condition_of_case": "100C_1e-3",
+    "rmse": 1.1434547896161589
+   },
+   {
+    "id": 38,
+    "condition": "100C_1e-4",
+    "condition_of_case": "100C_1e-4",
+    "rmse": 5.16050532809441
+   },
+   {
+    "id": 40,
+    "condition": "100C_1e-4",
+    "condition_of_case": "100C_1e-4",
+    "rmse": 5.255786353845098
+   },
+   {
+    "id": 41,
+    "condition": "100C_1e-4",
+    "condition_of_case": "100C_1e-4",
+    "rmse": 5.156619904093994
+   },
+   {
+    "id": 43,
+    "condition": "100C_1e-4",
+    "condition_of_case": "100C_1e-4",
+    "rmse": 5.257946773377093
+   },
+   {
+    "id": 28,
+    "condition": "100C_1e-5",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 5.852214213245366
+   },
+   {
+    "id": 29,
+    "condition": "100C_1e-5",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 5.997588072135611
+   },
+   {
+    "id": 30,
+    "condition": "100C_1e-5",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 6.5214063083087535
+   },
+   {
+    "id": 33,
+    "condition": "100C_1e-5",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 6.479604900910791
+   },
+   {
+    "id": 34,
+    "condition": "100C_1e-5",
+    "condition_of_case": "100C_1e-5",
+    "rmse": 5.7555723305427815
+   },
+   {
+    "id": 76,
+    "condition": "200C_1e-3",
+    "condition_of_case": "200C_1e-3",
+    "rmse": 7.597533271670142
+   },
+   {
+    "id": 78,
+    "condition": "200C_1e-3",
+    "condition_of_case": "200C_1e-3",
+    "rmse": 8.677295791778121
+   },
+   {
+    "id": 80,
+    "condition": "200C_1e-3",
+    "condition_of_case": "200C_1e-3",
+    "rmse": 8.044069998489642
+   },
+   {
+    "id": 81,
+    "condition": "200C_1e-3",
+    "condition_of_case": "200C_1e-3",
+    "rmse": 8.724577979740662
+   },
+   {
+    "id": 64,
+    "condition": "200C_1e-4",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 8.22563712958612
+   },
+   {
+    "id": 65,
+    "condition": "200C_1e-4",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 8.898996737617445
+   },
+   {
+    "id": 66,
+    "condition": "200C_1e-4",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 9.596963866581278
+   },
+   {
+    "id": 69,
+    "condition": "200C_1e-4",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 9.695884677831154
+   },
+   {
+    "id": 70,
+    "condition": "200C_1e-4",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 8.24115672500012
+   },
+   {
+    "id": 72,
+    "condition": "200C_1e-4",
+    "condition_of_case": "200C_1e-4",
+    "rmse": 9.8436549259284
+   },
+   {
+    "id": 60,
+    "condition": "200C_1e-5",
+    "condition_of_case": "200C_1e-5",
+    "rmse": 23.525128683227813
+   },
+   {
+    "id": 19,
+    "condition": "30C_1e-3",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 5.222360944339968
+   },
+   {
+    "id": 21,
+    "condition": "30C_1e-3",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 4.51027262067904
+   },
+   {
+    "id": 22,
+    "condition": "30C_1e-3",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 5.230908133411607
+   },
+   {
+    "id": 25,
+    "condition": "30C_1e-3",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 5.224121517727713
+   },
+   {
+    "id": 26,
+    "condition": "30C_1e-3",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 4.924953243656852
+   },
+   {
+    "id": 27,
+    "condition": "30C_1e-3",
+    "condition_of_case": "30C_1e-3",
+    "rmse": 4.48182184435551
+   },
+   {
+    "id": 18,
+    "condition": "30C_1e-4",
+    "condition_of_case": "30C_1e-4",
+    "rmse": 0.8053840465736994
+   },
+   {
+    "id": 2,
+    "condition": "30C_1e-5",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 1.6623637980126391
+   },
+   {
+    "id": 3,
+    "condition": "30C_1e-5",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 2.2685408074974265
+   },
+   {
+    "id": 5,
+    "condition": "30C_1e-5",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 1.7053682875887806
+   },
+   {
+    "id": 6,
+    "condition": "30C_1e-5",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 2.3060129271525187
+   },
+   {
+    "id": 8,
+    "condition": "30C_1e-5",
+    "condition_of_case": "30C_1e-5",
+    "rmse": 1.782415661609276
+   }
+  ]
+ },
+ "warnings": {}
+}

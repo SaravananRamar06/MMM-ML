@@ -1,0 +1,8 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+# Professor-supplied raw data: place it here locally, do not commit (see README)
+TEAM_8_extracted_results_set_1/
+# Caches rebuilt by src/data.py from the raw data
+data/curves_*.npz
