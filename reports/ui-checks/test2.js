@@ -1,0 +1,31 @@
+const { JSDOM, VirtualConsole } = require('jsdom');
+const BASE = 'http://127.0.0.1:8765'; const errors = [];
+const vc = new VirtualConsole(); vc.on('jsdomError', (e) => errors.push(String(e.message || e)));
+(async () => {
+  const dom = await JSDOM.fromURL(BASE + '/', { runScripts: 'dangerously', resources: 'usable', pretendToBeVisual: true, virtualConsole: vc,
+    beforeParse(w) { w.fetch = (u, o = {}) => ((o.method || 'GET').toUpperCase() !== 'GET' ? Promise.reject(new Error('BLOCKED')) : fetch(new URL(u, BASE), o));
+      w.matchMedia = (q) => ({ matches: false, addEventListener() {}, removeEventListener() {} }); w.HTMLElement.prototype.scrollIntoView = () => {}; } });
+  const w = dom.window, d = w.document, wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  await wait(4000);
+  const ok = (n, c, x = '') => console.log((c ? 'PASS ' : 'FAIL ') + n + (x ? '  [' + x + ']' : ''));
+  ok('default mood is calm', d.documentElement.dataset.mood === 'calm', d.getElementById('mood-toggle').textContent);
+  d.getElementById('mood-toggle').click(); ok('mood toggles to expressive', d.documentElement.dataset.mood === 'expressive'); d.getElementById('mood-toggle').click();
+  const q = (s) => d.querySelectorAll('#feed ' + s).length;
+  ok('headlines', q('.msg-headline') > 20, q('.msg-headline'));
+  ok('status rows', q('.status') > 3, q('.status-done') + ' done / ' + q('.status-pending') + ' pending');
+  ok('callouts', q('.callout') > 0, q('.callout'));
+  ok('numeric table cells aligned', q('td.num') > 20, q('td.num'));
+  ok('path chips', q('code.path-chip') > 20, q('code.path-chip'));
+  ok('commit chips', q('code.commit-chip') > 0, q('code.commit-chip'));
+  ok('code copy buttons', q('.copy-code') > 0, q('.copy-code'));
+  ok('outlines on long updates', q('.outline') >= 0, q('.outline') + ' outlines for ' + q('.message-preview') + ' previews');
+  ok('needs-you markers', q('.message.needs-you') > 0, q('.message.needs-you'));
+  const chips = [...d.querySelectorAll('#ai-filters .filter-chip')].map((c) => c.textContent);
+  ok('filter chips', chips.length >= 4, chips.join(' | '));
+  const gem = [...d.querySelectorAll('#ai-filters .filter-chip')].find((c) => c.textContent.startsWith('Gemini')); gem.click();
+  const visible = [...d.querySelectorAll('#feed .message')].filter((m) => !m.classList.contains('filtered-out'));
+  ok('filter shows only Gemini', visible.length > 0 && visible.every((m) => m.querySelector('.avatar').classList.contains('gemini')), visible.length + ' shown');
+  gem.click(); ok('filter clears', d.querySelectorAll('#feed .filtered-out').length === 0);
+  console.log('script errors:', errors.length ? errors.slice(0, 5) : 'none');
+  process.exit(0);
+})().catch((e) => { console.error('CRASH', e); process.exit(1); });

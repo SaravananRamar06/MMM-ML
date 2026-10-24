@@ -44,7 +44,7 @@ Density barely changes the response in these simulations. Whether density or G r
 ## 8. How the model was chosen
 Training half only: 3-fold case cross-validation, and hiding one temperature/rate combination at a time.
 
-| Approach | 3-fold CV RMSE (training half, mean over runs) | Hide-one-condition RMSE (training half, mean over 9 conditions) |
+| Approach | 3-fold CV RMSE (training half, per-case RMSE, mean over cases) | Hide-one-condition RMSE (training half, mean over 9 conditions) |
 |---|---|---|
 | Query MLP | 1.16 | 6.8 (lowest) |
 | PCA + Gaussian process | 0.66 (lowest) | 11.0 |
@@ -88,9 +88,9 @@ The random split mostly tests filling in between known conditions, which is easy
 - Ask the professor the four CL/data questions and what "two models" counts.
 - Viva guide built from these saved results.
 - Connect to the bracket (ANSYS) only after stress/strain definitions and the material model are confirmed.
-- A G-sensitivity study, the only porosity-like lever in this data. It is not measured porosity behaviour.
+- A G-sensitivity study; its connection to porosity requires confirmation.
 
 ## 15. Where every number came from
 - Data: the professor's 73 simulation files (checksums in `data/manifest.json`).
 - Code, models and results: github.com/SaravananRamar06/MMM-ML (private).
-- Built with AI coding agents. Claude analysed the data, trained the models and built the app. Codex researched the approach and re-checked every result. Gemini (Antigravity) independently reviewed the deck.
+- Built with AI coding agents. Claude analysed the data, trained the models and built the app. Codex researched the approach and checked saved-model reloads, metrics and the deck's numbers. Gemini (Antigravity) independently reviewed the deck.
