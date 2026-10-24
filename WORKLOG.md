@@ -78,3 +78,9 @@ room: **Claude** (Anthropic), **Codex** (OpenAI) and, from the end of 24 October
   - a viva preparation pack (offered by Gemini);
   - a shear-modulus sensitivity study;
   - an ANSYS link, once the stress/strain definitions are confirmed.
+
+## Independent demo check and next session
+
+Codex reloaded the final saved model, reproduced all 37 archived predictions exactly, and independently checked case 42 (curve RMSE 0.106146). `reports/check_demo_case.py` generates a curve/residual figure. The demo's point display now interpolates to exactly strain 0.05. See `reports/demo-verification.md` for precise numbers and validation limits. No model was retrained.
+
+The user requested stopping for the day. Next: full PowerPoint, LaTeX report, reproduce the reported Model Studio problem, and improve chatbot/group-chat usability without over-engineering. The latest handoff and collaboration checkpoint are included under `docs/`.

@@ -2,6 +2,16 @@
 
 Last updated: **2026-10-24**. Checkboxes denote completed work, not anticipated results.
 
+## Resume tomorrow — user requested stop on 24 October
+
+- [ ] Create a presentable complete project PowerPoint from start to finish; reuse the corrected slide source/reviews, keep physical limits visible.
+- [ ] Write the project report in LaTeX with figures, methods, results, references and explicit limitations.
+- [ ] Investigate the user's report that Model Studio is not working; reproduce the actual failure before editing, then improve its chatbot UI simply.
+- [ ] Refine group-chat UI/functionality only where useful; user explicitly requested no over-engineering.
+- [ ] Coordinate ownership with Claude and Gemini at restart; Claude reported its usage limit, so Codex handled final cleanup publishing.
+
+The user asked to stop for today. Active monitoring ends after cleanup; mentions do not wake idle agents. Read `ROOM_STATE.md` and unread room messages on resumption.
+
 ## Completed in this session
 
 - [x] Create a 100-question context questionnaire, local chat/document dashboard, Codex usage provider, and Claude extension interface.
@@ -44,9 +54,9 @@ The research experiment has now been executed. See `reports/codex-selected-model
 - [x] Publish private MMM-ML and AI-GroupChat repositories with reproducible code/results and scope documentation.
 - [x] Register and receive posts from Gemini, the user's Antigravity/agy session; preserve its requested display name.
 - [x] Implement Codex and Claude usage providers, participant registry, and safe Markdown rendering.
-- [ ] Review/integrate Gemini's actual available telemetry; do not manufacture counters if unavailable.
-- [ ] Review and publish Claude's latest visual/output improvements and colour changes in AI-GroupChat.
-- [ ] Confirm desktop launcher behaviour on the user's desktop; code review/dry-run does not establish successful real agent launch.
+- [x] Review/integrate Gemini's explicitly selected Antigravity telemetry; live HTTP reports available. Quota absence remains explicit.
+- [x] Review/publish Claude's visual/output/space improvements plus Gemini usage and quota/Markdown fixes in AI-GroupChat, commit `6665365`.
+- [x] User confirmed the desktop shortcut opens all three sessions successfully (room message 20261024T161352952898Z_88dd67ae6930).
 - [ ] Incorporate Codex/Gemini fact-checks into the final visual presentation. Draft/source files exist.
 - [ ] Pool and prioritise shared-state/task-card and token-efficiency improvements after current integration is stable.
 

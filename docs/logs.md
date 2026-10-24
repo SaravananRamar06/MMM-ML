@@ -128,3 +128,22 @@ Perform a reproducible curve-quality/definition audit and define the material pr
 - Claude owns current UI CSS/HTML, improved output formatting, colour revisions and desktop launcher. Codex added `/assets/room-ui.js` to both server source allowlists, and guided Gemini/Claude on usage-provider scope and unavailable telemetry. Existing live backend requires deliberate restart before the new external asset route can be used.
 - Standalone chat Python suite: `python3 -m unittest discover -s collaboration -p 'test_*.py' -v`, 19 passed. Current late UI changes require separate review before publishing; browser/desktop behaviour is not established by the Python suite.
 - Updated README/context/decisions/tasks to prevent stale “no model exists” snapshots from misleading future sessions.
+
+## 2026-10-24 — Three-agent dashboard integration published
+
+- Added receipt-safe `read --brief` and `read --id` plus ROOM_STATE checkpoints; pushed AI-GroupChat commit `4fc2639`. Previews and out-of-order exact-ID reads refuse --ack to avoid advancing the unread watermark.
+- Reviewed Gemini's Antigravity adapter; requested/remediated explicit selection, no heuristic transcript search, no fabricated zero telemetry, and cached parsing. Registered it in both participant registries; real session selector remains only in ignored live configuration. Verified actual live HTTP /api/usage returns available Codex/Claude/Gemini.
+- Researched Slack/Linear layouts and primary Fluent/W3C motion guidance; saved generic `docs/UI_DESIGN.md` in AI-GroupChat. Claude implemented space/density/panel controls and reduced-motion guards. Codex inspected after.png; no claim of independent full interactive-browser QA.
+- Fixed safe Markdown emphasis and ordered-list start numbers visible in the screenshot. Added per-quota snapshot timestamp, derived remaining percentage, and reset-passed warning that current quota is unknown. Claude/Gemini quotas remain unavailable from checked local sources, not unlimited or zero.
+- Final check: 25 Python tests, 6 Markdown tests, 3 quota-state JS tests, six inline scripts and both external scripts pass syntax checks. AI-GroupChat commit `6665365` pushed successfully; working tree clean.
+- Direct final model reload reproduced all 37 archived predictions exactly (max difference 0.0). Corrected presentation source now incorporates remaining wording/rounding fixes; Claude reports visual deck republished.
+- User confirmed the desktop launcher opens all three sessions successfully. Claude reports MMM-ML push `5df212a`; the new handoff checkpoint/log update is ready for its next coordinated export.
+
+## 2026-10-24 — Demo and end-of-day handoff
+
+- Independently checked final-model case 42 and generated `figures/demo_case42.png` plus reproducible `reports/check_demo_case.py`. Corrected demo.py's nearest-grid-versus-0.05 point display; no training or metrics changed. Full details in `reports/demo-verification.md`.
+- Added local PNG artifact rendering to AI-GroupChat, with name/path/symlink/size/type boundaries and tests. Restarted only the identified room server and verified the actual PNG HTTP response. Messages/Model Studio were retained. Updated checks: 26 Python, 7 Markdown-renderer and 3 quota-view tests.
+- User requested full PPT, LaTeX report, Model Studio repair/chatbot UI and simple group-chat refinement, then asked to continue tomorrow and clean up. Recorded these as next tasks; no new work on them started during cleanup. Model Studio's new reported failure has not been reproduced.
+- Claude reported reaching its usage limit. Codex announced takeover of the pending demo and final MMM-ML export/push, preserving the single-publisher convention.
+
+- AI-GroupChat final inline-figure integration was accepted by GitHub as `d38be98`; earlier UI/usage bundle is `6665365`. Local runtime figures/transcripts/session selectors remain excluded.

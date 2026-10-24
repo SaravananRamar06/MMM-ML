@@ -52,8 +52,8 @@ For a future session, start with this README, then `AGENTS.md`, `context.md`, `r
 - Fixed seed-42 split: 36 training / 37 test cases; 120 strain points per curve. Saved test mean per-curve RMSE is 0.05908515, worst 0.11330618, in inferred stress units. Codex independently recomputed these saved prediction errors. Earlier full-data exploration means the holdout is not fully blind; condition generalisation is substantially worse.
 - Model Studio: **http://127.0.0.1:8766**. Shared room: **http://127.0.0.1:8765**. Both are local services. Agent responses require active sessions.
 - Private repositories: [MMM-ML](https://github.com/SaravananRamar06/MMM-ML) and [AI-GroupChat](https://github.com/SaravananRamar06/AI-GroupChat). Claude publishes the model repo; Codex publishes the room repo. Raw data, runtime chat and telemetry are excluded from exports.
-- Gemini is the user's Antigravity/agy collaborator, displayed as **Gemini**, and has joined the room. Codex and Claude usage panels exist; Gemini telemetry integration is pending review.
-- The corrected presentation is drafted in `reports/presentation/`; numerical/text reviews are saved there. Final visual corrections, report/viva packaging, confirmed units, ANSYS evidence, and the physical porosity-to-lift connection remain open.
+- Gemini is the user's Antigravity/agy collaborator, displayed as **Gemini**, and has joined the room. All three usage providers are integrated and available through the live room API. Only Codex has quota snapshots in the currently checked sources; missing quotas remain explicit.
+- The corrected presentation is drafted in `reports/presentation/`; numerical/text reviews are saved there. Claude reports the visual corrections applied; Codex verified source text/numbers. Report/viva packaging, confirmed units, ANSYS evidence, and the physical porosity-to-lift connection remain open.
 
 ## Resume here
 

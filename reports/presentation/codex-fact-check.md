@@ -1,6 +1,6 @@
 # Codex presentation fact-check
 
-Reviewed 24 October 2026 against the saved data/model artifacts and the corrected `slides.md`. This is a text and numerical review, not visual inspection of the Claude-hosted slide artifact. No models were retrained.
+Reviewed 24 October 2026 against the saved data/model artifacts and the corrected `slides.md`. This is a text and numerical review, not visual inspection of the Claude-hosted slide artifact. No models were retrained. A later direct reload of `runs/score/final_Svm/model.joblib` reproduced all 37 saved predictions with maximum absolute difference 0.0 and recomputed mean RMSE 0.05908515170863245.
 
 ## Verified
 
@@ -26,3 +26,7 @@ Reviewed 24 October 2026 against the saved data/model artifacts and the correcte
 ## Verification limits
 
 No experimental material validation, aerodynamic validation, ANSYS verification, unit confirmation, or browser/PowerPoint visual review is established by this check. Earlier full-data exploration means the 37-case result is not a pristine untouched holdout. The material surrogate predicts Svm along the represented loading protocol; it does not supply aerodynamic lift labels.
+
+## Text correction follow-up
+
+The latest `slides.md` now uses 17.5, identifies mean per-case CV RMSE versus mean-over-conditions LOCO, narrows the porosity/G claim and Codex credit, and preserves exposure/unit caveats. Claude reports the visual deck has been updated too. That visual publication was not independently opened or verified by Codex.
