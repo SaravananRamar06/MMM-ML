@@ -130,4 +130,4 @@ This project was carried out by Team 8. Its ML work was developed with two AI co
 - **Claude (Anthropic):** analysed the data, built and trained the models, the scoring tool, the chat app and this README.
 - **Codex (OpenAI):** researched the approach, kept the project notes, built the curve-shape network, and independently re-checked the saved models and metrics.
 
-All numbers above come from files saved in this repo.
+All numbers above come from files saved in this repo. For the full story of what was done, in order, see [`WORKLOG.md`](WORKLOG.md).

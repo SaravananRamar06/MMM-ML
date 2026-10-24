@@ -18,7 +18,7 @@ COPY = [
     ("src", "src"), ("app", "app"), ("tests", "tests"), ("tools", "tools"), ("figures", "figures"),
     ("reports", "reports"), ("runs", "runs"), ("requirements.txt", "requirements.txt"),
     ("data/manifest.json", "data/manifest.json"), ("data/split.json", "data/split.json"),
-    ("README.github.md", "README.md"),
+    ("README.github.md", "README.md"), ("WORKLOG.md", "WORKLOG.md"),
     # project notes, kept together under docs/
     ("README.md", "docs/HANDOFF.md"), ("AGENTS.md", "docs/AGENTS.md"),
     *[(f, f"docs/{f}") for f in ("context.md", "decisions.md", "research.md", "dataset.md",
