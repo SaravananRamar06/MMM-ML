@@ -31,6 +31,11 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(parse("how accurate is it?")["intent"], "accuracy")
         self.assertIn("lift", parse("what porosity gives max lift")["notes"])
 
+    def test_bare_scientific_number_is_the_rate(self):
+        p = parse("compare 30 and 200 C at 1e-3")
+        self.assertEqual([c["rate"] for c in p["conditions"]], [1e-3, 1e-3])
+        self.assertNotIn("rate", p["defaults_used"])
+
     def test_strain_rate_is_not_read_as_strain(self):
         self.assertIsNone(parse("at 100 C, strain rate 1e-4")["strain_query"])
 

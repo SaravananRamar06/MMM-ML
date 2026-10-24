@@ -61,6 +61,11 @@ def parse(text):
         re.search(r"(" + NUM + r")\s*(?:/\s*s|s\^?-1|per second)", t)
     if m:
         rate = float(m.group(1))
+    else:
+        # A bare negative-exponent number ("at 1e-3") can only be a strain rate in this app.
+        m = re.search(r"(?<![\w.])(\d+(?:\.\d+)?e-\d+)(?![\w.])", t)
+        if m:
+            rate = float(m.group(1))
 
     density = None
     m = re.search(r"(?:density|rho|ρ)\s*(?:=|:|of)?\s*(" + NUM + r")", t)
