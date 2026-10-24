@@ -20,11 +20,11 @@ Multiscale Modelling of Materials using Machine Learning. Team: Pranav Parasuram
 ## 4. What drives the curve
 Average largest stress change when one input moves by one level (Svm):
 - temperature 22.1 MPa;
-- strain rate 17.4 MPa;
+- strain rate 17.5 MPa;
 - shear modulus 3.4 MPa;
 - density 0.19 MPa.
 
-Density, often used as a stand-in for porosity, barely changes the response in these simulations.
+Density barely changes the response in these simulations. Whether density or G represents porosity is unconfirmed. (Units inferred.)
 
 ## 5. Curves start high and decline; one drops irregularly
 - Each record starts at substantial stress from the first strain step and generally declines. No initial elastic segment is visible.
@@ -34,7 +34,7 @@ Density, often used as a stand-in for porosity, barely changes the response in t
 - Input: temperature, strain rate, density, shear modulus, and a strain value. Output: the von Mises stress at that strain.
 - Each curve is resampled to 120 strain points, so every case counts equally.
 - Professor's protocol: a random half of the cases for training (36) and the other half for testing (37), seed 42.
-- Early exploration used all 73 cases; settings were then re-chosen by cross-validation inside the 36 training cases, and the test set was scored once. The test set is therefore not fully blind.
+- Early exploration used all 73 cases; settings were then re-chosen by cross-validation inside the 36 training cases, and the final fixed model was scored on the test set in one step. Because exploration came first, the test set is not fully blind.
 
 ## 7. The model
 - A query MLP: 5 inputs → 16 → 16 → 1 stress value; ask it 120 times to get a curve.
@@ -44,7 +44,7 @@ Density, often used as a stand-in for porosity, barely changes the response in t
 ## 8. How the model was chosen
 Training half only: 3-fold case cross-validation, and hiding one temperature/rate combination at a time.
 
-| Approach | 3-fold CV error (training half) | Hide-one-condition error (training half) |
+| Approach | 3-fold CV RMSE (training half, mean over runs) | Hide-one-condition RMSE (training half, mean over 9 conditions) |
 |---|---|---|
 | Query MLP | 1.16 | 6.8 (lowest) |
 | PCA + Gaussian process | 0.66 (lowest) | 11.0 |
@@ -55,7 +55,7 @@ Training half only: 3-fold case cross-validation, and hiding one temperature/rat
 The course asks for a neural network. Among the networks tested, the query MLP had the lowest errors, and it was lowest of all five on the training-half hide-one-condition test. The GP stays as an interpolation reference.
 
 ## 9. Result on the 37 test cases
-- **0.059 MPa** mean error per curve; worst curve 0.113 MPa.
+- **0.059 MPa** mean RMSE per test curve; worst curve RMSE 0.113 MPa (units inferred).
 - A "copy the closest training curve" baseline scores 1.38 MPa, about 23× worse.
 - Figure: best, median and worst test curves.
 
@@ -80,8 +80,8 @@ The random split mostly tests filling in between known conditions, which is easy
 - **Test exposure:** settings were explored on all 73 cases before the formal selection, so the test set is not fully blind.
 
 ## 13. Coefficient of lift: what is missing
-- These simulations contain no lift values, and their curves have no elastic segment. G is only a supplied input.
-- So no model can learn porosity → coefficient of lift from them.
+- These simulations contain no lift values and no visible elastic segment; G is only a supplied input.
+- A porosity → coefficient-of-lift model would need lift data or an agreed calculation.
 - Needed from the professor: the intended CL calculation or data, the operating conditions, and the meaning of porosity in the data.
 
 ## 14. Next steps
@@ -93,4 +93,4 @@ The random split mostly tests filling in between known conditions, which is easy
 ## 15. Where every number came from
 - Data: the professor's 73 simulation files (checksums in `data/manifest.json`).
 - Code, models and results: github.com/SaravananRamar06/MMM-ML (private).
-- Built with two AI coding agents. Claude analysed the data, trained the models and built the app. Codex researched the approach and independently checked the saved models and metrics.
+- Built with AI coding agents. Claude analysed the data, trained the models and built the app. Codex researched the approach and re-checked every result. Gemini (Antigravity) independently reviewed the deck.

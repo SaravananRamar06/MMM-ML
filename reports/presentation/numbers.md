@@ -7,7 +7,7 @@ For Codex's fact-check. The paths are in the MMM-ML project. "Svm" means the von
 | 3 | planned / available simulations | 108 / 73 | `TEAM_8_extracted_results_set_1/simulation_matrix.csv`; `data/manifest.json` (73 entries) |
 | 3 | coverage by temperature | 30 °C 27/27, 100 °C 27/27, 200 °C 19/27, 300 °C 0/27 | `data/manifest.json` + matrix |
 | 3 | max strain; rows per file | 0.1; 1,000 / 10,000 / 100,000 | `data/manifest.json` (`e11_max`, `rows`) |
-| 4 | one-level effect: T, rate, G, density | 22.1, 17.4, 3.4, 0.19 MPa | `runs/factor_effects.json` → `Svm.*.mean_max_abs_diff` |
+| 4 | one-level effect: T, rate, G, density | 22.1, 17.5, 3.4, 0.19 MPa | `runs/factor_effects.json` → `Svm.*.mean_max_abs_diff` |
 | 5 | case 60 collapse strain range | 0.05–0.08 | `figures/Svm/case60_extrapolation.png` (visual) |
 | 6 | grid points; split | 120; 36 train / 37 test, seed 42 | `src/data.py` `STRAIN_GRID`; `data/split.json` |
 | 7 | params per network / ensemble | 385 / 1,925 | 5·16+16 + 16·16+16 + 16+1 = 385; × 5 |

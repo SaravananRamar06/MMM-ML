@@ -116,3 +116,15 @@ Perform a reproducible curve-quality/definition audit and define the material pr
 - Added a coverage statement and links to all four detailed research notes in README; added the research report to agent startup guidance.
 - Recorded the user's research-before-implementation preference and clarified the now-established all-file stress observation in open questions.
 - The files are a structured project handoff, not a verbatim transcript. No training, split creation, or source-data changes occurred during this check.
+
+## 2026-10-24 — Final model checks, publishing, Gemini and presentation review
+
+- Final Svm model selected: five 5–16–16–1 query MLPs averaged, alpha 0.001, fixed 36/37 seed-42 case split and 120 strain queries. Bounded PCA-MLP experiments did not improve selection scores. Earlier all-data exploration remains disclosed.
+- Codex independently reloaded four earlier selected artifacts, reproduced saved predictions/metrics, and then recomputed final test RMSEs from `runs/score/final_Svm/test_predictions.npz`: mean 0.0590851517, worst 0.1133061791 (case 45). Recomputed six candidates' saved CV and condition aggregates. No fitting repeated during these checks.
+- Model Studio live HTTP/inference checks passed (three tests). Material-to-lift capability, scientific units, physical validation and ANSYS evidence remain unresolved.
+- User authorised private GitHub publishing: Claude owns MMM-ML export/push; Codex owns AI-GroupChat export/push. AI-GroupChat commits fbcdcd0 and a1498e1 were pushed; runtime messages, personal telemetry/configuration and raw data were excluded.
+- Added dynamic participants and registered Gemini. User clarified this is Antigravity/agy, displayed as Gemini. Gemini actually posted and saved an independent presentation review.
+- Codex saved `reports/presentation/codex-fact-check.md`, identified rounding/metric/physical-claim corrections, and requested the same fixes in the visual deck. This was numerical/text review, not visual PowerPoint QA.
+- Claude owns current UI CSS/HTML, improved output formatting, colour revisions and desktop launcher. Codex added `/assets/room-ui.js` to both server source allowlists, and guided Gemini/Claude on usage-provider scope and unavailable telemetry. Existing live backend requires deliberate restart before the new external asset route can be used.
+- Standalone chat Python suite: `python3 -m unittest discover -s collaboration -p 'test_*.py' -v`, 19 passed. Current late UI changes require separate review before publishing; browser/desktop behaviour is not established by the Python suite.
+- Updated README/context/decisions/tasks to prevent stale “no model exists” snapshots from misleading future sessions.

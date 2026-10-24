@@ -6,7 +6,7 @@ Last updated: **2026-10-24**. Checkboxes denote completed work, not anticipated 
 
 - [x] Create a 100-question context questionnaire, local chat/document dashboard, Codex usage provider, and Claude extension interface.
 - [x] Verify six persistence/API/provider tests and live HTTP endpoints; read and acknowledge Claude's first room message.
-- [ ] Review Claude's existing implementation, split, and experiment-selection history before duplicating the proposed experiment. Earlier unexecuted items below refer to Codex's own work, not proof of an empty workspace.
+- [x] Review Claude's implementation, split, saved selection history, predictions, and model reloads. Earlier full-data exploration is disclosed.
 - [x] Locate project folder and inventory source files.
 - [x] Read the original handoff and extract the submitted PDF text.
 - [x] Inspect matrix values, output coverage, row counts, and selected histories.
@@ -19,7 +19,7 @@ Last updated: **2026-10-24**. Checkboxes denote completed work, not anticipated 
 ## Next: establish the data and target definitions
 
 - [x] Build a reproducible case inventory and numerical-quality audit; retain unconfirmed units as provisional. Raw-file hashes remain part of implementation preparation.
-- [ ] Plot representative stress–strain curves across conditions; investigate initial nonzero stress, softening, and differing strain support.
+- [x] Plot representative curves and identify initial nonzero stress, general decline, and case-60 irregularity. Their physical explanation remains unconfirmed.
 - [ ] Establish the generating solver/material law, loading protocol, output averaging, and strain/stress definitions where possible.
 - [ ] Recover or justify the density/modulus-to-porosity interpretation; do not assign labels by assumption.
 - [ ] Recover the professor's intended connection between porosity/material response and coefficient of lift, plus the aerodynamic setup and label source.
@@ -28,16 +28,27 @@ Last updated: **2026-10-24**. Checkboxes denote completed work, not anticipated 
 
 ## Then: implement and evaluate
 
-- [ ] Decide the 36/37 allocation and seed; save a random split manifest by available simulation ID.
-- [ ] Define balanced curve sampling and train-only preprocessing.
-- [x] Establish a research-backed first network family and rationale: compact query MLP. Exact settings and empirical selection remain pending.
-- [ ] Decide whether a second learned model adds value within the tentative two-model maximum.
-- [ ] Implement training with validation restricted to training cases; save complete run configuration.
-- [ ] Evaluate once the design is fixed on held-out cases; report per-case and condition-wise performance.
-- [ ] Save inference artifacts and verify reproducible prediction in a clean process.
-- [ ] Add focused checks for parsing, split isolation, unit conversions, target construction, and model reload as relevant.
+- [x] Fix 36/37 allocation and seed 42; save `data/split.json` by available simulation ID.
+- [x] Use 120 strain queries per case and training-fitted preprocessing.
+- [x] Select compact query MLP, five-member 5–16–16–1 tanh ensemble, alpha 0.001, target Svm.
+- [x] Complete bounded PCA-coefficient MLP comparison; reject it on training-side scores. GP is an interpolation reference.
+- [x] Save training-side case-CV and condition-holdout scores/configuration, with earlier full-data exploration disclosed.
+- [x] Save final 37-case scoring for the fixed model, per-case errors, and supplemental condition diagnostics. Do not call the test set fully blind.
+- [x] Save inference artifacts; independently reload selected models and reproduce saved predictions/metrics.
+- [x] Run focused PCA-MLP isolation/reload tests and Model Studio live parsing/inference checks. Unit definitions remain unconfirmed.
 
-The proposed next experiment is documented in `research.md`: seed-42 random 36/37 case split, three training-side case folds, balanced query MLP, and a conditional PCA-coefficient comparison. None of these training/split steps has been executed. Obtain or document remaining physical definitions before making constitutive or aerodynamic claims.
+The research experiment has now been executed. See `reports/codex-selected-model-check.md`, `reports/presentation/codex-fact-check.md`, and `runs/score/`. Physical definitions remain necessary before constitutive or aerodynamic claims.
+
+## Current collaboration work
+
+- [x] Publish private MMM-ML and AI-GroupChat repositories with reproducible code/results and scope documentation.
+- [x] Register and receive posts from Gemini, the user's Antigravity/agy session; preserve its requested display name.
+- [x] Implement Codex and Claude usage providers, participant registry, and safe Markdown rendering.
+- [ ] Review/integrate Gemini's actual available telemetry; do not manufacture counters if unavailable.
+- [ ] Review and publish Claude's latest visual/output improvements and colour changes in AI-GroupChat.
+- [ ] Confirm desktop launcher behaviour on the user's desktop; code review/dry-run does not establish successful real agent launch.
+- [ ] Incorporate Codex/Gemini fact-checks into the final visual presentation. Draft/source files exist.
+- [ ] Pool and prioritise shared-state/task-card and token-efficiency improvements after current integration is stable.
 
 ## Final deliverables
 

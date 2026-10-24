@@ -35,7 +35,7 @@ The detailed research notes are retained alongside the main report:
 - [Dataset-specific evidence](<research_notes/Neural networks for material curves/dataset_fit.md>)
 - [Development and validation workflow](<research_notes/Neural networks for material curves/workflow_validation.md>)
 
-For a future session, start with this README, then `AGENTS.md`, `context.md`, `research.md`, and `tasks.md`. Research is complete for the current recommendation; implementation and empirical model comparison have not started.
+For a future session, start with this README, then `AGENTS.md`, `context.md`, `research.md`, and `tasks.md`. The material model and empirical comparison are complete; current implementation details are in the checkpoint at the top of `context.md`.
 
 ## Existing source material
 
@@ -48,14 +48,13 @@ For a future session, start with this README, then `AGENTS.md`, `context.md`, `r
 
 ## Current status
 
-- Requirements/provenance discussion, numerical inspection of all 73 histories, and architecture/workflow research are complete.
-- Research recommends a compact `E11`-query MLP first and a conditional PCA-coefficient MLP second. This is a recommendation, not a trained-model result or user approval of exact settings.
-- Claude has since reported a pipeline and experiments in the shared room. Codex confirmed implementation files and a 36/37 split exist, but has not independently reproduced the modelling results. Review those artifacts before duplicating work.
-- The professor's data was **not** given to Claude when it generated the submitted presentation.
-- The user did not download or run the prior code. Embedded code in the longer handoff is a recovery source, not evidence of successful execution.
-- The professor approved the topic, not the presentation's specific equations, assumptions, or numerical results.
-- Final deliverables: working ML model(s), report, presentation, and viva. Deadline is next month relative to 24 October 2026; exact date pending.
+- Final material predictor: five small query MLPs averaged, each 5–16–16–1, target Svm. Saved in `runs/score/final_Svm/`.
+- Fixed seed-42 split: 36 training / 37 test cases; 120 strain points per curve. Saved test mean per-curve RMSE is 0.05908515, worst 0.11330618, in inferred stress units. Codex independently recomputed these saved prediction errors. Earlier full-data exploration means the holdout is not fully blind; condition generalisation is substantially worse.
+- Model Studio: **http://127.0.0.1:8766**. Shared room: **http://127.0.0.1:8765**. Both are local services. Agent responses require active sessions.
+- Private repositories: [MMM-ML](https://github.com/SaravananRamar06/MMM-ML) and [AI-GroupChat](https://github.com/SaravananRamar06/AI-GroupChat). Claude publishes the model repo; Codex publishes the room repo. Raw data, runtime chat and telemetry are excluded from exports.
+- Gemini is the user's Antigravity/agy collaborator, displayed as **Gemini**, and has joined the room. Codex and Claude usage panels exist; Gemini telemetry integration is pending review.
+- The corrected presentation is drafted in `reports/presentation/`; numerical/text reviews are saved there. Final visual corrections, report/viva packaging, confirmed units, ANSYS evidence, and the physical porosity-to-lift connection remain open.
 
 ## Resume here
 
-Use [research.md](research.md) to settle the material prediction contract and implement the proposed case-level experiment. Physical definitions still need confirmation; no split or model exists yet. In parallel, recover the intended relationship between porosity and lift coefficient and identify aerodynamic labels or a justified calculation. Do not present the old deck's numerical claims as validation of the new workflow.
+Read the current checkpoint in [context.md](context.md) and [tasks.md](tasks.md), then consume unread room messages before editing shared files. Finish presentation/integration reviews and obtain missing scientific definitions. Do not retrain or resplit merely because older research snapshots say implementation was pending.

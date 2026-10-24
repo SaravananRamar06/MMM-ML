@@ -18,16 +18,17 @@ Date of initial record: **2026-10-24**. "Confirmed" refers to the user's account
 | D12 | User correction, 2026-10-24 | Retire the fracture interpretation as the current project target. | Coefficient of lift was explicitly confirmed. Preserve original submission files, but correct the new handoff. |
 | D13 | Research recommendation, 2026-10-24 | First material model: compact query MLP, `(T, log10(rate), density, G, E11) -> Svm`; candidate `5–16–16–1`. | Literature plus all-file audit; not user approval of exact settings or empirical model selection. See `research.md`. |
 | D14 | Conditional research recommendation | Reserve a second model for a PCA-coefficient MLP if training-side reconstruction preserves important curve features. | Full-data exploratory PCA is not a final basis or prediction score. Retain case 60. |
-| D15 | Proposed experiment, not executed | Random 36-training/37-test split, proposed seed 42, three internal case folds. | Respect professor's half-case split; keep tuning/transforms inside training. Disclose existing full-data EDA. |
+| D15 | Implemented | Random 36-training/37-test split, seed 42, three internal case folds; `data/split.json`. | Training-side selection is saved; earlier all-data exploration must still be disclosed. |
+| D16 | Selected after bounded comparison | Deliver the Svm query MLP ensemble: five 5–16–16–1 tanh networks, alpha 0.001. | Saved final artifact in `runs/score/final_Svm/`; PCA-coefficient MLP rejected, GP kept as a reference. |
+| D17 | User-authorised publishing | Publish code/current results to private MMM-ML; reusable room to private AI-GroupChat. | Claude is MMM-ML publisher; Codex is chat publisher. Exclude raw data and runtime chat/telemetry from exports. |
+| D18 | User-confirmed identity | Display the Antigravity/agy collaborator as Gemini (`gemini`). | No Gemini CLI installation is required to name or join the existing agent session. |
 
 ## Decisions not yet made
 
 - Exact stress/strain target definitions and unit conversions.
 - Meaning of density and modulus variation; whether a porosity mapping is valid.
 - Aerodynamic setup, material/porosity-to-lift connection, and source of lift-coefficient labels.
-- Exact architecture/activation, framework, loss, preprocessing, and curve sampling; recommended network family is now documented in `research.md`.
-- Whether one or two learned models are needed and how they connect.
-- Locking/executing the proposed split seed and allocation; no manifest exists yet.
+- Whether the professor's tentative two-model limit includes exploratory references; only one final neural-network family is selected.
 - Material constants, build/heat-treatment conditions, and bracket coupling.
 - Final deadline and verified ANSYS outputs available for the final report.
 
