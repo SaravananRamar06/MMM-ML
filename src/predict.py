@@ -4,8 +4,8 @@ Example:
   .venv/bin/python src/predict.py --temperature 100 --rate 1e-4 --density 2619 --G 24541
   .venv/bin/python src/predict.py --temperature 150 --rate 3e-4 --density 2700 --G 25300 --plot curve.png
 
-The models are the ones chosen by training-side cross-validation (src/select_settings.py),
-fitted on the 36 training cases. They were trained only on 30/100/200 C, rates 1e-5..1e-3,
+The MLP is the final scored model (runs/score/final_Svm/model.joblib); the GP reference is the one
+chosen by training-side cross-validation (src/select_settings.py). Both are fitted on the 36 training cases. They were trained only on 30/100/200 C, rates 1e-5..1e-3,
 density 2488..2700 and G 23314..25300; anything outside that is extrapolation.
 """
 import os
@@ -25,6 +25,14 @@ from data import ROOT, STRAIN_GRID  # noqa: E402
 RANGES = {"temperature": (30, 200), "log10_rate": (-5, -3), "density": (2488.05, 2700),
           "G": (23313.95, 25300)}
 MODEL_FILES = {"mlp": "query_MLP.joblib", "gp": "PCA_plus_GP.joblib"}
+
+
+def model_path(name, target):
+    """The final scored model when one exists for this target (src/score.py --final), else the CV-selected one."""
+    final = ROOT / "runs" / "score" / f"final_{target}" / "model.joblib"
+    if name == "mlp" and final.exists():
+        return final
+    return ROOT / "runs" / f"selected_{target}" / MODEL_FILES[name]
 
 
 def warnings_for(t, log_rate, rho, g):
@@ -59,7 +67,7 @@ def main(argv=None):
     names = ["mlp", "gp"] if a.model == "both" else [a.model]
     preds = {}
     for n in names:
-        path = ROOT / "runs" / f"selected_{a.target}" / MODEL_FILES[n]
+        path = model_path(n, a.target)
         if not path.exists():
             sys.exit(f"missing {path}; run: .venv/bin/python src/select_settings.py --target {a.target}")
         preds[n] = joblib.load(path).predict(x)[0]
