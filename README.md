@@ -1,133 +1,149 @@
-# AlSi10Mg stress–strain predictor
+# AlSi10Mg stress–strain prediction using machine learning
 
-A small neural network that predicts how an AlSi10Mg aluminium alloy responds when it is stretched. You give it a temperature, a stretching speed (strain rate), a density and a shear modulus. It draws the full stress–strain curve almost instantly, instead of running a new simulation.
+We developed a small neural-network model for the course **Multiscale Modelling of Materials using Machine Learning**. It predicts the supplied AlSi10Mg simulations' stress response from temperature, strain rate, density, shear modulus and axial strain.
 
-It was built for the course **Multiscale Modelling of Materials using Machine Learning**, from 73 simulations supplied by the professor. A local chat page lets you ask for curves in plain English.
+The completed model returns a 120-point curve of **von Mises stress (`Svm`) against axial strain (`E11`)**. A local Model Studio lets us request and compare curves in plain language. The wider porosity-to-coefficient-of-lift objective still needs aerodynamic data and a defined connection to the material model.
 
-![Final model against the simulations it never saw](figures/final_test_curves.png)
+## Start here
 
-*The grey line is the simulation; the orange line is the model's prediction for a case it was never trained on. These are the best, median and worst of the 37 test cases.*
+- [Simple model guide](<project files/My model explained.html>): preparation, training and prediction explained in a personal voice for study and presentation. [Markdown version](<project files/My model explained.md>).
+- [Latest test results](<project files/Model test results.md>): fresh checks, error measures and limits, dated 25 October 2026.
+- [Presentation](<project files/AlSi10Mg Stress–Strain ML.pptx>): 24 slides with speaker notes. The slides are images; source text is retained in `reports/presentation/slides.md`.
+- [Project documents](<project files/README.md>): available guides and presentation files.
 
-## Try it in three commands
+## What we have completed
+
+| Stage | Completed work |
+|---|---|
+| Data inspection | Inventoried 73 available histories from 108 planned simulations; checked 2,197,000 rows and documented missing cases and unusual curves. |
+| Preparation | Matched conditions to simulation IDs, checked source hashes and interpolated every curve to the same 120 strain points. |
+| Evaluation design | Saved a fixed seed-42 split of 36 training cases and 37 test cases. All points from a simulation remain together. |
+| Model development | Compared the query MLP, a PCA-coefficient MLP, a PCA/Gaussian-process reference and additional variants using saved training-side evaluations. |
+| Final predictor | Saved a five-network query MLP ensemble, preprocessing, test predictions and per-case errors in `runs/score/final_Svm/`. |
+| Model checks | Recomputed errors, checked training-only scalers, reproduced a frozen-settings refit and checked equivalent NumPy inference. |
+| Interface | Built Model Studio with curve comparisons, point queries, tables and range warnings; provided command-line prediction. |
+| Documentation | Prepared a 24-slide presentation, a detailed reference guide, a simple personal guide and reproducible verification reports. |
+
+The material prediction workflow is implemented. Experimental validation, verified ANSYS coupling and aerodynamic lift prediction remain open.
+
+## Run Model Studio
+
+From the project root:
 
 ```bash
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-.venv/bin/python app/server.py          # then open http://127.0.0.1:8766
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python app/server.py
 ```
 
-Type things like:
+Open **http://127.0.0.1:8766**. Try:
 
-- `stress curve at 150 C, rate 1e-4`
-- `compare 30, 100 and 200 C at 1e-3 /s`
-- `stress at 5% strain for 100C, density 2619, G 24541`
-- `how accurate is it?` or `what ranges are valid?`
+```text
+stress curve at 100 C, rate 1e-4, density 2619, G 24541
+compare 30, 100 and 200 C at 1e-3 /s
+stress at 5% strain for 100C, density 2619, G 24541
+how accurate is it?
+```
 
-The page answers with a chart, a small table and any warnings. It runs entirely on your computer. Its "chat" is a set of fixed text rules (`app/nlu.py`), not an AI model, so it needs no internet or API key.
+The interface uses a deterministic text parser and locally saved predictors. It needs no LLM or API key. Check its displayed defaults when a condition is omitted. The Gaussian-process line is a comparison reference; the MLP is the final material predictor.
 
-Prefer the command line?
+To save a prediction directly:
 
 ```bash
-.venv/bin/python src/predict.py --temperature 100 --rate 1e-4 --density 2619 --G 24541 --plot curve.png
+.venv/bin/python src/predict.py --model mlp --target Svm --temperature 100 --rate 1e-4 --density 2619 --G 24541 --plot curve.png --csv curve.csv
 ```
 
-## How good is it?
+Saved models support inference without the raw dataset. Rebuilding prepared data or running the full source audit requires the professor-supplied files, which are excluded from the published repository.
 
-The professor asked for a random half of the simulations to be used for training and the other half for testing. That split is saved in `data/split.json`: 36 cases for training and 37 for testing.
+## How the model works
 
-| What we measured | Result |
+Each file represents one simulation condition. Histories have different lengths, so we interpolate every curve to **120 equally spaced E11 values from 0.0002 to 0.0999**. This gives each case the same number of training examples.
+
+```text
+temperature, log10(strain rate), density, shear modulus, E11
+                            ↓
+               standardise using training statistics
+                            ↓
+          five networks, each shaped 5 → 16 → 16 → 1
+                            ↓
+         average outputs and restore the stress scale
+                            ↓
+                          Svm
+```
+
+Each network uses two hidden layers with 16 tanh units and a linear output: **385 weights and biases per network**, or **1,925 across the ensemble**. The saved settings use L-BFGS, L2 penalty 0.001 and initialisation seeds 0–4. Querying all 120 strains produces a curve.
+
+We fit scalers and final weights using the 36 training cases only: 36 × 120 = **4,320 query points**, derived from 36 simulations. These are not 4,320 independent simulations. Internal case folds and condition holdouts were used for comparison. Earlier exploration had used all 73 cases, so the final test set is a previously explored holdout.
+
+## Results checked on 25 October 2026
+
+Errors below are in **source stress units**. MPa is plausible but has not been confirmed by the data owner.
+
+| Fresh check on the existing 37-case test split | Result |
+|---|---:|
+| Mean per-curve RMSE | **0.05908515** |
+| Median per-curve RMSE | 0.05056666 |
+| Worst per-curve RMSE | 0.11330618, case 45 |
+| Mean per-curve MAE | 0.04899859 |
+| RMSE pooled over all test points | 0.06486281 |
+| Maximum pointwise absolute error | 0.28832028 |
+
+All 73 source curves reproduce the cached interpolation exactly. Reloaded predictions and NumPy-runtime predictions match the saved model exactly in this environment. A fresh fit with frozen settings reproduced every weight and prediction exactly, without warnings. **13 unit tests and 3 live Model Studio tests passed.** Delivered model files were unchanged.
+
+These checks confirm repeatable software behaviour and agreement with supplied simulations. They do not establish experimental or aerodynamic accuracy. The saved training-side three-fold CV mean curve RMSE is **1.15826321**; the mean over nine held-out temperature/rate groups is **6.79360255**, rising to **23.52512868** for the 200 / 1e-5 group. Those diagnostics were read from saved results, not rerun in this retest.
+
+![Fresh check of case 42 and the worst test case](reports/retests/20261025T172218Z/test_curves.png)
+
+The random split mostly tests interpolation between related simulated conditions. Hiding an entire temperature/rate group is harder. The low random-split error is not proof of reliable prediction at new operating conditions.
+
+## Data coverage and scientific limits
+
+The matrix plans 108 cases. Available histories cover 27 cases at temperature 30, 27 at 100 and 19 at 200; **none are available at 300**. Temperature is interpreted as °C, rate as s⁻¹, density as kg/m³ and modulus as MPa, subject to confirmation.
+
+| Input | Available levels or operational range |
 |---|---|
-| Average error on the 37 test curves | **0.059 MPa** (worst curve 0.113 MPa) |
-| Stress levels in these curves | up to about 160 MPa, so the average error is under 0.1 % of peak stress |
-| A "copy the closest training curve" shortcut, for comparison | 1.38 MPa, about 23× worse |
-| A temperature/rate combination **never seen** in training | about 1.5–8 MPa below 200 °C; 8–25 MPa at 200 °C |
+| Temperature | 30, 100, 200; incomplete coverage at 200 |
+| Strain rate | 1e-5, 1e-4, 1e-3 |
+| Density | 2488.05, 2619, 2700 |
+| Shear modulus G | 23313.95, 24541, 25300 |
+| Curve query E11 | 0.0002–0.0999 |
 
-The last row is the honest limit. The random split mostly asks the model to fill in between conditions it has already seen, which is easy here. Predicting a genuinely new condition is harder, and the model gets worse there.
+Values between levels are interpolation requests, not independently validated conditions. Outside the range, the model extrapolates. Case 60 is the only available 200 / 1e-5 case and has an irregular response; it remains in the dataset. The histories do not supply a conventional zero-stress elastic loading segment, so we have not established an elastic modulus from their initial slope.
 
-## How it works, in plain words
+Density and shear modulus are supplied inputs. Neither has been verified as a porosity label. **C_L means aerodynamic coefficient of lift**, not critical flaw length. No lift labels or verified material-to-lift coupling exist in the current data. This predictor is a data-driven surrogate, with no enforced constitutive law or physics-informed loss.
 
+## Reproduce the checks
+
+```bash
+# Full audit: requires raw data and prepared caches. Start Studio first.
+.venv/bin/python reports/retest_model.py
+
+# Model, parser and runtime checks; some require prepared caches.
+.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v
+
+# Run while Studio is serving on port 8766.
+.venv/bin/python -m unittest discover -s tests -p live_model_app_check.py -v
 ```
- 73 simulation files  ──►  each curve resampled to 120 strain points (equal weight per case)
-                                         │
-             conditions (T, rate, density, G) + one strain value
-                                         ▼
-               small neural network: 2 layers × 16 neurons, 5 copies averaged
-                                         ▼
-                       one stress value ── ask 120 times ──► a full curve
-```
 
-- **Input:** the four material conditions, plus the strain at which you want the stress.
-- **Output:** the von Mises stress at that strain.
-- **Why ask one point at a time?** It lets one small network learn the shape of every curve. A curve is just the same question asked at 120 strains.
-- **Why so small?** There are only 36 training curves. A big network would memorise them instead of learning the pattern. In our tests, the larger 32×32 networks did consistently worse.
-- **Why five copies?** Each network starts from random weights. Averaging five makes the answer steadier. Each network has 385 numbers inside; together, 1,925.
+The retest writes a new timestamped evidence folder. It refits frozen settings separately and leaves the delivered model unchanged. Reproducibility checks do not create a new independent holdout.
 
-## How we chose this model
+To prepare data in a fresh checkout, place `TEAM_8_extracted_results_set_1/` in the project root, then run `.venv/bin/python src/data.py`. Preserve `data/split.json`. Training and selection scripts are in `src/`; do not resplit or overwrite final artifacts merely to repeat a check. The original final-scoring command refuses to overwrite an existing final result.
 
-We compared five approaches using **only the training half**, so the test set was not used to pick the winner:
+## Project layout
 
-| Approach | Error on seen conditions | Error on an unseen condition | Neural network? |
-|---|---|---|---|
-| **Query MLP**: this model | 1.16 MPa | **6.8 MPa** (best) | yes |
-| PCA + Gaussian process | **0.66 MPa** (best) | 11.0 MPa | no |
-| Average of the two | 0.87 MPa | 8.0 MPa | partly |
-| Query MLP with a 1/temperature input | 1.54 MPa | 8.6 MPa | yes |
-| Curve-shape (PCA) neural network | 2.00 MPa | 11.2 MPa | yes |
-
-*Errors are from 3-fold cross-validation inside the 36 training cases, and from hiding one temperature/rate combination at a time.*
-
-The Gaussian process is slightly better at filling in between known conditions. The course asks for a neural network, though, and the query MLP is the best network here and the best model on unseen conditions, so it is the final model. The Gaussian process stays in the chat page as a dashed comparison line. Where the two lines disagree, trust both less.
-
-The selection rule was written down before the last candidates were scored. The full history is in [`runs/score/`](runs/score) and [`reports/claude-model-recommendation.md`](reports/claude-model-recommendation.md).
-
-## What the data taught us
-
-- **Temperature and strain rate drive the curve.** Changing either one by one level moves the stress by about 17–22 MPa on average, and by up to 83 MPa.
-- **Shear modulus matters a little,** about 3.4 MPa per level.
-- **Density barely matters,** about 0.2 MPa per level and 0.37 MPa at most. In these simulations, lower density, often used as a stand-in for porosity, hardly changes the stress at all. (Source: `runs/factor_effects.json`.)
-- **The curves start at full flow stress and soften.** They have no elastic part, so stiffness can't be learned from them. G enters only as a supplied input.
-- **Case 60 is odd:** the only 200 °C / 1e-5 simulation, and its stress collapses unevenly. Every model struggles with it.
-
-## What it can't do
-
-- **No 300 °C:** there is no data there. Outside the trained ranges the app warns you. At 300 °C the network even predicts negative stress, which is impossible, and the app says so.
-- **No coefficient of lift:** the project discussed porosity and coefficient of lift, but these simulations contain no lift values, and their curves have no elastic part (G is only a supplied input). No model can learn porosity → lift from them. That needs aerodynamic data or an agreed physics calculation; see [`docs/project-questionnaire.md`](docs/project-questionnaire.md).
-- **Units are provisional:** MPa, °C and 1/s are inferred from the numbers, not from documentation.
-- **The test set is not fully blind:** model settings were explored early on using all 73 cases before the formal training-only selection. Both reports say so openly.
-
-## Repository map
-
-| Folder | What's inside |
+| Path | Purpose |
 |---|---|
-| `app/` | chat page (`index.html`), local server, plain-English parser |
-| `src/` | data loading, split, models, training, scoring, prediction |
-| `runs/score/final_Svm/` | **the final model**, its test predictions and metrics |
-| `runs/` | every other experiment: selection history, comparisons, calibration checks |
-| `figures/` | plots used above and in the reports |
-| `reports/` | Claude's modelling report and Codex's independent checks |
-| `docs/` | project context, decisions, research notes, open questions, questionnaire |
-| `tests/` | automated checks: `.venv/bin/python -m unittest discover -s tests`. With the app running and the raw data processed, `-p live_model_app_check.py` also checks the live app end to end |
+| `src/` | Preparation, models, selection, scoring and prediction |
+| `app/` | Model Studio server, parser and page |
+| `data/manifest.json`, `data/split.json` | Source checksums and fixed split |
+| `runs/score/final_Svm/` | Delivered model, NumPy weights, predictions and metrics |
+| `runs/score/` | Candidate scores and condition diagnostics |
+| `reports/retests/` | Timestamped checks, logs, per-case errors and plots |
+| `project files/` | Guides, results document and presentation |
+| `tests/` | Model, parser, runtime and live-service checks |
 
-## Re-running everything from the raw data
+Research, assumptions, decisions and open questions are retained in the project notes (under `docs/` in the published export). Older reports describe earlier experiment stages; the final Svm artifact and this README describe the delivered predictor. The separate [AI-GroupChat repository](https://github.com/SaravananRamar06/AI-GroupChat) contains the collaboration app.
 
-The professor's raw simulation files are **not** in this repo. To rebuild from scratch:
+## Remaining project work
 
-1. Put the folder `TEAM_8_extracted_results_set_1/` (73 `simulation_XXXX/STR_STR.OUT` files plus `simulation_matrix.csv`) in the repo root.
-2. Run:
-
-   ```bash
-   .venv/bin/python src/data.py                                # parse and resample; checks every file
-   .venv/bin/python -W ignore src/select_settings.py --target Svm
-   .venv/bin/python src/score.py --candidate mlp --target Svm   # training-half scores
-   .venv/bin/python -W ignore src/evaluate.py --target Svm      # comparisons and figures
-   ```
-
-`data/manifest.json` lists a SHA-256 checksum for every raw file, so you can confirm you have exactly the same data. The final test score is deliberately locked: `src/score.py --final` refuses to run twice.
-
-## Who did what
-
-This project was carried out by Team 8. Its ML work was developed with two AI coding agents, working in a shared local chat room:
-
-- **Claude (Anthropic):** analysed the data, built and trained the models, the scoring tool, the chat app and this README.
-- **Codex (OpenAI):** researched the approach, kept the project notes, built the curve-shape network, and independently re-checked the saved models and metrics.
-
-All numbers above come from files saved in this repo. For the full story of what was done, in order, see [`WORKLOG.md`](WORKLOG.md).
+We still need to confirm physical units, strain/stress definitions and the generating setup; establish a defensible porosity mapping; inspect the actual ANSYS files and results; and define the aerodynamic data and coupling needed for C_L prediction. The full course report and submission review must keep these limits explicit. Presentation and model guides are available, but the full material-to-lift workflow has not been validated.
