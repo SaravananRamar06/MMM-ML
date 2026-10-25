@@ -1,11 +1,12 @@
-# Project files
+# Project documents
 
-The finished documents the user asked for, in one place. Everything else (code, model, evidence) stays in the main folders.
+| Document | Purpose |
+|---|---|
+| [My model explained.html](<My model explained.html>) | Easy-to-read personal guide, from preparation and training to prediction and results. Open in a browser; use Print to make a paper copy. |
+| [My model explained.md](<My model explained.md>) | Editable Markdown source of the personal guide. |
+| [Model test results.md](<Model test results.md>) | Fresh model checks, metrics, evidence links and limitations from 25 October 2026. |
+| [AlSi10Mg Stress–Strain ML.pptx](<AlSi10Mg Stress–Strain ML.pptx>) | 24-slide presentation with speaker notes; slides are full-page images. |
+| [AlSi10Mg Stress–Strain ML.pdf](<AlSi10Mg Stress–Strain ML.pdf>) | PDF version of the presentation. |
+| `model_guide.pdf`, `.docx`, `.doc`, `.tex`, `.md` | Existing detailed model reference in several formats. The new personal guide is the concise starting point. |
 
-| File | What it is | Owner |
-|---|---|---|
-| `AlSi10Mg Stress–Strain ML.pptx` | Full 24-slide presentation with speaker notes (25 Oct 2026). Each slide is a full-page image; for editable text, export from the online deck | Claude |
-| `AlSi10Mg Stress–Strain ML.pdf` | The same 24 slides as a PDF | Claude |
-| `model_guide.pdf` / `.docx` / `.tex` / `.md` | Plain-language model guide for personal reference | Gemini (reviewed by Codex) |
-
-Slide text and the source of every number: `reports/presentation/slides.md` and `numbers.md`.
+The delivered material predictor is in `runs/score/final_Svm/`. Fresh verification evidence is in `reports/retests/20261025T172218Z/`. Slide source and numerical provenance are in `reports/presentation/`. Physical units remain unconfirmed; the current material model does not predict aerodynamic lift.
