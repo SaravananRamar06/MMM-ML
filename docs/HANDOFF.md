@@ -1,16 +1,17 @@
-# AlSi10Mg stress–strain prediction using machine learning
+# AlSi10Mg stress–strain prediction for an aircraft wing bracket
 
-We developed a small neural-network model for the course **Multiscale Modelling of Materials using Machine Learning**. It predicts the supplied AlSi10Mg simulations' stress response from temperature, strain rate, density, shear modulus and axial strain.
+We developed a small neural-network surrogate for the simulated stress response of an additively manufactured AlSi10Mg aircraft wing bracket (wing-rib bracket) for the course **Multiscale Modelling of Materials using Machine Learning**. It predicts the material's simulated stress response from temperature, strain rate, density, shear modulus and axial strain.
 
-The completed model returns a 120-point curve of **von Mises stress (`Svm`) against axial strain (`E11`)**. A local Model Studio lets us request and compare curves in plain language. The wider porosity-to-coefficient-of-lift objective still needs aerodynamic data and a defined connection to the material model.
+The completed model returns a 120-point curve of **von Mises stress (`Svm`) against axial strain (`E11`)**. A local Model Studio lets us request and compare curves in plain language. The wider porosity-to-coefficient-of-lift objective for the wing bracket still needs aerodynamic data and a defined connection to the structural FE model.
 
 ## Start here
 
+- [Research paper (IEEE)](<project files/Research Paper.pdf>): three-page publication-format research paper on the aircraft wing bracket surrogate model (`paper/paper.tex`).
+- [Course report](<project files/Final Course Report.pdf>): fact-checked five-page LaTeX report with corrected figures, references and limitations; source and build record in `report/`.
 - [Simple model guide](<project files/My model explained.html>): preparation, training and prediction explained in a personal voice for study and presentation. [Markdown version](<project files/My model explained.md>).
 - [Latest test results](<project files/Model test results.md>): fresh checks, error measures and limits, dated 25 October 2026.
-- [Course report](<project files/Final Course Report.pdf>): fact-checked five-page LaTeX report with corrected figures, references and limitations; source and build record in `report/`.
 - [Presentation](<project files/AlSi10Mg Stress–Strain ML.pptx>): 24 slides with speaker notes. The slides are images; source text is retained in `reports/presentation/slides.md`.
-- [Project documents](<project files/README.md>): available guides and presentation files.
+- [Project documents](<project files/README.md>): available guides, research paper and presentation files.
 
 ## What we have completed
 

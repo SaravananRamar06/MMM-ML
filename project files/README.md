@@ -1,7 +1,8 @@
-# Project documents
+# Project documents: AlSi10Mg Aircraft Wing Bracket Surrogate
 
 | Document | Purpose |
 |---|---|
+| [Research Paper.pdf](<Research Paper.pdf>) | Three-page IEEE-format research paper draft on the AlSi10Mg surrogate model for an aircraft wing bracket; two-column publication layout. |
 | [Final Course Report.pdf](<Final Course Report.pdf>) | Five-page course report compiled from the fact-checked LaTeX source; corrected figures, bibliography and explicit scientific limitations. |
 | [My model explained.html](<My model explained.html>) | Easy-to-read personal guide, from preparation and training to prediction and results. Open in a browser; use Print to make a paper copy. |
 | [My model explained.md](<My model explained.md>) | Editable Markdown source of the personal guide. |
