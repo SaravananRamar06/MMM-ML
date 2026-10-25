@@ -40,3 +40,10 @@ Date of initial record: **2026-10-24**. "Confirmed" refers to the user's account
 - Historical five-fold CV is not the current required final evaluation; the user clarified a random 50/50 case holdout.
 
 Append future decisions with date, reason, and affected artifacts. Do not turn a proposal into a confirmed requirement without evidence.
+
+
+## 25 October 2026 — Documentation and retest
+
+- User requested team-voice README text without contribution credits and a simple first-person explanation. Both README source versions now match; existing detailed guides are preserved alongside the new concise guide.
+- Keep the delivered predictor and fixed split unchanged. A retest uses a separate in-memory frozen-settings fit and timestamped evidence, with hashes verifying artifact preservation. Repeating the same holdout does not create independent validation.
+- User input questions should be posted in the group chat. No scientific definition was invented to complete the documentation.

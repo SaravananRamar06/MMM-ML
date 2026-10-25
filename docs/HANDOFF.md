@@ -1,60 +1,149 @@
-# MMM-ML — project handoff
+# AlSi10Mg stress–strain prediction using machine learning
 
-College course: **Multiscale Modelling of Materials using Machine Learning**. Material: **AlSi10Mg**. Current focus: a reproducible ML workflow on professor-supplied material simulations and establishing how porosity relates to the aerodynamic **coefficient of lift, C_L**.
+We developed a small neural-network model for the course **Multiscale Modelling of Materials using Machine Learning**. It predicts the supplied AlSi10Mg simulations' stress response from temperature, strain rate, density, shear modulus and axial strain.
 
-**Critical correction, 2026-10-24:** the user confirmed CL means coefficient of lift. The submitted presentation and historical handoffs incorrectly interpret the project target as critical flaw length. Do not carry that interpretation or its fracture equations into the new model.
+The completed model returns a 120-point curve of **von Mises stress (`Svm`) against axial strain (`E11`)**. A local Model Studio lets us request and compare curves in plain language. The wider porosity-to-coefficient-of-lift objective still needs aerodynamic data and a defined connection to the material model.
 
-## Read in this order
+## Start here
 
-1. [context.md](context.md) — confirmed project scope, people, requirements, and provenance.
-2. [tasks.md](tasks.md) — completed work and the next actions.
-3. [dataset.md](dataset.md) — observed files, schema, coverage, and interpretation gaps.
-4. [methodology.md](methodology.md) — proposed workflow and scientific limits.
-5. [open-questions.md](open-questions.md) — information still needed.
-6. [decisions.md](decisions.md) — accepted constraints and choices still pending.
-7. [logs.md](logs.md) — dated work history.
+- [Simple model guide](<project files/My model explained.html>): preparation, training and prediction explained in a personal voice for study and presentation. [Markdown version](<project files/My model explained.md>).
+- [Latest test results](<project files/Model test results.md>): fresh checks, error measures and limits, dated 25 October 2026.
+- [Presentation](<project files/AlSi10Mg Stress–Strain ML.pptx>): 24 slides with speaker notes. The slides are images; source text is retained in `reports/presentation/slides.md`.
+- [Project documents](<project files/README.md>): available guides and presentation files.
 
-[AGENTS.md](AGENTS.md) provides project-wide guidance for coding agents.
+## What we have completed
 
-[research.md](research.md) contains the research conclusion, all-file audit findings, architecture comparison, sources, and proposed model-development workflow.
+| Stage | Completed work |
+|---|---|
+| Data inspection | Inventoried 73 available histories from 108 planned simulations; checked 2,197,000 rows and documented missing cases and unusual curves. |
+| Preparation | Matched conditions to simulation IDs, checked source hashes and interpolated every curve to the same 120 strain points. |
+| Evaluation design | Saved a fixed seed-42 split of 36 training cases and 37 test cases. All points from a simulation remain together. |
+| Model development | Compared the query MLP, a PCA-coefficient MLP, a PCA/Gaussian-process reference and additional variants using saved training-side evaluations. |
+| Final predictor | Saved a five-network query MLP ensemble, preprocessing, test predictions and per-case errors in `runs/score/final_Svm/`. |
+| Model checks | Recomputed errors, checked training-only scalers, reproduced a frozen-settings refit and checked equivalent NumPy inference. |
+| Interface | Built Model Studio with curve comparisons, point queries, tables and range warnings; provided command-line prediction. |
+| Documentation | Prepared a 24-slide presentation, a detailed reference guide, a simple personal guide and reproducible verification reports. |
 
-Later implementation reviews: [saved prediction checks](reports/codex-artifact-check.md) and [selected model reload checks](reports/codex-selected-model-check.md). These verify artifact consistency; they do not replace the research assumptions or resolve the aerodynamic target.
+The material prediction workflow is implemented. Experimental validation, verified ANSYS coupling and aerodynamic lift prediction remain open.
 
-[project-questionnaire.md](project-questionnaire.md) contains all 100 context questions, starting with 12 priorities and prefilling confirmed facts. [COLLABORATION.md](COLLABORATION.md) explains the local browser group chat, Codex usage panel, and invitation for Claude to join and add its own usage provider.
+## Run Model Studio
 
-Start the dashboard with `python3 collaboration/group_chat.py serve` from this folder, then open `http://127.0.0.1:8765` on the same computer. Agents use the CLI to post during active turns; the room does not automatically invoke either model.
+From the project root:
 
-## Handoff coverage
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python app/server.py
+```
 
-The current Markdown files capture the project-relevant context from this conversation: the user's clarifications, team responsibilities, submission provenance, CL correction, professor's split instruction, tentative model limit, deadline uncertainty, dataset observations, research conclusion, unresolved questions, and next experiment. This is a structured handoff, not a verbatim chat export. Confirmed facts, historical claims, and recommendations are kept distinct.
+Open **http://127.0.0.1:8766**. Try:
 
-The detailed research notes are retained alongside the main report:
+```text
+stress curve at 100 C, rate 1e-4, density 2619, G 24541
+compare 30, 100 and 200 C at 1e-3 /s
+stress at 5% strain for 100C, density 2619, G 24541
+how accurate is it?
+```
 
-- [Constitutive architectures](<research_notes/Neural networks for material curves/constitutive_architectures.md>)
-- [Physics and operator alternatives](<research_notes/Neural networks for material curves/physics_and_operators.md>)
-- [Dataset-specific evidence](<research_notes/Neural networks for material curves/dataset_fit.md>)
-- [Development and validation workflow](<research_notes/Neural networks for material curves/workflow_validation.md>)
+The interface uses a deterministic text parser and locally saved predictors. It needs no LLM or API key. Check its displayed defaults when a condition is omitted. The Gaussian-process line is a comparison reference; the MLP is the final material predictor.
 
-For a future session, start with this README, then `AGENTS.md`, `context.md`, `research.md`, and `tasks.md`. The material model and empirical comparison are complete; current implementation details are in the checkpoint at the top of `context.md`.
+To save a prediction directly:
 
-## Existing source material
+```bash
+.venv/bin/python src/predict.py --model mlp --target Svm --temperature 100 --rate 1e-4 --density 2619 --G 24541 --plot curve.png --csv curve.csv
+```
 
-| Item | Role |
-| --- | --- |
-| `TEAM_8_extracted_results_set_1/` | Professor-supplied material data: 108 planned cases, 73 available histories. |
-| `AM Porosity in a Wing Rib Bracket.pdf` | Actual submitted presentation, generated using Claude; 16 slides. |
-| `AM-porosity-bracket-context.md` | Earlier AI-generated handoff; historical claims require verification. |
-| `AM-porosity-bracket-context-more.md` | Longer historical handoff, including embedded solver and fitting code; not executed here. |
+Saved models support inference without the raw dataset. Rebuilding prepared data or running the full source audit requires the professor-supplied files, which are excluded from the published repository.
 
-## Current status
+## How the model works
 
-- Final material predictor: five small query MLPs averaged, each 5–16–16–1, target Svm. Saved in `runs/score/final_Svm/`.
-- Fixed seed-42 split: 36 training / 37 test cases; 120 strain points per curve. Saved test mean per-curve RMSE is 0.05908515, worst 0.11330618, in inferred stress units. Codex independently recomputed these saved prediction errors. Earlier full-data exploration means the holdout is not fully blind; condition generalisation is substantially worse.
-- Model Studio: **http://127.0.0.1:8766**. Shared room: **http://127.0.0.1:8765**. Both are local services. Agent responses require active sessions.
-- Private repositories: [MMM-ML](https://github.com/SaravananRamar06/MMM-ML) and [AI-GroupChat](https://github.com/SaravananRamar06/AI-GroupChat). Claude publishes the model repo; Codex publishes the room repo. Raw data, runtime chat and telemetry are excluded from exports.
-- Gemini is the user's Antigravity/agy collaborator, displayed as **Gemini**, and has joined the room. All three usage providers are integrated and available through the live room API. Only Codex has quota snapshots in the currently checked sources; missing quotas remain explicit.
-- The corrected presentation is drafted in `reports/presentation/`; numerical/text reviews are saved there. Claude reports the visual corrections applied; Codex verified source text/numbers. Report/viva packaging, confirmed units, ANSYS evidence, and the physical porosity-to-lift connection remain open.
+Each file represents one simulation condition. Histories have different lengths, so we interpolate every curve to **120 equally spaced E11 values from 0.0002 to 0.0999**. This gives each case the same number of training examples.
 
-## Resume here
+```text
+temperature, log10(strain rate), density, shear modulus, E11
+                            ↓
+               standardise using training statistics
+                            ↓
+          five networks, each shaped 5 → 16 → 16 → 1
+                            ↓
+         average outputs and restore the stress scale
+                            ↓
+                          Svm
+```
 
-Read the current checkpoint in [context.md](context.md) and [tasks.md](tasks.md), then consume unread room messages before editing shared files. Finish presentation/integration reviews and obtain missing scientific definitions. Do not retrain or resplit merely because older research snapshots say implementation was pending.
+Each network uses two hidden layers with 16 tanh units and a linear output: **385 weights and biases per network**, or **1,925 across the ensemble**. The saved settings use L-BFGS, L2 penalty 0.001 and initialisation seeds 0–4. Querying all 120 strains produces a curve.
+
+We fit scalers and final weights using the 36 training cases only: 36 × 120 = **4,320 query points**, derived from 36 simulations. These are not 4,320 independent simulations. Internal case folds and condition holdouts were used for comparison. Earlier exploration had used all 73 cases, so the final test set is a previously explored holdout.
+
+## Results checked on 25 October 2026
+
+Errors below are in **source stress units**. MPa is plausible but has not been confirmed by the data owner.
+
+| Fresh check on the existing 37-case test split | Result |
+|---|---:|
+| Mean per-curve RMSE | **0.05908515** |
+| Median per-curve RMSE | 0.05056666 |
+| Worst per-curve RMSE | 0.11330618, case 45 |
+| Mean per-curve MAE | 0.04899859 |
+| RMSE pooled over all test points | 0.06486281 |
+| Maximum pointwise absolute error | 0.28832028 |
+
+All 73 source curves reproduce the cached interpolation exactly. Reloaded predictions and NumPy-runtime predictions match the saved model exactly in this environment. A fresh fit with frozen settings reproduced every weight and prediction exactly, without warnings. **13 unit tests and 3 live Model Studio tests passed.** Delivered model files were unchanged.
+
+These checks confirm repeatable software behaviour and agreement with supplied simulations. They do not establish experimental or aerodynamic accuracy. The saved training-side three-fold CV mean curve RMSE is **1.15826321**; the mean over nine held-out temperature/rate groups is **6.79360255**, rising to **23.52512868** for the 200 / 1e-5 group. Those diagnostics were read from saved results, not rerun in this retest.
+
+![Fresh check of case 42 and the worst test case](reports/retests/20261025T172218Z/test_curves.svg)
+
+The random split mostly tests interpolation between related simulated conditions. Hiding an entire temperature/rate group is harder. The low random-split error is not proof of reliable prediction at new operating conditions.
+
+## Data coverage and scientific limits
+
+The matrix plans 108 cases. Available histories cover 27 cases at temperature 30, 27 at 100 and 19 at 200; **none are available at 300**. Temperature is interpreted as °C, rate as s⁻¹, density as kg/m³ and modulus as MPa, subject to confirmation.
+
+| Input | Available levels or operational range |
+|---|---|
+| Temperature | 30, 100, 200; incomplete coverage at 200 |
+| Strain rate | 1e-5, 1e-4, 1e-3 |
+| Density | 2488.05, 2619, 2700 |
+| Shear modulus G | 23313.95, 24541, 25300 |
+| Curve query E11 | 0.0002–0.0999 |
+
+Values between levels are interpolation requests, not independently validated conditions. Outside the range, the model extrapolates. Case 60 is the only available 200 / 1e-5 case and has an irregular response; it remains in the dataset. The histories do not supply a conventional zero-stress elastic loading segment, so we have not established an elastic modulus from their initial slope.
+
+Density and shear modulus are supplied inputs. Neither has been verified as a porosity label. **C_L means aerodynamic coefficient of lift**, not critical flaw length. No lift labels or verified material-to-lift coupling exist in the current data. This predictor is a data-driven surrogate, with no enforced constitutive law or physics-informed loss.
+
+## Reproduce the checks
+
+```bash
+# Full audit: requires raw data and prepared caches. Start Studio first.
+.venv/bin/python reports/retest_model.py
+
+# Model, parser and runtime checks; some require prepared caches.
+.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v
+
+# Run while Studio is serving on port 8766.
+.venv/bin/python -m unittest discover -s tests -p live_model_app_check.py -v
+```
+
+The retest writes a new timestamped evidence folder. It refits frozen settings separately and leaves the delivered model unchanged. Reproducibility checks do not create a new independent holdout.
+
+To prepare data in a fresh checkout, place `TEAM_8_extracted_results_set_1/` in the project root, then run `.venv/bin/python src/data.py`. Preserve `data/split.json`. Training and selection scripts are in `src/`; do not resplit or overwrite final artifacts merely to repeat a check. The original final-scoring command refuses to overwrite an existing final result.
+
+## Project layout
+
+| Path | Purpose |
+|---|---|
+| `src/` | Preparation, models, selection, scoring and prediction |
+| `app/` | Model Studio server, parser and page |
+| `data/manifest.json`, `data/split.json` | Source checksums and fixed split |
+| `runs/score/final_Svm/` | Delivered model, NumPy weights, predictions and metrics |
+| `runs/score/` | Candidate scores and condition diagnostics |
+| `reports/retests/` | Timestamped checks, logs, per-case errors and plots |
+| `project files/` | Guides, results document and presentation |
+| `tests/` | Model, parser, runtime and live-service checks |
+
+Research, assumptions, decisions and open questions are retained in the project notes (under `docs/` in the published export). Older reports describe earlier experiment stages; the final Svm artifact and this README describe the delivered predictor. The separate [AI-GroupChat repository](https://github.com/SaravananRamar06/AI-GroupChat) contains the collaboration app.
+
+## Remaining project work
+
+We still need to confirm physical units, strain/stress definitions and the generating setup; establish a defensible porosity mapping; inspect the actual ANSYS files and results; and define the aerodynamic data and coupling needed for C_L prediction. The full course report and submission review must keep these limits explicit. Presentation and model guides are available, but the full material-to-lift workflow has not been validated.

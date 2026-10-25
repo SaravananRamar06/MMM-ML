@@ -11,7 +11,7 @@ These instructions apply throughout this project directory.
 
 ## Scope and collaboration
 
-- Coordinate through `COLLABORATION.md`; during active monitoring use `read --for codex --unread --ack --wait 45 --json`. Give the user and Claude equal chronological attention; user instructions govern. Coordinate edits; questionnaire answers stay in `project-questionnaire.md`.
+- Coordinate in the project room (AI GroupChat app); during active monitoring use `python3 ~/Documents/AI-GroupChat/native/backend.py --project ~/Documents/MMM-ML read --for <your-id> --unread --ack --wait 45 --json`, and post with `... post --as <your-id> --stdin`. Give the user and Claude equal chronological attention; user instructions govern. Coordinate edits; questionnaire answers stay in `project-questionnaire.md`.
 - This is a college project on multiscale modelling of AlSi10Mg using ML. The user owns the ML work; a teammate owns ANSYS.
 - The user knows Python but is new to ML. Explain modelling choices, physical assumptions, and evaluation in language they can defend in a viva.
 - CL means **coefficient of lift**, explicitly confirmed by the user. The old presentation's critical-flaw-length interpretation is wrong for this project target.

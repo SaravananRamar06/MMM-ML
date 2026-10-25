@@ -44,7 +44,7 @@ Note for the checker: slide 10's numbers come from leave-one-condition-out on al
 | 8 | strain grid; training examples | 120 points, 0.0002–0.0999; 36 × 120 = 4,320 | `src/data.py` `STRAIN_GRID`; `reports/model_verification_20261025.json` `training_scaler_samples` |
 | 10 | optimiser, alpha, iterations, tol | L-BFGS, 0.001, max 5,000, 1e-9 | `src/models.py`; loaded `model.joblib` (`alpha=0.001`) |
 | 10 | iterations per net; time | 1,152 / 1,269 / 1,866 / 1,456 / 1,640; 25.0 s | `reports/final_training_reproduction_20261025.json` |
-| 11 | scaler mean/scale (T, log-rate, ρ, G, E11) | 107.22/68.09, −3.917/0.829, 2598.71/89.26, 24371.98/850.39, 0.05/0.029 | `runs/score/final_Svm/model_numpy.npz` |
+| 11 | scaler mean/scale (T, log-rate, ρ, G, E11) | 107.22/68.09, −3.917/0.829, 2598.71/89.26, 24371.98/850.39, 0.05005/0.02902 | `runs/score/final_Svm/model_numpy.npz` |
 | 11 | standardised input; five net outputs | −0.1061, −0.1005, 0.2273, 0.1988, −0.0144; 0.068864, 0.071352, 0.066148, 0.066717, 0.067810 | recomputed by Claude from the npz, 25 Oct |
 | 11 | target mean/scale; result | 97.7665 / 27.3756; 99.63293 at E11 0.049631 (99.41859 interpolated at 0.05) | same |
 | 12 | curve start / 0.05 / end | 136.21 / 99.42 / 75.23 | same condition, `QueryRuntime.predict` |

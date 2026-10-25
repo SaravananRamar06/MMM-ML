@@ -21,7 +21,7 @@ COPY = [
     ("README.github.md", "README.md"), ("WORKLOG.md", "WORKLOG.md"),
     # project notes, kept together under docs/
     ("README.md", "docs/HANDOFF.md"), ("AGENTS.md", "docs/AGENTS.md"),
-    ("COLLABORATION.md", "docs/COLLABORATION.md"), ("ROOM_STATE.md", "docs/ROOM_STATE.md"),
+    ("ROOM_STATE.md", "docs/ROOM_STATE.md"),
     *[(f, f"docs/{f}") for f in ("context.md", "decisions.md", "research.md", "dataset.md",
                                  "methodology.md", "open-questions.md", "tasks.md", "logs.md",
                                  "project-questionnaire.md")],

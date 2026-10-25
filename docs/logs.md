@@ -173,3 +173,20 @@ Perform a reproducible curve-quality/definition audit and define the material pr
 - Deck revised on user comments: removed "What changed"; added "The part" bracket slide (dimensions from the first submission's STEP reading, labelled as not re-measured); applied Codex's wording fixes. Rendered all 20 slides locally with headless Brave, fixed two wrapping issues, and built `project files/AlSi10Mg Stress–Strain ML.pptx` (image slides + speaker notes; LibreOffice round-trip OK, 20 pages) and `.pdf`.
 - On user deck comments: removed "How we worked" and "Next steps" slides and the AI GroupChat card ("Five pieces we delivered"). Deck now 18 slides; re-rendered and rebuilt `project files/` PPTX and PDF.
 - User asked for a detailed model explanation in the deck: added six slides (what the model is, inside one file, data preparation, training, step-by-step prediction, output). Worked example recomputed from `model_numpy.npz` (99.63293 at E11 0.049631). Deck now 24 slides; PPTX/PDF rebuilt; sources in `reports/presentation/numbers.md`.
+
+
+## 2026-10-25 — Completed-work review, README rewrite and fresh model retest
+
+- User requested a complete MMM-ML status review, team-voice README with no contribution credits, fresh model tests and a simple first-person model explanation; later requested that input questions be posted in the group chat.
+- Replaced the handoff-style README with a project overview covering completed work, setup, data preparation, final architecture, results, scientific limits, reproduction and remaining work. Updated README.github.md identically so the export does not restore the old contribution section or unsupported unit claims.
+- Added `reports/retest_model.py`, which creates timestamped evidence, imports the read-only source audit, separately refits frozen settings, runs model/runtime/parser and live Studio suites, writes per-case errors and a curve/residual plot, and checks delivered artifact hashes.
+- Fresh run `reports/retests/20261025T172218Z/`: 73 source histories / 2,197,000 rows, raw/cache and reload differences 0.0; mean test curve RMSE 0.05908515170863245, median 0.05056665519928898, worst 0.11330617910816165 (case 45), mean MAE 0.04899859206569091, pooled RMSE 0.06486280725365938, max point error 0.28832027864772414. Units remain source units, likely MPa but unconfirmed.
+- Frozen 36-case fit with seeds 0–4 took 17.2608 s, no warnings, maximum weight and all-case prediction differences 0.0. NumPy runtime difference 0.0. Original model.joblib, model_numpy.npz, predictions and metrics retain identical SHA-256 hashes.
+- All 13 unit checks passed. Initial live test was blocked by sandbox networking, and an unsandboxed retry found Studio stopped. Started `app/server.py` on local port 8766; all 3 live checks passed, successful retry log retained. Results JSON preserves initial failure metadata and records successful retry. Studio was left running.
+- Added `project files/My model explained.md` and browser-readable/printable HTML, built by `tools/build_simple_guide.py`; added `project files/Model test results.md` and updated the deliverable index without contribution credits. Recomputed the worked example: 136.2091200142 at grid start, 99.4185871601 interpolated at .05, 75.2319416547 at grid end.
+- Reviewed the fresh plot. Historical case-CV and condition-holdout numbers are labelled as historical diagnostics, not newly rerun experiments. No split, selection or physical/aerodynamic claim changed. Shared results and publication handoff in the group chat.
+
+
+## 2026-10-25 — GitHub documentation publication verified
+
+Published the team-voice README, new personal guide, results, retest/build scripts, JSON/CSV/logs and an SVG plot through the GitHub connector. Fetched README.md back and verified exact match to README.github.md with contribution credits removed. README commit b2d90a390a2c0f222e5ea806f5ed2b2e2ed49d6b; document-index commit be58a301b1b2dc607609fdd8143bbf2c799f6fa8. Notified the room to pull before further exports.
