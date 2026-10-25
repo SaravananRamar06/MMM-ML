@@ -92,7 +92,7 @@ All 73 source curves reproduce the cached interpolation exactly. Reloaded predic
 
 These checks confirm repeatable software behaviour and agreement with supplied simulations. They do not establish experimental or aerodynamic accuracy. The saved training-side three-fold CV mean curve RMSE is **1.15826321**; the mean over nine held-out temperature/rate groups is **6.79360255**, rising to **23.52512868** for the 200 / 1e-5 group. Those diagnostics were read from saved results, not rerun in this retest.
 
-![Fresh check of case 42 and the worst test case](reports/retests/20261025T172218Z/test_curves.png)
+![Fresh check of case 42 and the worst test case](reports/retests/20261025T172218Z/test_curves.svg)
 
 The random split mostly tests interpolation between related simulated conditions. Hiding an entire temperature/rate group is harder. The low random-split error is not proof of reliable prediction at new operating conditions.
 
