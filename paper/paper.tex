@@ -5,20 +5,20 @@
 \sisetup{group-separator={,},group-minimum-digits=4}
 
 \begin{document}
-\title{A Small Neural-Network Surrogate for the Simulated Stress Response of Additively Manufactured AlSi10Mg}
+\title{A Small Neural-Network Surrogate for the Simulated Stress Response of Additively Manufactured AlSi10Mg in an Aircraft Wing Bracket}
 \author{\IEEEauthorblockN{Team 8}\IEEEauthorblockA{Multiscale Materials Modelling course project, October 2026}}
 \maketitle
 
 \begin{abstract}
-Multiscale design of additively manufactured parts needs fast approximations of material response. We train a compact surrogate that predicts the von Mises stress $S_{vm}$ of AlSi10Mg along operational strain $E_{11}$ from temperature, strain rate, density and shear modulus, using 73 simulated loading histories. The final model averages five 5--16--16--1 tanh multilayer perceptrons (385 parameters each). On a fixed split with 37 held-out simulations it reaches a mean per-curve RMSE of 0.0591 (worst 0.1133). When whole temperature/rate conditions are held out, the error rises to a group-averaged 6.79. The model therefore reproduces related simulated curves closely, but its generalisation to new conditions is not established. We compare it with Gaussian-process and principal-component alternatives, report exact reproducibility, and state the open questions: units, the porosity mapping and the link to aerodynamic lift.
+Multiscale design of additively manufactured aircraft parts, here an AlSi10Mg aircraft wing-rib bracket, needs fast approximations of material response. We train a compact surrogate that predicts the von Mises stress $S_{vm}$ of AlSi10Mg along operational strain $E_{11}$ from temperature, strain rate, density and shear modulus, using 73 simulated loading histories. The final model averages five 5--16--16--1 tanh multilayer perceptrons (385 parameters each). On a fixed split with 37 held-out simulations it reaches a mean per-curve RMSE of 0.0591 (worst 0.1133). When whole temperature/rate conditions are held out, the error rises to a group-averaged 6.79. The model therefore reproduces related simulated curves closely, but its generalisation to new conditions is not established. We compare it with Gaussian-process and principal-component alternatives, report exact reproducibility, and state the open questions: units, the porosity mapping and the link to aerodynamic lift.
 \end{abstract}
 
 \begin{IEEEkeywords}
-AlSi10Mg, additive manufacturing, surrogate model, multilayer perceptron, stress--strain prediction, generalisation
+AlSi10Mg, aircraft wing bracket, additive manufacturing, surrogate model, multilayer perceptron, stress--strain prediction, generalisation
 \end{IEEEkeywords}
 
 \section{Introduction}
-Porosity in laser-powder-bed-fused AlSi10Mg alters the mechanical response of structural parts such as a wing-rib bracket. A multiscale workflow that propagates material behaviour into structural and, ultimately, aerodynamic analysis needs material evaluations that are much cheaper than repeated simulations. This paper addresses the first link of that chain: a data-driven surrogate of the simulated material stress response. The structural analysis and any coupling to the coefficient of lift $C_L$ are outside its scope. No lift labels exist in the material data, so we make no aerodynamic claim.
+Porosity in laser-powder-bed-fused AlSi10Mg alters the mechanical response of structural parts. This study concerns an additively manufactured aircraft wing-rib bracket. A multiscale workflow that propagates material behaviour into structural and, ultimately, aerodynamic analysis needs material evaluations that are much cheaper than repeated simulations. This paper addresses the first link of that chain: a data-driven surrogate of the simulated material stress response. The structural analysis and any coupling to the coefficient of lift $C_L$ are outside its scope. No lift labels exist in the material data, so we make no aerodynamic claim.
 
 Our contributions are: (i) a 1,925-parameter ensemble surrogate trained on 36 simulations with leakage-controlled preprocessing; (ii) a comparison with five alternative surrogates on case-wise and condition-wise holdouts; and (iii) an explicit account of what the evidence does and does not support.
 
