@@ -6,3 +6,6 @@ __pycache__/
 TEAM_8_extracted_results_set_1/
 # Caches rebuilt by src/data.py from the raw data
 data/curves_*.npz
+report/*.aux
+report/*.log
+report/*.out

@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # (source in project, destination in repo)
 COPY = [
     ("src", "src"), ("app", "app"), ("tests", "tests"), ("tools", "tools"), ("figures", "figures"),
-    ("reports", "reports"), ("runs", "runs"), ("requirements.txt", "requirements.txt"),
+    ("reports", "reports"), ("report", "report"), ("runs", "runs"), ("requirements.txt", "requirements.txt"),
     ("data/manifest.json", "data/manifest.json"), ("data/split.json", "data/split.json"),
     ("README.github.md", "README.md"), ("WORKLOG.md", "WORKLOG.md"),
     # project notes, kept together under docs/
