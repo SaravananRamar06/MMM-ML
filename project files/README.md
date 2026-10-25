@@ -2,6 +2,7 @@
 
 | Document | Purpose |
 |---|---|
+| [Final Course Report.pdf](<Final Course Report.pdf>) | Five-page course report compiled from the fact-checked LaTeX source; corrected figures, bibliography and explicit scientific limitations. |
 | [My model explained.html](<My model explained.html>) | Easy-to-read personal guide, from preparation and training to prediction and results. Open in a browser; use Print to make a paper copy. |
 | [My model explained.md](<My model explained.md>) | Editable Markdown source of the personal guide. |
 | [Model test results.md](<Model test results.md>) | Fresh model checks, metrics, evidence links and limitations from 25 October 2026. |

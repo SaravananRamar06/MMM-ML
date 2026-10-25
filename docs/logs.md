@@ -190,3 +190,12 @@ Perform a reproducible curve-quality/definition audit and define the material pr
 ## 2026-10-25 — GitHub documentation publication verified
 
 Published the team-voice README, new personal guide, results, retest/build scripts, JSON/CSV/logs and an SVG plot through the GitHub connector. Fetched README.md back and verified exact match to README.github.md with contribution credits removed. README commit b2d90a390a2c0f222e5ea806f5ed2b2e2ed49d6b; document-index commit be58a301b1b2dc607609fdd8143bbf2c799f6fa8. Notified the room to pull before further exports.
+
+
+## 26 October 2026 (Asia/Kolkata) — Formal report completion
+
+- Reviewed the complete LaTeX draft against frozen model artifacts and fresh retest evidence. Corrected provenance of the condition-holdout figure, range-wide reliability claims, unmeasured improvement/bias assertions, test-figure scope and group-mean aggregation. Bibliographic metadata checked against primary sources.
+- Added a plot of saved training-half Svm condition diagnostics, without refitting models, plus the factual review in `reports/final_report_fact_check_20261025.md`.
+- No LaTeX compiler was installed. Downloaded official portable Tectonic0.17.0 and verified release SHA256 before execution. After first-use bundle fetch, compiled the reviewed source; fixed evidence-path line wrapping and caption alignment. Final five-page PDF has no TeX warnings; all pages rendered/visually inspected.
+- Exported identical final PDF copies to `project files/Final Course Report.pdf` and `project files/report.pdf`; source/build identities are in `report/build_verification.json`. Report task marked complete, with submission-specific review and unresolved scientific/ANSYS/aerodynamic inputs retained as open items.
+- User requested moving active discussion to the AI-GroupChat project room after the MMM-ML wrap-up. Cheap Codex Room Watch remains active and is switching with that handoff.

@@ -92,3 +92,10 @@ These sources support method/software citation metadata, not physical validation
 Final checked source: `report/report.tex`, SHA-256 `76bc9f93d5ef6963fe652c72b97868aa8a2a71c3c24d935e77c2efd562f3212c`.
 
 Confirmed the final caption defines case-CV over 36 cases and condition holdout as the unweighted mean of nine group means. The results paragraph makes the same distinction. Correct figure search paths are in place. All numerical, provenance and scientific-wording findings from this review are resolved for this source version. **Source factual review: passed.** Compilation, visual layout and final exported-PDF identity remain the document owner's checks; source approval alone does not certify a different later revision or the rendered file.
+
+
+## Final compiled PDF and layout check
+
+Compiled with verified portable Tectonic0.17.0. Corrected only evidence-block line wrapping and caption alignment after source factual approval; no numerical/scientific claims changed. Final source SHA256: `2b8df5fb67d8b28ddd65ef943908f0b52463f81b6f2e743158877dfc6699e5be`. Final PDF SHA256: `45a1c9f6a71ea6b6a0d5d0b59ffb42fc8c310ca66e3aae1a7624025c45b0fc94`.
+
+All five final pages were rendered and visually inspected. No clipping, overlap, broken tables/references or out-of-page links remain. The final TeX log contains no warnings or overfull/underfull boxes. Text extraction retains the checked metrics, uncertainty wording, references and evidence paths. `project files/Final Course Report.pdf` and `project files/report.pdf` are byte-identical to `report/report.pdf`. The PDF is an actual LaTeX/xdvipdfmx output, replacing the earlier Chromium fallback exports. Build identity is recorded in `report/build_verification.json`.

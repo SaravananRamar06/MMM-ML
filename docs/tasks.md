@@ -26,7 +26,8 @@ Latest evidence: `reports/retests/20261025T172218Z/`. Mean test curve RMSE 0.059
 ## Publication and document review
 
 - [x] Publish and fetch back the GitHub README in team voice, without contribution credits; publish the new guide, results, scripts, logs and SVG plot. Final document-index commit: be58a301b1b2dc607609fdd8143bbf2c799f6fa8; README commit: b2d90a390a2c0f222e5ea806f5ed2b2e2ed49d6b.
-- [ ] Finish the full course report and final submission review. Existing guides and presentation do not establish that the formal report is complete.
+- [x] Complete the factual course report, bibliography and corrected saved-diagnostic figure; compile the reviewed LaTeX source into a five-page PDF, inspect all pages and export identical copies in project files/. Evidence: report/build_verification.json.
+- [ ] Confirm the professor’s final submission template and complete submission-specific review after that information is supplied.
 - [ ] Confirm submission format, exact deadline and whether the tentative model-count limit includes an ensemble or GP reference.
 
 ## Scientific work still open

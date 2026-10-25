@@ -8,6 +8,7 @@ The completed model returns a 120-point curve of **von Mises stress (`Svm`) agai
 
 - [Simple model guide](<project files/My model explained.html>): preparation, training and prediction explained in a personal voice for study and presentation. [Markdown version](<project files/My model explained.md>).
 - [Latest test results](<project files/Model test results.md>): fresh checks, error measures and limits, dated 25 October 2026.
+- [Course report](<project files/Final Course Report.pdf>): fact-checked five-page LaTeX report with corrected figures, references and limitations; source and build record in `report/`.
 - [Presentation](<project files/AlSi10Mg Stress–Strain ML.pptx>): 24 slides with speaker notes. The slides are images; source text is retained in `reports/presentation/slides.md`.
 - [Project documents](<project files/README.md>): available guides and presentation files.
 
@@ -146,4 +147,4 @@ Research, assumptions, decisions and open questions are retained in the project 
 
 ## Remaining project work
 
-We still need to confirm physical units, strain/stress definitions and the generating setup; establish a defensible porosity mapping; inspect the actual ANSYS files and results; and define the aerodynamic data and coupling needed for C_L prediction. The full course report and submission review must keep these limits explicit. Presentation and model guides are available, but the full material-to-lift workflow has not been validated.
+We still need to confirm physical units, strain/stress definitions and the generating setup; establish a defensible porosity mapping; inspect the actual ANSYS files and results; and define the aerodynamic data and coupling needed for C_L prediction. The completed course report keeps these limits explicit; submission-specific review still needs the professor’s format and requirements. Presentation and model guides are available, but the full material-to-lift workflow has not been validated.
