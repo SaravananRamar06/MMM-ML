@@ -43,9 +43,9 @@ def warnings_for(t, log_rate, rho, g):
             out.append(f"{name}={v:g} is outside the training range [{lo:g}, {hi:g}]: extrapolation, do not trust.")
     if 100 < t <= 200 and log_rate < -4:
         out.append("Hot and slow (200 C / 1e-5 region) has only one training-set case (case 60, an "
-                   "irregular collapse); leave-one-condition-out error there is about 23-25 MPa.")
+                   "irregular collapse); leave-one-condition-out error there is about 23.5 (inferred stress units).")
     elif 100 < t <= 200:
-        out.append("Above 100 C, errors on conditions not in training were about 8-17 MPa.")
+        out.append("Above 100 C, leave-one-condition-out errors at 200 C were about 8-9 (inferred stress units).")
     return out
 
 

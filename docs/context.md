@@ -1,5 +1,13 @@
 # Current project context
 
+**25 October active work:** user requests a detailed accessible LaTeX/doc model guide, verification/improvement, and research/build of a general native app with one independent group chat per project, neutral theme and backend terminals. Gemini owns the guide; the original OpenCode instance (`opencode`) owns native-app research/prototype. A second existing OpenCode terminal is registered as `opencode2` / OpenCode 2; the user confirmed naming it. Do not conflate their messages/read receipts. Codex owns new verification/runtime files; historical Claude-owned app files await handoff.
+
+**New verification evidence:** `reports/model_verification_20261025.json` confirms all 73 raw curves (2,197,000 rows) reproduce cached data exactly, the documented case split, training-only scaler statistics, and exact final artifact reload. `reports/final_training_reproduction_20261025.json` records a fresh same-environment fit of the frozen five-network settings/seeds reproducing every weight and prediction exactly in 25 s without warnings. No new accuracy-selection experiment occurred. Training CV mean RMSE is 1.15826321 and condition-holdout mean is 6.79360255 (hot/slow 23.52512868), in inferred source stress units; final test mean remains 0.05908515. Studio's displayed unseen-condition 7.5 is stale.
+
+**Measured inference option:** new `src/query_runtime.py` exports identical float64 weights to a pickle-free NumPy NPZ, with 13 model/parser/runtime tests passing. Local single-curve median 0.511 -> 0.221 ms; fresh process/import/load/inference 976 -> 163 ms; 73-case batch was slower (21.8 vs 17.3 ms). Evidence in `reports/query_runtime_benchmark_20261025.json`. Integrated into Model Studio by Claude on 25 Oct (joblib fallback); no universal speedup or accuracy improvement claimed.
+
+**25 October 2026:** user resumed Codex room monitoring and requested adding their existing OpenCode terminal session. OpenCode is registered as agent `opencode` in the live MMM-ML room; the running server's participant API confirms registration. Its first post is still required to establish participation. No usage provider or model invocation was added.
+
 Last updated: **2026-10-24**, Asia/Kolkata.
 
 ## Latest collaboration state — overrides earlier implementation-status snapshots

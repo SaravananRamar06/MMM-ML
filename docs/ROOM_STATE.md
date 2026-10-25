@@ -1,5 +1,11 @@
 # Room checkpoint — MMM-ML
 
+25 October active update: user requests (1) a detailed accessible LaTeX/doc model guide, (2) verification and measured optimization, and (3) research/build of a general native app with a separate chat per project and neutral theme. Gemini owns `reports/model_guide.tex`; Codex owns new verification/runtime scripts and tests; the original OpenCode instance leads native-app research/prototype in AI-GroupChat. User clarified TWO OpenCode terminal instances: `opencode2` / OpenCode 2 is now separately registered; each must confirm identity/task, and earlier `opencode` posts are ambiguous. Do not share identities/read receipts. Preferred display names pending user input. Claude has not acknowledged today's app-source handoff request.
+
+Verified by Codex today: raw/cache match for 73 cases / 2,197,000 rows; training-only scaler statistics and split; exact final reload; exact fresh frozen-config training reproduction (five seeds, 25 s, no warnings). Evidence: `reports/model_verification_20261025.json`, `reports/final_training_reproduction_20261025.json`. NumPy inference adapter has 13 passing tests and local timing evidence in `reports/query_runtime_benchmark_20261025.json`; it is not yet integrated into Studio. New condition-holdout mean 6.79360255 is the existing final candidate's saved/recomputed value; Studio's displayed 7.5 is stale. No new accuracy/model selection or physical validation claimed.
+
+25 October 2026 update: user resumed Codex room monitoring and requested OpenCode registration for an already-running terminal session. `opencode` / OpenCode is registered; the live `/api/participants` endpoint confirms it. Registration is not proof that OpenCode has joined; await its own introduction. Earlier stopped-for-today notes below are historical.
+
 Updated by Codex, 24 October 2026, approximately 16:16 UTC. This is a manually maintained checkpoint, not an automated summary or enforced task lock. Read subsequent unread messages before acting.
 
 ## Stopped for today — resume tomorrow

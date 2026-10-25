@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-10-25T12:36:40.274222+00:00",
+  "status": "passed",
+  "cases": 73,
+  "source_rows": 2197000,
+  "raw_cache_max_abs_difference": 0.0,
+  "final_reload_max_abs_difference": 0.0,
+  "train_cases": 36,
+  "test_cases": 37,
+  "parameters_per_network": [
+    385,
+    385,
+    385,
+    385,
+    385
+  ],
+  "training_scaler_samples": 4320,
+  "test_mean_curve_rmse": 0.05908515170863245,
+  "test_worst_curve_rmse": 0.11330617910816165,
+  "test_worst_case": 45,
+  "cv_mean_curve_rmse": 1.1582632139842857,
+  "condition_holdout_mean_rmse": 6.793602548421109,
+  "condition_holdout_by_condition": {
+    "100C_1e-3": 1.2609868331961849,
+    "100C_1e-4": 5.207714589852649,
+    "100C_1e-5": 6.121277165028661,
+    "200C_1e-3": 8.260869260419643,
+    "200C_1e-4": 9.083715677090753,
+    "200C_1e-5": 23.525128683227813,
+    "30C_1e-3": 4.9324063840284476,
+    "30C_1e-4": 0.8053840465736994,
+    "30C_1e-5": 1.9449402963721283
+  },
+  "versions": {
+    "numpy": "2.2.6",
+    "sklearn": "1.7.2"
+  },
+  "limits": [
+    "Source stress units remain inferred.",
+    "Earlier full-data exploration means the test set is not fully blind.",
+    "This verifies artifacts and source processing, not independent training reproduction or physical validity.",
+    "No aerodynamic labels or validated porosity mapping exist."
+  ]
+}

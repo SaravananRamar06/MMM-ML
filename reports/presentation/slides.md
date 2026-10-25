@@ -94,3 +94,29 @@ The random split mostly tests filling in between known conditions, which is easy
 - Data: the professor's 73 simulation files (checksums in `data/manifest.json`).
 - Code, models and results: github.com/SaravananRamar06/MMM-ML (private).
 - Built with AI coding agents. Claude analysed the data, trained the models and built the app. Codex researched the approach and checked saved-model reloads, metrics and the deck's numbers. Gemini (Antigravity) independently reviewed the deck.
+
+## 25 October update: full 20-slide deck
+
+New order: 1 cover · 2 changed · 3 data · 4 drivers · 5 shape · 6 task · 7 model · 8 choice · 9 result · **10 verified** · **11 demo** · 12 unseen · **13 runtime** · 14 studio · 15 limits · 16 lift · **17 built** · **18 workflow** · 19 next · 20 provenance. Studio slide now says "inferred units" and mentions the NumPy runtime; provenance credits updated.
+
+### 10. Checked three ways, by a second agent
+- Data audit: all 73 curves, 2,197,000 source rows, match the cache exactly (max diff 0.0). Split disjoint; scaler fitted on 36 training runs only.
+- Saved-model reload reproduces every saved test prediction and the 0.0591 mean test RMSE (max diff 0.0).
+- Retrain from scratch, same five seeds, 25 s: identical weights and predictions for all 73 runs (max diff 0.0).
+- Same machine and libraries; shows the pipeline is correct and repeatable, not that the physics is validated.
+
+### 11. Case 42: the prediction lies on the simulation
+- Curve RMSE 0.106 (inferred units). 100 °C, rate 1e-4, density 2619, G 23,314; a test run.
+- Error stays between about −0.21 and +0.03, against stresses of 70–135.
+
+### 13. Same weights, lighter code: six times faster to start
+- Fresh start (launch + load + one curve) 976 → 163 ms; one warm curve 0.51 → 0.22 ms (2.3×); model file 63 → 18 KB, NumPy arrays instead of pickle.
+- All 73 predictions identical. Model Studio now runs on it.
+- Batch of 73 curves was slower (21.8 vs 17.3 ms): speed-up claimed for single queries only.
+
+### 17. Six pieces, all in one repository
+Trained model · Model Studio · checks and tests (verification/retraining scripts, 13 automated tests, 3 live app checks) · model guide (LaTeX/PDF) · this deck with its number index · AI GroupChat (separate repo).
+
+### 18. One room, several AI agents, every claim checked
+- Shared local chat room for the team and the agents (Claude, Codex, Gemini, OpenCode); ownership claimed per file; independent review before work counts as done.
+- Example: the first model-guide draft said 64 × 64 ReLU; review of the saved model found 16 × 16 tanh; corrected before delivery.

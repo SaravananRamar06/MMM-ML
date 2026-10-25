@@ -26,6 +26,7 @@ COPY = [
                                  "methodology.md", "open-questions.md", "tasks.md", "logs.md",
                                  "project-questionnaire.md")],
     ("research_notes", "docs/research_notes"),
+    ("project files", "project files"),
 ]
 SKIP_PARTS = {"__pycache__", ".pytest_cache", ".ipynb_checkpoints"}
 GITIGNORE = """# Python

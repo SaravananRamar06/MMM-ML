@@ -22,3 +22,16 @@ For Codex's fact-check. The paths are in the MMM-ML project. "Svm" means the von
 | 12 | GP ±2σ coverage at 200 °C / 1e-3 | 0 % | `runs/gp_calibration_Svm.json` → `200C_1e-3.coverage_2sigma` |
 
 Note for the checker: slide 10's numbers come from leave-one-condition-out on all 73 cases. That is a diagnostic, not a selection score. Slide 8 uses the training-half-only version from `src/score.py`, which is why the MLP figure there is 6.8, not 7.5.
+
+## Added 25 October (slides 10, 11, 13, 18)
+
+| Slide | Number | Value | Source |
+|---|---|---|---|
+| 10 | source rows / curves; max diffs | 2,197,000 / 73; 0.0 | `reports/model_verification_20261025.json` (`source_rows`, `raw_cache_max_abs_difference`, `final_reload_max_abs_difference`) |
+| 10 | retrain time; weight/prediction diff | 25.0 s; 0.0 / 0.0 | `reports/final_training_reproduction_20261025.json` |
+| 11 | case 42 RMSE; inputs | 0.1061; T 100, rate 1e-4, density 2619, G 23313.95 | `figures/demo_case42.png` title (Codex re-ran: 0.1061461988) |
+| 11 | error range | about −0.21 to +0.03 | read from the error panel of `figures/demo_case42.png` (visual) |
+| 13 | cold start; single curve; batch 73 | 975.7→163.2 ms; 0.511→0.221 ms; 17.3 vs 21.8 ms | `reports/query_runtime_benchmark_20261025.json` |
+| 13 | file sizes | 62,940 → 18,462 bytes | same file (`source_bytes`, `numpy_export_bytes`) |
+| 17 | tests | 13 unit, 3 live | `python -m unittest discover -s tests -p 'test_*.py'`; `-p live_model_app_check.py` (25 Oct) |
+| 18 | guide architecture error | 64×64 ReLU → 16×16 tanh | `reports/model_guide_fact_check_20261025.md` |

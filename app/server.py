@@ -21,9 +21,16 @@ import numpy as np  # noqa: E402
 from data import STRAIN_GRID  # noqa: E402  (also needed so joblib can unpickle src.models classes)
 from nlu import parse  # noqa: E402
 from predict import warnings_for  # noqa: E402
+from query_runtime import QueryRuntime  # noqa: E402
 
 CONFIG = json.loads((HERE / "config.json").read_text())
 MODELS = {m["key"]: {**m, "model": joblib.load(ROOT / m["artifact"])} for m in CONFIG["models"]}
+UNITS = CONFIG.get("units", "inferred stress units")
+# Same float64 weights as the joblib MLP, without sklearn dispatch (src/query_runtime.py, verified equal).
+for m in MODELS.values():
+    npz = (ROOT / m["artifact"]).with_name("model_numpy.npz")
+    if type(m["model"]).__name__ == "QueryMLP" and npz.exists():
+        m["model"], m["runtime"] = QueryRuntime.load(npz), npz.relative_to(ROOT).as_posix()
 PRIMARY = CONFIG["primary"]
 PORT = int(os.environ.get("MODEL_CHAT_PORT", "8766"))
 
@@ -35,8 +42,9 @@ Try:
 - `stress at 5% strain for 100C, density 2619, G 24541`
 - `what ranges are valid?` · `how accurate is it?`
 
-**Inputs:** temperature (°C or K), strain rate (/s), density (kg/m³), shear modulus G (MPa or GPa).
-Anything you leave out uses the dense reference: 30 °C, 1e-4 /s, 2700 kg/m³, 25,300 MPa."""
+**Inputs:** temperature (°C or K), strain rate (/s), density, shear modulus G (units as in the supplied data).
+Anything you leave out uses the dense reference: 30 °C, 1e-4 /s, density 2700, G 25,300.
+Stress is in **inferred units** (likely MPa, not confirmed by the data owner)."""
 
 RANGES = """The data has **73 available simulation cases**; these models were **fitted on the 36-case training half**, at these levels:
 
@@ -44,23 +52,25 @@ RANGES = """The data has **73 available simulation cases**; these models were **
 |---|---|
 | Temperature | 30, 100, 200 °C (no 300 °C data) |
 | Strain rate | 1e-5, 1e-4, 1e-3 /s |
-| Density | 2488–2700 kg/m³ (almost no effect on stress) |
-| G | 23,314–25,300 MPa |
-| Strain | 0.0002–0.0999 |
+| Density | 2488–2700 (almost no effect on stress) |
+| G | 23,314–25,300 |
+| Strain (E11, operational axial strain) | 0.0002–0.0999 |
 
 Between these levels the model interpolates. Outside them it extrapolates, and I'll warn you."""
 
 
 def accuracy_text():
     rows = "\n".join(f"| {m['label']} | {m['test_rmse']} | {m['unseen_rmse']} |" for m in MODELS.values())
-    return ("Error per curve, RMSE in MPa (unit provisional):\n\n| Model | 37 test cases | unseen T/rate condition |\n|---|---|---|\n"
+    return (f"Error per curve, RMSE in {UNITS}:\n\n| Model | 37 test cases | unseen T/rate condition |\n|---|---|---|\n"
             + rows + "\n\nTest cases were not used to fit these models, but they did influence earlier model "
-            "choices, so the test set is not fully blind. Errors grow at 200 °C, and 200 °C / 1e-5 is weakest (~23 MPa).")
+            "choices, so the test set is not fully blind. On a temperature/rate condition it has never seen, error is "
+            "about 1–6 at 30 and 100 °C, 8–9 at 200 °C, and worst at 200 °C / 1e-5 (23.5). "
+            "Evidence: `reports/model_verification_20261025.json`.")
 
 
 def predict(cond):
     x = np.array([[cond["temperature"], np.log10(cond["rate"]), cond["density"], cond["G"]]])
-    return {k: m["model"].predict(x)[0] for k, m in MODELS.items()}
+    return {k: np.asarray(m["model"].predict(x))[0] for k, m in MODELS.items()}
 
 
 def answer(text):
@@ -112,7 +122,7 @@ def answer(text):
     if p["strain_query"] is not None:
         head = "| Condition | Strain | " + " | ".join(m["label"] for m in MODELS.values()) + " |\n|---|---|" + "---|" * len(MODELS)
     else:
-        head = (f"Predicted **{CONFIG['target_label']}** ({MODELS[PRIMARY]['label']}), MPa:\n\n"
+        head = (f"Predicted **{CONFIG['target_label']}** ({MODELS[PRIMARY]['label']}), {UNITS}:\n\n"
                 "| Condition | start (ε≈0) | ε = 0.05 | end (ε = 0.1) |\n|---|---|---|---|")
     reply = head + "\n" + "\n".join(lines)
     if p["defaults_used"]:
@@ -142,12 +152,13 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/health":
             self._send(200, json.dumps({"ok": True, "config_status": CONFIG.get("status"), "primary": PRIMARY,
                                         "models": {k: m["artifact"] for k, m in MODELS.items()},
+                                        "runtime": {k: m.get("runtime", "joblib") for k, m in MODELS.items()},
                                         "parser": "deterministic rules (app/nlu.py); no LLM or network calls"}),
                        "application/json")
         elif self.path == "/api/info":
             self._send(200, json.dumps({"target": CONFIG["target_label"], "models": [
                 {k: m[k] for k in ("key", "label", "short", "test_rmse", "unseen_rmse")} for m in MODELS.values()],
-                "primary": PRIMARY}), "application/json")
+                "primary": PRIMARY, "units": UNITS}), "application/json")
         else:
             self._send(404, "not found", "text/plain")
 

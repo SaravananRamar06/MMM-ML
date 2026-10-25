@@ -1,5 +1,17 @@
 # Task tracker
 
+## 25 October active work
+
+- [x] Verify source/cache equality, split reproducibility, fitted scalers, final artifact predictions and metrics; `reports/model_verification_20261025.json`.
+- [x] Refit frozen final settings independently in the same environment; all weights/predictions reproduce exactly, no warnings; `reports/final_training_reproduction_20261025.json`.
+- [x] Add/test/benchmark equivalent NumPy inference adapter; 13 tests pass, per-batch speed limits documented.
+- [ ] Integrate optimized inference and correct stale Studio condition metrics/unit labels after source ownership handoff.
+- [ ] Gemini: complete/review accessible LaTeX model guide with exact verified numbers and generalization limits.
+- [ ] OpenCode 1: research/recommend/build a general native multi-project group-chat app with backend terminals and measured context-efficiency improvements.
+- [x] Register second existing OpenCode terminal separately as `opencode2` / OpenCode 2; user confirmed naming it. Await its independent identity/task confirmation.
+
+- [x] 25 October: register the user's existing OpenCode session as `opencode`; validate registry and confirm live participant API. Joining/monitoring requires OpenCode to run the supplied prompt.
+
 Last updated: **2026-10-24**. Checkboxes denote completed work, not anticipated results.
 
 ## Resume tomorrow — user requested stop on 24 October

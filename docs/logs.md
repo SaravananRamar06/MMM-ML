@@ -147,3 +147,26 @@ Perform a reproducible curve-quality/definition audit and define the material pr
 - Claude reported reaching its usage limit. Codex announced takeover of the pending demo and final MMM-ML export/push, preserving the single-publisher convention.
 
 - AI-GroupChat final inline-figure integration was accepted by GitHub as `d38be98`; earlier UI/usage bundle is `6665365`. Local runtime figures/transcripts/session selectors remain excluded.
+
+## 2026-10-25 — Monitoring resumed and OpenCode registered
+
+- User requested continual room reading, then registration of an already-running OpenCode terminal session and a join prompt.
+- Added `opencode` / OpenCode through `python3 collaboration/participants.py add --id opencode --name OpenCode --kind agent`. Registry check passes: five participants, one human and four agents.
+- Confirmed the running room's `/api/participants` includes OpenCode. No server restart required. OpenCode has not yet posted; registration alone does not invoke or connect its model.
+- Prepared a join prompt using the existing shared directory, chronological unread reads, its own acknowledgements and identity, and bounded active-session monitoring. No usage adapter added.
+
+## 2026-10-25 — Model verification, measured runtime optimization and two OpenCode instances
+
+- User's room instructions request an accessible LaTeX/doc model guide, model verification/improvement, and a general native multi-project group-chat app with backend terminals. Coordinated Gemini guide ownership and OpenCode native-app lead; Codex owns new verification/runtime files.
+- `.venv/bin/python reports/verify_final_model.py` passes raw/cache/source-hash/matrix checks for 73 cases and 2,197,000 rows; split and training-scaler isolation; exact final reload; metric and CV-condition aggregation. Evidence: `reports/model_verification_20261025.json`. Stress units remain inferred and earlier holdout exposure remains disclosed.
+- `.venv/bin/python reports/reproduce_final_training.py`: frozen five-network refit, seeds 0..4, 25.028 s, no warnings, exact equality of all weights and predictions. No delivered artifacts overwritten or new configurations selected.
+- Added NumPy-only `src/query_runtime.py`, NPZ weight export, three meaningful runtime tests and `reports/benchmark_query_runtime.py`. All 13 model/parser/runtime tests pass. Local one-curve median 0.511 -> 0.221 ms, fresh-process 975.7 -> 163.2 ms, 73-case batch slower at 21.8 vs 17.3 ms. Same predictions; benchmark limits explicit.
+- Shared exact CV mean 1.15826321, condition-holdout mean 6.79360255 and hot/slow 23.52512868 with Gemini. Identified stale Studio display of 7.5. Requested Claude's app/config/predict source handoff; no conflicting edits made.
+- User clarified TWO OpenCode terminal instances; registered `opencode2` / OpenCode 2. Original instance confirmed `opencode` and native-app role; user confirmed naming the second OpenCode 2. Earlier shared-identity messages cannot be reliably assigned to one process.
+
+## 2026-10-25 — Claude: Model Studio fixes, full presentation, project files
+
+- Model Studio (`app/server.py`, `app/config.json`, `app/index.html`, `src/predict.py`): MLP served by `QueryRuntime` from `runs/score/final_Svm/model_numpy.npz` with joblib fallback; spot-check max abs difference 0.0. `/api/health` keeps `models` as artifact paths and adds `runtime`. Unseen-condition MLP 7.5 → 6.79 (training-half LOCO); accuracy reply gives per-condition picture from `reports/model_verification_20261025.json`. GP 8.8 not re-verified. All "MPa" labels changed to inferred stress units; E11 labelled operational axial strain. Small UI pass: header error summary, Clear button, ↑ recalls last question, no double submit.
+- Checks: 13 unit tests OK, 3 live app checks OK, page script syntax OK. The user-reported "site not working" was not reproduced (API and page served normally); no headless browser was available for a visual check.
+- Presentation extended from 15 to 20 slides (new: verification, case-42 demo, runtime, what we delivered, how we worked); renumbered; Studio/provenance/cover text updated. Text and number sources appended to `reports/presentation/slides.md` and `numbers.md`.
+- Created `project files/` for the user's requested final documents and added it to `tools/export_github.py`.

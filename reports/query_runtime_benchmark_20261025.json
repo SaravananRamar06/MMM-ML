@@ -1,0 +1,62 @@
+{
+  "max_abs_difference_73_cases": 0.0,
+  "blas_threads": 1,
+  "prediction": {
+    "1": {
+      "sklearn": {
+        "median_ms": 0.511277,
+        "p95_ms": 0.74244235
+      },
+      "numpy": {
+        "median_ms": 0.22123749999999998,
+        "p95_ms": 0.30267905
+      },
+      "median_speedup": 2.3109870614158994
+    },
+    "3": {
+      "sklearn": {
+        "median_ms": 0.8788905,
+        "p95_ms": 1.2488534999999998
+      },
+      "numpy": {
+        "median_ms": 0.552862,
+        "p95_ms": 0.7838811499999999
+      },
+      "median_speedup": 1.5897104521562344
+    },
+    "37": {
+      "sklearn": {
+        "median_ms": 7.6631925,
+        "p95_ms": 9.708575849999995
+      },
+      "numpy": {
+        "median_ms": 6.990378,
+        "p95_ms": 9.57865495
+      },
+      "median_speedup": 1.0962486577979045
+    },
+    "73": {
+      "sklearn": {
+        "median_ms": 17.2714005,
+        "p95_ms": 27.03594134999998
+      },
+      "numpy": {
+        "median_ms": 21.818696000000003,
+        "p95_ms": 29.9003253
+      },
+      "median_speedup": 0.7915872011782921
+    }
+  },
+  "source_bytes": 62940,
+  "numpy_export_bytes": 18462,
+  "fresh_process_median_ms": {
+    "sklearn": 975.6622359998346,
+    "numpy": 163.15092400009235
+  },
+  "notes": [
+    "Local repeated warm timings; hardware and load affect results.",
+    "Fresh-process timings include interpreter startup/import/load and one curve.",
+    "Same fitted float64 weights; no retraining or change in accuracy claimed.",
+    "GP reference and HTTP rendering overhead are not included."
+  ]
+}

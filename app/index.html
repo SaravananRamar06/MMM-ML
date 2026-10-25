@@ -42,6 +42,7 @@ header {
 }
 h1 { margin: 0; font-size: 1.9rem; line-height: 1.15; font-weight: 600; letter-spacing: -0.01em; }
 .sub { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+.tools { display: flex; gap: 8px; }
 .theme {
   border: 1px solid var(--edge); background: var(--bot); color: var(--ink); border-radius: 999px;
   padding: 6px 12px; font: inherit; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
@@ -111,7 +112,10 @@ button.send:disabled { opacity: 0.55; cursor: progress; }
     <h1 class="serif">AlSi10Mg curve predictor</h1>
     <p class="sub" id="sub">Ask for a stress–strain curve in plain words.</p>
   </div>
-  <button class="theme" id="theme" type="button" aria-label="Switch colour theme">Blueprint</button>
+  <div class="tools">
+    <button class="theme" id="clear" type="button" aria-label="Clear the conversation">Clear</button>
+    <button class="theme" id="theme" type="button" aria-label="Switch colour theme">Blueprint</button>
+  </div>
 </header>
 <main id="scroll"><div id="log" aria-live="polite"></div></main>
 <footer>
@@ -122,7 +126,7 @@ button.send:disabled { opacity: 0.55; cursor: progress; }
       <textarea id="q" rows="1" placeholder="e.g. compare 30 and 200 C at rate 1e-3" autocomplete="off"></textarea>
       <button class="send" id="send" type="submit">Predict</button>
     </form>
-    <div class="hint">Enter to send, Shift+Enter for a new line. Runs locally; no data leaves this computer.</div>
+    <div class="hint">Enter to send, Shift+Enter for a new line, ↑ to recall your last question. Runs locally; no data leaves this computer.</div>
   </div>
 </footer>
 <script>
@@ -170,6 +174,7 @@ function md(text) {
 const NS = 'http://www.w3.org/2000/svg';
 function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
 function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); return Math.ceil(v / p * 2) / 2 * p; }
+let UNIT_SHORT = 'inferred units';
 const PALETTE = ['--mlp', '--gp', '#B0476B', '#7A5BC4', '#C27C0E', '#3C8DAD'];
 function chart(curves) {
   const W = 640, H = 340, m = { l: 52, r: 14, t: 12, b: 40 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
@@ -184,7 +189,7 @@ function chart(curves) {
   for (let k = 0; k <= 5; k++) { const t = el('text', { x: X(k * 0.02), y: m.t + ih + 18, 'text-anchor': 'middle' }, svg); t.textContent = (k * 0.02).toFixed(2); }
   for (let k = 0; k <= 5; k++) { const t = el('text', { x: m.l - 8, y: Y(k * ymax / 5) + 4, 'text-anchor': 'end' }, svg); t.textContent = Math.round(k * ymax / 5); }
   el('text', { x: m.l + iw / 2, y: H - 4, 'text-anchor': 'middle' }, svg).textContent = 'axial strain';
-  el('text', { x: 14, y: m.t + ih / 2, 'text-anchor': 'middle', transform: `rotate(-90 14 ${m.t + ih / 2})` }, svg).textContent = 'stress (MPa)';
+  el('text', { x: 14, y: m.t + ih / 2, 'text-anchor': 'middle', transform: `rotate(-90 14 ${m.t + ih / 2})` }, svg).textContent = 'stress (' + UNIT_SHORT + ')';
   // colour by condition; the comparison model reuses its condition's colour, dashed
   const conds = [...new Set(curves.map((c) => c.label.replace(/, (MLP|GP)$/, '')))];
   const color = (c) => { const k = conds.indexOf(c.label.replace(/, (MLP|GP)$/, '')) % PALETTE.length; const v = PALETTE[conds.length === 1 ? (c.primary ? 0 : 1) : k]; return v.startsWith('--') ? `var(${v})` : v; };
@@ -202,7 +207,7 @@ function chart(curves) {
     const x = Math.min(xmax, Math.max(0, (px - m.l) / iw * xmax)); const s = curves[0].strain;
     let i = 0; while (i < s.length - 1 && s[i + 1] <= x) i++;
     cursor.setAttribute('x1', X(s[i])); cursor.setAttribute('x2', X(s[i]));
-    readout.textContent = `strain ${s[i].toFixed(4)}:  ` + curves.map((c) => `${c.label} ${c.stress[i].toFixed(1)} MPa`).join(';  ');
+    readout.textContent = `strain ${s[i].toFixed(4)}:  ` + curves.map((c) => `${c.label} ${c.stress[i].toFixed(1)}`).join(';  ');
   };
   svg.addEventListener('pointermove', pick); svg.addEventListener('pointerdown', pick);
   fig.append(legend, readout);
@@ -216,8 +221,10 @@ function add(role, html) {
   else d.textContent = html;
   log.appendChild(d); scroll.scrollTop = scroll.scrollHeight; return d;
 }
+let last = '';
 async function ask(text) {
-  if (!text.trim()) return;
+  if (!text.trim() || send.disabled) return;
+  last = text;
   add('user', text); q.value = ''; grow(); send.disabled = true;
   const wait = add('bot', '<span class="typing">Computing curves…</span>');
   try {
@@ -234,13 +241,20 @@ async function ask(text) {
 }
 function grow() { q.style.height = 'auto'; q.style.height = Math.min(160, q.scrollHeight) + 'px'; }
 q.addEventListener('input', grow);
-q.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(q.value); } });
+q.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(q.value); }
+  else if (e.key === 'ArrowUp' && !q.value && last) { e.preventDefault(); q.value = last; grow(); }
+});
 $('#form').addEventListener('submit', (e) => { e.preventDefault(); ask(q.value); });
 EXAMPLES.forEach((x) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = x; b.onclick = () => ask(x); $('#chips').appendChild(b); });
 fetch('/api/info').then((r) => r.json()).then((info) => {
-  $('#sub').textContent = `Predicts ${info.target} from temperature, strain rate, density and shear modulus.`;
+  const m = info.models.find((x) => x.key === info.primary) || info.models[0];
+  $('#sub').textContent = `Predicts ${info.target} from temperature, strain rate, density and shear modulus. `
+    + `${m.short} error: ${m.test_rmse} on test curves, ${m.unseen_rmse} on unseen conditions (${info.units || 'inferred units'}).`;
 }).catch(() => {});
-add('bot', md('Ask me for a stress–strain curve, for example **"compare 30 and 200 C at rate 1e-3"**. I answer from models trained on the professor\'s simulations, and I tell you when a request is outside what they were trained on.'));
+const greet = () => add('bot', md('Ask me for a stress–strain curve, for example **"compare 30 and 200 C at rate 1e-3"**. I answer from models trained on the professor\'s simulations, and I tell you when a request is outside what they were trained on.'));
+greet();
+$('#clear').onclick = () => { log.replaceChildren(); greet(); q.focus(); };
 </script>
 </body>
 </html>

@@ -1,0 +1,240 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{listings}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!75!black,
+    citecolor=blue!75!black,
+    urlcolor=blue!75!black
+}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    rulecolor=\color{gray!30},
+    breaklines=true,
+    keywordstyle=\color{blue!80!black}\bfseries,
+    commentstyle=\color{green!50!black}\itshape,
+    stringstyle=\color{red!70!black}
+}
+
+\title{\textbf{Technical Reference \& Architecture Guide:}\\
+\Large AlSi10Mg Flow-Stress Neural Surrogate Model}
+\author{\textbf{Material Lab Project Team}\\
+\small User \and Gemini (Antigravity) \and Codex \and OpenCode \and Claude}
+\date{October 25, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This guide provides a comprehensive, technically rigorous, and accessible personal reference for the AlSi10Mg flow-stress surrogate model. It documents the problem physics, data representations, the ensemble neural network architecture (five 5--16--16--1 $\tanh$ MLPs, 385 parameters each, 1,925 total), training procedure (L-BFGS, $\alpha=0.001$), 3-tier reproducibility audits, verified test performance (mean curve RMSE $0.059085$ in inferred stress units), optimized NumPy runtime benchmarks ($0.221\,\text{ms}$ single-curve inference), operational boundaries, and a defense-oriented viva preparation guide.
+\end{abstract}
+
+\tableofcontents
+\vspace{1em}
+\hrule
+\vspace{1.5em}
+
+\section{Executive Summary \& Plain-Language Motivation}
+
+Additive manufacturing (AM) of metallic aerospace structural components—such as wing-rib brackets—frequently utilizes AlSi10Mg due to its strength-to-weight ratio and thermal properties. However, process variations alter the material's mechanical response across varying thermal and strain-rate regimes.
+
+To predict material flow curves without running computationally prohibitive full-field finite element simulations for every design query, we built a data-driven neural surrogate model.
+
+\paragraph{What the Model Does:}
+Given temperature, nominal strain rate, material density, shear modulus, and an operational axial strain point ($E_{11}$), the model predicts the corresponding flow stress. Within represented conditions, it reproduces the non-linear plastic yield curve with sub-millisecond latency.
+
+\section{Dataset, Feature Pipeline \& Partitioning}
+
+\subsection{Dataset Provenance \& Row Counts}
+The simulation matrix comprises \textbf{73 available histories}. The raw source data contains $2{,}197{,}000$ observation rows:
+\begin{itemize}
+    \item \textbf{Training Partition (36 cases):} $1{,}224{,}000$ raw source rows.
+    \item \textbf{Holdout Partition (37 cases):} $973{,}000$ raw source rows.
+\end{itemize}
+\textbf{Important Provenance Note:} The raw row counts represent the size of the underlying finite element output files, not independent training examples. For surrogate modeling, each simulation curve is interpolated onto a standardized \textbf{120-point operational strain grid}. Therefore:
+\begin{itemize}
+    \item Fitting operates on \textbf{4,320 query samples} ($36 \text{ cases} \times 120 \text{ points}$).
+    \item Evaluation operates on \textbf{4,440 query samples} ($37 \text{ cases} \times 120 \text{ points}$).
+\end{itemize}
+
+\subsection{Input Features \& Numerical Ranges}
+Inside the network, each sample is mapped as a 5-dimensional vector:
+\begin{equation}
+    \mathbf{x} = \begin{bmatrix} T \\ \log_{10}(\dot{\varepsilon}) \\ \rho \\ G \\ E_{11} \end{bmatrix} \longrightarrow y = \hat{\sigma}
+\end{equation}
+\begin{enumerate}
+    \item \textbf{$T$ (Temperature):} Numerical values $30.0$ to $200.0$ ($^\circ\text{C}$).
+    \item \textbf{$\dot{\varepsilon}$ (Strain Rate):} Nominal values $10^{-5}$ to $10^{-3}\,\text{s}^{-1}$, always encoded logarithmically: $\log_{10}(\dot{\varepsilon}) \in [-5.0, -3.0]$.
+    \item \textbf{$\rho$ (Density):} Numerical range $2488.05$ to $2700.0$ (presumably $\text{kg/m}^3$; units unconfirmed).
+    \item \textbf{$G$ (Shear Modulus):} Numerical range $23313.95$ to $25300.0$ (presumably $\text{MPa}$; units unconfirmed).
+    \item \textbf{$E_{11}$ (Operational Axial Strain):} Standardized 120-point grid spanning the monotonic loading trajectory.
+\end{enumerate}
+
+\paragraph{Physical Caveats on Inputs:}
+\begin{itemize}
+    \item \textbf{Unconfirmed Units:} Units for $G$ and $\rho$ are not explicitly defined in the simulation headers.
+    \item \textbf{No Porosity Mapping:} Neither $G$ nor $\rho$ has a validated physical porosity relationship in this dataset. Density varies stress by only $\sim 0.19$ units. Do not claim a direct porosity-to-lift mapping.
+\end{itemize}
+
+\subsection{Dataset Partitioning \& Evaluation Disclosure}
+The split was established using a reproducible pseudo-random seed on simulation IDs ($36$ train, $37$ test).
+\begin{itemize}
+    \item \textbf{Standardization Scope:} The input standardizer ($\boldsymbol{\mu}, \boldsymbol{\sigma}$) and target standardizer ($\mu_y, \sigma_y$) were fitted strictly on the $4{,}320$ training grid queries.
+    \item \textbf{Prior Exploration Disclosure:} While the final model fitting partition was strictly disjoint, earlier exploratory model selection was conducted on the full dataset before the final split was frozen. Therefore, the test set should be described as a \textit{disjoint holdout split}, not an untouched or completely blind benchmark.
+\end{itemize}
+
+\section{Model Architecture \& Training}
+
+\subsection{The 5-Network Query MLP Ensemble}
+The surrogate model is an ensemble of \textbf{five independently initialized multi-layer perceptrons} ($k \in \{0, 1, 2, 3, 4\}$). Each network shares an identical 5--16--16--1 architecture:
+\begin{itemize}
+    \item \textbf{Input Layer ($D=5$):} Standardized vector $\tilde{\mathbf{x}} = (\mathbf{x} - \boldsymbol{\mu}) / \boldsymbol{\sigma}$.
+    \item \textbf{Hidden Layer 1:} 16 neurons with hyperbolic tangent ($\tanh$) activation.
+    \begin{itemize}
+        \item Weights: $16 \times 5 = 80$, Biases: $16$. Subtotal: 96 parameters.
+    \end{itemize}
+    \item \textbf{Hidden Layer 2:} 16 neurons with hyperbolic tangent ($\tanh$) activation.
+    \begin{itemize}
+        \item Weights: $16 \times 16 = 256$, Biases: $16$. Subtotal: 272 parameters.
+    \end{itemize}
+    \item \textbf{Output Layer:} 1 linear neuron (identity activation).
+    \begin{itemize}
+        \item Weights: $1 \times 16 = 16$, Bias: $1$. Subtotal: 17 parameters.
+    \end{itemize}
+    \item \textbf{Parameter Total:} Exactly \textbf{385 trainable parameters per network}, totaling \textbf{1,925 parameters} across the 5-network ensemble.
+\end{itemize}
+
+\subsection{Mathematical Formulation}
+For network $k$, the standardized predicted stress $\hat{z}_k$ is:
+\begin{equation}
+    \hat{z}_k = \mathbf{W}_3^{(k)} \cdot \tanh\left( \mathbf{W}_2^{(k)} \cdot \tanh\left( \mathbf{W}_1^{(k)} \cdot \tilde{\mathbf{x}} + \mathbf{b}_1^{(k)} \right) + \mathbf{b}_2^{(k)} \right) + b_3^{(k)}
+\end{equation}
+The ensemble average across all 5 networks is unscaled using the training target mean $\mu_y$ and standard deviation $\sigma_y$:
+\begin{equation}
+    \hat{\sigma} = \left( \frac{1}{5} \sum_{k=0}^4 \hat{z}_k \right) \cdot \sigma_y + \mu_y
+\end{equation}
+
+\subsection{Training Procedure}
+\begin{itemize}
+    \item \textbf{Optimizer:} L-BFGS (quasi-Newton method, highly efficient for smooth non-linear parameter fitting on moderately sized tabular grids).
+    \item \textbf{Regularization:} $L_2$ penalty $\alpha = 0.001$.
+    \item \textbf{Loss Function:} Mean Squared Error (MSE) on standardized training queries.
+    \item \textbf{Seeds:} Five deterministic seeds ($0, 1, 2, 3, 4$).
+\end{itemize}
+
+\section{Verification, Reproducibility \& Metrics}
+
+\subsection{Three-Tier Verification Hierarchy}
+\begin{enumerate}
+    \item \textbf{Tier 1: Cache Verification (Zero Discrepancy)}
+    The 120-point interpolated stress grid for all 73 curves was audited directly against raw \texttt{STR\_STR.OUT} files and SHA256 hashes. The maximum absolute difference was verified at \textbf{0.0}.
+    
+    \item \textbf{Tier 2: Holdout Artifact Reload}
+    Evaluating the frozen saved ensemble weights on the 37 holdout cases reproduced the exact saved metrics:
+    \begin{itemize}
+        \item \textbf{Mean Test Curve RMSE:} $\mathbf{0.05908515}$ in inferred stress units.
+        \item \textbf{Worst Test Case RMSE:} $\mathbf{0.11330618}$ (Case 45).
+    \end{itemize}
+
+    \item \textbf{Tier 3: Same-Environment Training Reproduction}
+    A completely independent refit of all five seeds on the 36 training cases took \textbf{25.0 seconds}, produced zero convergence warnings, and reproduced all weights and 73 predictions with \textbf{0.0 maximum absolute difference}.
+\end{enumerate}
+
+\subsection{Generalization Gap: Interpolation vs.\ Unseen Conditions}
+\begin{table}[h]
+\centering
+\caption{Model Evaluation Metrics across Different Regimes}
+\vspace{0.5em}
+\begin{tabular}{llr}
+\toprule
+\textbf{Evaluation Split} & \textbf{Metric} & \textbf{Value (Stress Units)} \\
+\midrule
+Holdout Test Set (37 cases) & Mean Curve RMSE & \textbf{0.059085} \\
+Holdout Test Set & Worst Case RMSE (Case 45) & \textbf{0.113306} \\
+Training-Side Case CV (36 cases) & Mean Curve RMSE & \textbf{1.158263} \\
+Training-Side Case CV & Median Curve RMSE & \textbf{0.201877} \\
+Leave-Condition-Out (LOCO) & Mean of Condition Means & \textbf{6.793603} \\
+Leave-Condition-Out ($200^\circ\text{C}, 10^{-5}\,\text{s}^{-1}$) & Condition Mean RMSE & \textbf{23.525129} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Explaining the Metrics:}
+\begin{itemize}
+    \item \textbf{What is RMSE?} Root Mean Squared Error measures the average magnitude of prediction error across strain points along a curve: $\text{RMSE} = \sqrt{\frac{1}{N}\sum_{i=1}^N (\hat{\sigma}_i - \sigma_i)^2}$.
+    \item \textbf{Why is Test RMSE ($0.059$) so low?} All 8 temperature and strain-rate combinations present in the test set also exist in the training set. The test score measures interpolation within represented operating conditions.
+    \item \textbf{Why is LOCO RMSE ($6.79$) higher?} When an entire operating condition is held out, the model must extrapolate across temperature/rate space without anchor curves. In the hot/slow condition ($200^\circ\text{C}, 10^{-5}\,\text{s}^{-1}$), error rises to $23.53$.
+\end{itemize}
+
+\subsection{The Case 60 Anomaly}
+In training cross-validation, Case 60 exhibits high error ($\text{RMSE} = 25.99$). Inspection reveals that its recorded von Mises strain reverses while axial strain $E_{11}$ increases. The generating cause of this behavior is unknown. It is retained and flagged as genuine evidence of limited generalization under irregular yield behavior.
+
+\section{Runtime Performance \& Benchmarks}
+
+An optimized NumPy-only runtime was developed (\texttt{src/query\_runtime.py}) to eliminate the heavy scikit-learn dependency:
+\begin{itemize}
+    \item \textbf{Weight Storage:} Stored in an 18,462-byte pickle-free \texttt{.npz} file (vs. 62,940 bytes Joblib).
+    \item \textbf{Single-Curve Latency:} $0.221\,\text{ms}$ (NumPy) vs. $0.511\,\text{ms}$ (scikit-learn) in local repeated single-thread benchmarks.
+    \item \textbf{Fresh Interpreter / Import / Load / Inference:} $163\,\text{ms}$ (NumPy) vs. $976\,\text{ms}$ (scikit-learn).
+    \item \textbf{Full Batch (73 Cases):} NumPy was slower ($21.8\,\text{ms}$ vs. $17.3\,\text{ms}$), as scikit-learn utilizes optimized multi-threaded BLAS routines for large matrix multiplications.
+    \item \textbf{Accuracy Parity:} Exactly $0.0$ difference against reference model outputs.
+\end{itemize}
+
+\section{Verified Executable Code Example}
+
+The following Python script loads the lightweight NumPy runtime, runs inference on a test condition, and queries a specific strain value:
+
+\begin{lstlisting}[language=Python]
+import sys
+import numpy as np
+from src.query_runtime import QueryRuntime
+
+# 1. Load lightweight runtime (18 KB pickle-free NPZ)
+runtime = QueryRuntime.load("runs/score/final_Svm/model_numpy.npz")
+
+# 2. Define input case: [T, log10(strain_rate), density, shear_modulus]
+# Example: T = 100 deg C, rate = 1e-4 s^-1, density = 2619.0, G = 24541.0
+X_case = np.array([[100.0, -4.0, 2619.0, 24541.0]])
+
+# 3. Predict full 120-point flow-stress curve
+curve = runtime.predict(X_case)[0]
+print(f"Predicted curve output shape: {curve.shape}")  # (120,)
+
+# 4. Query stress at a specific strain point (e.g., E11 = 0.05)
+# runtime.strain provides the standardized 120-point strain grid
+stress_at_point = np.interp(0.05, runtime.strain, curve)
+print(f"Predicted Flow Stress at E11 = 0.05: {stress_at_point:.4f} (inferred units)")
+\end{lstlisting}
+
+\section{Operational Boundaries \& Defense Q\&A Guide}
+
+When presenting this model to academic reviewers, use this reference guide to answer challenging questions accurately:
+
+\paragraph{Q1: What are the units of your predicted stress?}
+\textit{Answer:} ``The raw simulation files report stress without explicit unit headers. The model predictions are evaluated in inferred stress units ($\text{RMSE} = 0.059$). While numerically consistent across all profiles, we explicitly treat them as inferred stress units rather than confirmed MPa until the simulator's exact constitutive definitions are verified.''
+
+\paragraph{Q2: Does your model predict true plastic strain?}
+\textit{Answer:} ``No. The input variable is $E_{11}$, which is the operational axial strain coordinate reported by the simulation output, not verified true plastic strain.''
+
+\paragraph{Q3: Can your model predict flow stress at $300^\circ\text{C}$?}
+\textit{Answer:} ``No. The training data strictly spans $30^\circ\text{C}$ to $200^\circ\text{C}$. Unconstrained MLPs predict unphysical negative stress when extrapolated to $300^\circ\text{C}$. Operational use must strictly remain within $[30^\circ\text{C}, 200^\circ\text{C}]$.''
+
+\paragraph{Q4: Can this model predict wing-rib bracket aerodynamic lift ($C_L$)?}
+\textit{Answer:} ``No. This is a material-level flow-stress surrogate. The simulation matrix models constitutive stress-strain histories, not aerodynamic coefficients. It serves as an accelerated constitutive input for finite element structural analysis.''
+
+\paragraph{Q5: Can you claim zero data leakage?}
+\textit{Answer:} ``We claim a strictly disjoint case partition for final fitting and evaluation. However, earlier exploratory feature selection was performed across the dataset before the final split was frozen. We maintain scientific honesty by reporting this exploration rather than claiming an untouched blind holdout.''
+
+\end{document}
