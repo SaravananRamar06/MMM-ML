@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # (source in project, destination in repo)
 COPY = [
     ("src", "src"), ("app", "app"), ("tests", "tests"), ("tools", "tools"), ("figures", "figures"),
-    ("reports", "reports"), ("report", "report"), ("runs", "runs"), ("requirements.txt", "requirements.txt"),
+    ("reports", "reports"), ("report", "report"), ("paper", "paper"), ("runs", "runs"), ("requirements.txt", "requirements.txt"),
     ("data/manifest.json", "data/manifest.json"), ("data/split.json", "data/split.json"),
     ("README.github.md", "README.md"), ("WORKLOG.md", "WORKLOG.md"),
     # project notes, kept together under docs/
@@ -37,6 +37,9 @@ __pycache__/
 TEAM_8_extracted_results_set_1/
 # Caches rebuilt by src/data.py from the raw data
 data/curves_*.npz
+report/*.aux
+report/*.log
+report/*.out
 """
 
 

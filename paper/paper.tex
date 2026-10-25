@@ -1,0 +1,103 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx,booktabs,amsmath,siunitx,cite,url}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{../report/figures/}{../reports/retests/20261025T172218Z/}}
+\sisetup{group-separator={,},group-minimum-digits=4}
+
+\begin{document}
+\title{A Small Neural-Network Surrogate for the Simulated Stress Response of Additively Manufactured AlSi10Mg}
+\author{\IEEEauthorblockN{Team 8}\IEEEauthorblockA{Multiscale Materials Modelling course project, October 2026}}
+\maketitle
+
+\begin{abstract}
+Multiscale design of additively manufactured parts needs fast approximations of material response. We train a compact surrogate that predicts the von Mises stress $S_{vm}$ of AlSi10Mg along operational strain $E_{11}$ from temperature, strain rate, density and shear modulus, using 73 simulated loading histories. The final model averages five 5--16--16--1 tanh multilayer perceptrons (385 parameters each). On a fixed split with 37 held-out simulations it reaches a mean per-curve RMSE of 0.0591 (worst 0.1133). When whole temperature/rate conditions are held out, the error rises to a group-averaged 6.79. The model therefore reproduces related simulated curves closely, but its generalisation to new conditions is not established. We compare it with Gaussian-process and principal-component alternatives, report exact reproducibility, and state the open questions: units, the porosity mapping and the link to aerodynamic lift.
+\end{abstract}
+
+\begin{IEEEkeywords}
+AlSi10Mg, additive manufacturing, surrogate model, multilayer perceptron, stress--strain prediction, generalisation
+\end{IEEEkeywords}
+
+\section{Introduction}
+Porosity in laser-powder-bed-fused AlSi10Mg alters the mechanical response of structural parts such as a wing-rib bracket. A multiscale workflow that propagates material behaviour into structural and, ultimately, aerodynamic analysis needs material evaluations that are much cheaper than repeated simulations. This paper addresses the first link of that chain: a data-driven surrogate of the simulated material stress response. The structural analysis and any coupling to the coefficient of lift $C_L$ are outside its scope. No lift labels exist in the material data, so we make no aerodynamic claim.
+
+Our contributions are: (i) a 1,925-parameter ensemble surrogate trained on 36 simulations with leakage-controlled preprocessing; (ii) a comparison with five alternative surrogates on case-wise and condition-wise holdouts; and (iii) an explicit account of what the evidence does and does not support.
+
+\section{Related work}
+Feed-forward networks have long been used to map process conditions to flow stress; Sun et al.\ predicted Ti600 hot-compression flow stress from temperature, strain and strain rate~\cite{sun2010}. Vijayaraghavan et al.\ distinguish such stepwise feed-forward prediction under known, nearly monotonic loading from recurrent treatment of general elastoplastic histories~\cite{vijayaraghavan2023}. Recurrent models have learned path-dependent plasticity from thousands of loading paths~\cite{mozaffar2019}, while physically recurrent networks that embed known constituent laws reproduced unloading behaviour from as few as 18 monotonic curves in selected scenarios~\cite{maia2023}. Thermodynamics-based networks build free energy and dissipation into the architecture~\cite{masi2021}, and physics-informed residual losses can introduce optimisation difficulties~\cite{krishnapriyan2021}. Operator-learning methods such as DeepONet learn maps between functions~\cite{lu2021deeponet}. Principal-component representations of stress curves have been combined with convolutional~\cite{yang2020} and neural-network~\cite{bhattacharya2021} regressors.
+
+Our setting is different: loading is monotonic, internal-state variables and constitutive definitions are not available, and only 73 histories exist. We therefore evaluate a deliberately small feed-forward query model and compare it with principal-component and Gaussian-process~\cite{rasmussen2006} alternatives, rather than adopting recurrent or physics-embedded architectures whose required quantities are unavailable.
+
+\section{Data}
+The design matrix planned 108 simulations; 73 were available, with \num{2197000} raw history rows. Temperature coverage is uneven: 27 cases at 30, 27 at 100, 19 at 200 and none at 300. Strain rate spans $10^{-5}$ to $10^{-3}$, density 2488.05 to 2700, and shear modulus $G$ 23313.95 to 25300. Units (\si{\celsius}, \si{\per\second}, \si{\mega\pascal}) are inferred from magnitudes and not confirmed. The data were supplied by the course instructor and are not public. The target is $S_{vm}$ along operational $E_{11}$. Each history is interpolated onto 120 $E_{11}$ values from 0.0002 to 0.0999 so that long, slow-rate runs do not dominate. The histories show no conventional zero-stress elastic segment, so the surrogate is not a constitutive law.
+
+\section{Method}
+\subsection{Split and leakage control}
+One fixed random split by simulation (seed 42) gives 36 training and 37 test cases, as close to the requested 50/50 split as 73 cases allow. All points of a simulation stay in one partition, and input and output scalers are fitted on training cases only. The 36 training cases give \num{4320} query points; these are not independent samples. Earlier exploration used all data, so the test cases were excluded from final fitting but are not a fully blind holdout.
+
+\subsection{Model}
+Each network maps five inputs (temperature, $\log_{10}$ rate, density, $G$, query $E_{11}$) to one $S_{vm}$ value through a 5--16--16--1 architecture with tanh hidden units and a linear output. Five networks (seeds 0--4) are fitted in scikit-learn~\cite{pedregosa2011} with L-BFGS~\cite{liu1989} and L2 penalty $\alpha=0.001$, and their predictions are averaged. Arrays and plots use NumPy~\cite{harris2020} and Matplotlib~\cite{hunter2007}. A full curve is produced by querying all 120 strain values for fixed conditions.
+
+\subsection{Model selection}
+Candidates were compared using training data only (Table~\ref{tab:cand}). The query MLP had the lowest condition-holdout error, the criterion most relevant to use beyond sampled conditions. A PCA + GP model was better on case-wise cross-validation but much worse on held-out conditions.
+
+\begin{table}[t]\centering
+\caption{Training-side comparison. Case CV: mean curve RMSE over 36 training cases. Condition holdout: unweighted mean of nine group-mean curve RMSEs. Both are saved results, not fresh evaluations of the delivered model.}
+\label{tab:cand}
+\begin{tabular}{lrr}\toprule
+Candidate & Case CV & Cond.\ holdout\\\midrule
+Query MLP (selected) & 1.158 & 6.794\\
+PCA + GP (6 comp.) & 0.664 & 10.962\\
+MLP/GP blend & 0.867 & 7.983\\
+Physics-style-input MLP & 1.536 & 8.609\\
+PCA-coef.\ MLP (4) & 2.269 & 11.086\\
+PCA-coef.\ MLP (6) & 2.004 & 11.205\\\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Results}
+Table~\ref{tab:test} gives the errors of the delivered ensemble on the 37 test cases, and Fig.~\ref{fig:test} shows two of them, including the worst.
+
+\begin{table}[t]\centering
+\caption{Test-set errors (inferred stress units).}
+\label{tab:test}
+\begin{tabular}{lr}\toprule
+Metric & Value\\\midrule
+Mean per-curve RMSE & 0.05909\\
+Median per-curve RMSE & 0.05057\\
+Worst curve RMSE (case 45) & 0.11331\\
+Mean per-curve MAE & 0.04900\\
+Pooled RMSE & 0.06486\\
+Largest point error & 0.28832\\\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{test_curves.png}
+\caption{Predicted vs.\ simulated $S_{vm}$ for test cases 42 and 45, with residuals. Case 45 is the worst of 37.}
+\label{fig:test}
+\end{figure}
+
+\textbf{Generalisation.} Holding out whole temperature/rate groups raises the group-averaged error to 6.79, about a hundred times the random-split error (Fig.~\ref{fig:cond}). The hardest group, 200 at $10^{-5}$, gives 23.53, and its only available case (60) lies in the training half. The low random-split error therefore mainly reflects interpolation between closely related conditions.
+
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{condition_holdout_Svm.png}
+\caption{Saved condition-holdout error of the selected model by temperature/rate group (training half, $\alpha=0.001$).}
+\label{fig:cond}
+\end{figure}
+
+\textbf{Worked example.} At temperature 100, rate $10^{-4}$, density 2619 and $G=24541$, the model predicts 136.20912 at the start of the grid, 99.41858716 at $E_{11}=0.05$ and 75.23194 at the end.
+
+\textbf{Reproducibility.} A separate refit with frozen settings reproduced all weights and predictions exactly in 17.26\,s without warnings. Thirteen unit tests and three live application tests pass. This is same-environment numerical reproducibility, not physical or cross-platform validation.
+
+\section{Discussion}
+A very small ensemble closely reproduces related simulated curves and is exactly reproducible, which makes it practical inside a larger workflow. Its weakness is extrapolation. With three temperatures and three rates, some groups contain very few cases, and the error grows sharply when a group is unseen. Reliability at other input combinations is therefore not established, even inside the numerical ranges. We propose adding simulations at sparse and missing conditions (especially 200 and 300) as the first priority, although we did not test this against changing the model size. The model predicts stress along operational strain only. Using it in structural analysis needs the solver's stress/strain definitions, confirmed units and the receiving material model. Any export to ANSYS is an unvalidated template until those are confirmed.
+
+\section{Limitations}
+Units, the solver, the material law and the stress/strain definitions are unconfirmed. The test cases were seen during earlier exploration, so the score is not a fully independent estimate and may be optimistic. Whether density and modulus encode porosity is unverified. There are no $C_L$ labels or agreed lift calculation. The teammate's ANSYS model has not yet been inspected, and no transfer of predictions into it has been validated.
+
+\section{Conclusion}
+A five-network MLP ensemble with 1,925 parameters reproduces simulated AlSi10Mg stress curves with a mean test RMSE of 0.059 on related conditions and is exactly reproducible. Extending it to new conditions, porosity effects or lift prediction requires the definitions and data identified above.
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+\end{document}

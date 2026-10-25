@@ -9,3 +9,11 @@ data/curves_*.npz
 report/*.aux
 report/*.log
 report/*.out
+report/*.aux
+report/*.log
+report/*.out
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
