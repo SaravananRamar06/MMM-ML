@@ -2,8 +2,8 @@ import docx
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
 from pathlib import Path
 
 ROOT = Path("/home/sarvn/Documents/MMM-ML")
@@ -151,7 +151,7 @@ r_box_bold.font.color.rgb = C_PRIMARY
 r_box_text = p_box.add_run(
     "This document serves as an accessible, end-to-end technical reference for understanding, defending, "
     "and querying the neural surrogate model developed for AlSi10Mg additive manufacturing simulations. "
-    "It breaks down how neural networks, weights, and tanh activations function intuitively, traces a worked "
+    "It breaks down how neural networks, weights, and tanh activations function, traces a worked "
     "step-by-step mathematical prediction, documents the verified 5-network ensemble architecture "
     "(1,925 total parameters, 0.059085 holdout RMSE), explains the generalization spectrum, and provides "
     "plain-language answers for academic viva defense."
@@ -159,38 +159,38 @@ r_box_text = p_box.add_run(
 r_box_text.font.size = Pt(9.5)
 r_box_text.font.color.rgb = C_SECONDARY
 
-# 1. Plain English
+# 1. Motivation
 add_heading_1("1. What the Model Does (In Plain English)")
 add_paragraph(
     "Additive manufacturing of metallic parts (such as aerospace brackets) produces material whose stiffness and "
-    "yield strength change depending on thermal history and strain rate. Running a full numerical finite-element "
+    "flow stress vary across different thermal and strain-rate conditions. Running a full numerical finite-element "
     "simulation for every new loading condition can take minutes or hours."
 )
 add_paragraph(
     "Given four environmental conditions (temperature, strain rate, density, shear modulus) and an axial strain point (E11), "
-    "the surrogate model instantly calculates the resulting flow stress in 0.22 milliseconds—reproducing the simulation's "
-    "non-linear curve with exceptional accuracy.",
+    "the surrogate model calculates the corresponding flow stress curve in 0.22 milliseconds—reproducing the simulated "
+    "response with high numerical fidelity within represented conditions.",
     bold_prefix="The Surrogate Solution: "
 )
 
-add_heading_2("Intuitive Analogy: How Neural Networks, Weights, and Tanh Work")
+add_heading_2("How Neural Networks, Weights, and Tanh Work")
 add_paragraph(
-    "Think of the neural network as an advanced mathematical curve-fitter equipped with 385 adjustable dials per network:"
+    "The surrogate model is an empirical function approximator equipped with 385 adjustable parameters per network:"
 )
-add_bullet("Features like temperature and strain act as incoming signals. Because raw numbers have vastly different scales (e.g., G ~ 24,000 while strain ~ 0.05), we standardize them first so all dials operate in a balanced numerical range around zero.", bold_prefix="Inputs (The Signals): ")
-add_bullet("Each connection between neurons has a 'weight'—a multiplier that determines how strongly that signal influences the next step. If temperature strongly softens the material, the weight connecting temperature to stress will be large and negative.", bold_prefix="Weights (Sensitivity Multipliers): ")
-add_bullet("Each neuron has an added constant offset (bias) that sets its default baseline before inputs arrive.", bold_prefix="Biases (Baseline Offsets): ")
-add_bullet("If a neural network only multiplied and added inputs, it could only draw straight lines. To capture physical curves—such as elastic loading followed by non-linear plastic yield—each neuron passes its sum through a hyperbolic tangent (tanh) function. Tanh curves the signal smoothly between -1 and +1, naturally reflecting physical saturation.", bold_prefix="Tanh Activation (The Non-Linear Bending): ")
-add_bullet("Rather than relying on a single network, we train five identical networks initialized with different random seeds. Taking their average smooths out random fitting noise and produces a robust, balanced prediction.", bold_prefix="Ensemble Averaging (The Committee): ")
+add_bullet("Features like temperature and strain act as input signals. Because raw numerical magnitudes differ widely (e.g., G ~ 24,000 while strain ~ 0.05), we standardize them first so inputs have zero mean and unit variance.", bold_prefix="Inputs: ")
+add_bullet("Each connection between layers has a numerical weight multiplier. Input influences combine nonlinearly across all layers rather than a single weight directly equaling physical sensitivity.", bold_prefix="Weights: ")
+add_bullet("Each neuron has an added constant offset (bias) that sets its baseline pre-activation value.", bold_prefix="Biases: ")
+add_bullet("Each neuron passes its pre-activation sum through a hyperbolic tangent (tanh) activation function, which maps values smoothly to (-1, 1). This introduces the nonlinearity required to fit smooth continuous response surfaces.", bold_prefix="Tanh Activation: ")
+add_bullet("Rather than relying on a single network, we train five identical networks initialized with different random seeds. Taking their average smooths out individual fitting variations and produces a stable consensus prediction.", bold_prefix="Ensemble Averaging: ")
 
 # 2. Worked Example
 add_heading_1("2. Tracing a Step-by-Step Prediction (Worked Numerical Example)")
 add_paragraph(
     "To demystify the internal math, let us trace an exact prediction using the calibrated parameters from the production runtime."
 )
-add_paragraph("We wish to predict flow stress for a material specimen under the following conditions:")
-add_bullet("Temperature (T) = 100.0 °C", bold_prefix="• ")
-add_bullet("Strain Rate = 1e-4 s^-1  -->  log10(rate) = -4.0", bold_prefix="• ")
+add_paragraph("We evaluate a material specimen under the following query inputs:")
+add_bullet("Temperature (T) = 100.0 (inferred °C units)", bold_prefix="• ")
+add_bullet("Strain Rate = 1e-4 (inferred s^-1 units)  -->  log10(rate) = -4.0", bold_prefix="• ")
 add_bullet("Density (rho) = 2619.0 (inferred units)", bold_prefix="• ")
 add_bullet("Shear Modulus (G) = 24541.0 (inferred units)", bold_prefix="• ")
 add_bullet("Axial Strain (E11) = 0.049631 (grid point closest to 0.05)", bold_prefix="• ")
@@ -231,15 +231,15 @@ add_heading_1("3. Training vs. Inference, L-BFGS & Regularization")
 add_paragraph(
     "It is essential to distinguish between the two distinct lifecycle phases of the model:"
 )
-add_bullet("The fitting phase where the algorithm determines the best 385 numerical weights per network. Using the L-BFGS optimizer on the 4,320 training grid points, training completes in 25.0 seconds for all 5 networks.", bold_prefix="Training Phase: ")
-add_bullet("The operational deployment phase. The weights are frozen into an 18 KB NPZ file. Calculating a curve requires only matrix multiplications and tanh evaluations, taking just 0.221 milliseconds.", bold_prefix="Inference Phase: ")
+add_bullet("The fitting phase where the algorithm determines the 385 numerical weights per network. Using the L-BFGS optimizer on the 4,320 training grid points, training completes in 25.0 seconds for all 5 networks.", bold_prefix="Training Phase: ")
+add_bullet("The operational deployment phase. The weights are frozen into an 18 KB NPZ file. Calculating a full 120-point curve requires only matrix multiplications and tanh evaluations, taking 0.221 milliseconds.", bold_prefix="Inference Phase: ")
 
-add_heading_2("Why L-BFGS and L2 Regularization (alpha = 0.001)?")
-add_bullet("Standard deep learning uses stochastic gradient descent (Adam/SGD) with minibatches. For moderately sized scientific datasets (4,320 samples), L-BFGS (a quasi-Newton 2nd-order method) approximates the curvature (Hessian matrix) of the error surface, converging to optimal weights with zero warnings and deterministic precision.", bold_prefix="L-BFGS Optimizer: ")
-add_bullet("Without regularization, neural networks can overfit by assigning huge weights to noisy data points. L2 regularization (penalty alpha = 0.001) adds a penalty proportional to the square of weight magnitudes, ensuring the fitted curves remain smooth and physically realistic.", bold_prefix="L2 Regularization (alpha = 0.001): ")
+add_heading_2("L-BFGS and L2 Regularization (alpha = 0.001)")
+add_bullet("For moderately sized tabular datasets (4,320 samples), L-BFGS (a quasi-Newton 2nd-order method) uses gradient history to approximate the Hessian curvature, efficiently converging to a local minimum on the empirical loss surface without convergence warnings.", bold_prefix="L-BFGS Optimizer: ")
+add_bullet("L2 weight regularization (penalty alpha = 0.001) penalizes large weight magnitudes, discouraging rapid oscillation between query coordinates.", bold_prefix="L2 Regularization (alpha = 0.001): ")
 
 # 4. Dataset & Splitting
-add_heading_1("4. Dataset Provenance & Why Case-Level Splitting Matters")
+add_heading_1("4. Dataset Provenance & Case-Level Splitting")
 add_paragraph(
     "The simulation dataset contains 73 complete flow-stress histories. The underlying finite element files contain "
     "2,197,000 raw rows (1,224,000 in the training cases, 973,000 in the holdout cases). These raw rows represent output time-steps, "
@@ -248,27 +248,69 @@ add_paragraph(
 add_bullet("Fitting operates on 4,320 query samples (36 cases x 120 strain points).", bold_prefix="Training Queries: ")
 add_bullet("Evaluation operates on 4,440 query samples (37 cases x 120 strain points).", bold_prefix="Holdout Queries: ")
 
-add_heading_2("The Grouping Trap: Why We Must Split by Case, Not by Rows")
+add_heading_2("Why We Split by Case, Not by Row")
 add_paragraph(
-    "A common novice machine learning error is randomly shuffling rows. If you split by row, strain point 0.05 from Case 1 "
-    "would be in the training set while strain point 0.051 from the exact same curve would be in the test set. "
-    "The model would achieve a fake '100% accuracy' by simply memorizing neighboring points on the same curve. "
-    "By partitioning strictly by simulation ID, the test set evaluates how well the model predicts entirely separate simulations.",
-    bold_prefix="Preventing Row-Level Data Leakage: "
+    "If data were partitioned randomly by row, neighboring strain coordinates from the same simulation curve would appear "
+    "in both partitions, yielding heavily overoptimistic evaluation scores. By partitioning strictly by simulation ID, "
+    "the holdout set evaluates how well the model predicts entirely separate simulation histories.",
+    bold_prefix="Avoiding Correlated Point Leakage: "
 )
 add_paragraph(
     "The split was established using a reproducible pseudo-random seed on simulation IDs (36 train, 37 test). "
-    "Standardizers were fitted strictly on the 4,320 training grid queries. Crucially, earlier exploratory feature selection "
-    "was performed across the dataset before the final split was frozen. We maintain scientific honesty by reporting this "
-    "prior exploration rather than claiming an untouched blind holdout.",
+    "Standardizers were fitted strictly on the 4,320 training grid queries. Earlier all-data exploration and feature selection "
+    "were conducted on the dataset. The final split is a disjoint case partition rather than an untouched blind benchmark.",
     bold_prefix="Prior Exploration Disclosure: "
 )
 
+add_heading_2("Compact Operational Input Range Table")
+add_paragraph("Summary of valid operational ranges inside the training domain. Note: Units are inferred and generalization on unseen condition combinations is not guaranteed:")
+
+tbl_range = doc.add_table(rows=1, cols=5)
+tbl_range.alignment = WD_TABLE_ALIGNMENT.CENTER
+tbl_range.autofit = False
+r_widths = [Inches(1.5), Inches(1.2), Inches(1.2), Inches(1.1), Inches(2.0)]
+
+r_hdr_cells = tbl_range.rows[0].cells
+r_hdr_titles = ["Feature", "Physical Range", "Internal Encoding", "Inferred Unit", "Operational Guidance"]
+for idx, title in enumerate(r_hdr_titles):
+    r_hdr_cells[idx].width = r_widths[idx]
+    set_cell_shading(r_hdr_cells[idx], "E2E8F0")
+    set_cell_margins(r_hdr_cells[idx], top=60, bottom=60, left=80, right=80)
+    p = r_hdr_cells[idx].paragraphs[0]
+    p.paragraph_format.space_after = Pt(0)
+    r = p.add_run(title)
+    r.font.bold = True
+    r.font.size = Pt(8.5)
+    r.font.color.rgb = C_PRIMARY
+
+range_data = [
+    ("Temperature (T)", "30.0 .. 200.0", "30.0 .. 200.0", "°C (inferred)", "Strictly [30, 200]; 300 °C extrapolation invalid"),
+    ("Strain Rate", "1e-5 .. 1e-3", "-5.0 .. -3.0", "s^-1 (inferred)", "Always log10-transformed before network input"),
+    ("Density (rho)", "2488.05 .. 2700.0", "2488.05 .. 2700.0", "kg/m³ (inferred)", "Minor sensitivity (~0.19 units); no porosity link"),
+    ("Shear Modulus (G)", "23313.95 .. 25300.0", "23313.95 .. 25300.0", "MPa (inferred)", "Numeric stiffness input; no porosity proxy"),
+    ("Axial Strain (E11)", "0.0002 .. 0.0999", "0.0002 .. 0.0999", "Strain", "Standardized 120-point monotonic loading grid")
+]
+
+for row in range_data:
+    r_cells = tbl_range.add_row().cells
+    for idx, val in enumerate(row):
+        r_cells[idx].width = r_widths[idx]
+        set_cell_margins(r_cells[idx], top=40, bottom=40, left=80, right=80)
+        p = r_cells[idx].paragraphs[0]
+        p.paragraph_format.space_after = Pt(0)
+        r = p.add_run(val)
+        r.font.size = Pt(8)
+        if idx == 0:
+            r.font.bold = True
+            r.font.color.rgb = C_PRIMARY
+        else:
+            r.font.color.rgb = C_SECONDARY
+
+doc.add_paragraph().paragraph_format.space_after = Pt(4)
+
 # 5. Verification & Generalization
 add_heading_1("5. Three-Tier Verification & The Generalization Spectrum")
-add_paragraph(
-    "To ensure ironclad defense, the model was subjected to a rigorous 3-tier audit:"
-)
+add_paragraph("The model was subjected to a rigorous 3-tier audit:")
 add_bullet("The 120-point interpolated grid for all 73 curves was audited against raw STR_STR.OUT files and SHA256 hashes. Maximum absolute difference = 0.0.", bold_prefix="Tier 1 (Cache Verification): ")
 add_bullet("Evaluating the frozen ensemble on the 37 holdout cases reproduced the exact saved metrics: Mean Test RMSE = 0.05908515 (worst case: 0.11330618, Case 45).", bold_prefix="Tier 2 (Holdout Artifact Reload): ")
 add_bullet("A completely independent refit of all five seeds on the 36 training cases took 25.0 seconds, producing zero warnings and reproducing all weights and predictions with 0.0 max absolute difference.", bold_prefix="Tier 3 (Same-Environment Reproduction): ")
@@ -294,7 +336,7 @@ for idx, title in enumerate(hdr_titles):
 
 rows_data = [
     ("Holdout Test Set (37 cases)", "Mean RMSE", "0.059085", "Within-condition interpolation fidelity"),
-    ("Holdout Test Set", "Worst RMSE", "0.113306", "Case 45 (T=100 °C, rate=1e-4 s^-1)"),
+    ("Holdout Test Set", "Worst RMSE", "0.113306", "Case 45 (T=100, rate=1e-4)"),
     ("Training Case CV (36 cases)", "Mean RMSE", "1.158263", "Cross-case variability across folds"),
     ("Training Case CV", "Median RMSE", "0.201877", "Half of training cases have RMSE <= 0.201877"),
     ("Leave-Condition-Out (LOCO)", "Mean of Conds", "6.793603", "Average generalization to unseen conditions"),
@@ -323,7 +365,7 @@ add_paragraph(
     "Root Mean Squared Error measures average prediction error along curve points. Why is Test RMSE 0.059 while Leave-Condition-Out RMSE is 6.79?"
 )
 add_bullet("All 8 temperature and strain-rate combinations in the test set exist in the training set. The model is interpolating along smooth curves for known conditions, yielding near-zero error (0.059).", bold_prefix="Within-Condition Interpolation (0.059 RMSE): ")
-add_bullet("When an entire operating condition is held out, the model must predict without anchor curves. Held-out interior levels (e.g., 100 °C, 1e-4 s^-1) represent interpolation to unseen conditions (RMSE ~5.2). However, boundary corners (e.g., 200 °C, 1e-5 s^-1) require extrapolation across extreme edges, where error reaches 23.53.", bold_prefix="Unseen Condition Generalization (6.79 - 23.53 RMSE): ")
+add_bullet("When an entire operating condition is held out, the model must predict without anchor curves. Held-out interior levels (e.g., 100 °C, 1e-4 s^-1) represent interpolation to unseen conditions (RMSE ~5.2). Boundary corners (e.g., 200 °C, 1e-5 s^-1) represent extrapolation across extreme edges, where condition mean error reaches 23.53.", bold_prefix="Unseen Condition Generalization (6.79 - 23.53 RMSE): ")
 
 add_paragraph(
     "In training cross-validation, Case 60 exhibits high error (RMSE = 25.99). Its recorded von Mises strain reverses "
@@ -336,7 +378,7 @@ add_paragraph(
 add_heading_1("6. Runtime Performance & Benchmarks")
 add_paragraph("An optimized NumPy-only runtime was developed (src/query_runtime.py) to eliminate the heavy scikit-learn dependency:")
 add_bullet("Stored in an 18,462-byte pickle-free .npz file (vs 62,940 bytes Joblib bundle).", bold_prefix="Weight Storage: ")
-add_bullet("0.221 ms (NumPy) vs 0.511 ms (scikit-learn) in local repeated single-thread benchmarks.", bold_prefix="Single-Curve Latency: ")
+add_bullet("0.221 ms (NumPy) vs 0.511 ms (scikit-learn) for full 120-point curve prediction in local repeated single-thread benchmarks.", bold_prefix="Full-Curve Latency: ")
 add_bullet("163 ms (NumPy) vs 976 ms (scikit-learn).", bold_prefix="Cold Startup Time: ")
 add_bullet("On full-batch evaluation (73 cases), scikit-learn took 17.3 ms vs NumPy 21.8 ms under identical single-thread BLAS settings.", bold_prefix="Full-Batch Caveat: ")
 add_bullet("Exactly 0.0 max absolute difference against reference model outputs across all 73 curves.", bold_prefix="Accuracy Parity: ")
@@ -370,7 +412,7 @@ add_code_block(
     "# 2. Reproduce fresh training across all 5 seeds from scratch (25.0s):\n"
     ".venv/bin/python reports/reproduce_final_training.py\n\n"
     "# 3. Run test suite (13 model, parser, and runtime tests):\n"
-    ".venv/bin/python -m pytest tests/\n\n"
+    ".venv/bin/python -m unittest discover -s tests -p \"test_*.py\" -v\n\n"
     "# 4. Run single-curve and batch runtime benchmarks:\n"
     ".venv/bin/python reports/benchmark_query_runtime.py\n"
 )
@@ -378,7 +420,7 @@ add_code_block(
 add_paragraph("Key evidence JSON files:", bold_prefix="Artifact Provenance: ")
 add_bullet("reports/model_verification_20261025.json (Audit results and metrics)", bold_prefix="• ")
 add_bullet("reports/final_training_reproduction_20261025.json (Refit timing and weight parity)", bold_prefix="• ")
-add_bullet("reports/query_runtime_benchmark_20261025.json (Latency and memory measurements)", bold_prefix="• ")
+add_bullet("reports/query_runtime_benchmark_20261025.json (Latency and file size measurements)", bold_prefix="• ")
 
 # 9. Viva Q&A
 add_heading_1("9. Operational Boundaries & Viva Defense Q&A Guide")
@@ -398,9 +440,9 @@ qa_items = [
      "No. This is a material-level flow-stress surrogate along the supplied uniaxial loading family. The simulation matrix "
      "models constitutive stress-strain histories, not aerodynamic coefficients. No bracket structural FEA integration has been validated."),
     ("Q5: Can you claim zero data leakage?",
-     "We claim a strictly disjoint case partition for final fitting and evaluation. However, earlier exploratory feature selection "
-     "was performed across the dataset before the final split was frozen. We maintain scientific honesty by reporting this "
-     "prior exploration rather than claiming an untouched blind holdout.")
+     "We claim a strictly disjoint case partition for final fitting and evaluation. However, earlier all-data exploration "
+     "and feature selection were conducted on the dataset. We maintain scientific honesty by reporting this exploration "
+     "rather than claiming an untouched blind holdout.")
 ]
 
 for q, a in qa_items:
