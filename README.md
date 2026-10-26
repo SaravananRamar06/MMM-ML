@@ -77,6 +77,72 @@ Each network uses two hidden layers with 16 tanh units and a linear output: **38
 
 We fit scalers and final weights using the 36 training cases only: 36 × 120 = **4,320 query points**, derived from 36 simulations. These are not 4,320 independent simulations. Internal case folds and condition holdouts were used for comparison. Earlier exploration had used all 73 cases, so the final test set is a previously explored holdout.
 
+### Principal prediction formula
+
+The final model approximates the relationship
+
+$$
+\widehat{S}_{vm}=f(T,\dot\varepsilon,\rho,G,\varepsilon_{11}).
+$$
+
+Here, the hat means a prediction; the training target is the supplied simulation's `Svm` column. We learn this relationship from simulation examples. **The equation below describes the neural network; it is not a constitutive law derived from material physics.**
+
+First, construct and standardise the five inputs:
+
+$$
+\mathbf{x}=
+\begin{bmatrix}
+T & \log_{10}(\dot\varepsilon) & \rho & G & \varepsilon_{11}
+\end{bmatrix}^{\mathsf T},
+\qquad
+z_j=\frac{x_j-\mu_j}{s_j}.
+$$
+
+- $T$: temperature, interpreted as degrees Celsius.
+- $\dot\varepsilon$: positive imposed strain rate, interpreted as inverse seconds.
+- $\rho$: density, interpreted as kg/m³.
+- $G$: shear modulus, interpreted as MPa.
+- $\varepsilon_{11}$: the axial strain query, corresponding to `E11`.
+- $\mu_j,s_j$: input means and standard deviations calculated from training queries only. Physical input units still need confirmation from the data owner.
+
+Each of the five networks then predicts a standardised stress. Their average is converted back to source stress units:
+
+$$
+\boxed{
+\widehat{S}_{vm}(\mathbf{x})=
+\mu_S+\frac{s_S}{5}\sum_{k=1}^{5}
+\left[
+W_{3,k}\tanh\!\left(
+W_{2,k}\tanh(W_{1,k}\mathbf{z}+\mathbf{b}_{1,k})
++\mathbf{b}_{2,k}
+\right)+b_{3,k}
+\right]
+}
+$$
+
+The index $k$ identifies a network. The matrices $W$ and biases $b$ are learned parameters; $\mu_S,s_S$ are the training stress mean and standard deviation. In this column-vector notation, the weight matrices have shapes $16\times5$, $16\times16$ and $1\times16$. The two hidden layers apply `tanh` element by element, allowing a nonlinear relationship; the output layer is linear. The code stores the equivalent weight matrices transposed for row-wise batches.
+
+### How we obtained the formula and how prediction works
+
+1. **Create equally weighted examples from each curve.** We interpolate each simulation onto the same 120-point strain grid. At each point, the four fixed conditions plus that point's strain form an input, and the recorded stress is its target. Equal point counts prevent long histories from dominating simply because they contain more rows.
+2. **Represent strain rate on a logarithmic scale.** Rates $10^{-5}$, $10^{-4}$ and $10^{-3}$ become $-5$, $-4$ and $-3$. This represents their order-of-magnitude spacing. Input standardisation then brings temperature, density, modulus and strain onto comparable numerical scales. The target is also standardised as $y=(S_{vm}-\mu_S)/s_S$.
+3. **Compose the network layers.** A neuron takes a weighted sum plus a bias. Applying `tanh` to two successive layers and following them with a linear output gives the nested expression above. We compared candidate settings using training-side evaluations and selected the saved 16–16 hidden-layer configuration.
+4. **Fit the unknown coefficients.** For each network independently, L-BFGS adjusts its weights and biases using training examples. For the scalar output and unweighted samples used here, the scikit-learn squared-error objective is:
+
+   $$
+   \mathcal{L}_k=
+   \frac{1}{2N}\sum_{i=1}^{N}\left(f_k(\mathbf{z}_i)-y_i\right)^2
+   +\frac{\alpha}{2N}\sum_{\ell=1}^{3}\lVert W_{\ell,k}\rVert_F^2,
+   \qquad N=4320,\quad\alpha=0.001.
+   $$
+
+   Here, $f_k$ is one network's standardised scalar output, and the squared Frobenius norm sums the squared weight entries. The first term penalises prediction error; the second discourages large weights. Biases are not included in the L2 penalty. Seeds 0–4 give five different initialisations; we average their fitted outputs rather than fitting a separate averaging model. Averaging does not guarantee correctness or provide calibrated uncertainty.
+5. **Predict a new curve without retraining.** For a supplied condition, we evaluate the saved formula at every strain in the 120-point grid, keeping temperature, rate, density and modulus fixed. Model Studio displays the resulting stress–strain curve. A point request such as 5% strain uses linear interpolation between the predicted grid values.
+
+For example, at $T=100$, $\dot\varepsilon=10^{-4}$, $\rho=2619$ and $G=24541$, the input before standardisation at 5% strain is $[100,-4,2619,24541,0.05]^{\mathsf T}$. Studio's interpolation of the saved model's grid predictions gives approximately **99.42 source stress units** at that strain. Stress units remain unconfirmed; this example demonstrates the computation, not physical validation.
+
+The implementation is in [`QueryMLP` in src/models.py](src/models.py); the selected settings are in [`src/models.py`'s `CANDIDATES`](src/models.py), and equivalent saved-weight inference is in [`src/query_runtime.py`](src/query_runtime.py). No elasticity equation, plasticity law, porosity relation or aerodynamic lift law is enforced by this model.
+
 ## Results checked on 25 October 2026
 
 Errors below are in **source stress units**. MPa is plausible but has not been confirmed by the data owner.
