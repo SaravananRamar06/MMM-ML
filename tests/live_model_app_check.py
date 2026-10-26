@@ -4,6 +4,7 @@ python3 -m unittest discover -s tests -p live_model_app_check.py -v
 Does not train, modify models, or write to the user's chat.
 """
 import json
+import os
 from pathlib import Path
 import unittest
 from urllib.request import Request, urlopen
@@ -11,7 +12,7 @@ from urllib.request import Request, urlopen
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE = 'http://127.0.0.1:8766'
+BASE = 'http://127.0.0.1:' + os.environ.get('MODEL_CHAT_PORT', '8766')
 
 
 def request(path, text=None):
@@ -36,9 +37,10 @@ class LiveModelAppTests(unittest.TestCase):
         with np.load(ROOT / 'runs/score/final_Svm/test_predictions.npz', allow_pickle=False) as saved:
             case_id = int(saved['test_ids'][0])
             expected = saved['prediction'][0].copy()
-        with np.load(ROOT / 'data/curves_Svm.npz', allow_pickle=False) as data:
-            position = int(np.flatnonzero(data['ids'] == case_id)[0])
-            temperature, log_rate, density, modulus = data['X'][position]
+        manifest = json.loads((ROOT / 'data/manifest.json').read_text())
+        case = next(m for m in manifest if m['id'] == case_id)
+        temperature, log_rate, density, modulus = (
+            case[k] for k in ('temperature', 'log10_strain_rate', 'density', 'shear_modulus'))
         text = f'stress curve at {temperature:g} C, rate {10 ** log_rate:g}, density {density:g}, G {modulus:g}'
         reply = request('/api/chat', text)
         primary = next(curve for curve in reply['curves'] if curve['primary'])

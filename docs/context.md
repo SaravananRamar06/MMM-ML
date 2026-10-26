@@ -122,3 +122,12 @@ The deck instead describes a separate synthetic porous-cell study used to fit a 
 Ask focused questions that uncover missing context. Do useful independent work where answers are not required. Explain why target definitions, data splitting, model choices, and physical assumptions matter for the viva. Do not require the user to already know ML in order to make progress.
 
 The user specifically requested architecture research and a documented conclusion before model creation, then asked for all project context to be retained in Markdown. `README.md` indexes the handoff and detailed research notes. The current stage is research completed and implementation pending, not a trained-model deliverable.
+
+## Current Windows checkout verification — 26 October 2026
+Fresh inference/artifact verification passed on Windows; 17 unit and 3 live tests pass after replacing test-only excluded-cache input dependencies with manifest inputs. Raw files and training caches are absent, so source processing and training could not be freshly reproduced. See latest docs/logs.md entry and parent outputs/model-review.md. Model Studio was started locally on port 8766.
+
+## Professor data restored and verified — 26 October 2026
+Raw professor histories are now present. Fresh source audit verifies all 73 source hashes, prepared held-out truth and both training scalers. This supersedes earlier absent-data status. A frozen Windows refit differs (test mean curve RMSE 0.112603 vs delivered 0.059085), so exact training reproduction is not established in this environment. Saved-artifact inference is exact. No porosity labels/definitions, bracket performance labels or lift data were supplied; full-purpose alignment remains incomplete. See latest logs entry.
+
+## Porosity workflow software — 26 October 2026
+New /workflow interface and CLI support declared porosity-to-material studies and comparison of supplied solver results, with evidence/range gates. Both STEP parts imported/measured successfully. 30 unit and 7 live API tests passed; browser checks passed. This is software preparation, not physical project completion: no solved bracket/wing model or new bracket/lift predictor exists. Required physical definitions remain pending from user; see configs/porosity_workflow.json and docs/porosity-workflow.md.

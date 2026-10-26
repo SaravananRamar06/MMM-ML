@@ -1,5 +1,6 @@
 """Numerical equivalence, serialization, validation and concurrent inference."""
 from concurrent.futures import ThreadPoolExecutor
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -18,8 +19,9 @@ class QueryRuntimeTests(unittest.TestCase):
     def setUpClass(cls):
         cls.model = joblib.load(ROOT / 'runs/score/final_Svm/model.joblib')
         cls.runtime = QueryRuntime.from_model(cls.model)
-        with np.load(ROOT / 'data/curves_Svm.npz', allow_pickle=False) as z:
-            cls.X = z['X']
+        manifest = json.loads((ROOT / 'data/manifest.json').read_text())
+        cls.X = np.array([[m[k] for k in ('temperature', 'log10_strain_rate', 'density', 'shear_modulus')]
+                          for m in manifest])
 
     def test_all_cases_and_random_conditions_match_existing_model(self):
         rng = np.random.default_rng(271)

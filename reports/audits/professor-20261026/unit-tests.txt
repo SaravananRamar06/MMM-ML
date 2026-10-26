@@ -1,0 +1,35 @@
+test_format_apdl_snippet (test_ansys_material_bridge.AnsysMaterialBridgeTests.test_format_apdl_snippet) ... ok
+test_format_tabular_csv_total_and_plastic (test_ansys_material_bridge.AnsysMaterialBridgeTests.test_format_tabular_csv_total_and_plastic) ... ok
+test_format_xml_snippet (test_ansys_material_bridge.AnsysMaterialBridgeTests.test_format_xml_snippet) ... ok
+test_predict_curve_shape_and_bounds (test_ansys_material_bridge.AnsysMaterialBridgeTests.test_predict_curve_shape_and_bounds) ... ok
+test_out_of_range_warnings (test_app_and_pipeline.GuardTests.test_out_of_range_warnings) ... ok
+test_saved_split_is_disjoint_and_complete (test_app_and_pipeline.GuardTests.test_saved_split_is_disjoint_and_complete) ... ok
+test_bare_scientific_number_is_the_rate (test_app_and_pipeline.ParserTests.test_bare_scientific_number_is_the_rate) ... ok
+test_intents_and_lift_is_flagged (test_app_and_pipeline.ParserTests.test_intents_and_lift_is_flagged) ... ok
+test_kelvin_gpa_and_strain_query (test_app_and_pipeline.ParserTests.test_kelvin_gpa_and_strain_query) ... ok
+test_strain_rate_is_not_read_as_strain (test_app_and_pipeline.ParserTests.test_strain_rate_is_not_read_as_strain) ... ok
+test_temperatures_units_and_defaults (test_app_and_pipeline.ParserTests.test_temperatures_units_and_defaults) ... ok
+test_curve_learning_and_saved_reload (test_pca_mlp.CurveComponentTests.test_curve_learning_and_saved_reload) ... ok
+test_fit_is_isolated_and_predict_does_not_refit (test_pca_mlp.CurveComponentTests.test_fit_is_isolated_and_predict_does_not_refit) ... ok
+test_rank_one_and_input_validation (test_pca_mlp.CurveComponentTests.test_rank_one_and_input_validation) ... ok
+test_air_density_is_used_for_dimensionless_lift (test_porosity_workflow.PorosityPhysicsContracts.test_air_density_is_used_for_dimensionless_lift) ... ok
+test_density_conversion_roundtrip_and_domains (test_porosity_workflow.PorosityPhysicsContracts.test_density_conversion_roundtrip_and_domains) ... ok
+test_explicit_assumed_study_matches_original_runtime (test_porosity_workflow.PorosityPhysicsContracts.test_explicit_assumed_study_matches_original_runtime) ... ok
+test_mapping_and_material_extrapolation_are_rejected (test_porosity_workflow.PorosityPhysicsContracts.test_mapping_and_material_extrapolation_are_rejected) ... ok
+test_mapping_needs_unique_points_and_physical_density (test_porosity_workflow.PorosityPhysicsContracts.test_mapping_needs_unique_points_and_physical_density) ... ok
+test_unconfirmed_and_unaccepted_assumptions_cannot_predict (test_porosity_workflow.PorosityPhysicsContracts.test_unconfirmed_and_unaccepted_assumptions_cannot_predict) ... ok
+test_ambiguous_zero_baselines_are_not_silently_selected (test_porosity_workflow.SolverEvidenceContracts.test_ambiguous_zero_baselines_are_not_silently_selected) ... ok
+test_bad_provenance_nonfinite_and_partial_aero_are_rejected (test_porosity_workflow.SolverEvidenceContracts.test_bad_provenance_nonfinite_and_partial_aero_are_rejected) ... ok
+test_changed_load_flow_geometry_or_comparison_is_not_paired (test_porosity_workflow.SolverEvidenceContracts.test_changed_load_flow_geometry_or_comparison_is_not_paired) ... ok
+test_duplicate_cases_and_empty_files_are_rejected (test_porosity_workflow.SolverEvidenceContracts.test_duplicate_cases_and_empty_files_are_rejected) ... ok
+test_paired_results_calculate_real_changes_and_cl (test_porosity_workflow.SolverEvidenceContracts.test_paired_results_calculate_real_changes_and_cl) ... ok
+test_structural_results_never_invent_a_lift_coefficient (test_porosity_workflow.SolverEvidenceContracts.test_structural_results_never_invent_a_lift_coefficient) ... ok
+test_zero_baseline_does_not_make_infinite_percent_changes (test_porosity_workflow.SolverEvidenceContracts.test_zero_baseline_does_not_make_infinite_percent_changes) ... ok
+test_all_cases_and_random_conditions_match_existing_model (test_query_runtime.QueryRuntimeTests.test_all_cases_and_random_conditions_match_existing_model) ... ok
+test_empty_and_invalid_inputs (test_query_runtime.QueryRuntimeTests.test_empty_and_invalid_inputs) ... ok
+test_roundtrip_batch_single_and_concurrent_reads (test_query_runtime.QueryRuntimeTests.test_roundtrip_batch_single_and_concurrent_reads) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 0.216s
+
+OK

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "porosity_mapping": {
+    "status": "unconfirmed",
+    "reference_density_kg_m3": null,
+    "density_is_bulk_density": null,
+    "modulus_by_phi": [],
+    "evidence": ""
+  },
+  "mechanical_case": {
+    "geometry_file": "Rib Bracket.STEP",
+    "support_geometry_file": "Bracket support.STEP",
+    "material_law": null,
+    "units_and_strain_definition": null,
+    "loads": null,
+    "supports": null,
+    "contacts": null,
+    "failure_criterion": null,
+    "evidence": ""
+  },
+  "aerodynamic_case": {
+    "wing_geometry": null,
+    "operating_conditions": null,
+    "reference_area_m2": null,
+    "bracket_to_wing_coupling": null,
+    "evidence": ""
+  }
+}

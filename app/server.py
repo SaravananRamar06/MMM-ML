@@ -2,6 +2,7 @@
 
 Start:  .venv/bin/python app/server.py        then open http://127.0.0.1:8766
 """
+import csv
 import json
 import os
 import sys
@@ -22,6 +23,7 @@ from data import STRAIN_GRID  # noqa: E402  (also needed so joblib can unpickle 
 from nlu import parse  # noqa: E402
 from predict import warnings_for  # noqa: E402
 from query_runtime import QueryRuntime  # noqa: E402
+from porosity_workflow import readiness, material_study, compare_solver_results  # noqa: E402
 
 CONFIG = json.loads((HERE / "config.json").read_text())
 MODELS = {m["key"]: {**m, "model": joblib.load(ROOT / m["artifact"])} for m in CONFIG["models"]}
@@ -44,7 +46,8 @@ Try:
 
 **Inputs:** temperature (°C or K), strain rate (/s), density, shear modulus G (units as in the supplied data).
 Anything you leave out uses the dense reference: 30 °C, 1e-4 /s, density 2700, G 25,300.
-Stress is in **inferred units** (likely MPa, not confirmed by the data owner)."""
+Stress is in **inferred units** (likely MPa, not confirmed by the data owner).
+For a porosity material study or to compare supplied solver results, open `/workflow`."""
 
 RANGES = """The data has **73 available simulation cases**; these models were **fitted on the 36-case training half**, at these levels:
 
@@ -149,6 +152,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path in ("/", "/index.html"):
             self._send(200, (HERE / "index.html").read_bytes(), "text/html; charset=utf-8")
+        elif self.path in ("/workflow", "/workflow.html"):
+            self._send(200, (HERE / "workflow.html").read_bytes(), "text/html; charset=utf-8")
+        elif self.path == "/api/workflow":
+            self._send(200, json.dumps(readiness()), "application/json")
         elif self.path == "/api/health":
             self._send(200, json.dumps({"ok": True, "config_status": CONFIG.get("status"), "primary": PRIMARY,
                                         "models": {k: m["artifact"] for k, m in MODELS.items()},
@@ -163,11 +170,31 @@ class Handler(BaseHTTPRequestHandler):
             self._send(404, "not found", "text/plain")
 
     def do_POST(self):
-        if self.path != "/api/chat" or self.headers.get("Host") not in (f"127.0.0.1:{PORT}", f"localhost:{PORT}"):
+        routes = ("/api/chat", "/api/porosity-study", "/api/solver-results")
+        if self.path not in routes or self.headers.get("Host") not in (f"127.0.0.1:{PORT}", f"localhost:{PORT}"):
             return self._send(403, "forbidden", "text/plain")
-        n = int(self.headers.get("Content-Length") or 0)
-        if n > 4000:
+        try:
+            n = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            return self._send(400, "invalid content length", "text/plain")
+        if n < 0 or n > (1048576 if self.path == "/api/solver-results" else 65536 if self.path == "/api/porosity-study" else 4000):
             return self._send(413, "too long", "text/plain")
+        if self.path != "/api/chat":
+            try:
+                payload = json.loads(self.rfile.read(n) or b"{}")
+                if not isinstance(payload, dict):
+                    raise ValueError('Request must be a JSON object.')
+                if self.path == "/api/porosity-study":
+                    result = material_study(payload['mapping'], payload['phi_values'],
+                                            payload['temperature_C'], payload['strain_rate_s'],
+                                            allow_assumed=payload.get('allow_assumed') is True)
+                else:
+                    if not isinstance(payload.get('csv'), str):
+                        raise ValueError('Supply solver results as CSV text.')
+                    result = compare_solver_results(payload['csv'])
+                return self._send(200, json.dumps(result, allow_nan=False), "application/json")
+            except (ValueError, KeyError, TypeError, csv.Error) as exc:
+                return self._send(400, json.dumps({'error': str(exc)}), "application/json")
         try:
             text = json.loads(self.rfile.read(n) or b"{}").get("text", "")
             self._send(200, json.dumps(answer(str(text)[:500])), "application/json")

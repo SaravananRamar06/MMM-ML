@@ -57,6 +57,21 @@ To save a prediction directly:
 
 Saved models support inference without the raw dataset. Rebuilding prepared data or running the full source audit requires the professor-supplied files, which are excluded from the published repository.
 
+## Porosity and bracket-performance workflow
+
+The local app now includes `/workflow` for conditional material studies and
+comparison of supplied structural/aerodynamic solver results. It requires an
+explicit porosity-to-density/modulus relation, labels assumed relations as
+exploratory, and calculates lift coefficient only from supplied aerodynamic
+lift and flow/reference quantities. It does not solve a bracket or wing or
+train a new bracket/lift predictor without those results.
+
+Both STEP parts have been imported and measured using OpenCASCADE/Gmsh; face
+information is available for a future verified boundary-condition setup. A
+porosity mapping, constitutive definitions, bracket load/support/contact cases
+and wing coupling remain unresolved. See the [workflow guide](docs/porosity-workflow.md)
+for Windows startup, configuration, solver CSV columns and verification.
+
 ## How the model works
 
 Each file represents one simulation condition. Histories have different lengths, so we interpolate every curve to **120 equally spaced E11 values from 0.0002 to 0.0999**. This gives each case the same number of training examples.

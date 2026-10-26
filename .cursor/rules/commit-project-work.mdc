@@ -1,0 +1,15 @@
+---
+description: Commit and push all project work to GitHub
+alwaysApply: true
+---
+
+# GitHub record of project work
+
+- The user requires project work to be committed and pushed to GitHub.
+- Before ending a work turn, commit completed code, tests, documentation,
+  research decisions and relevant verification evidence, then push to origin.
+- Use focused commits with clear messages and record scientific limitations.
+- Respect .gitignore. Exclude credentials, environments, professor-supplied raw
+  datasets, temporary downloads and scratch files.
+- Verify the push and report the commit identifier. If a push is blocked,
+  retain the local commit and explain the specific blocker.

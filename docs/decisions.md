@@ -47,3 +47,6 @@ Append future decisions with date, reason, and affected artifacts. Do not turn a
 - User requested team-voice README text without contribution credits and a simple first-person explanation. Both README source versions now match; existing detailed guides are preserved alongside the new concise guide.
 - Keep the delivered predictor and fixed split unchanged. A retest uses a separate in-memory frozen-settings fit and timestamped evidence, with hashes verifying artifact preservation. Repeating the same holdout does not create independent validation.
 - User input questions should be posted in the group chat. No scientific definition was invented to complete the documentation.
+
+## 26 October 2026 — Scope of implemented porosity extension
+Keep the final material model intact. A density-derived porosity relation requires explicit source confirmation or an explicitly accepted exploratory assumption; require a separate phi/G relation. Imported solver values are identified as supplied evidence. No structural or aerodynamic labels are fabricated from material stress curves, and no further NN is trained before target data exists. CAD face identities are preparation data, not inferred boundary conditions.

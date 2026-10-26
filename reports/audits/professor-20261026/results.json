@@ -1,0 +1,1303 @@
+{
+  "completed_at": "2026-10-26T15:11:54.232017+00:00",
+  "archive_files": [
+    "TEAM_8_extracted_results_set_1/simulation_0001/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0002/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0003/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0004/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0005/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0006/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0007/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0008/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0009/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0010/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0011/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0012/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0013/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0014/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0015/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0016/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0017/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0018/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0019/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0020/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0021/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0022/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0023/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0024/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0025/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0026/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0027/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0028/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0029/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0030/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0031/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0032/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0033/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0034/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0035/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0036/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0037/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0038/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0039/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0040/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0041/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0042/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0043/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0044/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0045/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0046/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0047/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0048/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0049/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0050/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0051/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0052/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0053/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0054/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0060/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0064/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0065/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0066/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0067/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0068/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0069/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0070/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0071/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0072/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0073/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0074/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0075/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0076/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0077/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0078/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0079/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0080/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_0081/STR_STR.OUT",
+    "TEAM_8_extracted_results_set_1/simulation_matrix.csv"
+  ],
+  "matrix_columns": [
+    "Simulation_ID",
+    "temperature",
+    "strain_rate",
+    "density",
+    "shear_modulus"
+  ],
+  "output_columns": [
+    "TIME",
+    "Evm",
+    "Svm",
+    "E11",
+    "E22",
+    "E33",
+    "E23",
+    "E13",
+    "E12",
+    "SCAU11",
+    "SCAU22",
+    "SCAU33",
+    "SCAU23",
+    "SCAU13",
+    "SCAU12",
+    "TEMP"
+  ],
+  "planned_cases": 108,
+  "available_cases": 73,
+  "total_rows": 2197000,
+  "all_finite": true,
+  "all_source_hashes_match_manifest": true,
+  "missing_ids": [
+    55,
+    56,
+    57,
+    58,
+    59,
+    61,
+    62,
+    63,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108
+  ],
+  "temperature_counts": {
+    "30.0": 27,
+    "100.0": 27,
+    "200.0": 19,
+    "300.0": 0
+  },
+  "raw_vs_saved_test_truth_max_difference": 0.0,
+  "saved_prediction_max_difference": 0.0,
+  "final_test_mean_curve_rmse": 0.05908515170863245,
+  "worst_curve_rmse": 0.11330617910816165,
+  "lookup_baseline_mean_curve_rmse": 1.3789783241715252,
+  "constant_training_mean_curve_baseline_rmse": 11.552196846451373,
+  "train_input_and_target_scalers_verified": true,
+  "max_von_mises_relative_difference": 9.84532276459087e-07,
+  "all_curves_end_below_initial": true,
+  "equivalent_strain_decreasing_cases": [
+    60
+  ],
+  "descriptive_factor_contrasts": {
+    "temperature": {
+      "matched_pairs": 65,
+      "median_curve_difference_rmse": 12.952663588677456,
+      "max_curve_difference_rmse": 69.98870024458896
+    },
+    "log10_rate": {
+      "matched_pairs": 65,
+      "median_curve_difference_rmse": 8.559934853967302,
+      "max_curve_difference_rmse": 51.50394956584083
+    },
+    "density": {
+      "matched_pairs": 72,
+      "median_curve_difference_rmse": 0.18373845718187165,
+      "max_curve_difference_rmse": 0.3839127929896486
+    },
+    "G": {
+      "matched_pairs": 72,
+      "median_curve_difference_rmse": 3.0641716263010053,
+      "max_curve_difference_rmse": 6.2648468746339026
+    }
+  },
+  "refit": {
+    "elapsed_seconds": 92.47607830000015,
+    "max_weight_difference": 0.793233472374987,
+    "max_prediction_difference_all_cases": 0.3994161042498092,
+    "test_mean_curve_rmse": 0.1126030830775965,
+    "warnings": [],
+    "iterations": [
+      1204,
+      1270,
+      1122,
+      1159,
+      1536
+    ]
+  },
+  "delivered_artifacts_unchanged": true,
+  "cases": [
+    {
+      "id": 1,
+      "rows": 100000,
+      "initial_stress": 133.2831,
+      "final_stress": 95.39303,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.79146277282529e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 2,
+      "rows": 100000,
+      "initial_stress": 132.0415,
+      "final_stress": 93.57584,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.73194802429949e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 3,
+      "rows": 100000,
+      "initial_stress": 130.0413,
+      "final_stress": 90.63858,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.684646186932352e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 4,
+      "rows": 100000,
+      "initial_stress": 133.1929,
+      "final_stress": 95.26449,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.786681096083347e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 5,
+      "rows": 100000,
+      "initial_stress": 131.9513,
+      "final_stress": 93.44755,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.785885452039817e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 6,
+      "rows": 100000,
+      "initial_stress": 129.9513,
+      "final_stress": 90.51089,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.82136328931184e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 7,
+      "rows": 100000,
+      "initial_stress": 133.0408,
+      "final_stress": 95.04729,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.759434919021885e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 8,
+      "rows": 100000,
+      "initial_stress": 131.7994,
+      "final_stress": 93.23112,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.80783383581152e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 9,
+      "rows": 100000,
+      "initial_stress": 129.7996,
+      "final_stress": 90.29489,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.77018807191002e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 10,
+      "rows": 10000,
+      "initial_stress": 146.6126,
+      "final_stress": 88.74818,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.442683650996345e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 11,
+      "rows": 10000,
+      "initial_stress": 145.3665,
+      "final_stress": 86.56756,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.262766867580404e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 12,
+      "rows": 10000,
+      "initial_stress": 143.3586,
+      "final_stress": 83.03971,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.323272940177539e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 13,
+      "rows": 10000,
+      "initial_stress": 146.5247,
+      "final_stress": 88.6506,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.454604408951819e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 14,
+      "rows": 10000,
+      "initial_stress": 145.2786,
+      "final_stress": 86.46974,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.635124222524998e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 15,
+      "rows": 10000,
+      "initial_stress": 143.2706,
+      "final_stress": 82.94153,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.185347812652581e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 16,
+      "rows": 10000,
+      "initial_stress": 146.3767,
+      "final_stress": 88.48605,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.403628621435682e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 17,
+      "rows": 10000,
+      "initial_stress": 145.1306,
+      "final_stress": 86.30479,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.410958473765993e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 18,
+      "rows": 10000,
+      "initial_stress": 143.1226,
+      "final_stress": 82.77597,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.514792244245927e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 19,
+      "rows": 1000,
+      "initial_stress": 160.3209,
+      "final_stress": 79.09889,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.38820201064969e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 20,
+      "rows": 1000,
+      "initial_stress": 159.0808,
+      "final_stress": 76.55664,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.266504059193176e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 21,
+      "rows": 1000,
+      "initial_stress": 157.0835,
+      "final_stress": 72.42268,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.466253733339848e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 22,
+      "rows": 1000,
+      "initial_stress": 160.2259,
+      "final_stress": 78.99477,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.64656565427995e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 23,
+      "rows": 1000,
+      "initial_stress": 158.9858,
+      "final_stress": 76.45171,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.501849088842777e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 24,
+      "rows": 1000,
+      "initial_stress": 156.9884,
+      "final_stress": 72.31612,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.576062947435292e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 25,
+      "rows": 1000,
+      "initial_stress": 160.0664,
+      "final_stress": 78.81969,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.911639417561881e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 26,
+      "rows": 1000,
+      "initial_stress": 158.826,
+      "final_stress": 76.275,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.296664918153244e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 27,
+      "rows": 1000,
+      "initial_stress": 156.8283,
+      "final_stress": 72.13682,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.628031642859009e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        303.15,
+        303.15
+      ]
+    },
+    {
+      "id": 28,
+      "rows": 100000,
+      "initial_stress": 122.965,
+      "final_stress": 84.07374,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.810869337291757e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 29,
+      "rows": 100000,
+      "initial_stress": 121.7285,
+      "final_stress": 82.21715,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.69550420931259e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 30,
+      "rows": 100000,
+      "initial_stress": 119.7367,
+      "final_stress": 79.21343,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.743861861726014e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 31,
+      "rows": 100000,
+      "initial_stress": 122.8698,
+      "final_stress": 83.95158,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.84503736700226e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 32,
+      "rows": 100000,
+      "initial_stress": 121.6332,
+      "final_stress": 82.09435,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.713604240290913e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 33,
+      "rows": 100000,
+      "initial_stress": 119.6414,
+      "final_stress": 79.09042,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.6787020919854e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 34,
+      "rows": 100000,
+      "initial_stress": 122.7095,
+      "final_stress": 83.74576,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.84532276459087e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 35,
+      "rows": 100000,
+      "initial_stress": 121.4729,
+      "final_stress": 81.88814,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.808742767104631e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 36,
+      "rows": 100000,
+      "initial_stress": 119.4811,
+      "final_stress": 78.88349,
+      "strain_start": 1e-06,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 2.7755575615628914e-17,
+      "von_mises_max_relative_difference": 9.708047065899508e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 37,
+      "rows": 10000,
+      "initial_stress": 137.6777,
+      "final_stress": 77.57883,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.643604605870622e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 38,
+      "rows": 10000,
+      "initial_stress": 136.4452,
+      "final_stress": 75.37159,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.391660983848943e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 39,
+      "rows": 10000,
+      "initial_stress": 134.4604,
+      "final_stress": 71.797,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.600195743553928e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 40,
+      "rows": 10000,
+      "initial_stress": 137.5778,
+      "final_stress": 77.46393,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.469788370996645e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 41,
+      "rows": 10000,
+      "initial_stress": 136.3452,
+      "final_stress": 75.25597,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.462867030402495e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 42,
+      "rows": 10000,
+      "initial_stress": 134.3604,
+      "final_stress": 71.6805,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.24861384399979e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 43,
+      "rows": 10000,
+      "initial_stress": 137.4097,
+      "final_stress": 77.26961,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.588967098006406e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 44,
+      "rows": 10000,
+      "initial_stress": 136.1771,
+      "final_stress": 75.06102,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.401845382320938e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 45,
+      "rows": 10000,
+      "initial_stress": 134.1921,
+      "final_stress": 71.48386,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.419379639086004e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 46,
+      "rows": 1000,
+      "initial_stress": 153.4284,
+      "final_stress": 69.31755,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.526111826784791e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 47,
+      "rows": 1000,
+      "initial_stress": 152.2053,
+      "final_stress": 66.67954,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.230716555055652e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 48,
+      "rows": 1000,
+      "initial_stress": 150.2366,
+      "final_stress": 62.35029,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.424337294360066e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 49,
+      "rows": 1000,
+      "initial_stress": 153.3187,
+      "final_stress": 69.1876,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.174649974647195e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 50,
+      "rows": 1000,
+      "initial_stress": 152.0956,
+      "final_stress": 66.54726,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.021308950082944e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 51,
+      "rows": 1000,
+      "initial_stress": 150.1267,
+      "final_stress": 62.21328,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.632297685620922e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 52,
+      "rows": 1000,
+      "initial_stress": 153.1343,
+      "final_stress": 68.96854,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 7.920786455773623e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 53,
+      "rows": 1000,
+      "initial_stress": 151.911,
+      "final_stress": 66.32421,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.997814860002243e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 54,
+      "rows": 1000,
+      "initial_stress": 149.9419,
+      "final_stress": 61.98213,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.152618982822905e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        373.15,
+        373.15
+      ]
+    },
+    {
+      "id": 60,
+      "rows": 100000,
+      "initial_stress": 105.374,
+      "final_stress": 6.289917,
+      "strain_start": 1e-06,
+      "strain_end": 0.09999996,
+      "rate_time_max_abs_difference": 4.000000002057913e-08,
+      "von_mises_max_relative_difference": 9.652118110974288e-07,
+      "equivalent_strain_decreases": 237,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 64,
+      "rows": 10000,
+      "initial_stress": 125.475,
+      "final_stress": 26.85804,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.078627651669582e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 65,
+      "rows": 10000,
+      "initial_stress": 124.2605,
+      "final_stress": 25.08979,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.523908799666235e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 66,
+      "rows": 10000,
+      "initial_stress": 122.3058,
+      "final_stress": 22.08904,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.252111331942523e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 67,
+      "rows": 10000,
+      "initial_stress": 125.3601,
+      "final_stress": 26.76472,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.608363620991488e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 68,
+      "rows": 10000,
+      "initial_stress": 124.1455,
+      "final_stress": 24.99724,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.304832158047563e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 69,
+      "rows": 10000,
+      "initial_stress": 122.1907,
+      "final_stress": 21.98896,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.470939814316375e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 70,
+      "rows": 10000,
+      "initial_stress": 125.1667,
+      "final_stress": 26.60786,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.553240268808165e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 71,
+      "rows": 10000,
+      "initial_stress": 123.952,
+      "final_stress": 24.8409,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.069633096280064e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 72,
+      "rows": 10000,
+      "initial_stress": 121.997,
+      "final_stress": 21.81982,
+      "strain_start": 1e-05,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.600176468492066e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 73,
+      "rows": 1000,
+      "initial_stress": 143.524,
+      "final_stress": 49.05797,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.496459755927947e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 74,
+      "rows": 1000,
+      "initial_stress": 142.3188,
+      "final_stress": 45.66218,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.85845865495969e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 75,
+      "rows": 1000,
+      "initial_stress": 140.3799,
+      "final_stress": 40.19512,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.672331123967208e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 76,
+      "rows": 1000,
+      "initial_stress": 143.4,
+      "final_stress": 48.84585,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.945840422478521e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 77,
+      "rows": 1000,
+      "initial_stress": 142.1947,
+      "final_stress": 45.4436,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.914251849965347e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 78,
+      "rows": 1000,
+      "initial_stress": 140.2557,
+      "final_stress": 39.97838,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.703279773235452e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 79,
+      "rows": 1000,
+      "initial_stress": 143.1913,
+      "final_stress": 48.48709,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 9.089511768834148e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 80,
+      "rows": 1000,
+      "initial_stress": 141.9859,
+      "final_stress": 45.0744,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.623660201921704e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    },
+    {
+      "id": 81,
+      "rows": 1000,
+      "initial_stress": 140.0467,
+      "final_stress": 39.61409,
+      "strain_start": 0.0001,
+      "strain_end": 0.1,
+      "rate_time_max_abs_difference": 1.3877787807814457e-17,
+      "von_mises_max_relative_difference": 8.92161377651432e-07,
+      "equivalent_strain_decreases": 0,
+      "temperature_range": [
+        473.15,
+        473.15
+      ]
+    }
+  ],
+  "limitations": [
+    "The refit uses frozen settings and existing data, not an independent blind validation.",
+    "Factor contrasts are descriptive differences, not causal porosity effects.",
+    "Source units, pore interpretation and generating constitutive law are not supplied."
+  ]
+}

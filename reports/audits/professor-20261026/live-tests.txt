@@ -1,0 +1,12 @@
+test_bad_rate_lift_request_and_extrapolation_are_not_silent (live_model_app_check.LiveModelAppTests.test_bad_rate_lift_request_and_extrapolation_are_not_silent) ... ok
+test_health_identifies_the_final_model (live_model_app_check.LiveModelAppTests.test_health_identifies_the_final_model) ... ok
+test_user_query_reproduces_a_saved_test_prediction (live_model_app_check.LiveModelAppTests.test_user_query_reproduces_a_saved_test_prediction) ... ok
+test_bad_solver_file_and_bad_mapping_shape_return_clear_errors (live_porosity_workflow_check.LivePorosityWorkflow.test_bad_solver_file_and_bad_mapping_shape_return_clear_errors) ... ok
+test_explicit_exploration_is_labelled_and_finite (live_porosity_workflow_check.LivePorosityWorkflow.test_explicit_exploration_is_labelled_and_finite) ... ok
+test_undeclared_porosity_relation_is_rejected (live_porosity_workflow_check.LivePorosityWorkflow.test_undeclared_porosity_relation_is_rejected) ... ok
+test_workflow_page_and_missing_physics_are_visible (live_porosity_workflow_check.LivePorosityWorkflow.test_workflow_page_and_missing_physics_are_visible) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.441s
+
+OK

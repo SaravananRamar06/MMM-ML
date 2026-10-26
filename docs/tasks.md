@@ -42,3 +42,13 @@ Latest evidence: `reports/retests/20261025T172218Z/`. Mean test curve RMSE 0.059
 - [ ] Obtain independent experimental or new simulation evidence for stronger generalisation claims.
 
 The current model predicts supplied material responses. Missing lift labels and unresolved physical coupling prevent an evidence-backed porosity-to-lift claim. These open definitions do not prevent using the existing predictor with its documented limits.
+
+- [x] 26 October Windows checkout: clone, review current model, verify bundled predictions, run 17 unit / 3 live checks, exercise browser and CLI, and provide Windows usage instructions. Fresh raw-data audit/refit remains unavailable until professor-supplied data is restored.
+
+- [x] Fresh audit of restored professor data: 73 histories / 2,197,000 finite rows, source hashes, target reconstruction and training-only scalers verified.
+- [ ] Explain/isolate frozen-settings Windows training difference before claiming exact training portability.
+- [ ] Confirm physical porosity mapping and material-law definitions; generate validated bracket and aerodynamic labels before claiming porosity-to-C_L capability.
+
+- [x] Implement and test conditional material-porosity studies, solver CSV comparison, CL calculation from actual aerodynamic inputs, CLI and browser interface.
+- [x] Import STEP solids with CAD kernel, measure volumes and identify face tags for a future verified FEA setup.
+- [ ] Obtain confirmed physical inputs and solver model, run/validate structural and aerodynamic analyses, and only then train/evaluate any new bracket/lift predictor. Full requested physical model remains incomplete.
