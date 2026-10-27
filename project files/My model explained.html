@@ -18,7 +18,7 @@ th { background: #edf2f5; } img { max-width: 100%; }
 </style></head><body><main><h1>My AlSi10Mg model, explained simply</h1>
 <h2>1. What I built</h2>
 <p>I built a machine-learning model that predicts the stress response recorded in AlSi10Mg material simulations. AlSi10Mg is an aluminium alloy. My model takes the material conditions and produces a stress–strain curve, so I can examine a response without running a new simulation each time.</p>
-<p><strong>My completed output is a material-response predictor.</strong> The broader project also discusses porosity and aerodynamic coefficient of lift, C_L. That part still needs suitable data and a defined connection to the material response. I cannot obtain lift from the present material files alone.</p>
+<p><strong>My completed output is a material-response predictor.</strong> The broader project links porosity to CL, the critical flaw length: the largest defect the bracket can carry before it fractures. That part still needs the stress at the bracket's critical location, a fracture-toughness value and an agreed flaw geometry. I cannot obtain CL from the present material files alone.</p>
 <h2>2. The data I started with</h2>
 <p>I used the professor-supplied simulation data. The matrix lists 108 planned cases, but the supplied folder contains 73 histories, with 2,197,000 rows in total. I kept the original files unchanged.</p>
 <p>Each simulation has four conditions: temperature, strain rate, density and shear modulus. Its <code>STR_STR.OUT</code> file contains 16 columns, including time, strain components, stress components, temperature and von Mises stress.</p>
@@ -95,7 +95,7 @@ shear modulus = 24541
 </table>
 <p>These are source stress units. An RMSE of 0.059 is an error magnitude, not “99.941% accuracy.”</p>
 <p>I separately refitted the original configuration on the same 36 training cases. It took about <strong>17.3 seconds</strong> on this run and reproduced every saved weight and prediction exactly, without warnings. <strong>All 13 unit tests and 3 live Studio tests passed.</strong> The delivered model files were unchanged.</p>
-<p>Studio's checks confirmed the final artifact, a saved test prediction, invalid-rate handling, lift-request handling and extrapolation warnings. These checks establish software behaviour, not physical validity.</p>
+<p>Studio's checks confirmed the final artifact, a saved test prediction, invalid-rate handling, handling of out-of-scope requests (such as lift) and extrapolation warnings. These checks establish software behaviour, not physical validity.</p>
 <h2>9. What the score means</h2>
 <p>The small random-split error means the model closely reproduces these supplied test curves when related conditions are represented in training. New operating conditions are harder.</p>
 <p>The saved training-side three-fold CV mean RMSE is <strong>1.1583</strong>. The saved mean across nine held-out temperature/rate groups is <strong>6.7936</strong>, rising to <strong>23.5251</strong> for the 200 / 1e-5 group. These are earlier diagnostic results, not newly refitted condition tests in this audit.</p>
@@ -103,9 +103,9 @@ shear modulus = 24541
 <h2>10. What is finished and what remains</h2>
 <p>I have completed preparation, the fixed split, model comparisons, the saved material predictor, inference, Model Studio, reproducibility checks, plots and presentation files. My current model predicts the supplied Svm response along E11.</p>
 <p>I still need confirmation of physical units and strain/stress definitions, a justified porosity interpretation, and the actual ANSYS files and results. These histories do not establish a conventional initial elastic segment. I have not validated transfer into a structural simulation.</p>
-<p>For C_L, I need an aerodynamic setup and suitable labels or an agreed physical calculation. I do not use fracture equations as a definition of lift coefficient. The material-to-structure-to-aerodynamics chain remains future work.</p>
+<p>For CL, I need the stress at the bracket's critical location from Ansys, a fracture toughness K_IC for LPBF AlSi10Mg, and an agreed flaw geometry; fracture mechanics then gives the critical flaw size. The material-to-structure-to-critical-flaw chain remains future work.</p>
 <h2>A short explanation I can give aloud</h2>
-<p>“I used 73 supplied AlSi10Mg simulations and converted each curve into 120 points. I kept 36 whole cases for training and 37 for testing. My model uses temperature, logarithmic strain rate, density, shear modulus and strain to predict von Mises stress. I average five small neural networks to form the curve. The latest mean curve RMSE is 0.0591 in source stress units, and a separate refit reproduces the saved model exactly. It works well on this random split, but errors increase for unseen conditions. Lift prediction and physical validation need additional work.”</p>
+<p>“I used 73 supplied AlSi10Mg simulations and converted each curve into 120 points. I kept 36 whole cases for training and 37 for testing. My model uses temperature, logarithmic strain rate, density, shear modulus and strain to predict von Mises stress. I average five small neural networks to form the curve. The latest mean curve RMSE is 0.0591 in source stress units, and a separate refit reproduces the saved model exactly. It works well on this random split, but errors increase for unseen conditions. Critical-flaw-length prediction and physical validation need additional work.”</p>
 <h2>Files I use</h2>
 <ul>
 <li>Model and metrics: <code>runs/score/final_Svm/</code></li>

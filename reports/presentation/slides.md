@@ -1,6 +1,8 @@
 # Corrected presentation: slide text (for fact-checking)
 
-Draft by Claude, 24 October 2026; corrected after Codex's and Gemini's fact-checks. This replaces the submitted deck, which treated CL as critical flaw length and used synthetic porous cells instead of the professor's data. Every number is listed with its source in `numbers.md`.
+Draft by Claude, 24 October 2026; corrected after Codex's and Gemini's fact-checks. This replaces the submitted deck, which used synthetic porous cells instead of the professor's data. Every number is listed with its source in `numbers.md`.
+
+**27 October 2026 correction:** CL means **critical flaw length**, as the submitted deck had it, not coefficient of lift. The lift wording below has been corrected; the 24-slide PPTX and PDF built from the earlier text still show the lift version. The current progress-review deck is `MMM-ML Project/presentation/Pores to Critical Flaw Length - Progress Review.pptx`.
 
 ## 1. Cover
 **Learning the stress–strain response of AlSi10Mg from simulations**
@@ -8,7 +10,7 @@ A neural-network surrogate trained on the professor's simulation data. This is a
 Multiscale Modelling of Materials using Machine Learning. Team: Pranav Parasuram C (ME24B1061), R Saravanan (ME24I1006), Dinesh Y (ME24B1043), Amit Narayan K (ME24I1024).
 
 ## 2. What changed since the first presentation
-- **CL means coefficient of lift**, not critical flaw length. The first deck answered the wrong question.
+- **CL means critical flaw length**: the largest defect the bracket can carry before fracture. The first deck had the right target, but not verified numbers.
 - The first deck's numbers came from synthetic porous cells that never used the professor's data.
 - This deck uses only the professor's 73 simulations. Every number comes from a saved, re-runnable file.
 
@@ -79,10 +81,10 @@ The random split mostly tests filling in between known conditions, which is easy
 - **Units:** MPa, °C and 1/s are inferred from the numbers, not documented.
 - **Test exposure:** settings were explored on all 73 cases before the formal selection, so the test set is not fully blind.
 
-## 13. Coefficient of lift: what is missing
-- These simulations contain no lift values and no visible elastic segment; G is only a supplied input.
-- A porosity → coefficient-of-lift model would need lift data or an agreed calculation.
-- Needed from the professor: the intended CL calculation or data, the operating conditions, and the meaning of porosity in the data.
+## 13. Critical flaw length: what is missing
+- These simulations contain no flaw sizes or fracture-toughness values and no visible elastic segment; G is only a supplied input.
+- A porosity → critical-flaw-length model needs the stress at the bracket's critical location, a fracture toughness K_IC and an agreed flaw geometry.
+- Needed from the professor: the intended CL calculation (flaw geometry, K_IC), and the meaning of porosity in the data.
 
 ## 14. Next steps
 - Ask the professor the four CL/data questions and what "two models" counts.
@@ -97,7 +99,7 @@ The random split mostly tests filling in between known conditions, which is easy
 
 ## 25 October update: full 20-slide deck
 
-New order: 1 cover · 2 changed · 3 data · 4 drivers · 5 shape · 6 task · 7 model · 8 choice · 9 result · **10 verified** · **11 demo** · 12 unseen · **13 runtime** · 14 studio · 15 limits · 16 lift · **17 built** · **18 workflow** · 19 next · 20 provenance. Studio slide now says "inferred units" and mentions the NumPy runtime; provenance credits updated.
+New order: 1 cover · 2 changed · 3 data · 4 drivers · 5 shape · 6 task · 7 model · 8 choice · 9 result · **10 verified** · **11 demo** · 12 unseen · **13 runtime** · 14 studio · 15 limits · 16 CL · **17 built** · **18 workflow** · 19 next · 20 provenance. Studio slide now says "inferred units" and mentions the NumPy runtime; provenance credits updated.
 
 ### 10. Checked three ways, by a second agent
 - Data audit: all 73 curves, 2,197,000 source rows, match the cache exactly (max diff 0.0). Split disjoint; scaler fitted on 36 training runs only.

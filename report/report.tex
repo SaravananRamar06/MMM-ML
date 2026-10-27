@@ -15,11 +15,11 @@
 \maketitle
 
 \begin{abstract}
-We trained a small neural-network surrogate that predicts the von Mises stress response $S_{vm}$ of AlSi10Mg along the operational strain $E_{11}$, given temperature, strain rate, density and shear modulus. The final predictor averages five 5--16--16--1 tanh networks (385 parameters each). On a fixed split of 37 held-out simulations, the mean per-curve RMSE is 0.0591 (worst 0.1133, case 45). Performance is much weaker when whole temperature/rate conditions are held out (mean 6.79), so the model closely reproduces the 37 related test curves, but its reliability at other input combinations, even inside the numerical ranges, is not established. Units are inferred, the held-out set is not fully blind, and the link from material porosity to the aerodynamic coefficient of lift $C_L$ has not been established. These limits are stated throughout.
+We trained a small neural-network surrogate that predicts the von Mises stress response $S_{vm}$ of AlSi10Mg along the operational strain $E_{11}$, given temperature, strain rate, density and shear modulus. The final predictor averages five 5--16--16--1 tanh networks (385 parameters each). On a fixed split of 37 held-out simulations, the mean per-curve RMSE is 0.0591 (worst 0.1133, case 45). Performance is much weaker when whole temperature/rate conditions are held out (mean 6.79), so the model closely reproduces the 37 related test curves, but its reliability at other input combinations, even inside the numerical ranges, is not established. Units are inferred, the held-out set is not fully blind, and the link from material porosity to the bracket's critical flaw length $C_L$ has not been established. These limits are stated throughout.
 \end{abstract}
 
 \section{Introduction and scope}
-The wider project studies how porosity in an additively manufactured AlSi10Mg wing-rib bracket affects structural and aerodynamic behaviour. This report covers only the machine-learning component: a fast surrogate for the material's simulated stress response, intended to replace repeated material simulations inside a larger multiscale workflow. The structural (ANSYS) analysis is a teammate's work and is not reported here. Throughout, $C_L$ means the coefficient of lift; no lift labels exist in the material data, so this report makes no aerodynamic prediction.
+The wider project studies how porosity in an additively manufactured AlSi10Mg wing-rib bracket affects its structural integrity, expressed as the critical flaw length $C_L$: the largest defect the bracket can carry at its design stress before fracture. This report covers only the machine-learning component: a fast surrogate for the material's simulated stress response, intended to replace repeated material simulations inside a larger multiscale workflow. The structural (ANSYS) analysis is reported separately and is not covered here. Throughout, $C_L$ means critical flaw length, not the aerodynamic coefficient of lift; the material data contains no flaw sizes or fracture-toughness values, so this report makes no $C_L$ prediction.
 
 \section{Data}
 The professor's design matrix planned 108 simulations; 73 were available, containing \num{2197000} raw history rows. Temperature coverage is uneven: 27 cases at 30, 27 at 100, 19 at 200 and none at 300 (units inferred as \si{\celsius}). Each case also varies strain rate ($10^{-5}$ to $10^{-3}$, inferred \si{\per\second}), density (2488.05 to 2700) and shear modulus $G$ (23313.95 to 25300).
@@ -95,13 +95,13 @@ The model predicts stress along operational strain only. Turning it into an inpu
 \item Units (\si{\mega\pascal}, \si{\celsius}, \si{\per\second}) are inferred, not confirmed; the solver, material law and stress/strain definitions are unconfirmed.
 \item The 37 test cases were seen during earlier exploration, so the test score is not a fully independent generalisation estimate and may be optimistic.
 \item Whether density and modulus levels encode porosity, and the mapping if so, is unverified.
-\item There are no $C_L$ labels or agreed lift calculation, and the material $\to$ structure $\to$ aerodynamics coupling is undefined.
-\item The teammate's ANSYS files, boundary conditions and results have not been inspected; no transfer of predictions into ANSYS has been validated.
+\item There is no agreed $C_L$ calculation (flaw geometry, fracture toughness $K_{IC}$, stress at the critical location), and the material $\to$ structure $\to$ critical-flaw coupling is undefined.
+\item The ANSYS analyses have not been checked against this report's material model; no transfer of predictions into ANSYS has been validated.
 \item Stronger generalisation claims need independent experimental data or new simulations.
 \end{itemize}
 
 \section{Conclusion}
-A five-network MLP ensemble reproduces the simulated AlSi10Mg stress response with a mean test RMSE of 0.059 on related conditions and is exactly reproducible. Predictions at other input combinations, even within the simulated temperature, rate, density and modulus ranges, should be treated as unverified. Extending it to new conditions, porosity effects or lift prediction requires the missing definitions and data listed above.
+A five-network MLP ensemble reproduces the simulated AlSi10Mg stress response with a mean test RMSE of 0.059 on related conditions and is exactly reproducible. Predictions at other input combinations, even within the simulated temperature, rate, density and modulus ranges, should be treated as unverified. Extending it to new conditions, porosity effects or critical-flaw-length prediction requires the missing definitions and data listed above.
 
 \section*{Data source}
 The simulation data were supplied by the course instructor (unpublished, Team 8 course project, 2026). They are not a public dataset; see \texttt{data/manifest.json} for the case list.

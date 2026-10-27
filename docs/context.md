@@ -1,5 +1,7 @@
 # Current project context
 
+**Latest user correction — 27 October 2026: CL = critical flaw length**, the largest pore or defect the AlSi10Mg bracket can carry at its design stress before fracture (linear-elastic estimate a_c = (1/π)(K_IC / Yσ)²). It is **not** the aerodynamic coefficient of lift. This overrides the 24 October "coefficient of lift" correction below; lift-based statements in older sections are kept only as history. The user also stated that both Ansys analyses (`Elastic.wbpj` here and the explicit Johnson–Cook bracket run in the separate `MMM-ML Project` folder) are their own work.
+
 **Latest verified state — 25 October 2026, 17:30 UTC:** the user requested a completed-work review, a team-voice README without contribution credits, a fresh model retest and a simple first-person model guide. `README.md` and `README.github.md` now match. New deliverables: `project files/My model explained.md`, its printable HTML version, and `project files/Model test results.md`. Detailed existing guides and fitted artifacts were preserved.
 
 **Fresh retest:** `reports/retests/20261025T172218Z/results.json` records source/cache equality for 73 histories and 2,197,000 rows; mean test curve RMSE 0.05908515170863245, median 0.05056665519928898, worst 0.11330617910816165 (case 45), mean MAE 0.04899859206569091. A separate frozen-settings fit took 17.26 seconds and exactly reproduced every weight and prediction without warnings. NumPy predictions also match exactly. All 13 unit and 3 live Studio tests passed. The initial live attempt hit sandbox restrictions; Studio was subsequently found stopped, started and successfully checked. All four delivered artifact hashes remain unchanged. This is same-data/local-environment reproducibility, not a new blind or physical validation. Saved condition-holdout diagnostics were checked for aggregation, not rerun.
@@ -18,7 +20,7 @@ Last updated: **2026-10-24**, Asia/Kolkata.
 
 ## Latest collaboration state — overrides earlier implementation-status snapshots
 
-**Current checkpoint, 24 October 2026:** the material model is implemented and selected. Final Svm predictor: five independently initialised 5–16–16–1 tanh query MLPs averaged; alpha 0.001, 385 parameters each. It maps `(T, log10(rate), density, G, E11)` to Svm, using 120 equally weighted strain queries per curve. `data/split.json` fixes seed 42, 36 training / 37 test cases. `runs/score/final_Svm/` holds the model, predictions, and metrics. Codex directly reloaded the final artifact and reproduced all 37 saved predictions with maximum absolute difference 0.0, then independently recomputed the saved curve RMSEs: mean 0.05908515, worst 0.11330618 (case 45), in inferred stress units. Earlier all-data exploration means this is not an untouched holdout. Condition-holdout results are much worse; no aerodynamic predictor or experimental validation is established.
+**Current checkpoint, 24 October 2026:** the material model is implemented and selected. Final Svm predictor: five independently initialised 5–16–16–1 tanh query MLPs averaged; alpha 0.001, 385 parameters each. It maps `(T, log10(rate), density, G, E11)` to Svm, using 120 equally weighted strain queries per curve. `data/split.json` fixes seed 42, 36 training / 37 test cases. `runs/score/final_Svm/` holds the model, predictions, and metrics. Codex directly reloaded the final artifact and reproduced all 37 saved predictions with maximum absolute difference 0.0, then independently recomputed the saved curve RMSEs: mean 0.05908515, worst 0.11330618 (case 45), in inferred stress units. Earlier all-data exploration means this is not an untouched holdout. Condition-holdout results are much worse; no critical-flaw-length (CL) predictor or experimental validation is established.
 
 - The bounded PCA-coefficient MLP comparison was implemented/tested and rejected on the saved training-side scores. PCA/GP remains a non-neural interpolation reference.
 - Model Studio runs locally at `http://127.0.0.1:8766`. It uses a deterministic parser and the final saved model. Codex's three live API/inference checks passed; it is not an LLM chat service.
@@ -44,7 +46,7 @@ Earlier bullets and sections below are historical snapshots; the checkpoint abov
 - Codex acknowledged ownership and requested Claude's modelling findings in `reports/claude-model-recommendation.md` before merging shared documents. Claude may own `collaboration/claude_usage.py` without changing Codex's provider/shared UI.
 - Six room/provider tests and live HTTP/API checks pass; visual rendering was not verified because no browser was available. An attempt to open the dashboard through the browser tool returned `Browser is not available: iab`. The user can open the local URL directly.
 
-**Latest user correction: CL = coefficient of lift, an aerodynamic quantity. It is NOT critical flaw length. This overrides the submitted presentation, both historical handoffs, and earlier interpretations in this conversation.**
+**Superseded 27 October 2026:** on 24 October the user said CL = coefficient of lift, not critical flaw length. The user has since reversed this: CL = critical flaw length (see the top of this file).
 
 ## Evidence labels
 
@@ -61,8 +63,8 @@ Earlier bullets and sections below are historical snapshots; the checkpoint abov
 - Professor supplied the simulation dataset for material modelling; it is not specific to the wing rib bracket geometry.
 - Intended project functionality includes **both**:
   1. Material conditions to a stress–strain curve.
-  2. Porosity to **coefficient of lift, C_L**, with the intended physical connection and required aerodynamic data still unresolved.
-- CL versus porosity arose from discussion with the professor, who recorded the topic in his notebook. The user subsequently explicitly clarified that CL is coefficient of lift, correcting the earlier critical-length interpretation. Do not read their earlier tentative agreement with the presentation as approval of a fracture target.
+  2. Porosity to **critical flaw length, CL**, with the material-to-bracket coupling and fracture inputs (flaw geometry, K_IC) still unresolved.
+- CL versus porosity arose from discussion with the professor, who recorded the topic in his notebook. The user briefly redefined CL as coefficient of lift on 24 October, then confirmed on 27 October that CL is critical flaw length. The fracture target is current; the first deck's specific porous-cell method and numbers remain unverified.
 - Professor approved the topic only; the presentation's method and formula were not specifically approved.
 - Professor said to determine which neural-network type to use. The user recalls a maximum of two models, but is uncertain about the exact limit.
 - Professor requested random selection of half the simulation cases for training and half for testing.
@@ -100,13 +102,13 @@ Earlier bullets and sections below are historical snapshots; the checkpoint abov
 - Research recommends a compact regularised query MLP first and a PCA-coefficient MLP only if training-side reconstruction supports it. This is not an observed accuracy result or approval of exact hyperparameters.
 - All-data exploratory PCA has occurred; do not describe the future holdout as never inspected. Do not reuse this descriptive basis for training or treat variance retention as prediction accuracy.
 - Proposed split is 36 training/37 test cases with seed 42 and three internal case folds. No split manifest, trained model, or training pipeline exists yet.
-- Units, initial state, generating constitutive model, porosity mapping, and the aerodynamic connection remain unresolved. Research did not validate old deck claims.
+- Units, initial state, generating constitutive model, porosity mapping, and the material-to-CL (fracture) connection remain unresolved. Research did not validate old deck claims.
 
 ## Scientific gap
 
-The supplied data has material conditions and stress/strain histories, but no explicit porosity or lift-coefficient labels. Its listed fields do not include aerodynamic conditions or forces. The relationship between material predictions, porosity, and aerodynamic C_L has not been established.
+The supplied data has material conditions and stress/strain histories, but no explicit porosity labels, flaw sizes or fracture-toughness values. The relationship between material predictions, porosity and critical flaw length cannot come from this data alone: it needs the stress at the bracket's critical location and a fracture-mechanics model.
 
-The deck instead describes a separate synthetic porous-cell study used to fit a stress-concentration law, followed by a fracture-mechanics calculation. That study did not use the professor's dataset and addresses the wrong interpretation of CL. Its fracture results do not supply aerodynamic target labels. The material-data audit can continue, but a lift predictor needs a separately justified target and connection.
+The first deck describes a separate synthetic porous-cell study used to fit a stress-concentration law, followed by a fracture-mechanics calculation. It targets the right quantity (critical flaw length) but did not use the professor's dataset, and its numbers have not been reproduced. Any reuse of its method needs independent checking.
 
 ## Historical claims to keep separate
 
@@ -114,7 +116,7 @@ The deck instead describes a separate synthetic porous-cell study used to fit a 
 - Later handoff: capacity loss revised to about 36% after changes to homogenised properties. This is a reported revision, not a verified correction here.
 - Historical material constants differ between the custom solver and ANSYS; quoted Young's modulus also differs (70 versus 76.6 GPa).
 - Historical bracket restraints differ between the custom solver and ANSYS.
-- The old files use CL for critical flaw length and C_L0 for Cockcroft–Latham damage. Both are separate from the actual project target, the aerodynamic coefficient of lift. Do not conflate them.
+- The old files use CL for critical flaw length, which matches the current project target, and C_L0 for the Cockcroft–Latham damage constant, which is a different quantity. Do not conflate CL with C_L0.
 - Old claims that closed forms extrapolate safely, 2D cells provide conservative bounds, or a solver is verified require independent assessment before reuse.
 
 ## Collaboration preferences
@@ -127,7 +129,7 @@ The user specifically requested architecture research and a documented conclusio
 Fresh inference/artifact verification passed on Windows; 17 unit and 3 live tests pass after replacing test-only excluded-cache input dependencies with manifest inputs. Raw files and training caches are absent, so source processing and training could not be freshly reproduced. See latest docs/logs.md entry and parent outputs/model-review.md. Model Studio was started locally on port 8766.
 
 ## Professor data restored and verified — 26 October 2026
-Raw professor histories are now present. Fresh source audit verifies all 73 source hashes, prepared held-out truth and both training scalers. This supersedes earlier absent-data status. A frozen Windows refit differs (test mean curve RMSE 0.112603 vs delivered 0.059085), so exact training reproduction is not established in this environment. Saved-artifact inference is exact. No porosity labels/definitions, bracket performance labels or lift data were supplied; full-purpose alignment remains incomplete. See latest logs entry.
+Raw professor histories are now present. Fresh source audit verifies all 73 source hashes, prepared held-out truth and both training scalers. This supersedes earlier absent-data status. A frozen Windows refit differs (test mean curve RMSE 0.112603 vs delivered 0.059085), so exact training reproduction is not established in this environment. Saved-artifact inference is exact. No porosity labels/definitions, bracket performance labels, flaw sizes or fracture-toughness data were supplied; full-purpose alignment remains incomplete. See latest logs entry.
 
 ## Porosity workflow software — 26 October 2026
-New /workflow interface and CLI support declared porosity-to-material studies and comparison of supplied solver results, with evidence/range gates. Both STEP parts imported/measured successfully. 30 unit and 7 live API tests passed; browser checks passed. This is software preparation, not physical project completion: no solved bracket/wing model or new bracket/lift predictor exists. Required physical definitions remain pending from user; see configs/porosity_workflow.json and docs/porosity-workflow.md.
+New /workflow interface and CLI support declared porosity-to-material studies and comparison of supplied solver results, with evidence/range gates. Both STEP parts imported/measured successfully. 30 unit and 7 live API tests passed; browser checks passed. This is software preparation, not physical project completion: no solved bracket/wing model or new bracket/lift predictor exists. Required physical definitions remain pending from user; see configs/porosity_workflow.json and docs/porosity-workflow.md. (Its lift-coefficient path predates the 27 October CL correction.)

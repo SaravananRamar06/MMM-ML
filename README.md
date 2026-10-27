@@ -2,7 +2,7 @@
 
 We developed a small neural-network surrogate for the simulated stress response of an additively manufactured AlSi10Mg aircraft wing bracket (wing-rib bracket) for the course **Multiscale Modelling of Materials using Machine Learning**. It predicts the material's simulated stress response from temperature, strain rate, density, shear modulus and axial strain.
 
-The completed model returns a 120-point curve of **von Mises stress (`Svm`) against axial strain (`E11`)**. A local Model Studio lets us request and compare curves in plain language. The wider porosity-to-coefficient-of-lift objective for the wing bracket still needs aerodynamic data and a defined connection to the structural FE model.
+The completed model returns a 120-point curve of **von Mises stress (`Svm`) against axial strain (`E11`)**. A local Model Studio lets us request and compare curves in plain language. The wider objective, porosity to **critical flaw length (CL)** for the wing bracket, still needs an ML-derived material card in the structural FE model and an agreed fracture-mechanics setup.
 
 ## Start here
 
@@ -26,7 +26,7 @@ The completed model returns a 120-point curve of **von Mises stress (`Svm`) agai
 | Interface | Built Model Studio with curve comparisons, point queries, tables and range warnings; provided command-line prediction. |
 | Documentation | Prepared a 24-slide presentation, a detailed reference guide, a simple personal guide and reproducible verification reports. |
 
-The material prediction workflow is implemented. Experimental validation, verified ANSYS coupling and aerodynamic lift prediction remain open.
+The material prediction workflow is implemented. Experimental validation, verified ANSYS coupling and critical-flaw-length (CL) prediction remain open.
 
 ## Run Model Studio
 
@@ -60,16 +60,17 @@ Saved models support inference without the raw dataset. Rebuilding prepared data
 ## Porosity and bracket-performance workflow
 
 The local app now includes `/workflow` for conditional material studies and
-comparison of supplied structural/aerodynamic solver results. It requires an
-explicit porosity-to-density/modulus relation, labels assumed relations as
-exploratory, and calculates lift coefficient only from supplied aerodynamic
-lift and flow/reference quantities. It does not solve a bracket or wing or
-train a new bracket/lift predictor without those results.
+comparison of supplied structural solver results. It requires an explicit
+porosity-to-density/modulus relation and labels assumed relations as
+exploratory. It was written while CL was being read as aerodynamic lift, so it
+can also compute a lift coefficient from supplied lift and flow quantities;
+that path does not serve the current critical-flaw-length target. It does not
+solve a bracket or train a new bracket/CL predictor.
 
 Both STEP parts have been imported and measured using OpenCASCADE/Gmsh; face
 information is available for a future verified boundary-condition setup. A
 porosity mapping, constitutive definitions, bracket load/support/contact cases
-and wing coupling remain unresolved. See the [workflow guide](docs/porosity-workflow.md)
+and the fracture setup for CL (flaw geometry, K_IC) remain unresolved. See the [workflow guide](docs/porosity-workflow.md)
 for Windows startup, configuration, solver CSV columns and verification.
 
 ## How the model works
@@ -156,7 +157,7 @@ The index $k$ identifies a network. The matrices $W$ and biases $b$ are learned 
 
 For example, at $T=100$, $\dot\varepsilon=10^{-4}$, $\rho=2619$ and $G=24541$, the input before standardisation at 5% strain is $[100,-4,2619,24541,0.05]^{\mathsf T}$. Studio's interpolation of the saved model's grid predictions gives approximately **99.42 source stress units** at that strain. Stress units remain unconfirmed; this example demonstrates the computation, not physical validation.
 
-The implementation is in [`QueryMLP` in src/models.py](src/models.py); the selected settings are in [`src/models.py`'s `CANDIDATES`](src/models.py), and equivalent saved-weight inference is in [`src/query_runtime.py`](src/query_runtime.py). No elasticity equation, plasticity law, porosity relation or aerodynamic lift law is enforced by this model.
+The implementation is in [`QueryMLP` in src/models.py](src/models.py); the selected settings are in [`src/models.py`'s `CANDIDATES`](src/models.py), and equivalent saved-weight inference is in [`src/query_runtime.py`](src/query_runtime.py). No elasticity equation, plasticity law, porosity relation or fracture criterion is enforced by this model.
 
 ## Results checked on 25 October 2026
 
@@ -173,7 +174,7 @@ Errors below are in **source stress units**. MPa is plausible but has not been c
 
 All 73 source curves reproduce the cached interpolation exactly. Reloaded predictions and NumPy-runtime predictions match the saved model exactly in this environment. A fresh fit with frozen settings reproduced every weight and prediction exactly, without warnings. **13 unit tests and 3 live Model Studio tests passed.** Delivered model files were unchanged.
 
-These checks confirm repeatable software behaviour and agreement with supplied simulations. They do not establish experimental or aerodynamic accuracy. The saved training-side three-fold CV mean curve RMSE is **1.15826321**; the mean over nine held-out temperature/rate groups is **6.79360255**, rising to **23.52512868** for the 200 / 1e-5 group. Those diagnostics were read from saved results, not rerun in this retest.
+These checks confirm repeatable software behaviour and agreement with supplied simulations. They do not establish experimental accuracy or fracture behaviour. The saved training-side three-fold CV mean curve RMSE is **1.15826321**; the mean over nine held-out temperature/rate groups is **6.79360255**, rising to **23.52512868** for the 200 / 1e-5 group. Those diagnostics were read from saved results, not rerun in this retest.
 
 ![Fresh check of case 42 and the worst test case](reports/retests/20261025T172218Z/test_curves.svg)
 
@@ -193,7 +194,7 @@ The matrix plans 108 cases. Available histories cover 27 cases at temperature 30
 
 Values between levels are interpolation requests, not independently validated conditions. Outside the range, the model extrapolates. Case 60 is the only available 200 / 1e-5 case and has an irregular response; it remains in the dataset. The histories do not supply a conventional zero-stress elastic loading segment, so we have not established an elastic modulus from their initial slope.
 
-Density and shear modulus are supplied inputs. Neither has been verified as a porosity label. **C_L means aerodynamic coefficient of lift**, not critical flaw length. No lift labels or verified material-to-lift coupling exist in the current data. This predictor is a data-driven surrogate, with no enforced constitutive law or physics-informed loss.
+Density and shear modulus are supplied inputs. Neither has been verified as a porosity label. **CL means critical flaw length**: the largest defect the bracket can carry at its design stress before fracture. It is not the aerodynamic coefficient of lift. The current data has no flaw-size or fracture-toughness labels, and no verified material-to-CL coupling. This predictor is a data-driven surrogate, with no enforced constitutive law or physics-informed loss.
 
 ## Reproduce the checks
 
@@ -229,4 +230,4 @@ Research, assumptions, decisions and open questions are retained in the project 
 
 ## Remaining project work
 
-We still need to confirm physical units, strain/stress definitions and the generating setup; establish a defensible porosity mapping; inspect the actual ANSYS files and results; and define the aerodynamic data and coupling needed for C_L prediction. The completed course report keeps these limits explicit; submission-specific review still needs the professor’s format and requirements. Presentation and model guides are available, but the full material-to-lift workflow has not been validated.
+We still need to confirm physical units, strain/stress definitions and the generating setup; establish a defensible porosity mapping; inspect the actual ANSYS files and results; and define the fracture setup (flaw geometry, K_IC, stress at the critical location) needed for CL prediction. The completed course report keeps these limits explicit; submission-specific review still needs the professor’s format and requirements. Presentation and model guides are available, but the full material-to-CL workflow has not been validated.
