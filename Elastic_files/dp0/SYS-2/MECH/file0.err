@@ -1,0 +1,31 @@
+/COM,ANSYS RELEASE 2026 R1           BUILD 26.1      UP20260202       11:13:50
+
+ *** WARNING ***                         ELAPSED TIME =       5.912   TIME= 11:13:51
+ Element shape checking is currently inactive.  Issue SHPP,ON or         
+ SHPP,WARN to reactivate, if desired.                                    
+
+ *** WARNING ***                         ELAPSED TIME =       5.945   TIME= 11:13:51
+ It has been detected that you are using reduced integration brick       
+ elements along with the PCG solver (EQSLV,PCG).  Please verify that     
+ you have multiple elements through the thickness in your model or       
+ switch to the SPARSE solver (EQSLV,SPARSE).                             
+
+ *** WARNING ***                         ELAPSED TIME =       6.298   TIME= 11:13:52
+ Material property EX of material 1 of element 3647 is evaluated at a    
+ temperature of 22, which is below the supplied temperature range.       
+ Temperature range checking terminates.                                  
+
+ *** WARNING ***                         ELAPSED TIME =       6.330   TIME= 11:13:52
+ Material property EX of material 1 of element 6642 is evaluated at a    
+ temperature of 22, which is below the supplied temperature range.       
+ Temperature range checking terminates.                                  
+
+ *** WARNING ***                         ELAPSED TIME =       6.340   TIME= 11:13:52
+ Material property EX of material 1 of element 6689 is evaluated at a    
+ temperature of 22, which is below the supplied temperature range.       
+ Temperature range checking terminates.                                  
+
+ *** WARNING ***                         ELAPSED TIME =       6.340   TIME= 11:13:52
+ Material property EX of material 1 of element 6953 is evaluated at a    
+ temperature of 22, which is below the supplied temperature range.       
+ Temperature range checking terminates.                                  

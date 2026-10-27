@@ -1,0 +1,259 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.174")
+template1 = GetTemplate(
+    TemplateName="Static Structural",
+    Solver="ANSYS")
+system1 = template1.CreateSystem()
+system2 = template1.CreateSystem(
+    Position="Right",
+    RelativeTo=system1)
+engineeringData1 = system1.GetContainer(ComponentName="Engineering Data")
+material1 = engineeringData1.GetMaterial(Name="Structural Steel")
+material1.Delete()
+favorites1 = EngData.LoadFavoriteItems()
+library1 = EngData.OpenLibrary(
+    Name="Additive Manufacturing Materials",
+    Source="Additive_Manufacturing_Materials.xml")
+matl1 = engineeringData1.ImportMaterial(
+    Name="AlSi10Mg",
+    Source="Additive_Manufacturing_Materials.xml")
+matl1.DisplayName = "AlSi10Mg - EP"
+matlProp1 = matl1.GetProperty(Name="Norton")
+matlProp1.Delete()
+matlProp2 = matl1.CreateProperty(
+    Name="Isotropic Hardening",
+    Definition="Multilinear",
+    Qualifiers={"Definition": "Multilinear", "Behavior": ""})
+matlProp2.Delete(Definition="Bilinear")
+matlProp2.BeginBatchUpdate()
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=-1,
+    Variables=["Temperature"],
+    Values=[["20 [C]"]])
+matlProp2.EndBatchUpdate()
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Variables=["Plastic Strain"],
+    Values=[["0 [m m^-1]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=-1,
+    Variables=["Temperature", "Plastic Strain"],
+    Values=[["20 [C]"], ["0.002 [m m^-1]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=-1,
+    Variables=["Temperature", "Plastic Strain"],
+    Values=[["20 [C]"], ["0.005 [m m^-1]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=-1,
+    Variables=["Temperature", "Plastic Strain"],
+    Values=[["20 [C]"], ["0.01 [m m^-1]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=-1,
+    Variables=["Temperature", "Plastic Strain"],
+    Values=[["20 [C]"], ["0.02 [m m^-1]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=-1,
+    Variables=["Temperature", "Plastic Strain"],
+    Values=[["20 [C]"], ["0.03 [m m^-1]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=-1,
+    Variables=["Temperature", "Plastic Strain"],
+    Values=[["20 [C]"], ["0.05 [m m^-1]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=-1,
+    Variables=["Temperature", "Plastic Strain"],
+    Values=[["20 [C]"], ["0.07 [m m^-1]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Variables=["Stress"],
+    Values=[["251.45 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=1,
+    Variables=["Stress"],
+    Values=[["275.8 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=2,
+    Variables=["Stress"],
+    Values=[["296.8 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=3,
+    Variables=["Stress"],
+    Values=[["324.1 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=4,
+    Variables=["Stress"],
+    Values=[["367 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=4,
+    Variables=["Stress"],
+    Values=[["367.9 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=5,
+    Variables=["Stress"],
+    Values=[["404.8 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=6,
+    Variables=["Stress"],
+    Values=[["468.5 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=7,
+    Variables=["Stress"],
+    Values=[["524.3 [Pa]"]])
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Edit()
+Refresh()
+Refresh()
+model1.Exit()
+Refresh()
+Refresh()
+Refresh()
+model1.Edit()
+material2 = engineeringData1.GetMaterial(Name="AlSi10Mg")
+material2.Delete()
+Refresh()
+EngData.EnableFilter(Enable=False)
+matl1.SetSuppression(Suppressed=True)
+matl1.SetSuppression(Suppressed=False)
+Refresh()
+engineeringData2 = system2.GetContainer(ComponentName="Engineering Data")
+material3 = engineeringData2.GetMaterial(Name="Structural Steel")
+material3.Delete()
+matl2 = engineeringData2.ImportMaterial(
+    Name="AlSi10Mg",
+    Source="Additive_Manufacturing_Materials.xml")
+matl2.DisplayName = "AlSi10Mg - E"
+matlProp3 = matl2.GetProperty(Name="Norton")
+matlProp3.Delete()
+model2 = system2.GetContainer(ComponentName="Model")
+model2.Edit()
+Refresh()
+model2.Exit()
+model2.Edit()
+Save(Overwrite=True)
+Save(Overwrite=True)
+model1.Exit()
+Save(Overwrite=True)
+model1.Edit()
+Save(Overwrite=True)
+model1.Exit()
+Save(Overwrite=True)
+Save(Overwrite=True)
+model2.Exit()
+model1.Edit()
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Variables=["Stress"],
+    Values=[["251450000 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=1,
+    Variables=["Stress"],
+    Values=[["275800000 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=2,
+    Variables=["Stress"],
+    Values=[["7.8886090522101181E-31 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=2,
+    Variables=["Stress"],
+    Values=[["296800000 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=3,
+    Variables=["Stress"],
+    Values=[["324100000 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=4,
+    Variables=["Stress"],
+    Values=[["367900000 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=6,
+    Variables=["Stress"],
+    Values=[["468500000 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=5,
+    Variables=["Stress"],
+    Values=[["404800000 [Pa]"]])
+matlProp2.SetData(
+    SheetName="Isotropic Hardening",
+    SheetQualifiers={"Definition": "Multilinear", "Behavior": ""},
+    Index=7,
+    Variables=["Stress"],
+    Values=[["524300000 [Pa]"]])
+model1.Edit()
+Save(Overwrite=True)
+Save(Overwrite=True)
+Save(Overwrite=True)
+Save(Overwrite=True)
+Save(Overwrite=True)
+Save(Overwrite=True)
+model1.Exit()
+modelComponent1 = system2.GetComponent(Name="Model")
+modelComponent1.Refresh()
+model2.Edit()
+Save(Overwrite=True)
+matlProp4 = matl2.GetProperty(Name="Isotropic Hardening")
+matlProp4.Delete(Definition="Bilinear")
+modelComponent1.Refresh()
+model2.Edit()
+model2.Edit()
+model2.Exit()
+model2.Edit()
+model1.Edit()
+model2.Edit()
+model2.Exit()
+system1.DisplayText = "Plastic"
+material4 = engineeringData2.GetMaterial(Name="AlSi10Mg")
+material4.Delete()
+system2.DisplayText = "Elastic"
+Save(Overwrite=True)
+model1.Exit()
+Save(Overwrite=True)
