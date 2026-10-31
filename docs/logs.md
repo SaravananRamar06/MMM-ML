@@ -281,3 +281,24 @@ networks. This is a justification for a starting model, not a new performance
 comparison. Preserved the fixed 4% assumption and marked the older research's
 lift interpretation and second-network proposal as historical. No model or
 pipeline changed; reviewed the two-document diff and checked whitespace.
+
+## 31 October 2026 (Asia/Kolkata) — Alternatives to the query MLP
+
+User asked whether a better neural network exists for this case. Reviewed
+scorer/factories and the PCA-MLP implementation, then used a read-only
+`.venv/Scripts/python.exe -B -` calculation to recompute saved CV means and
+means across held-out temperature/rate groups for query, transformed-input
+and four-/six-component PCA MLPs. All four CV records cover the exact same 36
+training IDs; aggregates match saved metrics at relative tolerance 1e-12.
+Historical query MLP is better than those tested neural alternatives on both
+reported aggregates. These are five-start ensembles, not a fresh fit of the
+planned single model; no new accuracy/generalisation result is claimed.
+
+Verified primary KAN, physics-informed, physically recurrent and DeepONet
+papers. Added conditional alternative guidance to docs/research.md: KAN is an
+untested optional comparison, physics-informed training needs justified laws,
+and recurrence/operator structure needs an appropriate task. Keep the current
+MLP selection and 4% fixed assumption. No new model comparison was executed;
+no architecture, configuration, test split or artifact changed. Reviewed the
+two-document diff and ran git diff --check; model tests were not rerun for
+this documentation-only explanation.

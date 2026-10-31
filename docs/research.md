@@ -28,6 +28,47 @@ was superseded on 27 October: the current project CL is critical flaw length.
 The current Colab plan selects one neural network; older proposals for a second
 network below describe the earlier comparison stage.
 
+## Could another neural network be better? — 31 October 2026
+
+No replacement is established for the new Colab plan. Recomputed means from
+the existing `runs/score/select_*_Svm.json` records, without retraining:
+query MLP CV mean curve RMSE 1.158263214; transformed-input MLP 1.535682918;
+PCA-coefficient MLP with four components 2.269393103 and six components
+2.004344462. Their condition-holdout means are respectively 6.793602548,
+8.609057590, 11.085609443 and 11.205496577, in source stress units.
+Every CV record covers the same 36 training IDs. These are historical
+five-initialisation ensemble comparisons, not results of the planned single
+network, and do not prove superiority over untested architectures. The
+transformed-input MLP does not have a physics-informed loss.
+
+- A small **Kolmogorov-Arnold network (KAN)** is a plausible optional comparison
+  because its learnable spline functions offer a different approximation
+  structure for numeric regression. The [original KAN paper](https://arxiv.org/abs/2404.19756)
+  reports benefits on its own problems, not this dataset. Treat suitability
+  here as a hypothesis; it needs a separate implementation and validation.
+- A **physics-informed MLP** could add justified governing-law residuals or
+  constraints once equations, units and states are established. This is a
+  training formulation and can use an MLP backbone, not necessarily a new
+  architecture. See the [original physics-informed formulation](https://arxiv.org/abs/1711.10561).
+  Fixed assumed porosity of 4% supplies no missing constitutive equations.
+- **Recurrent/state-based models** become relevant for general path-dependent
+  response, including unloading and reloading. The supplied increasing-E11
+  histories do not establish that broader task. A [physically recurrent model](https://arxiv.org/abs/2209.07320)
+  demonstrates embedding actual constituent laws and internal variables for
+  that purpose; its results are not evidence of superiority for this dataset.
+- **DeepONet** learns mappings involving input functions through branch and
+  trunk networks ([original paper](https://arxiv.org/abs/1910.03193)). The current
+  finite-condition-to-strain-query problem has not demonstrated a need for
+  that additional structure.
+
+Recommendation remains the compact query MLP. If a second neural experiment
+is requested, compare a small KAN with the single MLP on identical case folds,
+inputs, strain sampling and original-unit curve metrics, using training-only
+preprocessing and a comparable bounded tuning budget. Include training-side
+condition holdouts and convergence/seed sensitivity; keep the final case
+holdout out of selection and retain its historical-exposure disclosure. No
+KAN, PINN or recurrent model was trained or added to the chosen notebook.
+
 Research completed **24 October 2026**. Evidence: primary research papers, official ML documentation, and a reproducible inspection of all supplied histories.
 
 **Later workspace update:** this report records the research-completion state. Claude has since reported implementation/experiments and created a 36/37 split; Codex has observed those artifacts but has not reproduced its results. See the latest update in [context.md](context.md). Statements below that no model/split exists describe the earlier research snapshot.
