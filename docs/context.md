@@ -2,6 +2,15 @@
 
 **Latest user correction — 27 October 2026: CL = critical flaw length**, the largest pore or defect the AlSi10Mg bracket can carry at its design stress before fracture (linear-elastic estimate a_c = (1/π)(K_IC / Yσ)²). It is **not** the aerodynamic coefficient of lift. This overrides the 24 October "coefficient of lift" correction below; lift-based statements in older sections are kept only as history. The user also stated that both Ansys analyses (`Elastic.wbpj` here and the explicit Johnson–Cook bracket run in the separate `MMM-ML Project` folder) are their own work.
 
+**31 October 2026 — Colab planning:** user requested a fresh notebook from the
+professor data and selected scikit-learn, one neural network, and `E11 -> Svm`.
+The proposed single-network rebuild is not implemented. User then asked about
+adding porosity later; this is a future option. Density-derived phi requires
+confirmed density/reference definitions and adds no independent information;
+learning a separate phi effect requires paired response data. See the new
+material-model section in `porosity-workflow.md`. Existing artifacts and split
+are preserved; physical mappings remain unconfirmed.
+
 **Latest verified state — 25 October 2026, 17:30 UTC:** the user requested a completed-work review, a team-voice README without contribution credits, a fresh model retest and a simple first-person model guide. `README.md` and `README.github.md` now match. New deliverables: `project files/My model explained.md`, its printable HTML version, and `project files/Model test results.md`. Detailed existing guides and fitted artifacts were preserved.
 
 **Fresh retest:** `reports/retests/20261025T172218Z/results.json` records source/cache equality for 73 histories and 2,197,000 rows; mean test curve RMSE 0.05908515170863245, median 0.05056665519928898, worst 0.11330617910816165 (case 45), mean MAE 0.04899859206569091. A separate frozen-settings fit took 17.26 seconds and exactly reproduced every weight and prediction without warnings. NumPy predictions also match exactly. All 13 unit and 3 live Studio tests passed. The initial live attempt hit sandbox restrictions; Studio was subsequently found stopped, started and successfully checked. All four delivered artifact hashes remain unchanged. This is same-data/local-environment reproducibility, not a new blind or physical validation. Saved condition-holdout diagnostics were checked for aggregation, not rerun.

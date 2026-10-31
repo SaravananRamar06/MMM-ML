@@ -215,3 +215,37 @@ Installed optional gmsh 4.15.2 and imported both STEP solids with OpenCASCADE in
 
 ## 27 October 2026 — ANSYS Workbench project committed
 At the user's request, committed the teammate's ANSYS Workbench project `Elastic.wbpj` with `Elastic_files/` (34 files, about 146 MB; three systems SYS, SYS-1, SYS-2; two `file.rst` result files of 66 MB and 57 MB). Files were committed as found and have not been opened, inspected or validated here: boundary conditions, material inputs, units and solution quality remain unverified, and the "Inspect actual teammate ANSYS files" task stays open. Also re-ran Model Studio from a fresh .venv (Anaconda Python 3.12, pinned requirements); the 100 C / 1e-4 / 2619 / 24541 query at 5% strain returned 99.4, matching the documented check value. No model artifacts changed.
+
+## 31 October 2026 (Asia/Kolkata) — Colab planning and future porosity input
+
+User selected a fresh library-based Colab notebook for the material task,
+scikit-learn, one neural network and Svm against E11. Read-only inspection found
+73 histories / 108 planned cases, identical headers, about 515.4 MiB of raw
+histories and an existing 36/37 split that is disjoint and covers the available
+cases. No notebook was implemented or model trained. The supplied plan uses a
+single 5-16-16-1 MLP, training-only scaling, three training-case folds for L2
+selection, and the preserved case split; historical holdout exposure is disclosed.
+
+User asked how to add porosity later. Added conditional guidance to
+docs/porosity-workflow.md: confirm the density interpretation before deriving
+phi; prefer replacement over a duplicate density-derived feature; distinguish
+a mapped-input wrapper from learning new porosity-dependent response; obtain
+paired curves for an independently informative phi input; refit and evaluate
+by source case/group. Verified primary NIST measurement and pore-structure
+references without transferring their CoCr constants to AlSi10Mg. Mapping
+definition, reference density and G(phi) remain unresolved. No porosity labels,
+constitutive law, configuration or delivered model were changed. Documentation
+verification covers arithmetic, architecture counts and diff/whitespace checks;
+no training or physical-validation claim follows from this note.
+
+Verification: `git diff --check` passed; a read-only `.venv/Scripts/python.exe -B -`
+calculation checked conditional phi values 0%, 3%, 7.85%, network parameter
+counts 385/401, and that the mapping configuration remains unconfirmed with
+null reference density and bulk-density interpretation. Reviewed the complete
+five-document diff; no executable code changed, so model tests were not rerun.
+
+Publication integration: fetched the newer GitHub main branch, preserving its
+ANSYS files and 27 October user correction that CL means critical flaw length.
+Resolved overlapping context/log additions by keeping both dated records and
+marked the older lift workflow below as historical software. The current
+porosity discussion concerns the stress-strain model only.

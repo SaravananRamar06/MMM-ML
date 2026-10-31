@@ -51,3 +51,13 @@ Append future decisions with date, reason, and affected artifacts. Do not turn a
 
 ## 26 October 2026 — Scope of implemented porosity extension
 Keep the final material model intact. A density-derived porosity relation requires explicit source confirmation or an explicitly accepted exploratory assumption; require a separate phi/G relation. Imported solver values are identified as supplied evidence. No structural or aerodynamic labels are fabricated from material stress curves, and no further NN is trained before target data exists. CAD face identities are preparation data, not inferred boundary conditions.
+
+## 31 October 2026 — Colab choices and conditional porosity extension
+
+- User-selected: a fresh library-based Colab notebook, scikit-learn, one neural
+  network and Svm against E11. The notebook remains planned, not implemented.
+- Proposed future porosity route: establish per-case phi provenance first.
+  Replace density if phi is an exact transform of it; add a sixth input only
+  when phi supplies distinct information and paired response data exists.
+  These are conditional recommendations, not a confirmed physical mapping or
+  an instruction to train the extension. Preserve the existing model/version.
