@@ -1,5 +1,7 @@
 # Modelling plan and scientific limits
 
+**31 October current evidence:** see [effective-equation qualification](effective-equation-check.md). Both tested families failed training-side case validation. Evm matches accumulated stress work / Svm numerically; split stays 36/37. Older implementation and CL=lift statements below are historical; current CL means critical flaw length.
+
 Status: **proposed workflow, not an implemented or professor-approved architecture**.
 
 Later update: Claude has separately implemented a pipeline and reported experiments, pending independent review. Earlier no-implementation statements in this planning document describe Codex's research-completion snapshot. Read the latest state in `context.md` and coordinate through the room before duplicating work.

@@ -329,3 +329,14 @@ recovery/saturation equation is a candidate to qualify, not a confirmed law;
 plastic-strain mapping and state definitions remain open. No law calibration,
 network, new metric or solve was performed. Reviewed documentation and checked
 git diff --check; model tests are unnecessary for this planning-only change.
+
+
+## 31 October 2026 (Asia/Kolkata) - Execute effective-equation qualification
+
+Implemented src/effective_equation.py, configs/effective_equation.json, five focused tests, notebook export and independent verification scripts. Created the physics-only Colab notebook. Opened only the 36 training histories (1,224,000 rows), preserving data/split.json and source hashes. Checked Svm invariant and Evm reconstruction through cumulative right-endpoint stress work / Svm. Compared per-curve shapes, three-fold whole-case predictions, three alpha values, three starts, and nine temperature/rate-group holdouts for each effective family. No new network or final-test scoring occurred.
+
+Saved results, predictions and a visually inspected six-panel plot in reports/effective_equation_20261031/. Simple mean/worst normalized CV errors 5.79%/54.28%; flexible 6.68%/58.28%. Both fail prospective 5%/10% limits despite beating the mean-curve reference and passing optimizer/numerical checks. Case 60 remains included and is the sole 200/-5 training combination. Further law research is required. Units/source law remain unconfirmed; phi=0.04 remains metadata.
+
+Commands: .venv/Scripts/python.exe -B -m unittest discover -s tests -p test_effective_equation.py -v; .venv/Scripts/python.exe -B src/effective_equation.py --output reports/effective_equation_20261031; .venv/Scripts/python.exe -B scripts/build_effective_equation_notebook.py; .venv/Scripts/python.exe -B scripts/verify_effective_equation.py. Five tests pass. Verifier reconstructs CV predictions/metrics, fitting-only scalers, baseline, final reload, source hashes and notebook source. Python 3.13.15, NumPy 2.2.6, SciPy 1.15.3. Derivative relative error 1.95e-10; ODE relative error 2.05e-9.
+
+Initial test attempt encountered an external OS temp-directory permission issue; scratch tests now use excluded work/. Initial analysis encountered an external Matplotlib cache warning; reran with a workspace cache, retaining the initial output only as ignored scratch. A local notebook execution caught a glob matching simulation_matrix.csv as a directory; corrected the directory filter. Then executed notebook bootstrap, training-only ZIP extraction and the full checker locally; metrics exactly match the CLI run. Hosted Colab and Drive authorization are not claimed. The existing delivered model artifacts were not modified.

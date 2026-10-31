@@ -1,5 +1,7 @@
 # Choose small networks for material curves
 
+**31 October current evidence:** see [effective-equation qualification](effective-equation-check.md). Both tested families failed training-side case validation. Evm matches accumulated stress work / Svm numerically; split stays 36/37. Older implementation and CL=lift statements below are historical; current CL means critical flaw length.
+
 **Current user direction, 31 October:** compare MLP with PINN after establishing
 the governing constitutive equation, replacing the earlier one-model plan.
 All available files are supplied. See [the physics-first Colab plan](mlp-pinn-colab-plan.md).

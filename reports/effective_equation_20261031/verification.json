@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    "exponential: metrics, fold scalers, baseline and reloaded predictions agree",
+    "power_exponential: metrics, fold scalers, baseline and reloaded predictions agree",
+    "36 training source hashes unchanged; no test target in predictions",
+    "Notebook source matches checker; all Python cells compile",
+    "Notebook bootstrap, whitelist ZIP extraction and full computation executed locally; metrics match CLI"
+  ],
+  "unit_test_command": ".venv/Scripts/python.exe -B -m unittest discover -s tests -p test_effective_equation.py -v",
+  "notebook_computation_verified_locally": true,
+  "hosted_colab_execution_verified": false,
+  "protected_artifact_hashes": {
+    "metrics.json": "bc4abb3a452f9879ed86bc9b02ce975cb18db9df90024db24069c7f22bc2d303",
+    "model.joblib": "67ee8b17c9a74d4fa3c786c6520279d685c1d899bd8ea041cbea930067241401",
+    "model_numpy.npz": "d4b605444efcb0625b5b26e995737b3d217896414549ec63b97c7cb072e171e1",
+    "test_predictions.npz": "01a99dfd451d2a8fe72f4e2fe239b2f5cca90a6da73f7791d68c01a14d9ebb30"
+  }
+}

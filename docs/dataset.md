@@ -1,5 +1,7 @@
 # Professor-supplied dataset
 
+**31 October current evidence:** see [effective-equation qualification](effective-equation-check.md). Both tested families failed training-side case validation. Evm matches accumulated stress work / Svm numerically; split stays 36/37. Older implementation and CL=lift statements below are historical; current CL means critical flaw length.
+
 Inspection date: **2026-10-24**. Raw data location: `TEAM_8_extracted_results_set_1/`.
 
 ## Provenance and status

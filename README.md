@@ -6,6 +6,8 @@ The completed model returns a 120-point curve of **von Mises stress (`Svm`) agai
 
 ## Start here
 
+- [Effective governing-equation check](docs/effective-equation-check.md): 36-training-case qualification; both tested families fail the screening limits. [Physics-only Colab notebook](notebooks/effective_equation_check.ipynb).
+
 - [Research paper (IEEE)](<project files/Research Paper.pdf>): three-page publication-format research paper on the aircraft wing bracket surrogate model (`paper/paper.tex`).
 - [Course report](<project files/Final Course Report.pdf>): fact-checked five-page LaTeX report with corrected figures, references and limitations; source and build record in `report/`.
 - [Simple model guide](<project files/My model explained.html>): preparation, training and prediction explained in a personal voice for study and presentation. [Markdown version](<project files/My model explained.md>).

@@ -1,5 +1,7 @@
 # Colab plan: governing equation first, then MLP versus PINN
 
+**31 October execution checkpoint:** both effective exponential candidates failed prospective case-validation error limits using the 36 training histories. See [qualification evidence](effective-equation-check.md). Continue Phase A; neither candidate is frozen for Phase B.
+
 31 October 2026. User-requested plan; no new neural network has been created.
 This replaces the earlier single-model Colab proposal. The user explicitly
 requires a governing equation before either model is created and confirms

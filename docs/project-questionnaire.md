@@ -508,3 +508,8 @@ Asked whether VPSC inputs/run logs or crystal/texture files are available.
 User's answer: **"no we dont, i have given you all the files i have"**.
 File availability is resolved; Q06's original material-law identification
 remains open. Do not reinterpret the VPSC format lead as the user's confirmation.
+
+
+### 31 October 2026 - Equation scope and execution authorization
+
+User selected **"Effective law (Recommended)"**, accepting a literature-based effective response hypothesis with stated assumptions. User reaffirmed the 50/50 case split and authorized: **"okay, proceed with checking the effective governing equation using the 36 training cases before we create the MLP and PINN in Colab"**. Qualification implemented; 37 test histories excluded. Both candidates failed the prospective error limits.

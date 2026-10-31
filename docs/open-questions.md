@@ -49,3 +49,8 @@ do not repeatedly ask the user for missing source files.
 - Professor's approval: topic only, not the presentation's specific methodology.
 - First-principles phrase: user preference, not professor requirement.
 - User skill level: good Python, new to ML; wants conceptual preparation for the viva.
+
+
+## 31 October effective-equation follow-up
+
+Effective-law scope and 36/37 split are user-confirmed. Both tested families/maps fail qualification; see effective-equation-check.md. Open: supported condition/state dependence, case-60 loading/numerical interpretation, physical stress units and original constitutive definitions. User confirms all available files are supplied; do not re-request original inputs.

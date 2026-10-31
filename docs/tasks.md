@@ -33,6 +33,9 @@ Latest evidence: `reports/retests/20261025T172218Z/`. Mean test curve RMSE 0.059
 
 ## Scientific work still open
 
+- [x] 31 October: implement and verify the 36-training-case effective-equation check; both tested families fail qualification. See effective-equation-check.md.
+- [ ] Research a better supported effective equation before creating the MLP/PINN comparison; retain case 60 and exclude the 37 final-test histories from this study.
+
 - [ ] Current Colab plan, 31 October: establish and qualify a governing
   constitutive equation first, then compare MLP and PINN on the preserved
   case split. See mlp-pinn-colab-plan.md. Proposed common PyTorch training
