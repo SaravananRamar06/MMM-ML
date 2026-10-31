@@ -268,3 +268,16 @@ checks passed for 0.04 -> 4%, assumed status, unverified source histories and
 null density/G relations. The existing workflow mapping remains unconfirmed.
 Reviewed the documentation/config diff; `git diff --check` passed. No executable
 pipeline changed, so model tests were not rerun.
+
+## 31 October 2026 (Asia/Kolkata) — Explain the MLP choice
+
+User asked why the Colab plan uses an MLP. Added a current explanation at the
+top of docs/research.md: numeric-input nonlinear regression, strain-query curve
+generation, observed loading-family scope, 73 independent cases / 36 training
+cases, a compact 385-parameter starting network and CPU Colab usability.
+Rechecked the official scikit-learn 1.7 MLP guide; it supports nonlinear
+regression, scaling/regularisation requirements and starting with small
+networks. This is a justification for a starting model, not a new performance
+comparison. Preserved the fixed 4% assumption and marked the older research's
+lift interpretation and second-network proposal as historical. No model or
+pipeline changed; reviewed the two-document diff and checked whitespace.

@@ -1,5 +1,33 @@
 # Choose small networks for material curves
 
+## Current explanation for the Colab plan — 31 October 2026
+
+The user asked why an MLP was selected. The planned single query MLP maps five
+numeric features `(T, log10(rate), density, G, E11)` to continuous `Svm`.
+Nonlinear hidden layers allow an empirical nonlinear response; evaluating the
+same condition at successive E11 queries draws its curve. This formulation
+matches the observed increasing-E11 histories without requiring spatial inputs
+or demonstrating a need to learn diverse loading sequences.
+
+Only 73 independent simulation cases are available, with 36 assigned to
+training. The proposed 5-16-16-1 network has 385 weights and biases; its compact
+size limits capacity relative to larger networks but does not guarantee freedom
+from overfitting. Training-only scaling, L2 regularisation, case-level validation
+and a simple baseline remain necessary. Scikit-learn provides CPU training
+with few dependencies, useful for the requested beginner Colab notebook.
+[Official MLP guide](https://scikit-learn.org/1.7/modules/neural_networks_supervised.html).
+
+These are reasons for a starting architecture, not proof that an MLP beats
+every alternative. The new notebook has not been trained. The model represents
+the supplied loading family; general cyclic/multiaxial response would require
+appropriate history/state information and new evaluation. Fixed assumed
+porosity 4% remains study metadata and is not a learned influence.
+
+The research snapshot below is historical. In particular, its CL=lift reading
+was superseded on 27 October: the current project CL is critical flaw length.
+The current Colab plan selects one neural network; older proposals for a second
+network below describe the earlier comparison stage.
+
 Research completed **24 October 2026**. Evidence: primary research papers, official ML documentation, and a reproducible inspection of all supplied histories.
 
 **Later workspace update:** this report records the research-completion state. Claude has since reported implementation/experiments and created a 36/37 split; Codex has observed those artifacts but has not reproduced its results. See the latest update in [context.md](context.md). Statements below that no model/split exists describe the earlier research snapshot.
