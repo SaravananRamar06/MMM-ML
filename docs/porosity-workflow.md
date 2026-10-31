@@ -75,6 +75,18 @@ scikit-learn, one query MLP and `E11 -> Svm` for the material task. That noteboo
 is planned; it has not been created or trained in this discussion. Adding
 porosity is a future option, not an instruction to change the delivered model.
 
+**Later user instruction on 31 October:** assume porosity is **4%**, stored as
+`porosity_fraction = 0.04` in `configs/study_assumptions.json`. Treat this as a
+fixed nominal condition for the planned study and label it assumed. It does
+not establish that the supplied histories were generated at 4% porosity.
+Keep the constant in notebook/run metadata and retain the proposed five-input
+MLP; adding the same phi to every training example cannot identify how stress
+changes with phi. This choice does not set a reference density, density law,
+G(phi), toughness or pore geometry. Establish applicable response data or a
+supported physical mapping before claiming a stress prediction specifically
+validated for 4% porosity. The two routes below remain future options for
+learning or mapping a variable porosity input.
+
 Porosity fraction is `phi = pore_volume / total_volume`; store 3% as `0.03`.
 Each independent specimen or simulated microstructure needs a documented phi
 value paired with its actual stress-strain history and material conditions.

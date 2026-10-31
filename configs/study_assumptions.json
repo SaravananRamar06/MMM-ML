@@ -1,0 +1,9 @@
+{
+  "porosity_fraction": 0.04,
+  "porosity_status": "assumed",
+  "porosity_scope": "fixed nominal value for the planned material/bracket study",
+  "source": "User instruction on 2026-10-31: we will assume porosity is 4%",
+  "source_histories_porosity_status": "unverified",
+  "density_relation": null,
+  "shear_modulus_relation": null
+}

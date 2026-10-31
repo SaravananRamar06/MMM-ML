@@ -1,8 +1,14 @@
 # Open questions
 
-Last updated: **2026-10-27**. Ask questions when their answers affect the next step; avoid repeatedly asking the user for facts they have already said they do not know.
+Last updated: **2026-10-31**. Ask questions when their answers affect the next step; avoid repeatedly asking the user for facts they have already said they do not know.
 
 **Resolved target definition: CL = critical flaw length (confirmed 27 October 2026). It is not coefficient of lift. Do not ask again.**
+
+**Selected working assumption, 31 October 2026:** the user chose fixed nominal
+porosity of 4% (`phi = 0.04`) for the planned study. This resolves the nominal
+value to use as an assumption, not Q03's physical density/G interpretation or
+the porosity of each supplied history. Applicability of the existing curves
+to that study condition remains unverified.
 
 ## Scientific questions to resolve through evidence
 

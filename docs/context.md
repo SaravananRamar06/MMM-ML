@@ -11,6 +11,13 @@ learning a separate phi effect requires paired response data. See the new
 material-model section in `porosity-workflow.md`. Existing artifacts and split
 are preserved; physical mappings remain unconfirmed.
 
+**31 October 2026 — User-selected assumption:** use fixed nominal porosity
+`phi = 0.04` (4%) for the planned study. This is an assumed study condition,
+not a measured per-case label for the 73 histories. Record it in
+`configs/study_assumptions.json` and future notebook metadata; retain the
+five-input MLP because a constant feature cannot identify porosity dependence.
+Density/G relations and source-history applicability remain unresolved.
+
 **Latest verified state — 25 October 2026, 17:30 UTC:** the user requested a completed-work review, a team-voice README without contribution credits, a fresh model retest and a simple first-person model guide. `README.md` and `README.github.md` now match. New deliverables: `project files/My model explained.md`, its printable HTML version, and `project files/Model test results.md`. Detailed existing guides and fitted artifacts were preserved.
 
 **Fresh retest:** `reports/retests/20261025T172218Z/results.json` records source/cache equality for 73 histories and 2,197,000 rows; mean test curve RMSE 0.05908515170863245, median 0.05056665519928898, worst 0.11330617910816165 (case 45), mean MAE 0.04899859206569091. A separate frozen-settings fit took 17.26 seconds and exactly reproduced every weight and prediction without warnings. NumPy predictions also match exactly. All 13 unit and 3 live Studio tests passed. The initial live attempt hit sandbox restrictions; Studio was subsequently found stopped, started and successfully checked. All four delivered artifact hashes remain unchanged. This is same-data/local-environment reproducibility, not a new blind or physical validation. Saved condition-holdout diagnostics were checked for aggregation, not rerun.

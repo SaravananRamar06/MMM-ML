@@ -36,7 +36,9 @@ Latest evidence: `reports/retests/20261025T172218Z/`. Mean test curve RMSE 0.059
 - [ ] Planned 31 October: fresh beginner Colab notebook, scikit-learn, one query
   MLP and E11-to-Svm prediction using the preserved case split; no implementation
   requested in the planning discussion. Future porosity-input guidance is
-  documented in porosity-workflow.md; actual mapping/data remain pending.
+  documented in porosity-workflow.md. Use fixed nominal phi=0.04 as the user's
+  study assumption in metadata; source-history applicability and material
+  mappings remain pending.
 - [ ] Confirm the generating solver/material law, loading setup, output averaging, units and strain/stress definitions.
 - [ ] Establish whether density/modulus levels encode porosity, and justify any mapping before using it.
 - [ ] Obtain aerodynamic labels or an agreed physical calculation for coefficient of lift, C_L.

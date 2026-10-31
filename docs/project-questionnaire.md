@@ -489,3 +489,10 @@ Leave this for consolidation after answers arrive. It is not permission to guess
 | --- | --- | --- | --- | --- |
 
 After answers are reviewed, update [context.md](context.md), [decisions.md](decisions.md), [open-questions.md](open-questions.md), and [tasks.md](tasks.md). The questionnaire should preserve the original answer/source when a later clarification changes it.
+
+### 31 October 2026 — Nominal porosity follow-up
+
+User's exact instruction in the Colab planning discussion: **"we will assume
+porosity is 4%"**. Record fixed nominal `phi = 0.04` for the planned study, with
+status **assumed**. This is not a measurement or confirmation of the porosity
+behind the 73 source histories. Q03's density/modulus definitions remain open.

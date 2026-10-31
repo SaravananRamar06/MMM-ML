@@ -249,3 +249,22 @@ ANSYS files and 27 October user correction that CL means critical flaw length.
 Resolved overlapping context/log additions by keeping both dated records and
 marked the older lift workflow below as historical software. The current
 porosity discussion concerns the stress-strain model only.
+
+## 31 October 2026 (Asia/Kolkata) — Fixed nominal porosity assumption
+
+User instructed: "we will assume porosity is 4%". Recorded `phi = 0.04`, status
+assumed, in configs/study_assumptions.json and updated the context, decisions,
+questionnaire, open questions, task note and material-workflow guidance.
+Interpreted this as the nominal study condition, without relabelling the raw
+histories or asserting that their existing stress curves correspond to 4%.
+Keep the constant in future notebook/run metadata; the proposed five-input
+MLP remains unchanged because a constant feature cannot identify a porosity
+effect. Material mappings and the source histories' applicability remain
+unverified. No model, raw data, existing workflow configuration or prediction
+was modified.
+
+Verification: `.venv/Scripts/python.exe -B -` parsed and range-checked the JSON;
+checks passed for 0.04 -> 4%, assumed status, unverified source histories and
+null density/G relations. The existing workflow mapping remains unconfirmed.
+Reviewed the documentation/config diff; `git diff --check` passed. No executable
+pipeline changed, so model tests were not rerun.

@@ -61,3 +61,9 @@ Keep the final material model intact. A density-derived porosity relation requir
   when phi supplies distinct information and paired response data exists.
   These are conditional recommendations, not a confirmed physical mapping or
   an instruction to train the extension. Preserve the existing model/version.
+- User instruction later in the same discussion: "we will assume porosity is
+  4%". Adopt fixed nominal `phi = 0.04` as a study assumption, stored in
+  `configs/study_assumptions.json`. This does not confirm source-history
+  porosity, a reference density or a G(phi) law. Keep this constant in metadata
+  rather than adding it as a learned feature. A porosity-dependent extension
+  still needs response data spanning known phi values.
