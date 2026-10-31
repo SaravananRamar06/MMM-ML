@@ -1,5 +1,15 @@
 # Current project context
 
+**31 October 2026 — Current requested plan:** compare MLP and PINN in Colab,
+with the governing constitutive equation established before creating either
+model. This supersedes the earlier one-network proposal below. User confirms
+all available files are supplied; no VPSC inputs/run logs are available. Work
+from the outputs and primary literature, labelling any selected constitutive
+law as a hypothesis until qualified. The VPSC-like format is an investigative
+lead, not verified provenance. See `mlp-pinn-colab-plan.md` for the physics-first
+sequence and proposed common PyTorch implementation. No new network or
+physical calibration has been performed; fixed assumed phi=0.04 is retained.
+
 **Latest user correction — 27 October 2026: CL = critical flaw length**, the largest pore or defect the AlSi10Mg bracket can carry at its design stress before fracture (linear-elastic estimate a_c = (1/π)(K_IC / Yσ)²). It is **not** the aerodynamic coefficient of lift. This overrides the 24 October "coefficient of lift" correction below; lift-based statements in older sections are kept only as history. The user also stated that both Ansys analyses (`Elastic.wbpj` here and the explicit Johnson–Cook bracket run in the separate `MMM-ML Project` folder) are their own work.
 
 **31 October 2026 — Colab planning:** user requested a fresh notebook from the

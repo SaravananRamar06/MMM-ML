@@ -1,5 +1,11 @@
 # Choose small networks for material curves
 
+**Current user direction, 31 October:** compare MLP with PINN after establishing
+the governing constitutive equation, replacing the earlier one-model plan.
+All available files are supplied. See [the physics-first Colab plan](mlp-pinn-colab-plan.md).
+The format resembles VPSC output but source law/provenance are unconfirmed;
+recovery/saturation is a candidate for research, not an adopted governing law.
+
 ## Current explanation for the Colab plan — 31 October 2026
 
 The user asked why an MLP was selected. The planned single query MLP maps five

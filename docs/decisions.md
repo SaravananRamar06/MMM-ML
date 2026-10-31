@@ -67,3 +67,17 @@ Keep the final material model intact. A density-derived porosity relation requir
   porosity, a reference density or a G(phi) law. Keep this constant in metadata
   rather than adding it as a learned feature. A porosity-dependent extension
   still needs response data spanning known phi values.
+
+## 31 October 2026 — MLP versus PINN, governing equation first
+
+- User requests a step-by-step Colab comparison of MLP and PINN and explicitly
+  requires a governing equation before model creation. This replaces the
+  single-model Colab choice; the delivered predictor remains preserved.
+- User confirms all files are supplied and no original VPSC inputs/run logs
+  are available. Do not require further user files to produce the plan.
+- Proposed workflow: qualify a sourced constitutive hypothesis on training
+  cases before creating networks, then use a common PyTorch implementation
+  for a controlled data-loss versus physics-residual comparison.
+- No constitutive law is selected yet. Recovery/saturation is a research
+  candidate; VPSC-like names/columns do not confirm the generator or its law.
+  Fixed 4% porosity does not establish material mappings or equation constants.

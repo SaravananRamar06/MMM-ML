@@ -496,3 +496,15 @@ User's exact instruction in the Colab planning discussion: **"we will assume
 porosity is 4%"**. Record fixed nominal `phi = 0.04` for the planned study, with
 status **assumed**. This is not a measurement or confirmation of the porosity
 behind the 73 source histories. Q03's density/modulus definitions remain open.
+
+### 31 October 2026 — MLP/PINN and governing-equation follow-up
+
+User requests: **"let's compare MLP and PINN in Google Colab. give me a step
+by step plan using our dataset"**, followed by **"we do need a governing
+equation primarily before the model is created"**. Record this as the current
+two-model planning scope and sequence.
+
+Asked whether VPSC inputs/run logs or crystal/texture files are available.
+User's answer: **"no we dont, i have given you all the files i have"**.
+File availability is resolved; Q06's original material-law identification
+remains open. Do not reinterpret the VPSC format lead as the user's confirmation.

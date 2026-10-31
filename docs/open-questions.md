@@ -10,6 +10,12 @@ value to use as an assumption, not Q03's physical density/G interpretation or
 the porosity of each supplied history. Applicability of the existing curves
 to that study condition remains unverified.
 
+**File availability resolved, 31 October:** the user has supplied all files
+they have; there are no additional VPSC inputs or run logs. Q01's generating
+law remains scientifically unresolved. Investigate a literature-grounded
+constitutive hypothesis and qualify it before the requested MLP/PINN build;
+do not repeatedly ask the user for missing source files.
+
 ## Scientific questions to resolve through evidence
 
 | ID | Question | Why it matters | Best next evidence |

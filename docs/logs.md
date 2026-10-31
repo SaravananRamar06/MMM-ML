@@ -302,3 +302,30 @@ MLP selection and 4% fixed assumption. No new model comparison was executed;
 no architecture, configuration, test split or artifact changed. Reviewed the
 two-document diff and ran git diff --check; model tests were not rerun for
 this documentation-only explanation.
+
+## 31 October 2026 (Asia/Kolkata) — Physics-first MLP/PINN Colab plan
+
+User changed the requested plan to MLP versus PINN and required a governing
+equation before model creation. User confirms all files are supplied and no
+VPSC inputs/run logs are available. Recorded the exact replies in the
+questionnaire and updated current context, decisions, tasks and open questions.
+Added docs/mlp-pinn-colab-plan.md with a constitutive-law qualification phase
+before neural architecture/training, followed by the controlled comparison.
+PyTorch for both is proposed to support differentiable physics losses fairly;
+the original artifact and fixed 4% assumed porosity are retained.
+
+Read-only inventory found 74 raw files (73 OUT histories and one CSV), with no
+source inputs; existing split remains 36/37. Read the existing audit confirming
+all 73 final stresses below initial stresses and Evm reversal in case 60.
+A narrow source read found TB,PLAS,...,MISO in the bracket SYS/ds.dat, with a
+tabulated plastic-strain/stress curve. This is not validation of that FE model
+or evidence of the professor dataset's generating law.
+
+Verified primary LANL VPSC code: similar output labels and file name are a
+provenance lead, with version/column differences; multiple hardening laws and
+state variables are possible. Verified primary storage/recovery, Sandia
+Johnson-Cook and PINN references plus PyTorch autograd docs. The proposed
+recovery/saturation equation is a candidate to qualify, not a confirmed law;
+plastic-strain mapping and state definitions remain open. No law calibration,
+network, new metric or solve was performed. Reviewed documentation and checked
+git diff --check; model tests are unnecessary for this planning-only change.
