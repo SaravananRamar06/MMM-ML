@@ -91,3 +91,8 @@ User chose "Effective law (Recommended)" and authorized checking it using the 36
 ## 2 November 2026 - Test the single MLP proposal
 
 User selected "MLP equation (Recommended)" and requested "test this" after asking for the best plan. Execute the specified single 5-16-16-1, seed-42 scikit-learn model with alpha selected only on 36 training cases; compare with the existing curve-copy baseline and diagnose omitted condition groups through nested selection. Export the exact empirical equation. Preserve 37 test cases until the selected fitted weights are saved/locked. This is a fresh experiment, not a universal-best-model claim.
+
+
+## 2 November - Single MLP test conclusion
+
+The specified single MLP improves mean RMSE over the lookup baseline in training-case CV (2.174491 versus 3.602695) and the 37-case test (0.142667 versus 1.378978). It supports within-design interpolation; nested condition holdouts are much weaker, including 43.236012 at 200/-5, and do not justify a universal-best or new-regime claim. The exported JSON equation exactly reproduces the final network. The recovered fit is weight-for-weight identical to the preserved first fit; the rerun addressed reporting only. Keep the previous ensemble and its results as a separate artifact. Hosted Colab remains unverified following a browser policy stop.

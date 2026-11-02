@@ -29,6 +29,7 @@ for partition,ids in [('cv',r['train_ids']),('test',r['test_ids'])]:
         actual=scores(saved[partition]['Svm'],saved[partition][key])
         for metric,value in actual.items():np.testing.assert_allclose(value,r[target][metric],rtol=1e-12,atol=1e-12)
 X=conditions(r['train_ids']);V=conditions(r['test_ids']);Y=saved['cv']['Svm']
+assert r['selected_alpha']==min(r['trials'],key=lambda t:(t['metrics']['mean_rmse'],-t['alpha']))['alpha']
 for trial in r['trials']:
     seen=[]
     for f in trial['folds']:
@@ -43,11 +44,27 @@ for g in r['condition_holdouts']:
     assert not set(g['fit_ids'])&set(g['validation_ids'])
     group_ix=[r['train_ids'].index(i) for i in g['fit_ids']]
     np.testing.assert_allclose(g['fit']['mean'],queries(X[group_ix],grid).mean(0),rtol=1e-13)
+    assert g['alpha']==min(g['selection'],key=lambda t:(t['metrics']['mean_rmse'],-t['alpha']))['alpha']
+    if 'core_source_sha256' in g:
+        assert g['core_source_sha256']==sha(root/'src/single_mlp.py')
+        assert g['worker_source_sha256']==sha(root/'scripts/precompute_mlp_conditions.py')
     for trial in g['selection']:
+        seen=[]
         for f in trial['folds']:
             assert set(f['fit_ids']+f['validation_ids'])==set(g['fit_ids'])
             assert not set(f['fit_ids'])&set(f['validation_ids'])
+            seen+=f['validation_ids']
+            ix=[r['train_ids'].index(i) for i in f['fit_ids']]
+            np.testing.assert_allclose(f['mean'],queries(X[ix],grid).mean(0),rtol=1e-13)
+            np.testing.assert_allclose(f['scale'],queries(X[ix],grid).std(0),rtol=1e-12)
+            np.testing.assert_allclose(f['target_mean'],Y[ix].mean(),rtol=1e-13)
+            np.testing.assert_allclose(f['target_scale'],Y[ix].std(),rtol=1e-13)
+        assert sorted(seen)==sorted(g['fit_ids'])
 eq=json.loads((out/'equation.json').read_text());model=joblib.load(out/'model.joblib')
+np.testing.assert_allclose(model['xs'].mean_,queries(X,grid).mean(0),rtol=1e-13)
+np.testing.assert_allclose(model['xs'].scale_,queries(X,grid).std(0),rtol=1e-12)
+np.testing.assert_allclose(model['ym'],Y.mean(),rtol=1e-13)
+np.testing.assert_allclose(model['ys'],Y.std(),rtol=1e-13)
 lock=json.loads((out/'selection_lock.json').read_text())
 assert lock['fit_ids']==split['train'] and lock['alpha']==r['selected_alpha']
 assert lock['equation_sha256']==sha(out/'equation.json') and lock['model_sha256']==sha(out/'model.joblib')

@@ -33,6 +33,9 @@ Latest evidence: `reports/retests/20261025T172218Z/`. Mean test curve RMSE 0.059
 
 ## Scientific work still open
 
+- [x] 2 November: test the fresh single MLP on the unchanged 36/37 case split; perform nested condition diagnostics, export all equation coefficients and independently verify predictions, scalers, folds, source hashes and original artifact preservation. See reports/single_mlp_20261102/README.md.
+- [ ] Hosted Colab execution remains unverified; the prepared notebook embeds the locally tested code. This is distinct from the completed local model test.
+
 - [x] 31 October: implement and verify the 36-training-case effective-equation check; both tested families fail qualification. See effective-equation-check.md.
 - [ ] Research a better supported effective equation before creating the MLP/PINN comparison; retain case 60 and exclude the 37 final-test histories from this study.
 

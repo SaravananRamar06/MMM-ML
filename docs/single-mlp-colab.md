@@ -44,5 +44,8 @@ inference must match sklearn to 1e-10 source stress units, including JSON reload
 Run `python src/single_mlp.py --output reports/NEW_DIRECTORY`.
 The notebook notebooks/single_mlp_equation.ipynb embeds this same code and split.
 Set its Drive ZIP path, then execute in order. Hosted Colab execution and Drive
-access are not verified by local execution. The local result and verification
-will be recorded in reports/single_mlp_20261102/ after the experiment completes.
+access are not verified by local execution. The completed local result and verification are recorded in
+[reports/single_mlp_20261102/README.md](../reports/single_mlp_20261102/README.md).
+Mean test RMSE is 0.142667 versus baseline 1.378978; the exact equation reload
+difference is 0.0. Missing-condition performance is weaker (up to 43.236012 RMSE).
+Four focused tests and independent saved-result verification pass.
