@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
+import tempfile
 import numpy as np
 from threadpoolctl import threadpool_limits
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
@@ -41,6 +43,20 @@ class SingleMLPTests(unittest.TestCase):
             np.testing.assert_allclose(rec['mean'],queries(self.X[tr],self.e).mean(0))
         self.assertEqual(sorted(seen),list(ids))
         np.testing.assert_array_equal(lookup(self.X[:6],self.Y[:6],self.X[6:]),LookupBaseline().fit(self.X[:6],self.Y[:6]).predict(self.X[6:]))
+
+    def test_completed_comparison_resumes_without_refitting(self):
+        scratch=Path(__file__).resolve().parents[1]/'work'
+        scratch.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=scratch) as folder:
+            cache=Path(folder).resolve()
+            self.assertTrue(cache.is_relative_to(scratch.resolve()))
+            with threadpool_limits(limits=1):
+                first,_,base=select(self.X,self.Y,np.arange(9),self.e,self.cfg,cache)
+            with patch('single_mlp.fit',side_effect=AssertionError('Completed checkpoint must not refit')):
+                resumed,_,baseline=select(self.X,self.Y,np.arange(9),self.e,self.cfg,cache)
+            self.assertEqual(first['metrics'],resumed['metrics'])
+            np.testing.assert_array_equal(first['prediction'],resumed['prediction'])
+            np.testing.assert_array_equal(base,baseline)
 
 
 if __name__=='__main__':unittest.main()

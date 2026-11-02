@@ -352,3 +352,8 @@ Implemented the fresh single-network protocol and exact JSON equation export, fr
 The first full fit reached all nine condition diagnostics and final 37-case scoring, but JSON serialization failed on a NumPy int64 audit ID before the main results file was saved. Preserved its final model, equation and selection lock under excluded work/single_mlp_20261102_save_failure/. Corrected audit IDs to native integers and added a NumPy-aware strict JSON serializer with a regression test. All three focused tests pass. Added per-alpha and per-condition checkpoints under excluded work/ keyed by exact source/config/raw-training hashes. The unchanged 100-fit protocol is repeating in live exec session 91372 to recover complete validation evidence; no hyperparameter or optimizer change follows test exposure.
 
 Independent rescoring of the saved first-run model gives final-test mean/median/worst RMSE 0.1426668112 / 0.1020162051 / 0.4191297662; equation mismatch 0.0. The verifier now requires the repeated final model weights and predictions to match that preserved model exactly. These scores are provisional until the complete evidence package is verified.
+
+
+### 2 November - Checkpoint reuse verified
+
+Added a regression test that saves a completed alpha comparison, reloads it with fitting disabled, and requires identical predictions, metrics and baseline values. All four focused single-MLP tests pass. Live recovery session 91372 reproduced the original training-only selection exactly (alpha 0.001, mean case RMSE 2.174491113800993) and has persisted its primary comparisons and the first omitted-condition alpha comparisons. The complete recovery evidence package remains pending; no settings were changed after test exposure.
