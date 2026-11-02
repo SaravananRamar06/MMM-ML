@@ -357,3 +357,10 @@ Independent rescoring of the saved first-run model gives final-test mean/median/
 ### 2 November - Checkpoint reuse verified
 
 Added a regression test that saves a completed alpha comparison, reloads it with fitting disabled, and requires identical predictions, metrics and baseline values. All four focused single-MLP tests pass. Live recovery session 91372 reproduced the original training-only selection exactly (alpha 0.001, mean case RMSE 2.174491113800993) and has persisted its primary comparisons and the first omitted-condition alpha comparisons. The complete recovery evidence package remains pending; no settings were changed after test exposure.
+
+
+### 2 November - Independent condition checks and Colab UI limitation
+
+Added scripts/precompute_mlp_conditions.py to compute remaining temperature groups with the same frozen core fit/select functions. Worker alpha caches are private; only completed group JSON results are atomically published for the main recovery run to reuse. Main session remains 91372; independent temperature-100 and temperature-200 workers are sessions 90481 and 31298. All settings and case partitions are unchanged.
+
+Read the computer-use skill and attempted a browser-tab setup to check hosted Colab. Computer Use stopped because it could not establish the current browser URL with sufficient confidence for policy enforcement. No further UI inputs were attempted. Hosted Colab remains unverified; local computation continues independently. This UI limitation does not block the local scientific test.
