@@ -21,6 +21,13 @@ from threadpoolctl import threadpool_limits
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def json_text(value):
+    def scalar(v):
+        if isinstance(v,np.generic): return v.item()
+        raise TypeError(f'Unsupported JSON value: {type(v).__name__}')
+    return json.dumps(value,indent=2,default=scalar,allow_nan=False)+'\n'
+
+
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -42,7 +49,7 @@ def load_cases(raw, ids, grid):
         r = matrix[i]
         X.append([float(r['temperature']),np.log10(float(r['strain_rate'])),float(r['density']),float(r['shear_modulus'])])
         Y.append(np.interp(grid,a[:,1],a[:,0]))
-        audit.append(dict(id=i,sha256=sha(path),rows=len(a)))
+        audit.append(dict(id=int(i),sha256=sha(path),rows=len(a)))
     return np.array(X),np.array(Y),audit
 
 
@@ -110,16 +117,27 @@ def scores(y,p):
         case_rmse=rmse.tolist(),case_mae=mae.tolist())
 
 
-def select(X,Y,ids,grid,cfg):
+def select(X,Y,ids,grid,cfg,cache=None):
     folds = list(KFold(cfg['folds'],shuffle=True,random_state=cfg['seed']).split(X))
     trials = []; base = np.empty_like(Y)
     for alpha in cfg['alphas']:
+        cached=None if cache is None else cache/f'alpha_{alpha}.json'
+        if cached is not None and cached.exists():
+            trial=json.loads(cached.read_text());trial['prediction']=np.array(trial['prediction'])
+            trials.append(trial)
+            for tr,va in folds: base[va]=lookup(X[tr],Y[tr],X[va])
+            continue
         p = np.empty_like(Y); records = []
         for tr,va in folds:
             m,info = fit(X[tr],Y[tr],grid,alpha,cfg)
             p[va] = predict(m,X[va],grid); base[va] = lookup(X[tr],Y[tr],X[va])
             records.append(dict(fit_ids=ids[tr].tolist(),validation_ids=ids[va].tolist(),**info))
-        trials.append(dict(alpha=alpha,metrics=scores(Y,p),folds=records,prediction=p))
+        trial=dict(alpha=alpha,metrics=scores(Y,p),folds=records,prediction=p)
+        trials.append(trial)
+        if cached is not None:
+            cached.parent.mkdir(parents=True,exist_ok=True)
+            cached.write_text(json_text({**trial,'prediction':p.tolist()}))
+        print('CV alpha finished',alpha,'cases',len(ids),flush=True)
     best = min(trials,key=lambda t:(t['metrics']['mean_rmse'],-t['alpha']))
     return best,trials,base
 
@@ -135,24 +153,33 @@ def run(root,output):
     protected = {str(p.relative_to(root)):sha(p) for p in (root/'runs/score/final_Svm').glob('*') if p.is_file()}
     start = time.perf_counter()
     X,Y,audit = load_cases(root/'TEAM_8_extracted_results_set_1',train,grid)
-    best,trials,base = select(X,Y,train,grid,cfg)
+    signature=hashlib.sha256((sha(__file__)+json_text(cfg)+json_text(audit)).encode()).hexdigest()[:16]
+    cache=root/'work'/f'single_mlp_cache_{signature}'
+    best,trials,base = select(X,Y,train,grid,cfg,cache/'primary')
     print('Training-only selection:',best['alpha'],best['metrics']['mean_rmse'],flush=True)
     groups = []
     for T,rate in sorted(set(map(tuple,X[:,:2]))):
+        group_cache=cache/f'group_{T}_{rate}'
+        group_result=group_cache/'result.json'
+        if group_result.exists():
+            groups.append(json.loads(group_result.read_text()))
+            print('Restored completed condition check',T,rate,flush=True)
+            continue
         va = np.flatnonzero((X[:,0]==T)&(X[:,1]==rate)); tr = np.setdiff1d(np.arange(36),va)
-        b,ts,_ = select(X[tr],Y[tr],train[tr],grid,cfg)
+        b,ts,_ = select(X[tr],Y[tr],train[tr],grid,cfg,group_cache)
         m,info = fit(X[tr],Y[tr],grid,b['alpha'],cfg)
         groups.append(dict(temperature=T,log10_rate=rate,fit_ids=train[tr].tolist(),validation_ids=train[va].tolist(),
             alpha=b['alpha'],selection=[{k:v for k,v in t.items() if k!='prediction'} for t in ts],
             fit=info,mlp=scores(Y[va],predict(m,X[va],grid)),baseline=scores(Y[va],lookup(X[tr],Y[tr],X[va]))))
+        group_result.write_text(json_text(groups[-1]))
         print('Nested condition check',T,rate,groups[-1]['mlp']['mean_rmse'],flush=True)
     model,fit_info = fit(X,Y,grid,best['alpha'],cfg)
     eq = export_equation(model)
-    (output/'equation.json').write_text(json.dumps(eq,indent=2)+'\n')
+    (output/'equation.json').write_text(json_text(eq))
     joblib.dump(model,output/'model.joblib')
     lock = dict(config=cfg,alpha=best['alpha'],fit_ids=train.tolist(),seed=cfg['seed'],
                 equation_sha256=sha(output/'equation.json'),model_sha256=sha(output/'model.joblib'))
-    (output/'selection_lock.json').write_text(json.dumps(lock,indent=2)+'\n')
+    (output/'selection_lock.json').write_text(json_text(lock))
     # No test history is opened until the selected fitted model has been saved and locked.
     V,Z,test_audit = load_cases(root/'TEAM_8_extracted_results_set_1',test,grid)
     p,pb = predict(model,V,grid),lookup(X,Y,V)
@@ -171,7 +198,7 @@ def run(root,output):
         versions=dict(python=platform.python_version(),numpy=np.__version__,scipy=scipy.__version__,sklearn=sklearn.__version__),
         elapsed_seconds=time.perf_counter()-start,code_sha256=sha(__file__),split_sha256=sha(root/'data/split.json'),
         caveat='Previously explored test set; same-design interpolation, not blind/physical validation. Condition checks use nested training-only alpha selection. No universal-best claim.')
-    (output/'results.json').write_text(json.dumps(result,indent=2)+'\n')
+    (output/'results.json').write_text(json_text(result))
     for label,ids,y,pr,bl in [('cv',train,Y,best['prediction'],base),('test',test,Z,p,pb)]:
         with (output/f'{label}_predictions.csv').open('w',newline='') as f:
             w=csv.writer(f);w.writerow(['id','E11','Svm','MLP','lookup'])
@@ -187,7 +214,7 @@ def run(root,output):
         ax.plot(e,truth,label='Supplied curve',color='black');ax.plot(e,mp,label='Single MLP');ax.plot(e,bp,'--',label='Curve-copy baseline')
         ax.set(title=title,xlabel='E11 (source strain coordinate)',ylabel='Svm (source stress units)');ax.legend()
     fig.savefig(output/'comparison.png',dpi=150);plt.close(fig)
-    print(json.dumps({k:result[k] for k in ['selected_alpha','cv','test','test_baseline','checks']}),flush=True)
+    print(json_text({k:result[k] for k in ['selected_alpha','cv','test','test_baseline','checks']}),flush=True)
     return result
 
 

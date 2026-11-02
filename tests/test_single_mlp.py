@@ -6,11 +6,14 @@ import unittest
 import numpy as np
 from threadpoolctl import threadpool_limits
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
-from single_mlp import fit,predict,export_equation,equation_predict,queries,select,lookup
+from single_mlp import fit,predict,export_equation,equation_predict,queries,select,lookup,json_text
 from models import LookupBaseline
 
 
 class SingleMLPTests(unittest.TestCase):
+    def test_numpy_audit_values_serialize_without_precision_loss(self):
+        values=dict(id=np.int64(60),error=np.float64(1e-12),passed=np.bool_(True))
+        self.assertEqual(json.loads(json_text(values)),dict(id=60,error=1e-12,passed=True))
     def setUp(self):
         self.X=np.random.default_rng(4).normal(size=(9,4))
         self.e=np.linspace(.001,.09,12)

@@ -345,3 +345,10 @@ Initial test attempt encountered an external OS temp-directory permission issue;
 ## 2 November 2026 - Single MLP test implementation checkpoint
 
 Implemented the fresh single-network protocol and exact JSON equation export, frozen settings, a self-contained Colab notebook generator, independent result verifier/report writer and two focused tests. The tests pass for equation orientation/precision, parameter count, batch inference, fitting-only scalers, case folds and equivalence of the copied baseline to the existing baseline. All notebook Python cells compile and embed the exact module. Full source-data experiment is running in exec session 60627; initial training-only CV selected alpha 0.001 with mean RMSE 2.174491. Nine nested condition-group diagnostics and final locked-model test scoring remain underway. No completion or final test accuracy is claimed at this checkpoint.
+
+
+### 2 November - Report serialization recovery
+
+The first full fit reached all nine condition diagnostics and final 37-case scoring, but JSON serialization failed on a NumPy int64 audit ID before the main results file was saved. Preserved its final model, equation and selection lock under excluded work/single_mlp_20261102_save_failure/. Corrected audit IDs to native integers and added a NumPy-aware strict JSON serializer with a regression test. All three focused tests pass. Added per-alpha and per-condition checkpoints under excluded work/ keyed by exact source/config/raw-training hashes. The unchanged 100-fit protocol is repeating in live exec session 91372 to recover complete validation evidence; no hyperparameter or optimizer change follows test exposure.
+
+Independent rescoring of the saved first-run model gives final-test mean/median/worst RMSE 0.1426668112 / 0.1020162051 / 0.4191297662; equation mismatch 0.0. The verifier now requires the repeated final model weights and predictions to match that preserved model exactly. These scores are provisional until the complete evidence package is verified.

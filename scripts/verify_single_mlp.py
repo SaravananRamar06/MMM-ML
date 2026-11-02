@@ -11,6 +11,8 @@ from single_mlp import scores,predict,equation_predict,queries,lookup,sha
 out=root/'reports/single_mlp_20261102'
 r=json.loads((out/'results.json').read_text());split=json.loads((root/'data/split.json').read_text())
 assert r['train_ids']==split['train'] and r['test_ids']==split['test']
+assert [a['id'] for a in r['training_audit']]==split['train']
+assert [a['id'] for a in r['test_audit']]==split['test']
 assert r['code_sha256']==sha(root/'src/single_mlp.py') and r['split_sha256']==sha(root/'data/split.json')
 with (root/'TEAM_8_extracted_results_set_1/simulation_matrix.csv').open() as f:
     matrix={int(a['Simulation_ID']):a for a in csv.DictReader(f)}
@@ -33,19 +35,34 @@ for trial in r['trials']:
         assert not set(f['fit_ids'])&set(f['validation_ids']);seen+=f['validation_ids']
         ix=[r['train_ids'].index(i) for i in f['fit_ids']]
         np.testing.assert_allclose(f['mean'],queries(X[ix],grid).mean(0),rtol=1e-13)
+        np.testing.assert_allclose(f['scale'],queries(X[ix],grid).std(0),rtol=1e-12)
         np.testing.assert_allclose(f['target_mean'],Y[ix].mean(),rtol=1e-13)
         np.testing.assert_allclose(f['target_scale'],Y[ix].std(),rtol=1e-13)
     assert sorted(seen)==sorted(r['train_ids'])
 for g in r['condition_holdouts']:
     assert not set(g['fit_ids'])&set(g['validation_ids'])
+    group_ix=[r['train_ids'].index(i) for i in g['fit_ids']]
+    np.testing.assert_allclose(g['fit']['mean'],queries(X[group_ix],grid).mean(0),rtol=1e-13)
     for trial in g['selection']:
         for f in trial['folds']:
             assert set(f['fit_ids']+f['validation_ids'])==set(g['fit_ids'])
             assert not set(f['fit_ids'])&set(f['validation_ids'])
 eq=json.loads((out/'equation.json').read_text());model=joblib.load(out/'model.joblib')
+lock=json.loads((out/'selection_lock.json').read_text())
+assert lock['fit_ids']==split['train'] and lock['alpha']==r['selected_alpha']
+assert lock['equation_sha256']==sha(out/'equation.json') and lock['model_sha256']==sha(out/'model.joblib')
+assert r['checks']['parameters']==385
 p=predict(model,V,grid);q=equation_predict(eq,queries(V,grid)).reshape(p.shape)
 np.testing.assert_allclose(p,saved['test']['MLP'],rtol=0,atol=1e-10)
 np.testing.assert_allclose(q,p,rtol=0,atol=1e-10)
+retry_reference=root/'work/single_mlp_20261102_save_failure/model.joblib'
+retry_identical=None
+if retry_reference.exists():
+    previous=joblib.load(retry_reference)
+    for a,b in zip(model['net'].coefs_+model['net'].intercepts_,previous['net'].coefs_+previous['net'].intercepts_):
+        np.testing.assert_array_equal(a,b)
+    np.testing.assert_array_equal(p,predict(previous,V,grid))
+    retry_identical=True
 np.testing.assert_array_equal(lookup(X,Y,V),saved['test']['lookup'])
 for rel,h in r['checks']['protected_artifacts_unchanged'].items():assert sha(root/rel)==h
 for a in r['training_audit']+r['test_audit']:
@@ -56,6 +73,7 @@ for c in nb['cells']:
     if c['cell_type']=='code' and not s.startswith('%'):compile(s,'notebook-cell','exec')
 assert repr((root/'src/single_mlp.py').read_text(encoding='utf-8')) in ''.join(nb['cells'][3]['source'])
 verification=dict(passed=True,metric_reconstruction=True,fold_scaler_isolation=True,nested_group_isolation=True,
+    unchanged_model_after_reporting_retry=retry_identical,
     model_and_equation_reload_max_difference=float(np.max(np.abs(q-p))),source_and_original_artifact_hashes_match=True,
     notebook_cells_compile_and_embed_tested_source=True,hosted_colab_verified=False)
 (out/'verification.json').write_text(json.dumps(verification,indent=2)+'\n')
