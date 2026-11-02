@@ -86,3 +86,8 @@ Keep the final material model intact. A density-derived porosity relation requir
 ## 31 October 2026 - Effective-equation qualification result
 
 User chose "Effective law (Recommended)" and authorized checking it using the 36 training cases before creating MLP/PINN. Preserve the exact 36/37 split. Tested a simple exponential and Hockett-Sherby-type softening adaptation with fitting-only positive condition-dependent maps. Prospective research screens: mean normalized error <5%, worst <10%, baseline improvement, convergence and numerical correctness. Both candidates fail the error screens. Do not create the planned networks with these equations yet. Rejection applies to the tested families/maps/protocol, not all effective laws. Keep 4% porosity as assumed metadata. See effective-equation-check.md.
+
+
+## 2 November 2026 - Test the single MLP proposal
+
+User selected "MLP equation (Recommended)" and requested "test this" after asking for the best plan. Execute the specified single 5-16-16-1, seed-42 scikit-learn model with alpha selected only on 36 training cases; compare with the existing curve-copy baseline and diagnose omitted condition groups through nested selection. Export the exact empirical equation. Preserve 37 test cases until the selected fitted weights are saved/locked. This is a fresh experiment, not a universal-best-model claim.

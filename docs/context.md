@@ -1,5 +1,8 @@
 # Current project context
 
+**2 November 2026 - Current direction:** user selected the exact MLP prediction equation, then requested "test this". A fresh single 385-parameter MLP test is running with fixed 36/37 cases, training-only alpha selection and nested condition holdouts. This supersedes the MLP/PINN comparison request. See single-mlp-colab.md; no physical governing law is claimed.
+
+
 **31 October 2026 - Effective-equation checks completed:** user selected an effective law and authorized using only the 36 training cases. Both tested exponential families fail prospective case-CV error limits (mean/worst normalized errors 5.79%/54.28% and 6.68%/58.28%). No equation is frozen for PINN use. See effective-equation-check.md, the physics-only notebook and reports/effective_equation_20261031/. The 37 test histories were excluded; no new neural network was created. Evm matches accumulated stress work divided by Svm numerically, not conventional accumulated plastic strain.
 
 **31 October 2026 — Current requested plan:** compare MLP and PINN in Colab,

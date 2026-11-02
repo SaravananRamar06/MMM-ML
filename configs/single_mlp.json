@@ -1,0 +1,7 @@
+{
+  "hidden": [16, 16], "activation": "tanh", "solver": "lbfgs",
+  "seed": 42, "folds": 3, "alphas": [0.0001, 0.001, 0.01],
+  "max_iter": 5000, "max_fun": 50000, "tol": 1e-9,
+  "strain_min": 0.0002, "strain_max": 0.0999, "strain_points": 120,
+  "porosity_fraction_assumed": 0.04
+}

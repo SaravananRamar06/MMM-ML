@@ -513,3 +513,8 @@ remains open. Do not reinterpret the VPSC format lead as the user's confirmation
 ### 31 October 2026 - Equation scope and execution authorization
 
 User selected **"Effective law (Recommended)"**, accepting a literature-based effective response hypothesis with stated assumptions. User reaffirmed the 50/50 case split and authorized: **"okay, proceed with checking the effective governing equation using the 36 training cases before we create the MLP and PINN in Colab"**. Qualification implemented; 37 test histories excluded. Both candidates failed the prospective error limits.
+
+
+### 2 November 2026 - MLP equation and test authorization
+
+User chose **"MLP equation (Recommended)"** for an exact learned prediction equation, then asked **"come up with the best plan"** and set the active goal **"test this"**. The current experiment tests the specified single-MLP proposal and exports its numerical equation.
