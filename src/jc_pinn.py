@@ -375,9 +375,17 @@ def make_equation(members, cfg, x_mean, x_scale, y_scale, cand, fit_ids):
         members=members, fit_ids=[int(i) for i in fit_ids],
         ensemble='sigma = exp(mean_k[ln sigma_JC(theta_k) + delta_k(z)]); z = (x - x_mean)/x_scale; '
                  'delta_k = w3.tanh(W2.tanh(W1.z + b1) + b2) + b3',
-        validity=dict(temperature_C=[30, 200], temperature_physics_only_C=[200, 300], log10_rate=[-5, -3],
+        validity=dict(temperature_C=[30, 200], temperature_extrapolation_C=[200, 300], log10_rate=[-5, -3],
                       density=[2488.05, 2700], G_MPa=[23313.95, 25300], E11=[0.0002, 0.0999],
-                      note='Data cover 30-200 C; 200-300 C follows Equation 1 through the physics term only and is unvalidated.'))
+                      note=extrapolation_note(cand)))
+
+
+def extrapolation_note(cand):
+    if cand['lambda_phys'] > 0:
+        return (f"Data cover 30-200 C; 200-300 C is held to Equation 1 only through the {cand['physics']} physics "
+                'residual and is unvalidated.')
+    return ('Data cover 30-200 C; with lambda_phys = 0 nothing constrains 200-300 C except the Equation 1 backbone '
+            'and the smooth network, so those curves are unvalidated extrapolation.')
 
 
 # ----------------------------------------------------------------------------- fitting and scoring
@@ -603,7 +611,7 @@ def write_csv(path, ids, grid, columns):
                 w.writerow([int(case), repr(float(e))] + [repr(float(v[i, j])) for v in columns.values()])
 
 
-def study_curves(eq, cfg, grid):
+def study_curves(eq, cfg, grid, cand=None):
     sp = cfg['study_point']
     rows = []
     for T in (30.0, 100.0, 200.0, 300.0):
@@ -613,7 +621,7 @@ def study_curves(eq, cfg, grid):
             rows.append(dict(temperature=T, log10_rate=lr, stress=s.tolist(), equation_only_backbone=base.tolist(),
                              correction_factor=np.exp(d).tolist(), extrapolated=T > 200))
     return dict(porosity=sp['porosity'], density=sp['density'], G=sp['G'], E11=grid.tolist(), curves=rows,
-                note='300 C has no data: its curve follows Equation 1 through the physics term only and is unvalidated.')
+                note='300 C has no data. ' + extrapolation_note(cand or eq.get('selected', dict(lambda_phys=0.0))))
 
 
 def plots(output, grid, test, Z, p, p_jc, train, Y, cv, cv_jc, sel, study, refs):
@@ -625,7 +633,7 @@ def plots(output, grid, test, Z, p, p_jc, train, Y, cv, cv_jc, sel, study, refs)
     import matplotlib.pyplot as plt
     rm = np.sqrt(np.mean((Z - p) ** 2, axis=1))
     order = np.argsort(rm)
-    i60 = list(train).index(60) if 60 in list(train) else None
+    i60 = list(train).index(60) if cv is not None and 60 in list(train) else None
     panels = [(Z[order[-1]], p[order[-1]], p_jc[order[-1]], f'Worst test case {test[order[-1]]}'),
               (Z[order[len(order) // 2]], p[order[len(order) // 2]], p_jc[order[len(order) // 2]],
                f'Median test case {test[order[len(order) // 2]]}')]
@@ -646,6 +654,12 @@ def plots(output, grid, test, Z, p, p_jc, train, Y, cv, cv_jc, sel, study, refs)
     fig.savefig(Path(output) / 'test_comparison.png', dpi=150)
     plt.close(fig)
 
+    if 'selected_trial' in sel:
+        holdout_figure(output, sel, refs, plt)
+    study_figure(output, study, plt)
+
+
+def holdout_figure(output, sel, refs, plt):
     names = [f"{g['temperature']:g} °C\n1e{g['log10_rate']:g}" for g in sel['selected_trial']['groups']]
     series = [('Curve copy', [g['metrics']['mean_rmse'] for g in sel['lookup']['groups']], '#95a5a6'),
               ('Equation 1 only', [g['metrics']['mean_rmse'] for g in sel['equation_only']['groups']], '#c0392b'),
@@ -663,13 +677,15 @@ def plots(output, grid, test, Z, p, p_jc, train, Y, cv, cv_jc, sel, study, refs)
     fig.savefig(Path(output) / 'condition_holdouts.png', dpi=150)
     plt.close(fig)
 
+
+def study_figure(output, study, plt):
     fig, axes = plt.subplots(1, 3, figsize=(13, 3.9), constrained_layout=True, sharey=True)
     colours = {30.0: '#1f77b4', 100.0: '#2ca02c', 200.0: '#d62728', 300.0: '#7f7f7f'}
     for ax, lr in zip(axes, (-5.0, -4.0, -3.0)):
         for c in study['curves']:
             if c['log10_rate'] == lr:
                 ax.plot(study['E11'], c['stress'], '--' if c['extrapolated'] else '-', color=colours[c['temperature']],
-                        label=f"{c['temperature']:g} °C" + (' (Eq. 1 extrapolation)' if c['extrapolated'] else ''))
+                        label=f"{c['temperature']:g} °C" + (' (no data: extrapolation)' if c['extrapolated'] else ''))
         ax.set(title=f'φ = {study["porosity"]:.0%}, rate 1e{lr:g} /s', xlabel='E11 (axial strain)')
         ax.grid(alpha=.3)
     axes[0].set_ylabel('Predicted Svm (MPa, inferred)')
@@ -729,7 +745,7 @@ def run(root, raw, output, mode='full', selected=None, workers=None, expected=No
     for rel, h in protected.items():
         assert sha(root / rel) == h, rel
     refs = references(root)
-    study = study_curves(eq, cfg, grid)
+    study = study_curves(eq, cfg, grid, chosen)
     by_cond = []
     for T, rate in sorted(set(map(tuple, V[:, :2]))):
         k = (V[:, 0] == T) & (V[:, 1] == rate)
@@ -759,12 +775,41 @@ def run(root, raw, output, mode='full', selected=None, workers=None, expected=No
     if cvp is not None:
         write_csv(output / 'cv_predictions.csv', train, grid,
                   dict(Svm=Y, JC_PINN=cvp['model'], equation_only=cvp['equation_only'], lookup=cvp['lookup']))
-        plots(output, grid, test, Z, p, p_jc, train, Y, cvp['model'], cvp['equation_only'], sel, study, refs)
+    plots(output, grid, test, Z, p, p_jc, train, Y, None if cvp is None else cvp['model'],
+          None if cvp is None else cvp['equation_only'], sel, study, refs)
     summary = dict(selected=chosen, test={k: {m: v[m] for m in ('mean_rmse', 'median_rmse', 'worst_rmse', 'mean_nrmse')}
                                           for k, v in result['test'].items()},
                    equation_only_constants=eq_only['theta'], numpy_vs_torch=eq_err, seconds=round(result['elapsed_seconds'], 1))
     print(json_text(summary), flush=True)
     return result
+
+
+def replot(run_dir, root=ROOT):
+    """Redraw a saved run's figures from its CSV/JSON files (no refitting, no new test scoring)."""
+    run_dir = Path(run_dir)
+    R = json.loads((run_dir / 'results.json').read_text())
+    eq = json.loads((run_dir / 'equation.json').read_text())
+    cfg = R['config']
+    grid = strain_grid(cfg)
+
+    def read(name):
+        rows = {}
+        with (run_dir / name).open() as f:
+            for r in csv.DictReader(f):
+                rows.setdefault(int(r['id']), []).append(r)
+        return rows
+    tst = read('test_predictions.csv')
+    test, train = R['test_ids'], R['train_ids']
+    col = lambda rows, ids, k: np.array([[float(r[k]) for r in rows[i]] for i in ids])
+    Z, p, p_jc = (col(tst, test, k) for k in ('Svm', 'JC_PINN', 'equation_only'))
+    Y = cv = cv_jc = None
+    if (run_dir / 'cv_predictions.csv').exists():
+        cvr = read('cv_predictions.csv')
+        Y, cv, cv_jc = (col(cvr, train, k) for k in ('Svm', 'JC_PINN', 'equation_only'))
+    sel = R['selection'] if 'trials' in R['selection'] else {}
+    study = study_curves(eq, cfg, grid, R['selected'])
+    plots(run_dir, grid, np.array(test), Z, p, p_jc, np.array(train), Y, cv, cv_jc, sel, study, R['references'])
+    return study
 
 
 def versions():

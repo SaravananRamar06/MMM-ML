@@ -1,0 +1,85 @@
+{
+  "purpose": "Post-hoc control: identical network and training with Equation 1 switched off (constant backbone). Not used for selection; the locked JC-PINN is unchanged.",
+  "backbone_max_relative_deviation_from_constant": 8.681413316891096e-06,
+  "control": {
+    "cv_mean_rmse": 1.315051929639399,
+    "group_mean_rmse": 5.6290534301442,
+    "score": 3.4720526798917994,
+    "groups": [
+      {
+        "name": "T30_rate-5",
+        "temperature": 30.0,
+        "log10_rate": -5.0,
+        "mean_rmse": 3.5243766656084325
+      },
+      {
+        "name": "T30_rate-4",
+        "temperature": 30.0,
+        "log10_rate": -4.0,
+        "mean_rmse": 0.8942068339426194
+      },
+      {
+        "name": "T30_rate-3",
+        "temperature": 30.0,
+        "log10_rate": -3.0,
+        "mean_rmse": 1.1388194733849477
+      },
+      {
+        "name": "T100_rate-5",
+        "temperature": 100.0,
+        "log10_rate": -5.0,
+        "mean_rmse": 13.396955443427865
+      },
+      {
+        "name": "T100_rate-4",
+        "temperature": 100.0,
+        "log10_rate": -4.0,
+        "mean_rmse": 1.3593027748242876
+      },
+      {
+        "name": "T100_rate-3",
+        "temperature": 100.0,
+        "log10_rate": -3.0,
+        "mean_rmse": 0.4054466216750837
+      },
+      {
+        "name": "T200_rate-5",
+        "temperature": 200.0,
+        "log10_rate": -5.0,
+        "mean_rmse": 18.973171636900204
+      },
+      {
+        "name": "T200_rate-4",
+        "temperature": 200.0,
+        "log10_rate": -4.0,
+        "mean_rmse": 6.592572007582931
+      },
+      {
+        "name": "T200_rate-3",
+        "temperature": 200.0,
+        "log10_rate": -3.0,
+        "mean_rmse": 4.37662941395143
+      }
+    ],
+    "test": {
+      "mean_rmse": 0.3375431121298086,
+      "median_rmse": 0.362699833612574,
+      "worst_rmse": 0.6119686713280205,
+      "mean_mae": 0.25334685348582886,
+      "mean_nrmse": 0.0033331446728346783
+    }
+  },
+  "jc_pinn": {
+    "cv_mean_rmse": 2.097863146460241,
+    "group_mean_rmse": 6.234866068039225,
+    "score": 4.166364607249733,
+    "test": {
+      "mean_rmse": 0.43862877347121765,
+      "median_rmse": 0.3952168060218003,
+      "worst_rmse": 0.8406385273479724,
+      "mean_mae": 0.32688357810404506,
+      "mean_nrmse": 0.004212568456001056
+    }
+  },
+  "caveat": "The JC-PINN figures include selection among 14 settings using these same splits; the control had no selection."
+}
