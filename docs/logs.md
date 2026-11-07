@@ -388,3 +388,7 @@ Notebook `notebooks/jc_pinn_colab.ipynb` (built by scripts/build_jc_pinn_noteboo
 ### 7 November - Explained notebook and model viewer
 
 User asked to display the model, then for an ipynb with the entire description of the model, its training and its output. Published a private interactive viewer (claude.ai artifact; copy in reports/jc_pinn_20261107/model_viewer.html; its JS predictor matches saved predictions to 1.7e-13). Added scripts/build_jc_pinn_explained_notebook.py -> notebooks/jc_pinn_explained.ipynb (10 parts: setup, data, equation, why the equation alone fails, model, loss/physics, training and selection, outputs, optional retraining, limits/viva). It embeds the module, split, verified run and the 73 interpolated curves, and computes every number live. Executed locally with nbclient in 19 s with no errors or warnings and 6 figures, and saved with outputs: live calibration reproduces the seven constants, live training of member 0 matches the saved weights exactly, and live test scoring reproduces 0.4386. Hosted Colab/Kaggle not verified.
+
+### 7 November - Model specification sheet
+
+User asked for the full specs of the model. Added docs/jc-pinn-spec.md (identity, equation and constants, network, ensemble and parameter totals, data, loss and optimiser, selection, performance, validity, files), with every value read from the committed config and run files; linked from docs/jc-pinn.md and README. No model, code or result changed; verifier re-run passes.
