@@ -1,6 +1,0 @@
-{
- "candidate": "mlp",
- "target": "Svm",
- "selection_scores": 1.1582632139842857,
- "selected_at": "2026-10-24T14:43:59.804087+00:00"
-}

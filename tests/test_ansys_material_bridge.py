@@ -1,19 +1,22 @@
-"""Tests for ANSYS Engineering Data Material Bridge."""
+"""Tests for the ANSYS Engineering Data material bridge (bracket/tools), driven by the JC-PINN."""
 from pathlib import Path
 import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'tools'))
+sys.path.insert(0, str(ROOT / 'bracket/tools'))
 sys.path.insert(0, str(ROOT / 'src'))
 
-import ansys_material_bridge as amb
-import numpy as np
+import ansys_material_bridge as amb  # noqa: E402
+import jc_pinn  # noqa: E402
+import numpy as np  # noqa: E402
 
 
 class AnsysMaterialBridgeTests(unittest.TestCase):
     def test_predict_curve_shape_and_bounds(self):
-        strains, stresses = amb.predict_curve(temperature=100.0, rate=1e-4, density=2619.0, G=24541.0, target="Svm")
+        strains, stresses = amb.predict_curve(temperature=100.0, rate=1e-4, density=2619.0, G=24541.0)
+        _, expected = jc_pinn.predict_curves(jc_pinn.load_final_equation(ROOT), [[100.0, 1e-4, 2619.0, 24541.0]])
+        np.testing.assert_allclose(stresses, expected[0], rtol=0, atol=1e-12)
         self.assertEqual(len(strains), 120)
         self.assertEqual(len(stresses), 120)
         # Verify finite and physically positive stresses

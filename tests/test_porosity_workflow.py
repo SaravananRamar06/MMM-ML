@@ -1,9 +1,8 @@
-"""Numerical contracts, evidence gates and comparable solver-result groups.
+"""Porosity workflow (bracket/workflow): numerical contracts, evidence gates and comparable solver-result groups.
 
 All assumed mappings and solver records below are synthetic test fixtures.
-They are not professor-confirmed definitions or bracket/wing simulation results.
+They are not professor-confirmed definitions or bracket simulation results.
 """
-import copy
 import csv
 import io
 import sys
@@ -14,7 +13,9 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
-import porosity_workflow as pw
+sys.path.insert(0, str(ROOT / 'bracket/workflow'))
+import porosity_workflow as pw  # noqa: E402
+import jc_pinn  # noqa: E402
 
 
 def mapping():
@@ -28,16 +29,14 @@ def row(case='fixture-0', phi=0, **overrides):
                 material_definition_id='synthetic-fixture', load_case_id='fixture-load',
                 source_reference='synthetic test fixture, not a simulation', comparison_group_id='fixture-study',
                 porosity_fraction=phi, temperature_C=100, force_x_N=0, force_y_N=1000, force_z_N=0,
-                max_displacement_mm=1, max_von_mises_MPa=50, aerodynamic_condition_id='fixture-flow',
-                aerodynamic_source_reference='synthetic aero fixture', lift_N=1000,
-                air_density_kg_m3=1.25, speed_m_s=40, reference_area_m2=2)
+                max_displacement_mm=1, max_von_mises_MPa=50)
     data.update(overrides)
     return data
 
 
 def as_csv(rows):
     f = io.StringIO()
-    writer = csv.DictWriter(f, fieldnames=pw.STRUCTURAL_FIELDS + pw.AERO_FIELDS)
+    writer = csv.DictWriter(f, fieldnames=pw.STRUCTURAL_FIELDS)
     writer.writeheader()
     writer.writerows(rows)
     return f.getvalue()
@@ -55,13 +54,6 @@ class PorosityPhysicsContracts(unittest.TestCase):
         with self.assertRaises(ValueError):
             pw.porosity_from_density(2800, 2700)
 
-    def test_air_density_is_used_for_dimensionless_lift(self):
-        self.assertEqual(pw.lift_coefficient(1000, 1.25, 40, 2), .5)
-        self.assertEqual(pw.lift_coefficient(-1000, 1.25, 40, 2), -.5)
-        for rho, speed, area in ((0, 40, 2), (1.25, 0, 2), (1.25, 40, -1), (np.nan, 40, 2)):
-            with self.subTest(values=(rho, speed, area)), self.assertRaises(ValueError):
-                pw.lift_coefficient(1000, rho, speed, area)
-
     def test_unconfirmed_and_unaccepted_assumptions_cannot_predict(self):
         for status in ('unconfirmed', 'assumed'):
             m = mapping(); m['status'] = status
@@ -71,16 +63,17 @@ class PorosityPhysicsContracts(unittest.TestCase):
         with self.assertRaises(ValueError):
             pw.material_study(m, [0], 100, 1e-4, allow_assumed=True)
 
-    def test_explicit_assumed_study_matches_original_runtime(self):
-        from query_runtime import QueryRuntime
+    def test_explicit_assumed_study_matches_the_locked_jc_pinn(self):
         study = pw.material_study(mapping(), [0, .03, .0785], 100, 1e-4, allow_assumed=True)
         self.assertEqual(study['mapping_status'], 'assumed')
         self.assertEqual(study['kind'], 'conditional_material_response')
         self.assertIn('not a bracket', study['limitations'][0])
-        runtime = QueryRuntime.load(ROOT / 'runs/score/final_Svm/model_numpy.npz')
+        eq = jc_pinn.load_final_equation(ROOT)
+        grid = np.linspace(0.0002, 0.0999, 120)
         for curve in study['curves']:
-            expected = runtime.predict([[100, -4, curve['density_kg_m3'], curve['G_MPa']]])[0]
-            np.testing.assert_array_equal(curve['stress_source_units'], expected)
+            X5 = np.c_[np.tile([100, -4, curve['density_kg_m3'], curve['G_MPa']], (120, 1)), grid]
+            np.testing.assert_allclose(curve['stress_MPa'], jc_pinn.equation_predict(eq, X5), rtol=0, atol=1e-12)
+        self.assertAlmostEqual(study['curves'][1]['density_kg_m3'], 2619)
 
     def test_mapping_needs_unique_points_and_physical_density(self):
         for change in ({'density_is_bulk_density': False}, {'modulus_by_phi': []},
@@ -97,33 +90,24 @@ class PorosityPhysicsContracts(unittest.TestCase):
 
 
 class SolverEvidenceContracts(unittest.TestCase):
-    def test_paired_results_calculate_real_changes_and_cl(self):
-        result = pw.compare_solver_results(as_csv([row(), row('fixture-1', .03,
-                                                           max_displacement_mm=1.2, lift_N=900)]))
+    def test_paired_results_calculate_real_changes(self):
+        result = pw.compare_solver_results(as_csv([row(), row('fixture-1', .03, max_displacement_mm=1.2, max_von_mises_MPa=55)]))
         r = result['rows'][1]
         self.assertEqual(r['baseline_case_id'], 'fixture-0')
-        self.assertAlmostEqual(r['CL'], .45)
-        self.assertAlmostEqual(r['change_from_zero_porosity']['CL']['difference'], -.05)
         self.assertAlmostEqual(r['change_from_zero_porosity']['max_displacement_mm']['percent'], 20)
+        self.assertAlmostEqual(r['change_from_zero_porosity']['max_von_mises_MPa']['difference'], 5)
 
-    def test_changed_load_flow_geometry_or_comparison_is_not_paired(self):
-        for change in ({'force_y_N': 1100}, {'speed_m_s': 50}, {'geometry_sha256': 'b' * 64},
-                       {'comparison_group_id': 'different-study'}, {'reference_area_m2': 3}):
+    def test_changed_load_temperature_geometry_or_comparison_is_not_paired(self):
+        for change in ({'force_y_N': 1100}, {'temperature_C': 200}, {'geometry_sha256': 'b' * 64},
+                       {'comparison_group_id': 'different-study'}):
             with self.subTest(change=change):
                 r = pw.compare_solver_results(as_csv([row(), row('fixture-1', .03, **change)]))['rows'][1]
                 self.assertIsNone(r['baseline_case_id'])
                 self.assertEqual(r['change_from_zero_porosity'], {})
 
-    def test_structural_results_never_invent_a_lift_coefficient(self):
-        r = row()
-        for key in pw.AERO_FIELDS:
-            r[key] = ''
-        self.assertIsNone(pw.read_solver_results(as_csv([r]))[0]['CL'])
-
-    def test_bad_provenance_nonfinite_and_partial_aero_are_rejected(self):
+    def test_bad_provenance_and_nonfinite_values_are_rejected(self):
         for change in ({'source_reference': ''}, {'geometry_sha256': 'unknown'}, {'porosity_fraction': 3},
-                       {'max_displacement_mm': -1}, {'lift_N': 'nan'}, {'speed_m_s': 0},
-                       {'aerodynamic_source_reference': ''}):
+                       {'max_displacement_mm': -1}, {'max_von_mises_MPa': 'nan'}, {'force_x_N': 'inf'}):
             with self.subTest(change=change), self.assertRaises(ValueError):
                 pw.read_solver_results(as_csv([row(**change)]))
 

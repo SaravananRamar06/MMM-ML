@@ -599,6 +599,15 @@ def references(root):
     p = Path(root) / 'runs/score/final_Svm/metrics.json'
     if p.exists():
         out['ensemble_mlp'] = dict(source=str(p.relative_to(root)), sha256=sha(p), metrics=json.loads(p.read_text()))
+    if not out:
+        # The earlier models were archived; their numbers are frozen with provenance in baselines.json.
+        for b in sorted(Path(root).glob('reports/*/baselines.json')):
+            B = json.loads(b.read_text())
+            s, e = B['single_mlp'], B['ensemble_mlp']
+            out['single_mlp'] = dict(source=str(b.relative_to(root)), test=s['test'], cv=dict(mean_rmse=s['cv']), groups=s['groups'])
+            out['ensemble_mlp'] = dict(source=str(b.relative_to(root)), metrics=dict(test_mean_rmse=e['test']['mean_rmse'],
+                                       test_median_rmse=e['test']['median_rmse'], test_worst_rmse=e['test']['worst_rmse'], per_case=e['test_case_rmse']))
+            break
     return out
 
 
@@ -810,6 +819,49 @@ def replot(run_dir, root=ROOT):
     study = study_curves(eq, cfg, grid, R['selected'])
     plots(run_dir, grid, np.array(test), Z, p, p_jc, np.array(train), Y, cv, cv_jc, sel, study, R['references'])
     return study
+
+
+# ----------------------------------------------------------------------------- using the delivered model
+FINAL_RUN = 'reports/jc_pinn_20261107'
+DATA_BOX = dict(temperature=(30.0, 200.0), log10_rate=(-5.0, -3.0), density=(2488.05, 2700.0), G=(23313.95, 25300.0))
+
+
+def load_final_equation(root=ROOT):
+    """The delivered, locked JC-PINN (checked against its selection lock)."""
+    run = Path(root) / FINAL_RUN
+    lock = json.loads((run / 'selection_lock.json').read_text())
+    if sha(run / 'equation.json') != lock['equation_sha256']:
+        raise ValueError('equation.json does not match selection_lock.json')
+    return json.loads((run / 'equation.json').read_text())
+
+
+def predict_curves(eq, conditions, grid=None):
+    """Predicted Svm (MPa, inferred) on the E11 grid for rows [T degC, strain rate 1/s, density kg/m3, G MPa]."""
+    grid = np.linspace(0.0002, 0.0999, 120) if grid is None else np.asarray(grid, dtype=float)
+    c = np.atleast_2d(np.asarray(conditions, dtype=float))
+    if np.any(c[:, 1] <= 0):
+        raise ValueError('Strain rate must be positive.')
+    X = np.c_[c[:, 0], np.log10(c[:, 1]), c[:, 2], c[:, 3]]
+    return grid, equation_predict(eq, queries(X, grid)).reshape(len(c), len(grid))
+
+
+def range_warnings(temperature, rate, density, G):
+    """Plain-language warnings about where a query sits relative to the simulated data."""
+    out = []
+    lr = math.log10(rate) if rate > 0 else float('nan')
+    for name, v, (lo, hi) in (('temperature', temperature, DATA_BOX['temperature']), ('log10 strain rate', lr, DATA_BOX['log10_rate']),
+                              ('density', density, DATA_BOX['density']), ('shear modulus G', G, DATA_BOX['G'])):
+        if not (lo - 1e-9 <= v <= hi + 1e-9):
+            out.append(f'{name} {v:g} is outside the simulated range {lo:g} to {hi:g}: unvalidated extrapolation.')
+    if 200 < temperature <= 300:
+        out.append('Above 200 C there is no data and no physics penalty in the selected model; treat the curve as unverified.')
+    if temperature not in (30.0, 100.0, 200.0) and 30 <= temperature <= 200:
+        out.append('Temperature lies between the simulated levels 30, 100 and 200 C: interpolated.')
+    if abs(lr - round(lr)) > 1e-9 and -5 <= lr <= -3:
+        out.append('Strain rate lies between the simulated levels 1e-5, 1e-4 and 1e-3 /s: interpolated.')
+    if abs(temperature - 200) < 1e-9 and abs(lr + 5) < 1e-9:
+        out.append('200 C at 1e-5 /s has a single simulation (case 60, irregular collapse); errors there are largest.')
+    return out
 
 
 def versions():

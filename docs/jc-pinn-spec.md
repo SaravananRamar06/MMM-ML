@@ -9,7 +9,7 @@ Full technical specification of the delivered Johnson–Cook-governed model (run
 | Task | Predict von Mises stress `Svm` (MPa, inferred) along axial strain `E11` for AlSi10Mg at given T, strain rate, density (porosity), G |
 | Type | Hybrid grey-box regressor: physical-law backbone × neural correction, 5-member ensemble |
 | Framework | PyTorch (float64, CPU); inference also in pure NumPy from `equation.json` |
-| Version | Run `reports/jc_pinn_20261107`, locked 7 Nov 2026; code commit `260e17b` |
+| Version | Run `reports/jc_pinn_20261107`, locked 7 Nov 2026; produced by `src/jc_pinn.py` at commit `c3ee1a6` (sha256 `d3f66db6…`, recorded in `selection_lock.json`). Later commits changed only plotting, wording and reporting helpers, not the model or training. See also [`ERRATA.md`](../reports/jc_pinn_20261107/ERRATA.md). |
 
 ## 2. Governing equation (backbone)
 `σ_JC = [A − B·ε^n] · [1 + C·ln(ε̇/ε̇0)] · [1 − T*^m] · [G/G0]^q · [1 − φ]^r`

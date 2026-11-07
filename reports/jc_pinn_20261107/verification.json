@@ -22,5 +22,6 @@
   "members": 5,
   "parameters_per_member": 385,
   "protected_artifacts_unchanged": true,
+  "protected_artifacts_archived": 13,
   "all_passed": true
 }

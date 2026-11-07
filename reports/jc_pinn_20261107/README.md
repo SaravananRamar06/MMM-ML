@@ -182,6 +182,7 @@ NumPy equation versus torch: 3.4e-13. Unit tests: `tests/test_jc_pinn.py`.
   (`scripts/build_raw_from_committed_curves.py`); np.interp at identical grid points returns those values exactly,
   and the verifier confirms the curves equal the 2 Nov curves that were hash-checked against the raw files.
 * Equation 1 constants are effective fitting constants for these simulations, not measured material properties.
+* Two notes inside the locked files are corrected in [ERRATA.md](ERRATA.md); the files stay unchanged so the lock still verifies.
 
 ## Reproduce
 

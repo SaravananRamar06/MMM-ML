@@ -52,17 +52,16 @@ saved = J.scores(Y, P)
 assert abs(saved['mean_rmse'] - R['test']['jc_pinn']['mean_rmse']) < 1e-9, 'recomputed test score differs from the locked run'
 
 # other models' per-case test errors on the same 37 cases
-single = {}
-with (root / 'reports/single_mlp_20261102/test_predictions.csv').open() as f:
-    for r in csv.DictReader(f):
-        single.setdefault(int(r['id']), []).append(float(r['MLP']))
-P_single = np.array([single[i] for i in test])
-ens_case = json.loads((root / 'runs/score/final_Svm/metrics.json').read_text())['per_case']
+# frozen with provenance in baselines.json (the earlier models' files are on branch archive/pre-final-2026-11-07)
+BASE = json.loads((run / 'baselines.json').read_text())
+single_case = BASE['single_mlp']['test_case_rmse']
+ens_case = BASE['ensemble_mlp']['test_case_rmse']
 case_rmse = lambda A: np.sqrt(np.mean((A - Y) ** 2, axis=1))
 
 E = P - Y
 rel = E / Y
-rm, rm_eq1, rm_lookup, rm_single = case_rmse(P), case_rmse(P_eq1), case_rmse(P_lookup), case_rmse(P_single)
+rm, rm_eq1, rm_lookup = case_rmse(P), case_rmse(P_eq1), case_rmse(P_lookup)
+rm_single = np.array([single_case[str(i)] for i in test])
 rm_ens = np.array([ens_case[str(i)] for i in test])
 spread = members.std(0)
 ss_res, ss_tot = float(np.sum(E ** 2)), float(np.sum((Y - Y.mean()) ** 2))

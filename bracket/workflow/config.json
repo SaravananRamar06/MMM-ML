@@ -1,0 +1,21 @@
+{
+  "schema_version": 2,
+  "porosity_mapping": {
+    "status": "assumed",
+    "reference_density_kg_m3": 2700.0,
+    "density_is_bulk_density": true,
+    "modulus_by_phi": [],
+    "evidence": "User definition for the JC-PINN, 7 Nov 2026: phi = 1 - density/2700 (bulk density). The shear-modulus relation G(phi) is not defined by the data, which cross density and G independently; supply phi/G pairs from a source or an explicit assumption."
+  },
+  "mechanical_case": {
+    "geometry_file": "bracket/cad/Rib Bracket.STEP",
+    "support_geometry_file": "bracket/cad/Bracket support.STEP",
+    "material_law": null,
+    "units_and_strain_definition": null,
+    "loads": null,
+    "supports": null,
+    "contacts": null,
+    "failure_criterion": null,
+    "evidence": ""
+  }
+}

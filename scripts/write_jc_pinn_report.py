@@ -11,8 +11,10 @@ run = Path(sys.argv[1]) if len(sys.argv) > 1 else root / 'reports/jc_pinn_202611
 R = json.loads((run / 'results.json').read_text())
 EQ = json.loads((run / 'equation.json').read_text())
 V = json.loads((run / 'verification.json').read_text()) if (run / 'verification.json').exists() else {}
-ens = json.loads((root / 'runs/score/select_mlp_Svm.json').read_text())
-ens_test = json.loads((root / 'runs/score/final_Svm/metrics.json').read_text())
+BASE = json.loads((run / 'baselines.json').read_text())   # earlier models, frozen with provenance
+ens = dict(loco_by_condition=BASE['ensemble_mlp']['loco_by_condition'], loco_mean_rmse=BASE['ensemble_mlp']['loco_mean_rmse'])
+ens_test = dict(test_mean_rmse=BASE['ensemble_mlp']['test']['mean_rmse'], test_median_rmse=BASE['ensemble_mlp']['test']['median_rmse'],
+                test_worst_rmse=BASE['ensemble_mlp']['test']['worst_rmse'])
 single = R['references'].get('single_mlp')
 CTRL = json.loads((run / 'control_no_equation.json').read_text()) if (run / 'control_no_equation.json').exists() else None
 S = R['selection']
@@ -155,7 +157,8 @@ L += [f"NumPy equation versus torch: {R['checks']['numpy_vs_torch_max_error']:.1
       '* The raw histories are not in Git. This run read a stand-in folder rebuilt from the committed 120-point curves',
       '  (`scripts/build_raw_from_committed_curves.py`); np.interp at identical grid points returns those values exactly,',
       '  and the verifier confirms the curves equal the 2 Nov curves that were hash-checked against the raw files.',
-      '* Equation 1 constants are effective fitting constants for these simulations, not measured material properties.', '',
+      '* Equation 1 constants are effective fitting constants for these simulations, not measured material properties.',
+      '* Two notes inside the locked files are corrected in [ERRATA.md](ERRATA.md); the files stay unchanged so the lock still verifies.', '',
       '## Reproduce', '',
       '```bash',
       'python scripts/build_raw_from_committed_curves.py            # only if the real raw folder is absent',

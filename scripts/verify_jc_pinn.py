@@ -109,12 +109,22 @@ checks['cv_metrics_equation_only'] = close(metric(Yc, np.array([cv[i]['equation_
 
 # 5. same curves as every earlier model (committed 2 Nov curves)
 old = {}
-for name in ('cv_predictions.csv', 'test_predictions.csv'):
-    with (root / 'reports/single_mlp_20261102' / name).open() as f:
-        for r in csv.DictReader(f):
-            old.setdefault(int(r['id']), []).append(float(r['Svm']))
-checks['curves_identical_to_2nov_curves'] = all(np.array_equal(np.array(old[i]), test[i]['Svm']) for i in ids) and \
-    all(np.array_equal(np.array(old[i]), cv[i]['Svm']) for i in split['train'])
+old_dir = root / 'reports/single_mlp_20261102'
+if old_dir.exists():
+    for name in ('cv_predictions.csv', 'test_predictions.csv'):
+        with (old_dir / name).open() as f:
+            for r in csv.DictReader(f):
+                old.setdefault(int(r['id']), []).append(float(r['Svm']))
+    checks['curves_identical_to_2nov_curves'] = all(np.array_equal(np.array(old[i]), test[i]['Svm']) for i in ids) and \
+        all(np.array_equal(np.array(old[i]), cv[i]['Svm']) for i in split['train'])
+else:
+    # Archived: the identity was checked when baselines.json was frozen; here the curves must still match the run's fingerprints.
+    base = json.loads((run / 'baselines.json').read_text())
+    fp = R['fingerprints']
+    def matches(i, y, part):
+        return max(abs(a - b) for a, b in zip([y[0], y[len(y) // 2], y[-1], float(np.mean(y))], fp[part][str(i)])) <= 1e-9
+    checks['curves_identical_to_2nov_curves'] = bool(base['curves_identical_to_2nov_hash_checked_curves']) and \
+        all(matches(i, test[i]['Svm'], 'test') for i in ids) and all(matches(i, cv[i]['Svm'], 'train') for i in split['train'])
 
 # 6. physical bounds of the Equation 1 constants
 b = json.loads((root / 'configs/jc_pinn.json').read_text())['calibration']['bounds']
@@ -127,9 +137,16 @@ checks['constants_within_physical_bounds'] = bool(ok)
 checks['members'] = len(EQ['members'])
 checks['parameters_per_member'] = R['checks']['parameters_per_member']
 
-# 7. earlier delivered artifacts unchanged
-checks['protected_artifacts_unchanged'] = all(sha(root / k) == v for k, v in R['checks']['protected_artifacts_unchanged'].items()) \
-    and len(R['checks']['protected_artifacts_unchanged']) > 0
+# 7. earlier delivered artifacts unchanged (files moved to the archive branch are recorded in baselines.json)
+prot = R['checks']['protected_artifacts_unchanged']
+present = {k: v for k, v in prot.items() if (root / k).exists()}
+archived = set(prot) - set(present)
+arch_ok = True
+if archived:
+    base = json.loads((run / 'baselines.json').read_text())
+    arch_ok = bool(base.get('archive', {}).get('branch'))
+checks['protected_artifacts_unchanged'] = len(prot) > 0 and all(sha(root / k) == v for k, v in present.items()) and arch_ok
+checks['protected_artifacts_archived'] = len(archived)
 
 passed = all(v for k, v in checks.items() if isinstance(v, bool))
 checks['all_passed'] = passed

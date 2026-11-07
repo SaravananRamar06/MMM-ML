@@ -2,8 +2,8 @@
 
 The professor's raw histories are excluded from Git. Every project model reads them through the
 same interpolation onto 120 E11 points, and those interpolated curves for all 73 cases are
-committed in reports/single_mlp_20261102/{cv,test}_predictions.csv (written with full float
-precision). This script writes one 120-row STR_STR.OUT per case plus a simulation_matrix.csv so the
+committed in reports/jc_pinn_20261107/{cv,test}_predictions.csv (column Svm, written with full float
+precision; identical to the 2 Nov hash-checked curves, see baselines.json). This script writes one 120-row STR_STR.OUT per case plus a simulation_matrix.csv so the
 JC-PINN pipeline can run its exact raw-file loading path in an environment without the raw data.
 np.interp at the identical grid points returns the stored values exactly, so models see the same
 curves as from the real histories. Unused columns are zero. Output goes to the ignored work/ folder.
@@ -18,7 +18,7 @@ out = Path(sys.argv[1]) if len(sys.argv) > 1 else root / 'work/raw_from_committe
 manifest = {m['id']: m for m in json.loads((root / 'data/manifest.json').read_text())}
 curves = {}
 for name in ('cv_predictions.csv', 'test_predictions.csv'):
-    with (root / 'reports/single_mlp_20261102' / name).open() as f:
+    with (root / 'reports/jc_pinn_20261107' / name).open() as f:
         for r in csv.DictReader(f):
             curves.setdefault(int(r['id']), []).append((r['E11'], r['Svm']))
 assert sorted(curves) == sorted(manifest), 'committed curves must cover all 73 manifest cases'
