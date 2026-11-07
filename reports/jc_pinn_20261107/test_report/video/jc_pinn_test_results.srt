@@ -1,0 +1,83 @@
+1
+00:00:00,700 --> 00:00:08,342
+How good is the JC-PINN on simulations it has never seen?
+
+2
+00:00:10,292 --> 00:00:18,558
+73 simulations, split at random: 36 trained the model and chose its settings.
+
+3
+00:00:18,808 --> 00:00:25,634
+The model was locked, fingerprint recorded, before any test file was opened.
+
+4
+00:00:25,884 --> 00:00:29,350
+Nothing in this video was tuned on the test data.
+
+5
+00:00:31,300 --> 00:00:35,870
+The test cases cover eight temperature and strain-rate combinations.
+
+6
+00:00:36,120 --> 00:00:44,986
+30 °C at 1e-4 /s: eight test cases, but only one training case.
+
+7
+00:00:46,936 --> 00:00:53,594
+All 37 predictions, best to worst, against the simulations.
+
+8
+00:00:53,844 --> 00:01:01,414
+Average error per curve: 0.44 MPa, about 0.4 % of the stress.
+
+9
+00:01:03,364 --> 00:01:11,414
+All 4,440 test points, predicted against simulated, sit on the diagonal.
+
+10
+00:01:11,664 --> 00:01:15,226
+R² = 0.9995.
+
+11
+00:01:17,176 --> 00:01:24,242
+95 % of points are within ±1 MPa, and 80 % within ±0.5 MPa.
+
+12
+00:01:24,492 --> 00:01:30,958
+Errors are centred on zero: 17 curves slightly high, 20 slightly low.
+
+13
+00:01:32,908 --> 00:01:40,958
+Error is smallest mid-curve and grows near 10 % strain, where the model under-predicts slightly.
+
+14
+00:01:44,908 --> 00:01:50,822
+Best case, #37: off by less than 0.1 MPa.
+
+15
+00:01:51,072 --> 00:01:59,482
+The 8 worst cases are all at 30 °C, 1e-4 /s, the condition with one training case.
+
+16
+00:01:59,732 --> 00:02:03,702
+Even there, the error stays below 1 MPa.
+
+17
+00:02:05,652 --> 00:02:14,158
+The five trained copies agree within about 0.1 MPa: the result is stable.
+
+18
+00:02:18,652 --> 00:02:29,270
+It beats Equation 1 alone in all 37 cases, and the curve-copy baseline in 24.
+
+19
+00:02:29,520 --> 00:02:37,354
+The earlier plain MLPs, and the same network without Equation 1, are more precise here.
+
+20
+00:02:39,304 --> 00:02:49,706
+At 30–200 °C it reproduces unseen simulations to well under 1 MPa, with no bias.
+
+21
+00:02:49,956 --> 00:02:58,870
+New temperature/rate combinations: several MPa. Above 200 °C: unverified.

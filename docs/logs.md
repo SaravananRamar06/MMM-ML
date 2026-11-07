@@ -392,3 +392,7 @@ User asked to display the model, then for an ipynb with the entire description o
 ### 7 November - Model specification sheet
 
 User asked for the full specs of the model. Added docs/jc-pinn-spec.md (identity, equation and constants, network, ensemble and parameter totals, data, loss and optimiser, selection, performance, validity, files), with every value read from the committed config and run files; linked from docs/jc-pinn.md and README. No model, code or result changed; verifier re-run passes.
+
+### 7 November - Full test report and test-results video
+
+User asked to test the model on the remaining data and chose "37 test cases, full report". Added scripts/test_report_jc_pinn.py. It verifies equation.json against its selection lock and recomputes the locked score exactly, with no refitting and no new choices. It writes reports/jc_pinn_20261107/test_report/: per-case CSV, summary JSON, three figures and a README. Findings: mean curve RMSE 0.439, R² 0.99952, 94.9 % of points within ±1 MPa, mean signed error +0.009, member spread 0.104. Errors rise near 10 % strain. The 8 worst cases are all at 30 °C/1e-4 /s (1 training case versus 8 test cases in the random split). Case wins: 37/37 against Equation 1 alone, 24/37 against curve copy, 0/37 against the earlier MLPs. Rendered test_report/video/jc_pinn_test_results.mp4 (3:00, 1080p30, Edge neural narration, captions, synthesised music bed) from the report data. Page errors 0.
