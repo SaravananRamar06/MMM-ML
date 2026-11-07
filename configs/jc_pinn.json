@@ -1,0 +1,99 @@
+{
+  "governing_equation": "sigma_JC = [A - B*eps^n] * [1 + C*ln(rate/rate0)] * [1 - Tstar^m] * [G/G0]^q * [1 - phi]^r",
+  "model": "sigma = sigma_JC(theta) * exp(delta), delta = 5-16-16-1 tanh correction network",
+  "source": "User notebook pages and instructions, 7 November 2026 (Equation 1 of 'User-customised JC Equation')",
+  "constants": {
+    "rate0": 1e-05,
+    "T_ref": 30.0,
+    "T_melt": 600.0,
+    "G0": 25300.0,
+    "rho0": 2700.0,
+    "eps_ref": 0.1
+  },
+  "variable_mapping": {
+    "eps": "E11, the monotonic axial strain coordinate (user-confirmed 7 Nov 2026)",
+    "rate": "matrix strain_rate in 1/s; ln term uses rate/rate0 (user-confirmed strain-rate ratio)",
+    "Tstar": "(T - T_ref)/(T_melt - T_ref) with matrix temperature in degrees C; clipped at 0 below T_ref",
+    "G": "matrix shear_modulus in MPa (G0 given in MPa by the user)",
+    "phi": "1 - density/rho0 per case (user-confirmed 7 Nov 2026); 1 - phi = density/rho0",
+    "B": "reparametrised as B = A*beta/eps_ref^n with 0 <= beta <= 0.99 so A - B*eps^n > 0 for eps <= eps_ref"
+  },
+  "calibration": {
+    "bounds": {
+      "A": [1.0, 2000.0],
+      "beta": [0.0, 0.99],
+      "n": [0.05, 5.0],
+      "C": [0.0, 2.0],
+      "m": [0.05, 20.0],
+      "q": [0.0, 10.0],
+      "r": [0.0, 20.0]
+    },
+    "starts": 8,
+    "seed": 42,
+    "max_nfev": 20000,
+    "tol": 1e-12
+  },
+  "network": {
+    "inputs": ["temperature", "log10_rate", "density", "G", "E11"],
+    "hidden": [16, 16],
+    "activation": "tanh",
+    "last_layer_init": "zeros",
+    "correction_inputs": [0, 1, 2, 3, 4]
+  },
+  "training": {
+    "alpha": 1.0,
+    "adam_lr": 0.005,
+    "adam_steps": 1500,
+    "lbfgs_max_iter": 2500,
+    "lbfgs_history": 50,
+    "lbfgs_tolerance_grad": 1e-10,
+    "lbfgs_tolerance_change": 1e-14,
+    "theta_lr_scale": 1.0
+  },
+  "collocation": {
+    "points": 4096,
+    "seed": 42,
+    "box": {
+      "temperature": [30.0, 300.0],
+      "log10_rate": [-5.0, -3.0],
+      "density": [2488.05, 2700.0],
+      "G": [23313.95, 25300.0],
+      "E11": [0.0002, 0.0999]
+    }
+  },
+  "selection": {
+    "theta_modes": ["frozen", "joint"],
+    "seeds": [0, 1, 2],
+    "folds": 3,
+    "fold_seed": 42,
+    "score": "0.5*(case-CV mean curve RMSE + mean over the nine temperature/rate group holdouts of the group mean curve RMSE)",
+    "tie_break": "lowest score; exact ties prefer larger lambda_phys, then frozen theta",
+    "physics": {
+      "none": [0.0],
+      "level": [0.001, 0.01, 0.1],
+      "trend": [0.0001, 0.001, 0.01]
+    }
+  },
+  "final": {
+    "seeds": [0, 1, 2, 3, 4],
+    "ensemble": "geometric mean of member stresses, equal to sigma_JC(theta)*exp(mean delta) for frozen theta"
+  },
+  "grid": {
+    "strain_min": 0.0002,
+    "strain_max": 0.0999,
+    "strain_points": 120
+  },
+  "study_point": {
+    "porosity": 0.04,
+    "density": 2592.0,
+    "G": 24541.0,
+    "note": "phi = 4% is the user's study condition (rho = 2700*(1-0.04)); G uses the middle matrix level because the data cross G and density independently"
+  },
+  "development_notes": [
+    "7 Nov 2026, before the formal selection run and using the three training-case folds only (no group holdouts, no test data):",
+    "weight decay alpha=0.001 (inherited from the sklearn single MLP) let the multiplicative correction exp(delta) blow up when extrapolating (fold mean RMSE 25.3); alpha in {0.001,0.1,1,3,10} at lambda=0 gave 25.3/4.8/2.4/4.2/4.6, so alpha=1 is fixed",
+    "the level penalty pulled predictions toward Equation 1, which is about 10% off in level, and raised fold errors; a derivative (trend) residual was added as a second physics form",
+    "single-seed fold means: none 2.37, trend 1e-4/1e-3/1e-2/1e-1 2.75/3.18/2.82/4.13, level 1e-3/1e-2 4.97/4.08; joint theta was worse on the fold without 30C/1e-5 cases",
+    "these development looks use the same three folds as the formal case-CV, so the selected model's CV estimate is mildly optimistic"
+  ]
+}
