@@ -1,6 +1,6 @@
 # JC-PINN explainer video
 
-`jc_pinn_explainer.mp4`: 2 min 52 s, 1920×1080, 30 fps, H.264 and AAC narration. Burned-in captions are also in `jc_pinn_explainer.srt`.
+`jc_pinn_explainer.mp4`: 3 min 2 s, 1920×1080, 30 fps, H.264 video with AAC neural-voice narration. Burned-in captions are also in `jc_pinn_explainer.srt`.
 
 ## Scenes
 
@@ -25,10 +25,11 @@ Every frame is drawn from real data in `bundle.json`:
 ## Rebuild
 
 ```bash
-python build.py mb-en1
+python build.py
 NODE_PATH=$(npm root -g) node render.js build/jc_pinn_explainer.mp4
 ```
 
-* `build.py` synthesises each narration sentence with espeak-ng and the MBROLA `mb-en1` voice (apt packages `espeak-ng`, `mbrola-en1`). It sizes each scene to its speech and writes the caption timings and the stage page.
+* `build.py` synthesises each narration sentence with Microsoft Edge neural text-to-speech, voice `en-US-AndrewNeural` at −4 % rate, using the `edge-tts` Python package. This is an online service, reached through the session proxy, and it receives only the narration text.
+  * Run `python build.py mb-en1` for the earlier offline espeak-ng/MBROLA voice.
+  * It sizes each scene to its speech and writes the caption timings and the stage page.
 * `render.js` uses Playwright Chromium to call `renderAt(t)` for every frame and pipes the frames to ffmpeg.
-* A more natural neural voice (Piper or Kokoro) needs `huggingface.co` and `github.com`. The session's egress gateway currently blocks both.
