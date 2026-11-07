@@ -1,0 +1,224 @@
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root { --bg: #eef1f4; --surface: #ffffff; --ink: #18212b; --muted: #586575; --line: #ccd3dc; --grid: #e3e8ee;
+  --model: #1d5ea8; --model-soft: #e4edf8; --eq: #a8620e; --eq-soft: #f8eedf; --data: #18212b; --lo: #d9e6f5; --hi: #b5481f; --chip: #e7edf4;
+  --t30: #1d5ea8; --t100: #2f8a57; --t200: #b5481f; }
+html, body { margin: 0; background: var(--bg); width: 1920px; height: 1080px; overflow: hidden }
+svg { display: block; color: var(--ink) }
+svg text { font-family: "IBM Plex Mono", monospace; font-size: 20px; fill: currentColor }
+svg .sub { font-size: 17px; fill: var(--muted) }
+svg .lab { font-family: "IBM Plex Sans", sans-serif; font-weight: 600; font-size: 22px }
+svg .disp { font-family: "Archivo", sans-serif; font-weight: 700 }
+svg .body { font-family: "IBM Plex Sans", sans-serif }
+svg .eqt { fill: var(--eq) } svg .nnt { fill: var(--model) }
+svg .axis { stroke: var(--line); fill: none } svg .gridl { stroke: var(--grid) }
+</style></head>
+<body><svg id="v" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
+<script>
+const B = /*DATA*/;
+const TL = /*TIMELINE*/;
+const NS = 'http://www.w3.org/2000/svg';
+const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const fmt = (v, d = 2) => Number.isFinite(v) ? v.toFixed(d) : '–';
+function hexMix(a, b, t) { const p = h => { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); }; const x = p(a), y = p(b); return 'rgb(' + x.map((v, i) => Math.round(v + (y[i] - v) * t)).join(',') + ')'; }
+const M = B.model, C = M.constants, LN10 = Math.log(10);
+function factors(th, T, lr, rho, G, e) { const [A, Bc, n, Cc, m, q, r] = th; const Ts = Math.max((T - C.T_ref) / (C.T_melt - C.T_ref), 0);
+  return [A - Bc * Math.pow(e, n), 1 + Cc * LN10 * (lr - Math.log10(C.rate0)), 1 - (Ts > 0 ? Math.pow(Ts, m) : 0), Math.pow(G / C.G0, q), Math.pow(rho / C.rho0, r)]; }
+const prod = a => a.reduce((s, v) => s * v, 1);
+/*NETVIZ*/
+function member(mem, T, lr, rho, G, e) { const base = prod(factors(mem.theta, T, lr, rho, G, e)); const fw = netForward(mem, [T, lr, rho, G, e]); return { base, d: fw.act[3][0], s: base * Math.exp(fw.act[3][0]) }; }
+const GRID = Array.from({ length: 120 }, (_, k) => 0.0002 + k * (0.0999 - 0.0002) / 119);
+const pathOf = (xs, ys, X, Y) => xs.map((v, k) => (k ? 'L' : 'M') + X(v).toFixed(1) + ' ' + Y(ys[k]).toFixed(1)).join('');
+function chart(g, x, y, w, h, xmax, ymax, opts = {}) {
+  const X = v => x + v / xmax * w, Y = v => y + h - clamp(v, 0, ymax) / ymax * h, fs = opts.fs || 16;
+  for (let v = 0; v <= ymax + 1e-9; v += (opts.ystep || 40)) { el('line', { x1: x, x2: x + w, y1: Y(v), y2: Y(v), class: 'gridl' }, g); el('text', { x: x - 8, y: Y(v) + 5, 'text-anchor': 'end', class: 'sub', style: `font-size:${fs}px` }, g).textContent = v; }
+  for (const v of [0, 0.05, 0.1]) el('text', { x: X(v), y: y + h + fs + 6, 'text-anchor': 'middle', class: 'sub', style: `font-size:${fs}px` }, g).textContent = v.toFixed(2);
+  el('rect', { x, y, width: w, height: h, class: 'axis' }, g);
+  return { X, Y };
+}
+const sub = (t, a, b) => clamp((t - a) / (b - a), 0, 1);  // local progress of t between a and b
+const svg = document.getElementById('v');
+const header = (g, eyebrow, title) => { el('text', { x: 110, y: 96, class: 'sub', style: 'letter-spacing:3px;font-size:18px' }, g).textContent = eyebrow.toUpperCase(); el('text', { x: 110, y: 150, class: 'disp', style: 'font-size:46px' }, g).textContent = title; };
+const Tcol = T => css(T === 30 ? '--t30' : T === 100 ? '--t100' : '--t200');
+
+// ----------------------------------------------------------------- scenes: build(g) returns update(u, sec)
+const SCENES = {
+  title(g) {
+    const curve = el('path', { fill: 'none', stroke: css('--model'), 'stroke-width': 5, opacity: .9 }, g);
+    const c = B.cases[42]; const X = v => 1100 + v / 0.1 * 680, Y = v => 860 - v / 160 * 560;
+    const t1 = el('text', { x: 110, y: 430, class: 'disp', style: 'font-size:104px' }, g); t1.textContent = 'JC-PINN';
+    const t2 = el('text', { x: 114, y: 510, class: 'body', style: 'font-size:38px' }, g); t2.textContent = 'A physics-informed model of AlSi10Mg';
+    const t3 = el('text', { x: 114, y: 566, class: 'sub', style: 'font-size:26px' }, g); t3.textContent = 'Customised Johnson–Cook law × neural-network correction';
+    const t4 = el('text', { x: 114, y: 640, class: 'sub', style: 'font-size:22px' }, g); t4.textContent = 'Multiscale Modelling of Materials using ML · run of 7 Nov 2026';
+    return (u) => { const k = Math.round(ease(sub(u, .05, .8)) * 119); curve.setAttribute('d', pathOf(GRID.slice(0, k + 1), c.S.slice(0, k + 1), X, Y));
+      [t1, t2, t3, t4].forEach((t, i) => t.setAttribute('opacity', ease(sub(u, .05 + i * .1, .3 + i * .1)))); };
+  },
+  data(g) {
+    header(g, 'The data', '73 simulated stress–strain curves');
+    const ch = chart(g, 180, 220, 1000, 640, 0.1, 160);
+    el('text', { x: 680, y: 920, 'text-anchor': 'middle', class: 'sub' }, g).textContent = 'E11 (axial strain)';
+    el('text', { x: 180, y: 205, class: 'sub' }, g).textContent = 'Svm (MPa)';
+    const ids = B.train_ids, paths = ids.map(i => el('path', { fill: 'none', stroke: Tcol(B.cases[i].T), 'stroke-width': 2.6, opacity: .85 }, g));
+    const facts = [['108', 'planned simulations'], ['73', 'with results (none at 300 °C)'], ['120', 'strain points per curve'], ['36 / 37', 'training / test cases']];
+    const fe = facts.map(([n, l], i) => { const gg = el('g', {}, g); el('text', { x: 1290, y: 290 + i * 130, class: 'disp', style: 'font-size:58px' }, gg).textContent = n; el('text', { x: 1292, y: 330 + i * 130, class: 'body', style: 'font-size:24px;fill:var(--muted)' }, gg).textContent = l; return gg; });
+    const leg = [[30, '30 °C'], [100, '100 °C'], [200, '200 °C']].map(([T, l], i) => { const gg = el('g', {}, g); el('line', { x1: 200 + i * 170, x2: 236 + i * 170, y1: 960, y2: 960, stroke: Tcol(T), 'stroke-width': 5 }, gg); el('text', { x: 246 + i * 170, y: 967, class: 'body' }, gg).textContent = l; return gg; });
+    return (u) => {
+      ids.forEach((i, k) => { const s = sub(u, .02 + k * .012, .2 + k * .012), n = Math.round(s * 119); paths[k].setAttribute('d', n ? pathOf(GRID.slice(0, n + 1), B.cases[i].S.slice(0, n + 1), ch.X, ch.Y) : ''); });
+      fe.forEach((e, i) => e.setAttribute('opacity', ease(sub(u, .15 + i * .17, .3 + i * .17)))); leg.forEach(e => e.setAttribute('opacity', ease(sub(u, .1, .25))));
+    };
+  },
+  equation(g) {
+    header(g, 'The governing law', 'Our customised Johnson–Cook equation');
+    const terms = [['[A − B·εⁿ]', 'strain softening'], ['[1 + C·ln(rate/10⁻⁵)]', 'strain rate'], ['[1 − T*ᵐ]', 'temperature'], ['(G/25300)^q', 'shear modulus'], ['(1 − φ)^r', 'porosity']];
+    el('text', { x: 110, y: 260, style: 'font-size:40px' }, g).textContent = 'σ =';
+    let xx = 200; const te = terms.map(([f, l], i) => { const gg = el('g', {}, g); const t = el('text', { x: xx, y: 260, style: 'font-size:34px;fill:var(--eq)' }, gg); t.textContent = f; const w = f.length * 19.5;
+      el('line', { x1: xx, x2: xx + w, y1: 278, y2: 278, stroke: css('--eq'), 'stroke-width': 3 }, gg); el('text', { x: xx + w / 2, y: 310, 'text-anchor': 'middle', class: 'sub' }, gg).textContent = l; xx += w + 30; return gg; });
+    const defs = el('text', { x: 110, y: 370, class: 'sub', style: 'font-size:21px' }, g); defs.textContent = 'T* = (T − 30)/(600 − 30)   ·   φ = 1 − ρ/2700   ·   7 constants fitted: A, B, n, C, m, q, r';
+    const cases = [2, 46, 60], th = M.theta_alone;
+    const panels = cases.map((id, i) => { const gg = el('g', {}, g); const c = B.cases[id], x0 = 140 + i * 590;
+      const ch = chart(gg, x0, 450, 470, 390, 0.1, 160, { fs: 15 });
+      el('text', { x: x0, y: 438, class: 'body', style: 'font-size:20px' }, gg).textContent = `Case ${id} · ${c.T} °C · 1e${c.lr} /s`;
+      el('path', { d: pathOf(GRID, c.S, ch.X, ch.Y), fill: 'none', stroke: css('--data'), 'stroke-width': 3 }, gg);
+      const eq = GRID.map(e => prod(factors(th, c.T, c.lr, c.rho, c.G, e)));
+      const p = el('path', { fill: 'none', stroke: css('--eq'), 'stroke-width': 3, 'stroke-dasharray': '10 8' }, gg);
+      const rm = Math.sqrt(eq.reduce((s, v, k) => s + (v - c.S[k]) ** 2, 0) / 120);
+      const lab = el('text', { x: x0 + 460, y: 475, 'text-anchor': 'end', class: 'eqt', style: 'font-size:18px' }, gg); lab.textContent = `Equation 1 alone: ${rm.toFixed(1)} MPa off`;
+      return { gg, p, eq, ch, lab }; });
+    const lg = el('g', {}, g); el('line', { x1: 140, x2: 180, y1: 945, y2: 945, stroke: css('--data'), 'stroke-width': 3 }, lg); el('text', { x: 190, y: 952, class: 'body' }, lg).textContent = 'simulation';
+    el('line', { x1: 360, x2: 400, y1: 945, y2: 945, stroke: css('--eq'), 'stroke-width': 3, 'stroke-dasharray': '10 8' }, lg); el('text', { x: 410, y: 952, class: 'body' }, lg).textContent = 'Equation 1 fitted alone (same shape for every condition)';
+    return (u) => { te.forEach((e, i) => e.setAttribute('opacity', ease(sub(u, .03 + i * .07, .12 + i * .07)))); defs.setAttribute('opacity', ease(sub(u, .4, .5)));
+      panels.forEach((P, i) => { const a = ease(sub(u, .5 + i * .05, .58 + i * .05)), n = Math.round(ease(sub(u, .55, .85)) * 119); P.gg.setAttribute('opacity', a); P.p.setAttribute('d', n ? pathOf(GRID.slice(0, n + 1), P.eq.slice(0, n + 1), P.ch.X, P.ch.Y) : ''); P.lab.setAttribute('opacity', ease(sub(u, .85, .92))); });
+      lg.setAttribute('opacity', ease(sub(u, .55, .65))); };
+  },
+  model(g) {
+    header(g, 'The model', 'Equation backbone × learned correction');
+    const box = (x, y, w, h, cls, title, lines) => { const gg = el('g', {}, g); el('rect', { x, y, width: w, height: h, rx: 14, fill: cls === 'eq' ? css('--eq-soft') : cls === 'nn' ? css('--model-soft') : css('--surface'), stroke: cls === 'eq' ? css('--eq') : cls === 'nn' ? css('--model') : css('--line'), 'stroke-width': 3 }, gg);
+      el('text', { x: x + 26, y: y + 48, class: 'lab ' + (cls === 'eq' ? 'eqt' : cls === 'nn' ? 'nnt' : ''), style: 'font-size:28px' }, gg).textContent = title;
+      lines.forEach((l, i) => el('text', { x: x + 26, y: y + 92 + i * 36, style: 'font-size:22px' }, gg).textContent = l); return gg; };
+    const bIn = box(110, 400, 300, 290, '', 'Inputs', ['T  °C', 'strain rate', 'density ρ', 'shear modulus G', 'strain E11']);
+    const bEq = box(560, 230, 620, 230, 'eq', 'Equation 1  →  σ_JC', ['5 physical factors multiplied', '7 constants A, B, n, C, m, q, r', 'bounded to stay physical']);
+    const bNN = box(560, 610, 620, 230, 'nn', 'Correction network  →  δ', ['5 → 16 → 16 → 1, tanh', '385 weights per copy', 'output starts at 0']);
+    const bOut = box(1440, 400, 380, 290, '', 'Stress', ['σ = σ_JC × e^δ', '', 'averaged over', '5 trained copies']);
+    const wires = [[[410, 545], [480, 545], [480, 345], [560, 345]], [[410, 545], [480, 545], [480, 725], [560, 725]], [[1180, 345], [1300, 345], [1300, 500], [1440, 500]], [[1180, 725], [1300, 725], [1300, 590], [1440, 590]]];
+    const wl = wires.map(pts => el('path', { d: 'M' + pts.map(p => p.join(' ')).join(' L'), fill: 'none', stroke: css('--ink'), 'stroke-width': 3 }, g));
+    const lab1 = el('text', { x: 1310, y: 330, class: 'eqt', style: 'font-size:22px' }, g); lab1.textContent = 'σ_JC';
+    const lab2 = el('text', { x: 1310, y: 760, class: 'nnt', style: 'font-size:22px' }, g); lab2.textContent = '× e^δ';
+    const dots = wires.map(() => Array.from({ length: 4 }, () => el('circle', { r: 9, fill: css('--model') }, g)));
+    const note = el('text', { x: 560, y: 920, class: 'body', style: 'font-size:28px' }, g); note.textContent = 'Before training δ = 0, so the model starts as exactly Equation 1.';
+    const along = (pts, f) => { const seg = []; let tot = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(d); tot += d; }
+      let r = f * tot; for (let i = 0; i < seg.length; i++) { if (r <= seg[i]) { const a = r / seg[i]; return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * a, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * a]; } r -= seg[i]; } return pts[pts.length - 1]; };
+    return (u, sec) => { [bIn, bEq, bNN, bOut].forEach((b, i) => b.setAttribute('opacity', ease(sub(u, .02 + i * .09, .12 + i * .09))));
+      wl.forEach((w, i) => w.setAttribute('opacity', ease(sub(u, .3, .4)))); [lab1, lab2].forEach(l => l.setAttribute('opacity', ease(sub(u, .4, .5))));
+      dots.forEach((ds, w) => ds.forEach((d, k) => { const f = ((sec * 0.45 + k / 4) % 1), on = u > .42; const [x, y] = along(wires[w], f); d.setAttribute('cx', x); d.setAttribute('cy', y); d.setAttribute('fill', css(w % 2 ? '--model' : '--eq')); d.setAttribute('opacity', on ? .85 : 0); }));
+      note.setAttribute('opacity', ease(sub(u, .62, .72))); };
+  },
+  network(g) {
+    header(g, 'Inside the correction network', 'Signals flowing through 385 learned numbers');
+    const viz = NetViz(g, { x: 40, y: 190, w: 1840, h: 860 }, M.members[0], { scale: 1.55, noHint: true });
+    const c = B.cases[42], strains = [0.0002, 0.05, 0.0999];
+    const info = el('text', { x: 1880, y: 150, 'text-anchor': 'end', class: 'body', style: 'font-size:24px;fill:var(--muted)' }, g);
+    return (u) => { const k = Math.min(2, Math.floor(u * 3)), tau = u * 3 - k, p = clamp((tau - .05) / .7 * 3, 0, 3), e = strains[k];
+      const fw = viz.update({ x5: [c.T, c.lr, c.rho, c.G, e], p }); const base = prod(factors(M.members[0].theta, c.T, c.lr, c.rho, c.G, e)), d = fw.act[3][0];
+      info.textContent = `Test case 42 · 100 °C · pass ${k + 1} of 3` + (p >= 3 ? `  ·  σ = ${base.toFixed(1)} × ${Math.exp(d).toFixed(3)} = ${(base * Math.exp(d)).toFixed(1)} MPa` : ''); };
+  },
+  training(g) {
+    header(g, 'Training one network', 'From Equation 1 to the simulations');
+    const T = B.training, sn = T.snaps, E = T.E11, maxStep = sn[sn.length - 1].step;
+    const panels = T.cases.map((c, i) => { const x = 140 + (i % 2) * 520, y = 230 + Math.floor(i / 2) * 400; const gg = el('g', {}, g); const ch = chart(gg, x, y, 430, 310, 0.1, 160, { fs: 15 });
+      el('text', { x, y: y - 12, class: 'body', style: 'font-size:19px;fill:var(--muted)' }, gg).textContent = `Case ${c.id} · ${c.T} °C · 1e${c.lr} /s`;
+      el('path', { d: pathOf(E, T.truth[i], ch.X, ch.Y), fill: 'none', stroke: css('--data'), 'stroke-width': 3, opacity: .55 }, gg);
+      el('path', { d: pathOf(E, sn[0].curves[i], ch.X, ch.Y), fill: 'none', stroke: css('--eq'), 'stroke-width': 2.4, 'stroke-dasharray': '9 7' }, gg);
+      return { ch, p: el('path', { fill: 'none', stroke: css('--model'), 'stroke-width': 4 }, gg) }; });
+    const lx = 1240, ly = 230, lw = 600, lh = 600, lo = Math.log10(0.002), hi = Math.log10(0.2);
+    const LX = s => lx + s / maxStep * lw, LY = v => ly + lh - (Math.log10(clamp(v, 0.002, 0.2)) - lo) / (hi - lo) * lh;
+    el('rect', { x: lx, y: ly, width: LX(T.adam_steps) - lx, height: lh, fill: css('--model-soft') }, g); el('rect', { x: lx, y: ly, width: lw, height: lh, class: 'axis' }, g);
+    for (const v of [0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2]) { el('line', { x1: lx, x2: lx + lw, y1: LY(v), y2: LY(v), class: 'gridl' }, g); el('text', { x: lx - 8, y: LY(v) + 6, 'text-anchor': 'end', class: 'sub' }, g).textContent = v; }
+    el('text', { x: lx + 12, y: ly + 30, class: 'sub' }, g).textContent = 'Adam'; el('text', { x: LX(T.adam_steps) + 12, y: ly + 30, class: 'sub' }, g).textContent = 'L-BFGS';
+    el('text', { x: lx, y: ly - 14, class: 'body', style: 'font-size:22px;font-weight:600' }, g).textContent = 'Training loss (log scale)';
+    const lossP = el('path', { fill: 'none', stroke: css('--model'), 'stroke-width': 3 }, g), dot = el('circle', { r: 8, fill: css('--model') }, g);
+    const stepT = el('text', { x: lx, y: ly + lh + 44, class: 'body', style: 'font-size:24px' }, g), errT = el('text', { x: lx, y: ly + lh + 84, class: 'body', style: 'font-size:28px;font-weight:600' }, g);
+    const H = T.hist.filter(h => h[2] > 0).sort((a, b) => a[0] - b[0]);
+    return (u) => { const t = sub(u, .04, .92), step = Math.round(Math.pow(t, 1.8) * maxStep);
+      let j = 0; while (j < sn.length - 2 && sn[j + 1].step <= step) j++; const a = sn[j], b = sn[Math.min(j + 1, sn.length - 1)], w = b.step === a.step ? 0 : clamp((step - a.step) / (b.step - a.step), 0, 1), mix = (x, y) => x + (y - x) * w;
+      panels.forEach((P, i) => P.p.setAttribute('d', pathOf(E, a.curves[i].map((v, k) => mix(v, b.curves[i][k])), P.ch.X, P.ch.Y)));
+      const hs = H.filter(h => h[0] <= step); lossP.setAttribute('d', hs.map((h, k) => (k ? 'L' : 'M') + LX(h[0]).toFixed(1) + ' ' + LY(h[2]).toFixed(1)).join(''));
+      const lv = hs.length ? hs[hs.length - 1][2] : sn[0].loss; dot.setAttribute('cx', LX(step)); dot.setAttribute('cy', LY(lv));
+      stepT.textContent = step <= T.adam_steps ? `Adam step ${step} of ${T.adam_steps}` : `L-BFGS evaluation ${step - T.adam_steps} of ${T.lbfgs_evals}`;
+      errT.textContent = `Mean training error: ${mix(a.rmse, b.rmse).toFixed(2)} MPa`; };
+  },
+  selection(g) {
+    header(g, 'Choosing the settings', '14 settings scored on training cases only');
+    const tr = B.trials, gl = B.group_labels, x0 = 560, cw = 104, rh = 50, y0 = 250;
+    const lab = c => `${c.physics === 'none' ? 'no physics' : c.physics + ' λ=' + c.lambda_phys}, ${c.theta_mode}`;
+    ['CV'].concat(gl.map(q => `${q.T}° 1e${q.lr}`)).forEach((c, j) => el('text', { x: x0 + j * cw + cw / 2, y: y0 - 18, 'text-anchor': 'middle', class: 'sub', style: 'font-size:16px' }, g).textContent = c);
+    el('text', { x: x0 + 10 * cw + 60, y: y0 - 18, 'text-anchor': 'middle', class: 'sub' }, g).textContent = 'score';
+    const order = tr.map((t, i) => i).sort((a, b) => tr[a].s - tr[b].s), rank = []; order.forEach((i, r) => rank[i] = r);
+    const lmin = Math.log(0.5), lmax = Math.log(14), color = v => hexMix(css('--lo'), css('--hi'), clamp((Math.log(v) - lmin) / (lmax - lmin), 0, 1));
+    const rows = tr.map((t, i) => { const gg = el('g', {}, g); const hl = el('rect', { x: 100, y: -4, width: x0 + 10 * cw + 130 - 100, height: rh - 4, rx: 6, fill: 'none', stroke: css('--model'), 'stroke-width': 4, opacity: 0 }, gg);
+      el('text', { x: 120, y: rh / 2 + 6, style: 'font-size:19px' }, gg).textContent = lab(t.c);
+      const cells = [t.cv].concat(t.groups).map((v, j) => ({ v, r: el('rect', { x: x0 + j * cw + 3, y: 2, width: cw - 6, height: rh - 12, rx: 4, fill: css('--chip') }, gg), tx: el('text', { x: x0 + j * cw + cw / 2, y: rh / 2 + 4, 'text-anchor': 'middle', style: 'font-size:16px' }, gg) }));
+      const sc = el('text', { x: x0 + 10 * cw + 60, y: rh / 2 + 6, 'text-anchor': 'middle', style: 'font-size:19px' }, gg); return { gg, hl, cells, sc, t }; });
+    const lock = el('text', { x: 120, y: y0 + 14 * rh + 40, class: 'body', style: 'font-size:28px;font-weight:600;fill:var(--model)' }, g); lock.textContent = 'Winner locked before any of the 37 test files was read.';
+    return (u) => { const fill = sub(u, .03, .55), so = ease(sub(u, .6, .8)), fin = sub(u, .82, .9), shown = Math.floor(fill * 140);
+      rows.forEach((R, i) => { R.cells.forEach((c, j) => { const on = i * 10 + j < shown; c.r.setAttribute('fill', on ? color(c.v) : css('--chip')); c.tx.textContent = on ? c.v.toFixed(c.v >= 10 ? 1 : 2) : '';
+          c.tx.setAttribute('fill', on && (Math.log(c.v) - lmin) / (lmax - lmin) > .55 ? css('--surface') : css('--ink')); });
+        R.sc.textContent = fill >= 1 ? R.t.s.toFixed(3) : ''; R.gg.setAttribute('transform', `translate(0 ${(y0 + (i + (rank[i] - i) * so) * rh).toFixed(1)})`); R.hl.setAttribute('opacity', rank[i] === 0 ? fin : 0); });
+      lock.setAttribute('opacity', fin); };
+  },
+  test(g) {
+    header(g, 'Five copies, then the test', 'Scored once on 37 unseen simulations');
+    const c = B.cases[42], gg = el('g', {}, g); const ch = chart(gg, 160, 230, 700, 600, 0.1, 160);
+    el('text', { x: 160, y: 218, class: 'body', style: 'font-size:20px;fill:var(--muted)' }, g).textContent = 'Test case 42 · 100 °C · 1e-4 /s';
+    el('path', { d: pathOf(GRID, c.S, ch.X, ch.Y), fill: 'none', stroke: css('--data'), 'stroke-width': 3.5, opacity: .6 }, g);
+    const mem = M.members.map(m => GRID.map(e => member(m, c.T, c.lr, c.rho, c.G, e)));
+    const ens = GRID.map((e, k) => Math.exp(mem.reduce((s, m) => s + Math.log(m[k].s), 0) / 5));
+    const bp = mem.map(() => el('path', { fill: 'none', stroke: css('--eq'), 'stroke-width': 2, 'stroke-dasharray': '7 6' }, g));
+    const mp = mem.map(() => el('path', { fill: 'none', stroke: css('--model'), 'stroke-width': 2.4 }, g));
+    const ep = el('path', { d: pathOf(GRID, ens, ch.X, ch.Y), fill: 'none', stroke: css('--model'), 'stroke-width': 5.5 }, g);
+    const R = B.results, bars = [['Equation 1 alone', R.eq1.test, '--eq'], ['Curve-copy baseline', R.lookup.test, '--muted'], ['JC-PINN (this model)', R.pinn.test, '--model'], ['Same network, Eq. 1 off', R.control.test, '--muted'], ['Single MLP (2 Nov)', R.single.test, '--muted']];
+    const bx = 1340, bw = 440, by = 300, bh = 90, lmin = -1, lmax = 1;
+    el('text', { x: 980, y: 260, class: 'body', style: 'font-size:24px;font-weight:600' }, g).textContent = 'Test error, 37 cases (MPa, log scale)';
+    for (const v of [0.1, 1, 10]) { const x = bx + (Math.log10(v) - lmin) / (lmax - lmin) * bw; el('line', { x1: x, x2: x, y1: by, y2: by + 5 * bh, class: 'gridl' }, g); el('text', { x, y: by + 5 * bh + 26, 'text-anchor': 'middle', class: 'sub' }, g).textContent = v; }
+    const be = bars.map(([n, v, col], i) => { const y = by + i * bh; el('text', { x: bx - 16, y: y + 40, 'text-anchor': 'end', class: 'body', style: 'font-size:22px' }, g).textContent = n;
+      return { r: el('rect', { x: bx, y: y + 14, height: 38, width: 0, rx: 5, fill: css(col) }, g), t: el('text', { x: bx, y: y + 42, style: 'font-size:22px' }, g), v }; });
+    const note = el('text', { x: 980, y: 900, class: 'body', style: 'font-size:26px' }, g);
+    return (u) => { const fan = sub(u, .02, .12), conv = ease(sub(u, .15, .38)), grow = ease(sub(u, .42, .7));
+      mem.forEach((m, j) => { bp[j].setAttribute('d', pathOf(GRID, m.map(v => v.base), ch.X, ch.Y)); bp[j].setAttribute('opacity', (fan * (1 - conv) * .8).toFixed(3));
+        mp[j].setAttribute('d', pathOf(GRID, m.map((v, k) => v.s + (ens[k] - v.s) * conv), ch.X, ch.Y)); mp[j].setAttribute('opacity', (fan * (1 - conv * .85) * .7).toFixed(3)); });
+      ep.setAttribute('opacity', conv);
+      be.forEach(b => { const w = (Math.log10(b.v) - lmin) / (lmax - lmin) * bw * grow; b.r.setAttribute('width', Math.max(0, w)); b.t.setAttribute('x', bx + w + 10); b.t.textContent = grow > .05 ? b.v.toFixed(b.v < 1 ? 3 : 2) : ''; });
+      note.textContent = u > .72 ? `17× better than Equation 1 alone; the network without it does slightly better.` : ''; note.setAttribute('opacity', ease(sub(u, .72, .8))); };
+  },
+  close(g) {
+    header(g, 'What to take away', 'The equation gives names, the network gives accuracy');
+    const items = ['Equation 1 alone: 7.37 MPa test error (fixed curve shape).', 'JC-PINN: 0.44 MPa on 37 unseen simulations, chosen without seeing them.', 'Same network without Equation 1: 0.34 MPa, so the law adds interpretability.',
+      'Valid 30–200 °C, rates 1e-5 to 1e-3 /s, porosity 0–7.85 %.', 'Above 200 °C there is no data: predictions there are unverified.'];
+    const ie = items.map((t, i) => { const gg = el('g', {}, g); el('rect', { x: 110, y: 250 + i * 120, width: 10, height: 64, fill: css(i < 3 ? '--model' : '--eq') }, gg); el('text', { x: 150, y: 294 + i * 120, class: 'body', style: 'font-size:34px' }, gg).textContent = t; return gg; });
+    const foot = el('text', { x: 110, y: 1000, class: 'sub', style: 'font-size:20px' }, g); foot.textContent = 'SaravananRamar06/MMM-ML · reports/jc_pinn_20261107 · notebooks/jc_pinn_explained.ipynb';
+    return (u) => { ie.forEach((e, i) => e.setAttribute('opacity', ease(sub(u, .03 + i * .13, .13 + i * .13)))); foot.setAttribute('opacity', ease(sub(u, .7, .8))); };
+  }
+};
+
+// ----------------------------------------------------------------- timeline and captions
+let curKey = null, curUpdate = null, sceneG = null;
+const capBand = el('rect', { x: 0, y: 1000, width: 1920, height: 80, fill: css('--ink'), opacity: .9 });
+const capText = el('text', { x: 960, y: 1050, 'text-anchor': 'middle', class: 'body', style: 'font-size:30px;fill:var(--surface)' });
+const prog = el('rect', { x: 0, y: 1074, height: 6, width: 0, fill: css('--model') });
+const total = TL.reduce((s, x) => s + x.dur, 0);
+window.renderAt = function (t) {
+  let acc = 0, sc = TL[TL.length - 1], local = sc.dur;
+  for (const s of TL) { if (t < acc + s.dur) { sc = s; local = t - acc; break; } acc += s.dur; }
+  if (sc.key !== curKey) { if (sceneG) sceneG.remove(); sceneG = el('g', {}, svg); curUpdate = SCENES[sc.key](sceneG); curKey = sc.key; svg.appendChild(capBand); svg.appendChild(capText); svg.appendChild(prog); }
+  const u = clamp(local / sc.dur, 0, 1), fade = Math.min(1, local / 0.35, (sc.dur - local) / 0.35);
+  curUpdate(u, local); sceneG.setAttribute('opacity', clamp(fade, 0, 1).toFixed(3));
+  const cap = sc.sentences.find(s => local >= s.start && local < s.end + 0.25);
+  capText.textContent = cap ? cap.show : ''; capBand.setAttribute('opacity', cap ? .9 : 0);
+  prog.setAttribute('width', (t / total * 1920).toFixed(1));
+};
+window.TOTAL = total;
+</script></body></html>

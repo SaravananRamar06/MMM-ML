@@ -1,0 +1,111 @@
+1
+00:00:00,600 --> 00:00:09,320
+JC-PINN: a physics-informed model for additively manufactured AlSi10Mg.
+
+2
+00:00:11,020 --> 00:00:15,892
+The professor supplied 73 simulated stress–strain curves.
+
+3
+00:00:16,092 --> 00:00:22,563
+Three temperatures, three strain rates, three densities, three shear moduli.
+
+4
+00:00:22,763 --> 00:00:27,679
+Every curve softens, and its shape changes with temperature and rate.
+
+5
+00:00:27,879 --> 00:00:33,863
+36 curves train the model; 37 are kept back for the final test.
+
+6
+00:00:35,563 --> 00:00:39,489
+The governing law is our customised Johnson–Cook equation.
+
+7
+00:00:39,689 --> 00:00:45,956
+Strain, rate, temperature, shear-modulus and porosity terms are multiplied.
+
+8
+00:00:46,156 --> 00:00:50,671
+Fitted on its own, it misses the curves by about 10 %.
+
+9
+00:00:50,871 --> 00:00:55,759
+A product of separate terms gives every condition the same curve shape.
+
+10
+00:00:57,459 --> 00:01:04,312
+So the equation becomes the backbone, multiplied by a learned correction e^δ.
+
+11
+00:01:04,512 --> 00:01:10,184
+Before training δ = 0, so the model starts as exactly the equation.
+
+12
+00:01:11,884 --> 00:01:16,721
+Inside the network, the five inputs are first standardised.
+
+13
+00:01:16,921 --> 00:01:20,608
+They pass through two hidden layers of 16 units each.
+
+14
+00:01:20,808 --> 00:01:28,063
+Each unit adds its weighted inputs and a bias, then squashes the sum with tanh.
+
+15
+00:01:28,263 --> 00:01:34,456
+Thicker wires carry stronger signals: blue pushes up, amber pushes down.
+
+16
+00:01:34,656 --> 00:01:39,494
+The single output δ sets the correction factor at every strain.
+
+17
+00:01:41,194 --> 00:01:44,277
+Training starts from the equation alone.
+
+18
+00:01:44,477 --> 00:01:50,883
+1,500 Adam steps learn the curve shapes; L-BFGS then refines them.
+
+19
+00:01:51,083 --> 00:01:56,530
+Mean training error falls from 8.95 to 0.35 MPa.
+
+20
+00:01:58,230 --> 00:02:04,439
+14 settings, including physics penalties, were scored on training cases only.
+
+21
+00:02:04,639 --> 00:02:10,660
+Cross-validation folds, plus whole temperature/rate groups hidden.
+
+22
+00:02:10,860 --> 00:02:14,858
+The best setting was locked before any test file was read.
+
+23
+00:02:16,558 --> 00:02:18,936
+Five trained copies are averaged into one prediction.
+
+24
+00:02:19,136 --> 00:02:27,456
+Test error: 0.44 MPa on 37 unseen cases, 17× better than the equation alone.
+
+25
+00:02:27,656 --> 00:02:31,507
+The same network without the equation does slightly better (0.34 MPa).
+
+26
+00:02:31,707 --> 00:02:36,559
+So the equation adds named physical constants, not accuracy.
+
+27
+00:02:38,259 --> 00:02:45,272
+Valid for 30–200 °C at the simulated rates and porosities.
+
+28
+00:02:45,472 --> 00:02:50,720
+Above 200 °C there is no data, so predictions there are unverified.
