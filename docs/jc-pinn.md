@@ -143,6 +143,7 @@ What this means:
 
 ## 6. How to run it
 
+* **Read everything in one place:** `notebooks/jc_pinn_explained.ipynb`. It explains the data, the equation, the model, the loss, training, selection, the test results, the control and predictions, computing every number live. It is saved with its outputs and runs in about 20 s without the raw data. Part 9 can retrain from the professor's folder.
 * **Google Colab / Kaggle:** open `notebooks/jc_pinn_colab.ipynb`.
   * `MODE = 'PREDICT'` plots curves from the saved equation without any data, e.g. 4 % porosity.
   * `MODE = 'FAST'` refits the selected setting and scores the test cases in a few minutes.
