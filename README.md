@@ -6,6 +6,8 @@ The completed model returns a 120-point curve of **von Mises stress (`Svm`) agai
 
 ## Start here
 
+- [JC-PINN with our Johnson–Cook Equation 1](docs/jc-pinn.md) (7 Nov): the customised Johnson–Cook law as the model's backbone, with a learned correction. Test error 0.44 against 7.37 for the equation alone. A no-equation control shows the separable law adds interpretability, not accuracy. [Results and verification](reports/jc_pinn_20261107/README.md). [Colab/Kaggle notebook](notebooks/jc_pinn_colab.ipynb).
+
 - [Fresh single MLP test and numerical equation](reports/single_mlp_20261102/README.md): verified 36/37-case test, baseline comparison and condition limitations. [Colab notebook](notebooks/single_mlp_equation.ipynb).
 
 - [Effective governing-equation check](docs/effective-equation-check.md): 36-training-case qualification; both tested families fail the screening limits. [Physics-only Colab notebook](notebooks/effective_equation_check.ipynb).

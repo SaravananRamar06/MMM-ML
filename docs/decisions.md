@@ -96,3 +96,33 @@ User selected "MLP equation (Recommended)" and requested "test this" after askin
 ## 2 November - Single MLP test conclusion
 
 The specified single MLP improves mean RMSE over the lookup baseline in training-case CV (2.174491 versus 3.602695) and the 37-case test (0.142667 versus 1.378978). It supports within-design interpolation; nested condition holdouts are much weaker, including 43.236012 at 200/-5, and do not justify a universal-best or new-regime claim. The exported JSON equation exactly reproduces the final network. The recovered fit is weight-for-weight identical to the preserved first fit; the rerun addressed reporting only. Keep the previous ensemble and its results as a separate artifact. Hosted Colab remains unverified following a browser policy stop.
+
+
+## 7 November 2026 - User Equation 1 as the governing law (JC-PINN)
+
+- **Governing equation (user-specified):** `sigma_JC = [A - B*eps^n][1 + C ln(rate/1e-5)][1 - T*^m][G/25300]^q[1 - phi]^r`,
+  `T* = (T - 30)/(600 - 30)` in degrees C, `phi = 1 - density/2700`. This is the user's customised
+  Johnson-Cook law; its sign `A - B*eps^n` describes the softening seen in all 73 histories.
+- **Variable mapping (user-confirmed):** eps = E11; rate term uses the strain-rate ratio; G in MPa.
+  `phi = 1 - density/2700` is now the user's porosity definition for this model, so the per-case levels
+  0 / 3 / 7.85 % are used as inputs. This resolves Q03 by user decision for the JC-PINN; it remains an
+  assumption about the professor's generator, not a confirmed simulation input. The fixed 4 % value is
+  kept as the study condition at which curves are reported.
+- **Model form (user choice):** `sigma = sigma_JC(theta) * exp(delta)`, delta a zero-initialised
+  5-16-16-1 tanh network (385 parameters). The constants are bounded: A - B*eps^n > 0 up to eps = 0.1,
+  C, q, r >= 0. Rebuilt from scratch in PyTorch: scikit-learn cannot take a physics loss, and the network
+  now predicts a correction to Equation 1, so the old weights do not transfer. Earlier models remain baselines.
+- **Physics residuals:** level (`delta`, stay close to Equation 1) and trend (`d delta / d condition`, i.e. the
+  model's temperature/rate/density/G sensitivities equal Equation 1's), at 4096 fixed Sobol collocation
+  points over T 30-300 C. The trend form was added after a training-fold development check showed that
+  pulling the level toward Equation 1 (about 10 % off) increases error; see configs/jc_pinn.json.
+- **Weight decay alpha = 1** (sklearn convention), fixed from a training-fold development check at
+  lambda = 0; alpha = 0.001 let the multiplicative correction blow up in extrapolation.
+- **Selection (user choice "Balanced"):** score = 0.5 x (case-CV mean RMSE + mean over nine temperature/rate
+  group holdouts), training cases only; 14 candidates (none/level/trend physics x lambda x frozen/joint
+  constants), 3 seeds each; final model is a 5-seed ensemble locked before the 37 test cases are read.
+
+
+## 7 November 2026 - JC-PINN result
+
+The pre-registered balanced score selected the Equation 1 backbone with jointly trained constants and no physics penalty (CV 2.098, groups 6.235); the final 5-seed model was locked before the 37 test cases were read and scored once: 0.4386 mean RMSE (Equation 1 alone 7.3656). Keep this as the delivered Equation-1-governed model. A post-hoc control without Equation 1 was better on every measure (test 0.3375, groups 5.629); report that Equation 1's separable form is not supported as the governing law of these simulations and adds interpretability rather than accuracy. Do not switch the deliverable or change the equation without the user's decision. Quote the "Equation 1 alone" constants as the calibrated law; constants inside the joint model are not separately identifiable.

@@ -518,3 +518,23 @@ User selected **"Effective law (Recommended)"**, accepting a literature-based ef
 ### 2 November 2026 - MLP equation and test authorization
 
 User chose **"MLP equation (Recommended)"** for an exact learned prediction equation, then asked **"come up with the best plan"** and set the active goal **"test this"**. The current experiment tests the specified single-MLP proposal and exports its numerical equation.
+
+
+### 7 November 2026 - User-customised Johnson-Cook equation and JC-PINN decisions
+
+User supplied two notebook pages titled **"User-customised JC Equation"** and asked to use
+**the first equation** as the governing equation of the ML model, either altering the existing
+model's weights or rebuilding it from scratch, trained on the professor's folder and runnable on
+Google Colab or Kaggle. Equation 1 as written:
+`sigma = [A - B*eps_p^n][1 + C ln eps_p*][1 - T*^m][G/G0]^q[1 - phi]^r`, with the page-2 definitions
+`eps_p* = eps_p/eps_p0, eps_p0 = 1e-5`; `T* = (T - Tr)/(TM - Tr), TM = 600 C, Tr = 30 C`;
+`G0 = 25300 MPa`; `phi = 1 - rho/rho0, rho0 = 2700 kg/m3`. Equations 2 and 3 on the page were not requested.
+
+Answers to the four follow-up questions (all chose the recommended option):
+- How Equation 1 governs the model: **"Backbone + correction (Recommended)"** - Equation 1 is the model's
+  structure, with a small network learning a bounded correction and a physics penalty at collocation points.
+- Rate term: **"Rate ratio + E11 (Recommended)"** - `eps_p*` is the strain-rate ratio `rate/1e-5`; `eps_p` is `E11`.
+- Porosity: **"Per-case phi + 4% study point (Recommended)"** - `phi = 1 - density/2700` per case for training
+  (0, 3, 7.85 %); the fixed 4 % assumption becomes the study condition (density 2592 kg/m3).
+- Selection meaning of "best": **"Balanced (Recommended)"** - average of case-CV error and held-out
+  temperature/rate-group error, training cases only, fixed before the run.

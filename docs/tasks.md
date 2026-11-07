@@ -33,6 +33,10 @@ Latest evidence: `reports/retests/20261025T172218Z/`. Mean test curve RMSE 0.059
 
 ## Scientific work still open
 
+- [x] 7 November: build the JC-PINN with the user's Equation 1 as governing law (backbone + correction), training-only selection over 14 physics settings, lock-before-test scoring, independent verification, post-hoc no-equation control and Colab/Kaggle notebook (local PREDICT/FAST execution). See jc-pinn.md and reports/jc_pinn_20261107/.
+- [ ] Run notebooks/jc_pinn_colab.ipynb on hosted Colab or Kaggle with the real professor folder (user step; the notebook checks curve fingerprints).
+- [ ] Decide with the user whether to keep the JC-PINN, adopt the no-equation network recipe, or extend Equation 1 (condition-dependent B, n) given the control result.
+
 - [x] 2 November: test the fresh single MLP on the unchanged 36/37 case split; perform nested condition diagnostics, export all equation coefficients and independently verify predictions, scalers, folds, source hashes and original artifact preservation. See reports/single_mlp_20261102/README.md.
 - [ ] Hosted Colab execution remains unverified; the prepared notebook embeds the locally tested code. This is distinct from the completed local model test.
 

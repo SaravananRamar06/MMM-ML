@@ -54,3 +54,8 @@ do not repeatedly ask the user for missing source files.
 ## 31 October effective-equation follow-up
 
 Effective-law scope and 36/37 split are user-confirmed. Both tested families/maps fail qualification; see effective-equation-check.md. Open: supported condition/state dependence, case-60 loading/numerical interpretation, physical stress units and original constitutive definitions. User confirms all available files are supplied; do not re-request original inputs.
+
+
+## 7 November 2026 - Q03 by user decision for the JC-PINN
+
+The user defined porosity as `phi = 1 - density/2700` in their customised Johnson-Cook notes, giving 0 / 3 / 7.85 % per case; 4 % stays the study point. This is used by the JC-PINN as a user-chosen definition. Whether the professor's generator intended density as porosity is still unconfirmed. The calibrated porosity exponent is r = 0 (no usable porosity effect in the separable law). New open point: whether a condition-dependent extension of Equation 1 (B and n depending on T* and rate) is wanted, since the separable form cannot change curve shape.
