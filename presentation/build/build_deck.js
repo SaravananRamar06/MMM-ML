@@ -365,9 +365,9 @@ pres.addSection({ title: "Comparison" });
   });
   text(s, "EXPECTED IN THE RESULTS", { x: 9.0, y: 1.85, w: 3.75, h: 0.3, fontSize: 12, bold: true, color: STEEL, charSpacing: 3 });
   const exp = [
-    ["EL", "Highest stress at the bore and no plastic strain: it cannot yield.", STEEL],
-    ["JC-B", "Stress capped near yield; plastic strain appears at the top of the bore.", INK],
-    ["JC-U", "Same pattern as JC-B; any gap between them comes only from the curve.", ORANGE],
+    ["EL", "Highest peak: it cannot yield, so its stress keeps rising with load.", STEEL],
+    ["JC-B", "Lower peak: yielding and hardening cap the stress.", INK],
+    ["JC-U", "Close to JC-B if our curve is right; any gap comes only from the curve.", ORANGE],
   ];
   exp.forEach(([c, b, col], i) => {
     const y = 2.3 + i * 1.33;
@@ -376,26 +376,55 @@ pres.addSection({ title: "Comparison" });
     text(s, b, { x: 9.2, y: y + 0.48, w: 3.4, h: 0.65, fontSize: 14, color: INK });
   });
   text(s, "Only JC-U can carry porosity into the bracket model, so it is our route to CL(φ).", { x: 0.6, y: 6.45, w: 12.1, h: 0.4, fontSize: 18, bold: true, color: ORANGE });
-  s.addNotes("Elastic captures stiffness only. Built-in Johnson-Cook adds yield, hardening, strain-rate and temperature effects, but with generic constants. User-defined Johnson-Cook loses the automatic rate and temperature dependence, because each table is for one condition, but it is the only one that can include porosity, through our own curve. We expect EL to give the highest stress at the bore with no plastic strain, and both JC runs to cap the stress near yield and show plastic strain at the top of the bore.");
+  s.addNotes("Elastic captures stiffness only. Built-in Johnson-Cook adds yield, hardening, strain-rate and temperature effects, but with generic constants. User-defined Johnson-Cook loses the automatic rate and temperature dependence, because each table is for one condition, but it is the only one that can include porosity, through our own curve. We expect EL to give the highest peak because it cannot yield, JC-B to give a lower, capped peak, and JC-U to land close to JC-B if our curve is right.");
 }
 
 // ================================================================== 13 Results
 {
-  const s = content("Comparison", "Results at the bore", "Equivalent stress and plastic strain: EL · JC-B · JC-U");
-  const sims = [["EL", "Elastic", STEEL], ["JC-B", "Built-in JC", INK], ["JC-U", "User Defined JC", ORANGE]];
-  sims.forEach(([c, nme, col], k) => {
+  const s = content("Comparison", "Results · equivalent stress at t = 0.06 s", "Where the bracket is most stressed");
+  const sims = [
+    ["EL", "Elastic", STEEL, "result_el.png", 1.370, "595.27", "at the fixed corner of the upper mounting face"],
+    ["JC-B", "Built-in JC", INK, "result_jcb.png", 1.370, "320.79", "around the bore, where the load enters"],
+    ["JC-U", "User Defined JC", ORANGE, "result_jcu.png", 1.388, "323.81", "around the bore, where the load enters"],
+  ];
+  sims.forEach(([c, nme, col, file, ratio, mx, where], k) => {
     const x = 0.6 + k * 4.12, w = 3.85;
-    card(s, x, 1.8, w, 4.25, TINT);
-    text(s, [B(c + "  ", { color: col }), R(nme, { color: MUTED })], { x: x + 0.25, y: 1.95, w: w - 0.5, h: 0.4, fontSize: 18 });
-    s.addShape(pres.shapes.RECTANGLE, { x: x + 0.25, y: 2.45, w: w - 0.5, h: 2.45, fill: { color: WHITE }, line: { color: LINE, width: 1, dashType: "dash" }, objectName: uid("contour_slot") });
-    text(s, "Add the Workbench contour here", { x: x + 0.25, y: 3.45, w: w - 0.5, h: 0.4, fontSize: 13, color: LINE, align: "center" });
-    text(s, "max equivalent stress", { x: x + 0.25, y: 5.05, w: 2.2, h: 0.35, fontSize: 13, color: MUTED });
-    text(s, "— MPa", { x: x + 2.2, y: 5.03, w: w - 2.45, h: 0.38, fontSize: 15, bold: true, align: "right" });
-    text(s, "max plastic strain", { x: x + 0.25, y: 5.5, w: 2.2, h: 0.35, fontSize: 13, color: MUTED });
-    text(s, c === "EL" ? "0 (elastic)" : "—", { x: x + 2.2, y: 5.48, w: w - 2.45, h: 0.38, fontSize: 15, bold: true, align: "right" });
+    card(s, x, 1.75, w, 4.95, TINT);
+    text(s, [B(c + "  ", { color: col }), R(nme, { color: MUTED })], { x: x + 0.2, y: 1.88, w: w - 0.4, h: 0.4, fontSize: 18 });
+    img(s, file, x + 0.15, 2.38, w - 0.3, ratio, `${nme} run: equivalent (von Mises) stress contour on the bracket at 0.06 s, maximum ${mx} MPa`);
+    text(s, "max von Mises stress", { x: x + 0.2, y: 5.1, w: w - 0.4, h: 0.3, fontSize: 13, color: MUTED });
+    text(s, [B(mx, { color: col }), R(" MPa", { color: INK, bold: false, fontSize: 18 })], { x: x + 0.2, y: 5.38, w: w - 0.4, h: 0.6, fontSize: 32 });
+    text(s, where, { x: x + 0.2, y: 6.02, w: w - 0.4, h: 0.55, fontSize: 14, color: INK });
   });
-  text(s, "Read each run at the same time step and on the same contour scale, so the three panels compare directly.", { x: 0.6, y: 6.3, w: 12.1, h: 0.4, fontSize: 15, color: MUTED });
-  s.addNotes("Here we show the three contour plots side by side, read at the same time and on the same colour scale. Point out where the peak sits, at the top of the bore and the inner corner, and compare the peak stress and plastic strain across the three runs.");
+  s.addNotes("These are the three Workbench contours of von Mises stress, all read at the same time, 0.06 seconds. The colour scales are different in each picture, so compare the legend numbers rather than the colours. Elastic peaks at 595 megapascals at the fixed corner of the upper mounting face. Both Johnson-Cook runs peak at about 321 to 324 megapascals around the bore.");
+}
+
+// ================================================================== 14 Results comparison
+{
+  const s = content("Comparison", "EL vs JC-B vs JC-U · results", "Plasticity halves the peak; our curve matches Ansys");
+  s.addChart(pres.charts.BAR, [{ name: "Max von Mises stress (MPa)", labels: ["EL", "JC-B", "JC-U"], values: [595.27, 320.79, 323.81] }], {
+    x: 0.6, y: 1.75, w: 5.6, h: 4.7, barDir: "col", barGapWidthPct: 70,
+    chartColors: ["2F5D8A", "14213D", "E8590C"], showLegend: false,
+    showTitle: true, title: "Max von Mises stress at t = 0.06 s (MPa)", titleFontSize: 14, titleColor: "14213D", titleFontFace: "+mn-lt",
+    showValue: true, dataLabelPosition: "outEnd", dataLabelFontSize: 16, dataLabelFontBold: true, dataLabelColor: "14213D", dataLabelFontFace: "+mn-lt", dataLabelFormatCode: "0.0",
+    catAxisLabelColor: "14213D", catAxisLabelFontSize: 16, catAxisLabelFontFace: "+mn-lt", catAxisLabelFontBold: true,
+    valAxisLabelColor: "6B7785", valAxisLabelFontSize: 12, valAxisLabelFontFace: "+mn-lt", valAxisMinVal: 0, valAxisMaxVal: 700, valAxisMajorUnit: 100,
+    valGridLine: { color: "DCE4EC", size: 0.75 }, catGridLine: { style: "none" }, objectName: "max_stress_chart",
+  });
+  const finds = [
+    ["1.85×", "EL overpredicts", "Without yielding, stress keeps rising: 595 MPa against about 322 MPa for both JC runs.", STEEL],
+    ["0.94 %", "JC-U agrees with JC-B", "323.81 vs 320.79 MPa: our user-defined curve gives the same answer as Ansys' built-in model.", ORANGE],
+    ["Bore", "The peak moves to the bore", "EL peaks at the fixed mounting-face corner; with plasticity the peak sits where the pin load enters.", INK],
+  ];
+  finds.forEach(([big, h, b, col], i) => {
+    const y = 1.75 + i * 1.5;
+    card(s, 6.6, y, 6.1, 1.32, TINT);
+    text(s, big, { x: 6.8, y: y + 0.2, w: 1.75, h: 0.9, fontSize: 30, bold: true, color: col, valign: "middle" });
+    text(s, h, { x: 8.6, y: y + 0.14, w: 3.95, h: 0.38, fontSize: 17, bold: true });
+    text(s, b, { x: 8.6, y: y + 0.52, w: 3.95, h: 0.75, fontSize: 14, color: MUTED });
+  });
+  text(s, "JC-U matches Ansys' own JC and peaks at the bore, so it is the model we use to add porosity.", { x: 0.6, y: 6.5, w: 12.1, h: 0.4, fontSize: 18, bold: true, color: ORANGE });
+  s.addNotes("The elastic model gives a peak 1.85 times higher, because it never yields. The two Johnson-Cook runs agree within one percent, 320.8 against 323.8 megapascals, which tells us our user-defined curve behaves like Ansys' own Johnson-Cook model. With plasticity the peak moves from the fixed corner of the mounting face to the bore, where the pin load enters. That is the stress location we need for the critical flaw length, and it is why JC-U is the model we take forward with porosity.");
 }
 
 // ================================================================== 14 Approach
@@ -407,8 +436,8 @@ pres.addSection({ title: "Approach" });
   const steps = [
     ["Material model", "JC-PINN trained on the 73 professor-supplied AlSi10Mg simulations: 0.44 MPa mean curve error on 37 held-out cases, R² = 0.9995.", "DONE"],
     ["Material into Ansys", "Export the predicted curve as the JC-U hardening table, using our material bridge tool.", "READY"],
-    ["Bracket stress", "Run JC-U with the upper-half bore load to find σ at the critical location.", "NOW"],
-    ["Porosity sweep", "Repeat for φ = 0, 4 % (study point) and above, giving σ(φ) and K", "NEXT", "IC", "(φ)."],
+    ["Bracket stress", "JC-U with the upper-half bore load: peak 323.8 MPa, located at the bore.", "DONE"],
+    ["Porosity sweep", "Repeat for φ = 0, 4 % (study point) and above, giving σ(φ) and K", "NOW", "IC", "(φ)."],
     ["Critical flaw length", "CL = (1/π)(K", "NEXT", "IC", " ⁄ Yσ)² for each φ, giving the CL(φ) curve."],
   ];
   steps.forEach(([h, b0, tag, sub, rest], i) => {
@@ -425,7 +454,7 @@ pres.addSection({ title: "Approach" });
   });
   text(s, "STILL TO PIN DOWN", { x: 0.6, y: 5.9, w: 3, h: 0.3, fontSize: 12, bold: true, color: ORANGE, charSpacing: 3 });
   text(s, [R("A literature K"), R("IC", { subscript: true }), R(" for printed AlSi10Mg  ·  the flaw shape factor Y  ·  confirmation of how density and G map to porosity")], { x: 0.6, y: 6.25, w: 12.1, h: 0.4, fontSize: 15, color: WHITE });
-  s.addNotes("Step one is done: our physics-informed JC-PINN reproduces the professor's simulations to about 0.44 MPa on cases it never saw. Next we export its curve as the JC-U table, run the bracket with the upper-half bore load, and read the stress at the critical spot. We repeat that across porosity levels and feed stress and toughness into the fracture formula to get critical flaw length against porosity. We still need a literature toughness value, a flaw shape factor and confirmation of the porosity mapping.");
+  s.addNotes("Step one is done: our physics-informed JC-PINN reproduces the professor's simulations to about 0.44 MPa on cases it never saw. Its curve goes into Ansys as the JC-U table. The bracket run with the upper-half bore load is done: JC-U peaks at 323.8 megapascals at the bore. Now we repeat that across porosity levels and feed stress and toughness into the fracture formula to get critical flaw length against porosity. We still need a literature toughness value, a flaw shape factor and confirmation of the porosity mapping.");
 }
 
 (async () => {

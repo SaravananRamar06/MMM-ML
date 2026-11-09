@@ -1,6 +1,6 @@
 # Presentation: Effect of Porosity on an AM Wing Rib Bracket
 
-`Porosity in an AM Wing Rib Bracket.pptx` (14 slides, 16:9, speaker notes on every slide) and a PDF copy.
+`Porosity in an AM Wing Rib Bracket.pptx` (15 slides, 16:9, speaker notes on every slide) and a PDF copy.
 It replaces the October deck, which used a home-made Python solver, treated CL as lift in one version and
 quoted unverified capacity-loss figures. None of that content is reused here.
 
@@ -16,16 +16,16 @@ quoted unverified capacity-loss figures. None of that content is reused here.
 | 8 | Comparison Study set-up | `source/Comparison Study - Final.wbpj`: three Explicit Dynamics (AUTODYN) systems named Elastic, Built-in JC and User Defined JC, all using `Rib Bracket.STEP` |
 | 9–11 | EL, JC-B, JC-U | Material property lists for AlSi10Mg - EL / JCB / JCU in the same `.wbpj` |
 | 12 | Comparison | Capabilities of each material model, plus the results we expect |
-| 13 | Results | Empty frames for the three Workbench contours and their peak values |
-| 14 | Approach | JC-PINN test result (0.44 MPa mean curve RMSE, R² = 0.9995, 37 cases) from `reports/jc_pinn_20261107/` on branch `claude/tender-hamilton-vd2qvm` |
+| 13 | Results | Your Workbench contours (`source/results/`), equivalent stress at t = 0.06 s: EL 595.27, JC-B 320.79, JC-U 323.81 MPa |
+| 14 | Results comparison | Same three peaks: EL = 1.85× JC-B; JC-U is within 0.94 % of JC-B; the EL peak sits at the fixed mounting-face corner and both JC peaks sit at the bore |
+| 15 | Approach | JC-PINN test result (0.44 MPa mean curve RMSE, R² = 0.9995, 37 cases) from `reports/jc_pinn_20261107/` on branch `claude/tender-hamilton-vd2qvm` |
 
 ## Not in the project file, so the deck does not state it
 
 The `.wbpj` holds the project structure only. Material constants, load magnitude, end time, mesh and results
-are in `Comparison Study - Final_files/`, which was not supplied. So:
+are in `Comparison Study - Final_files/`, which was not supplied. The results slides use your contour screenshots instead. Still open:
 
 - **F has no magnitude.** Its direction (+Y, upper half of the bore) follows the stated load choice. The fixed support on both mounting faces matches the earlier `Elastic.wbpj`; check it against the Comparison Study set-up.
-- **Slide 13 needs the three contour images and the peak stress and plastic strain values.**
 - **Slide 11 says the JC-U table comes from the user's customised JC law (Equation 1).** The `.wbpj` only shows that JC-U uses a multilinear isotropic hardening table, so confirm the source.
 
 ## Rebuild
@@ -34,6 +34,7 @@ are in `Comparison Study - Final_files/`, which was not supplied. So:
 pip install gmsh==4.15.2 matplotlib numpy pillow      # gmsh needs libGLU on Linux
 python presentation/build/extract_planform.py presentation/build/planform.json
 python presentation/build/diagrams.py presentation/build/planform.json
+python presentation/build/crop_results.py
 NODE_PATH=<dir containing pptxgenjs> node presentation/build/build_deck.js <pptx skill dir>
 ```
 
