@@ -76,6 +76,20 @@ def collect():
     forms = screen['correction_forms_balanced']
     n['ScrBoundedScore'] = f2(forms['bounded exp correction (x1/3..x3), alpha 0.1']['score'])
 
+    # Porosity (density) analysis, post-hoc and descriptive.
+    pa = load('porosity_analysis.json')
+    dv, fr = pa['density_vs_model'], pa['density_vs_model']['full_range']
+    n['PorPairs'], n['PorPairsLower'] = str(dv['pairs']), str(dv['pairs_with_lower_density_lower_stress'])
+    n['PorSameSign'], n['PorCorr'] = str(dv['model_pairs_same_sign']), f"{dv['correlation_data_model']:.2f}"
+    n['PorFullPairs'], n['PorFullCorr'] = str(fr['pairs']), f"{fr['correlation_data_model']:.2f}"
+    n['PorData'], n['PorModel'], n['PorMPa'] = f"{fr['data_rel_pct']:.2f}", f"{fr['model_rel_pct']:.2f}", f"{fr['data_MPa']:.2f}"
+    for T, key in (('30', 'Thirty'), ('100', 'Hundred'), ('200', 'TwoHundred')):
+        n['PorData' + key] = f"{fr['by_temperature'][T]['data_rel_pct']:.2f}"
+        n['PorModel' + key] = f"{fr['by_temperature'][T]['model_rel_pct']:.2f}"
+    n['PorImpliedR'] = f"{pa['equation1']['implied_r_from_data']:.3f}"
+    n['PorG'], n['PorT'] = f"{pa['comparison']['G_full_range_rel_pct']:.2f}", f"{-pa['comparison']['T_30_to_100_rel_pct']:.1f}"
+    n['PorRatio'] = f"{pa['comparison']['G_over_density_ratio']:.0f}"
+
     # Training and data configuration.
     cfg = res['config']
     tr = cfg['training']

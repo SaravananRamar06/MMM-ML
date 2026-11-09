@@ -207,7 +207,7 @@ Single MLP of 2 Nov (same split, for reference) & \nSingleCV & \nSingleGroups & 
 \end{tabular}
 \end{table}
 
-\paragraph{Final constants.} Fitted jointly, the constants become $A=\nPinnA$, $B=\nPinnB$, $n=\nPinnn$, $C=\nPinnC$, $m=\nPinnm$, $q=\nPinnq$ and $r\approx0$. The porosity exponent stays at its lower bound in both fits. Once $G$ is in the equation, Equation~1 attributes no separate effect to $1-\phi$; any remaining porosity dependence is carried by the correction, which sees density as an input. On the test set the correction is substantial: the mean $|\delta|$ is \nDeltaMean{} and the largest is \nDeltaMax{}. With joint fitting the constants and $\delta$ share the work, so the constants are best read as a physical backbone rather than as stand-alone material constants.
+\paragraph{Final constants.} Fitted jointly, the constants become $A=\nPinnA$, $B=\nPinnB$, $n=\nPinnn$, $C=\nPinnC$, $m=\nPinnm$, $q=\nPinnq$ and $r\approx0$. The porosity exponent stays at its lower bound in both fits, although the data do contain a small, consistent porosity effect (Section~\ref{sec:porosity}). That effect is carried by the correction, which sees density as an input. On the test set the correction is substantial: the mean $|\delta|$ is \nDeltaMean{} and the largest is \nDeltaMax{}. With joint fitting the constants and $\delta$ share the work, so the constants are best read as a physical backbone rather than as stand-alone material constants.
 
 %=====================================================================
 \section{Results on the test set}
@@ -307,6 +307,43 @@ In the observed range (30--200\,\textdegree C) we checked the signs of the model
 \end{figure}
 
 %=====================================================================
+\subsection{How porosity acts}
+\label{sec:porosity}
+Porosity enters the data only through density, as $\phi=1-\rho/2700$ (0, 3 and 7.85\,\%). To isolate its effect, we compared every pair of simulations that differ in density alone, with the same temperature, rate and $G$. This analysis is post-hoc and descriptive: it uses all 73 curves, and fits or changes nothing. Fig.~\ref{fig:porosity} and Table~\ref{tab:porosity} give the result:
+\begin{itemize}
+\item \textbf{The effect is real and consistent.} In all \nPorPairsLower{} of \nPorPairs{} pairs, lower density gives lower stress.
+\item \textbf{The effect is small.} Going from $\phi=0$ to 7.85\,\% lowers the stress by \nPorData\,\% on average (\nPorMPa~MPa).
+\item \textbf{It grows with temperature:} \nPorDataThirty\,\% at 30\,\textdegree C, \nPorDataHundred\,\% at 100\,\textdegree C and \nPorDataTwoHundred\,\% at 200\,\textdegree C.
+\end{itemize}
+
+\noindent For comparison, the full range of $G$ changes the stress by \nPorG\,\%, about \nPorRatio{} times more than porosity, and 30 to 100\,\textdegree C changes it by \nPorT\,\%.
+
+\paragraph{Equation 1 missed it; the correction caught it.} The data imply a porosity exponent $r\approx\nPorImpliedR$, but both fits put $r$ at its lower bound of zero. A 0.3~MPa effect is far smaller than the roughly 10~MPa misfit of Equation~1 alone, so least squares cannot resolve it. The JC-PINN instead carries the effect in its correction network, through the density input:
+\begin{itemize}
+\item it predicts a \nPorModel\,\% drop over the full range, against \nPorData\,\% in the data;
+\item it has the same sign in all \nPorSameSign{} pairs;
+\item its pair-by-pair correlation with the data is \nPorFullCorr{} over the \nPorFullPairs{} full-range pairs (\nPorCorr{} over all \nPorPairs);
+\item it reproduces the growth with temperature.
+\end{itemize}
+
+\paragraph{What this means for the bracket.} The simulations vary density and $G$ independently, but in a printed part both fall as porosity rises. Because $G$ acts about \nPorRatio{} times more strongly, the effect of porosity on a real bracket depends mainly on the relation $G(\phi)$, which these data do not define. This is why the porosity workflow in \file{bracket/workflow/} asks for that relation explicitly.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_porosity}
+\caption{Left: stress drop against porosity for pairs differing only in density, simulation (circles, dotted means) and JC-PINN (crosses, solid means). Right: mean stress drop when one variable changes at a time.}
+\label{fig:porosity}
+\end{figure}
+
+\begin{table}[H]\centering\small
+\caption{Porosity effect (mean stress drop from $\phi=0$ to 7.85\,\%, pairs differing only in density).}
+\label{tab:porosity}
+\begin{tabular}{lrrr}\toprule
+ & 30\,\textdegree C & 100\,\textdegree C & 200\,\textdegree C\\\midrule
+Simulation & \nPorDataThirty\,\% & \nPorDataHundred\,\% & \nPorDataTwoHundred\,\%\\
+JC-PINN & \nPorModelThirty\,\% & \nPorModelHundred\,\% & \nPorModelTwoHundred\,\%\\\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Could the model be improved?}
 After the lock, we screened possible improvements on the training cases only, without touching the test set:
 \begin{itemize}
@@ -332,14 +369,14 @@ None beat the locked model, so we submit it unchanged. The evidence is in \file{
 \item \textbf{Units inferred} (\textdegree C, s$^{-1}$, MPa, kg\,m$^{-3}$).
 \item \textbf{No data above 200\,\textdegree C,} and no physics penalty acts there in the selected model. Curves at 300\,\textdegree C are unvalidated.
 \item \textbf{Strain is total axial strain} $E_{11}$, not plastic strain, because the histories have no elastic segment.
-\item \textbf{Porosity mapping.} Porosity and $G$ vary independently in the design, so the relation $G(\phi)$ needed for a real part is not defined by these data.
+\item \textbf{Porosity mapping.} Porosity and $G$ vary independently in the design, so the relation $G(\phi)$ needed for a real part is not defined by these data. Since $G$ acts about \nPorRatio{} times more strongly than density, this relation dominates any bracket-level porosity effect. Whether the generator intended density to represent porosity is also unconfirmed.
 \item \textbf{No fracture prediction.} The bracket's critical flaw length is not predicted: the data contain no flaw sizes or toughness.
 \item \textbf{Weak spot.} The model is weakest where training cases are scarce, notably at 30\,\textdegree C, $10^{-4}$\,s$^{-1}$.
 \end{itemize}
 
 %=====================================================================
 \section{Conclusion}
-Equation~1 works as the governing law of a neural material model. Multiplying it by a zero-initialised correction gives a model that starts as the equation and keeps its named constants. It reaches \nTestMean~MPa on 37 locked test curves, \nImprovement{} times better than the equation alone. Its error on unseen conditions is roughly half that of our earlier single MLP. The physics residuals did not help on this data. A control without the equation is slightly more accurate, so the equation's contribution is interpretability and structure rather than accuracy. Data at 300\,\textdegree C, an experimental check and a defined porosity--modulus relation are the next steps that would make the model useful beyond the simulated range.
+Equation~1 works as the governing law of a neural material model. Multiplying it by a zero-initialised correction gives a model that starts as the equation and keeps its named constants. It reaches \nTestMean~MPa on 37 locked test curves, \nImprovement{} times better than the equation alone. Its error on unseen conditions is roughly half that of our earlier single MLP. The data's small but consistent porosity effect (\nPorData\,\% over 0--7.85\,\%) is missed by Equation~1's porosity term ($r=0$) but captured by the correction. The physics residuals did not help on this data. A control without the equation is slightly more accurate, so the equation's contribution is interpretability and structure rather than accuracy. Data at 300\,\textdegree C, an experimental check and a defined porosity--modulus relation are the next steps that would make the model useful beyond the simulated range.
 
 \FloatBarrier
 \bibliographystyle{unsrt}

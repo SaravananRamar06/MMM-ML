@@ -125,9 +125,19 @@ What this means:
    constants, correct trends, a physical starting point), not accuracy.
 3. **Trade-off.** On the professor's random 50/50 test the earlier MLPs remain more precise (0.143 and 0.059 against 0.439). The balanced
    criterion we chose traded some interpolation precision for better behaviour on unseen temperature/rate combinations.
-4. **Porosity.** r settles at 0, so Equation 1's porosity term finds no usable effect. Density changes stress by only about 0.2 %
-   in these simulations. The small density effect the model does have comes from the network, and it has the physical sign
-   (stress falls as porosity rises) at every checked point between 30 and 200 °C.
+4. **Porosity.** Porosity enters only through density (φ = 1 − ρ/2700).
+   * **The data contain a real effect.** In all 72 pairs of cases that differ only in density, lower density gives lower stress.
+   * **The effect is small.** From φ = 0 to 7.85 % the stress falls by 0.34 % (about 0.3 MPa). The drop grows with temperature:
+     0.25 % at 30 °C, 0.30 % at 100 °C and 0.53 % at 200 °C.
+   * **Equation 1 misses it.** The data imply r ≈ 0.04, but the fit set r = 0, because the effect is buried under Equation 1's
+     roughly 10 MPa misfit.
+   * **The network catches it.** The correction reproduces the effect through its density input: 0.31 % against 0.34 %, the same
+     sign in all 72 pairs, and correlation 0.97.
+   * **G matters more for a real part.** G acts about 16 times more strongly, so for a real bracket the porosity effect depends
+     mainly on how G falls with porosity. The data do not define that.
+
+   Evidence: [`porosity_analysis.json`](../reports/jc_pinn_20261107/porosity_analysis.json), from `scripts/porosity_analysis.py`
+   (post-hoc and descriptive).
 5. **Physical sign checks:** across 2,579 collocation points between 30 and 200 °C, there are no points where stress rises with strain or temperature,
    or falls with G or density. Between 200 and 300 °C there is no data and no physics penalty. These curves are unvalidated
    extrapolation, and 2.5 % of points there have the wrong density sign.
@@ -175,8 +185,8 @@ and [test-results video](../reports/jc_pinn_20261107/test_report/video/jc_pinn_t
 * **Then why did the physics penalty not help?** Equation 1 is about 10 % off in level, and its fixed curve shape is wrong for hot or
   slow conditions. Pulling the model toward it, or toward its trends, moves predictions away from the simulations. A PINN only helps
   when its governing equation is right where data are missing.
-* **What does r tell us about porosity?** In these simulations density changes stress by only about 0.2 %, so the porosity exponent is
-  small. The model can say how stress changes between φ = 0 and 7.85 % *in these simulations*; it does not measure real pore effects.
+* **What does r tell us about porosity?** In these simulations φ = 0 → 7.85 % lowers stress by only 0.34 %. The fit put r at 0,
+  although the data imply about 0.04, and the network carries the effect instead. The model can say how stress changes between φ = 0 and 7.85 % *in these simulations*; it does not measure real pore effects.
 * **Can it predict 300 °C?** It returns a curve, but there is no data above 200 °C. The selected model has no physics penalty, so that curve
   is a free extrapolation of the backbone and network, and it is unvalidated.
 * **Limits:**

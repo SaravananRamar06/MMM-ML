@@ -2,7 +2,7 @@
 
 | File | What it is |
 |---|---|
-| `report.pdf` / `report.tex` | Course report on the final JC-PINN model (14 pages). |
+| `report.pdf` / `report.tex` | Course report on the final JC-PINN model (15 pages). |
 | `numbers.tex` | Every number quoted in the report, paper and slides, generated from `reports/jc_pinn_20261107/` by `scripts/write_latex_numbers.py`. Do not edit by hand. |
 | `numbers.json` | The same values, for the slide builder. |
 | `refs.bib` | Bibliography shared with `paper/paper.tex`. Every entry was checked against its DOI, publisher page or arXiv record. |

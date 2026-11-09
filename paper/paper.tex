@@ -209,6 +209,16 @@ Five-MLP ensemble & -- & \nEnsGroups$^{\ast}$ & \nEnsTest\\\bottomrule
 \subsection{Physical behaviour}
 Across 2579 points in the observed range (30--200\,\textdegree C), the predicted stress falls with strain and with temperature, and rises with $G$ and with density, at every point. Fig.~\ref{fig:study} shows curves at the project's study porosity $\phi=4\,\%$. The 300\,\textdegree C curves are unvalidated extrapolation: no data exist there, and no physics penalty is active.
 
+\textbf{Porosity.} Porosity enters only through density ($\phi=1-\rho/2700$). In all \nPorPairsLower{} of \nPorPairs{} case pairs that differ in density alone, lower density gives lower stress. Over $\phi=0\to7.85\,\%$ the drop is \nPorData\,\% (\nPorDataThirty, \nPorDataHundred{} and \nPorDataTwoHundred\,\% at 30, 100 and 200\,\textdegree C). That is about \nPorRatio{} times weaker than the effect of $G$.
+
+The data imply $r\approx\nPorImpliedR$, but the separable fit sets $r=0$: the effect is buried under Equation~1's misfit. The correction network instead reproduces it, through the density input: \nPorModel\,\% against \nPorData\,\%, the same sign in every pair, and correlation \nPorFullCorr{} (Fig.~\ref{fig:por}). For a real part, the effect of porosity therefore depends mainly on the unknown relation $G(\phi)$.
+
+\begin{figure}[t]\centering
+\includegraphics[width=\columnwidth]{fig_porosity}
+\caption{Porosity effect: pairs differing only in density, simulation against JC-PINN (left), and one-variable effects (right).}
+\label{fig:por}
+\end{figure}
+
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{fig_study_point}
 \caption{Predicted curves at $\phi=4\,\%$ ($\rho=2592$, $G=24541$). Dashed: 300\,\textdegree C, no data.}
