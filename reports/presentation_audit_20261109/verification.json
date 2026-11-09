@@ -1,0 +1,491 @@
+{
+  "review_date": "2026-11-09",
+  "project_commit": "66b89e0beb43ce5e83119f266a56f1d187c329b6",
+  "deck_filename": "Final Presentation - Porosity in an AM Wing Bracket.pptx",
+  "deck_sha256": "7d7165a382c0f4f4187c3ac1ec8c5b815f0705a36161b8a522a2751bc0e71f00",
+  "method": "Saved-weight inference and saved-prediction reconstruction; no fitting or selection.",
+  "presentation_branch": {
+    "commit": "b56ab26b9e033c1effe5eb68d35361fef3c5f0a9",
+    "ref": "origin/claude/blissful-knuth-nwvl73",
+    "downloaded_deck_matches_github": true,
+    "companion_pdf_sha256": "bdb739dd9764f792e6a4e165892451056bf3cd5c789b4082a0dd19aa485559ae",
+    "workbench_sha256": "355d4bcc6bdfd8f15d3baf49542732eff5ab74fcba57a1802d5e7a502d3e6349",
+    "explicit_systems": [
+      "Elastic",
+      "Built-in JC",
+      "User Defined JC"
+    ],
+    "companion_solver_folder_committed": false,
+    "test_prediction_source_matches_main": true,
+    "cv_prediction_source_matches_main": true
+  },
+  "github_sources": {
+    "presentation/source/results/A Elastic - equivalent stress.png": "e9e5344cd94977183c2a48a02718a7f6ebe3ac6a24473693229c60371a1171c0",
+    "presentation/source/results/B Built-in JC - equivalent stress.png": "6157036b37b8e54a5182cc4ffbd2d1a456791bd8ffe559965b319b98eaec9177",
+    "presentation/source/results/C User Defined JC - equivalent stress.png": "03fa9edf8419b98d50414e075f9ca7eed1a3cc39100290386751a4a0e50518bb"
+  },
+  "slide_count": 20,
+  "slides": [
+    {
+      "slide": 1,
+      "text": "MULTISCALE MODELLING OF MATERIALS USING MACHINE LEARNING  \u00b7  COURSE PROJECT\nEffect of Porosity on an Additively Manufactured Aircraft Wing Bracket\nFrom AlSi10Mg material data to bracket stress, with a physics-informed neural network and Ansys\nTEAM\nPranav Parasuram C\n   ME24B1061\nR Saravanan\n   ME24I1006\nDinesh Y\n   ME24B1043\nAmit Narayan K\n   ME24I1024\nCourse instructor  \nProf. Arul Kumar Mariyappan\nIndian Institute of Information Technology, Design and Manufacturing (IIITDM) Kancheepuram",
+      "speaker_notes": "Good morning. We are presenting our course project on how porosity from 3D printing affects an aluminium aircraft wing bracket, and how a physics-informed neural network and Ansys work together to assess it.\n1"
+    },
+    {
+      "slide": 2,
+      "text": "01 \u00b7 PROBLEM STATEMENT\nPrinted brackets are light, but they carry hidden pores\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\n1\nThe part: \nan aircraft wing-rib bracket that carries load from the rib into the wing spar.\n2\nThe process: \nlaser powder-bed fusion (metal 3D printing) in AlSi10Mg aluminium alloy, for low weight and complex shapes.\n3\nThe catch: \nprinting traps gas pores and leaves lack-of-fusion voids. Some porosity is always present.\n4\nThe risk: \neach pore is a ready-made flaw. Under repeated flight loads it can grow into the crack that breaks the bracket.\nPrinted cross-section (schematic). Porosity \u03c6 = pore volume \u00f7 total volume.\nProblem:  \nhow much does porosity reduce the size of flaw the bracket can safely carry, and how can a designer check that quickly?\n2",
+      "speaker_notes": "The bracket is printed, not machined, so it is light and can have an optimised shape. But printing always leaves pores. Each pore is a flaw already inside the part, and repeated flight loads can grow it into a crack. So our problem is: how much does porosity cut the flaw size the bracket can tolerate, and how can a designer check that quickly?\n2"
+    },
+    {
+      "slide": 3,
+      "text": "02 \u00b7 OBJECTIVE\nPredict the safe flaw size as porosity rises\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\n1\nLearn the material\nTrain a neural network on the 73 AlSi10Mg simulations we were given, to predict the stress\u2013strain curve for any temperature, strain rate, density and shear modulus.\n2\nLoad the bracket\nFeed those curves into Ansys and find the stress at the bracket's critical location under its real service load.\n3\nPredict the critical flaw length\nCombine that stress with fracture mechanics to get CL against porosity, the number a designer can act on.\nTARGET QUANTITY\nC\nL\n = (1/\u03c0) \u00b7 (K\nIC\n \u2044 Y \u03c3)\u00b2\n\u03c3\nstress at the critical location (Ansys)\nK\nK\nIC\n: source and porosity dependence still to be defined (no toughness data supplied)\nY\nshape factor of the flaw\nCL is the \ncritical flaw length\n: the largest pore or crack the bracket can carry at its working stress before it fractures. Study point: porosity \u03c6 = 4 % (assumed).\n3",
+      "speaker_notes": "We have three objectives. First, learn the material behaviour from the professor's 73 simulations using a neural network. Second, put that behaviour into Ansys and find the stress in the bracket. Third, combine the stress with fracture mechanics to get the critical flaw length, CL, as porosity changes. CL is the biggest flaw the bracket can carry before it breaks.\n3"
+    },
+    {
+      "slide": 4,
+      "text": "03 \u00b7 OUR APPROACH\nThe data science life cycle we followed\n01\nProblem\nPorosity in a printed wing bracket; target CL(\u03c6)\n02\nCAD & Ansys\nBracket geometry, loads, supports; 3 material models\n03\nEDA\n73 simulations explored: coverage, trends, key inputs\n04\nModel\nPhysics-informed NN (JC-PINN) chosen and trained\n05\nEvaluate\nScored after locking on 37 held-out simulations\n06\nDeploy\nA bracket-check tool for aerospace companies\nWHY IT IS MULTISCALE\nMaterial scale: \nthe neural network learns how AlSi10Mg flows under temperature and strain rate.   \nPart scale: \nAnsys uses that behaviour to load the full bracket.   \nDecision: \nfracture mechanics turns the bracket stress into a safe flaw size.\n4",
+      "speaker_notes": "This is the path through the talk, following the data science life cycle: define the problem, model the bracket in Ansys, explore the data, build and evaluate the model, and finally deploy it. It is multiscale because the network works at the material scale, Ansys at the part scale, and fracture mechanics turns the result into a decision.\n4"
+    },
+    {
+      "slide": 5,
+      "text": "04 \u00b7 CAD MODEL, LOADS AND SUPPORTS\nRib Bracket.STEP: geometry, loads and supports\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\nEnvelope\n231.5 \u00d7 230 \u00d7 40 mm plate\nVolume \u00b7 mass\n778 cm\u00b3 \u00b7 \u2248 2.1 kg (fully dense)\nMaterial\nAlSi10Mg, laser powder-bed fusion\nLoad F\nBearing load along +Y on the upper half of the \u00d810 mm bore (628 mm\u00b2 face)\nSupports\nFixed in all directions on both 50 \u00d7 40 mm spar mounting faces\nReactions\nR = F and M = F \u00d7 210 mm at the spar\nLoad path\nLower arm in tension, diagonal arm in compression\nWhy only the upper half? \nA pin can only push: it bears on the half of the bore the load drives it into, and the lower half opens a gap. Loading the whole bore would pull on the lower half and halve the bearing stress.\n5",
+      "speaker_notes": "This one slide carries the whole structural set-up. The bracket is a 40 mm thick AlSi10Mg plate with two arms meeting at a 10 mm bore. The pin load F acts upward on the upper half of the bore. Both mounting faces bolt to the spar and are fixed. Statics gives a reaction equal to F and a moment of F times the 210 mm lever arm, with the lower arm in tension and the diagonal arm in compression. We load only the upper half of the bore because a pin can only push; the lower half separates.\n5"
+    },
+    {
+      "slide": 6,
+      "text": "05 \u00b7 ANSYS SIMULATIONS\nThree explicit simulations: only the material model changes\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\nWorkbench project \nComparison Study - Final\n: three \nExplicit Dynamics (AUTODYN)\n systems on the same bracket and the same bore load. Any difference in the results comes from the material law.\nEL  \nA \u00b7 Elastic\n\u03c3 = E\u00b7\u03b5\nLinear and never yields. Card: density, E, \u03bd.\nJC-B  \nB \u00b7 Elasto-plastic JC\n\u03c3y = (A + B \u03b5p\u207f)(1 + C ln \u03b5\u0307*)(1 \u2212 T*\u1d50)\nAnsys' built-in Johnson\u2013Cook strength: yield, hardening, strain-rate and temperature terms.\nJC-U  \nC \u00b7 User-defined JC\nour (\u03b5p, \u03c3) table\nMultilinear hardening table from our customised JC law (table source to be confirmed). The formula has G and porosity terms, but the fitted porosity exponent r \u2248 0: density moves stress by only \u2248 0.2 (inferred MPa) in the data.\n6",
+      "speaker_notes": "We ran three explicit dynamics simulations in Ansys. They share the geometry, mesh set-up and bore load, and differ only in the material card. A is purely elastic. B is elasto-plastic, using Ansys' built-in Johnson-Cook strength model. C is our user-defined Johnson-Cook, where we type in the hardening curve point by point from our own customised Johnson-Cook law, which also carries shear modulus and porosity terms; in our fit the porosity exponent comes out at about zero, because density barely changes the stress in the data.\n6"
+    },
+    {
+      "slide": 7,
+      "text": "06 \u00b7 ANSYS RESULTS\nEquivalent stress at t = 0.06 s\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\nEL  \nElastic\npeak von Mises stress\n595.27\n MPa\nat the fixed corner of the upper mounting face\nJC-B  \nElasto-plastic JC\npeak von Mises stress\n320.79\n MPa\naround the bore, where the load enters\nJC-U  \nUser-defined JC\npeak von Mises stress\n323.81\n MPa\naround the bore, where the load enters\nAnsys results supplied by the team; not independently re-run.\n7",
+      "speaker_notes": "These are the von Mises stress contours, all at 0.06 seconds. The colour scales differ between pictures, so read the legend numbers. The elastic run peaks at 595 megapascals at the fixed corner of the upper mounting face. Both Johnson-Cook runs peak at about 321 to 324 megapascals around the bore.\n7"
+    },
+    {
+      "slide": 8,
+      "text": "07 \u00b7 ANSYS COMPARISON\nPlasticity halves the peak, and our curve matches Ansys\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\n1.85\u00d7\nElastic overpredicts\nIt cannot yield, so its stress keeps rising: 595 MPa against about 322 MPa for both JC runs.\n0.94 %\nJC-U agrees with JC-B\n323.81 vs 320.79 MPa: our user-defined curve behaves like Ansys' own Johnson\u2013Cook model.\nBore\nThe peak moves to the bore\nWith plasticity, the hot spot sits where the pin load enters: the location \u03c3 is read from for CL.\nJC-U is the route for our own material curves to drive the bracket model.\nAnsys results supplied by the team; not independently re-run.\n8",
+      "speaker_notes": "Three findings. The elastic model gives a peak 1.85 times higher, because it never yields. The two Johnson-Cook runs agree within one percent, so our user-defined curve behaves like Ansys' own model. And with plasticity the peak moves to the bore, which is where we read the stress for the critical flaw length. That is why JC-U is the route for our own material curves.\n8"
+    },
+    {
+      "slide": 9,
+      "text": "08 \u00b7 EXPLORATORY DATA ANALYSIS\nThe data: 73 AlSi10Mg simulations from the professor\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\n108\nplanned simulations\n73\nwith results\n2.2 M\nrows of history\n5 \u2192 1\ninputs \u2192 output\ncases available\n10\u207b\u2075 /s\n10\u207b\u2074 /s\n10\u207b\u00b3 /s\n30 \u00b0C\n9\n9\n9\n100 \u00b0C\n9\n9\n9\n200 \u00b0C\n1\n9\n9\n300 \u00b0C\n0\n0\n0\nEach cell holds 9 combinations of density \u00d7 shear modulus. Only one case at 200 \u00b0C, 10\u207b\u2075 /s; none at 300 \u00b0C.\nWHAT EACH SIMULATION GIVES\nTemperature T\n30 \u00b7 100 \u00b7 200 \u00b0C\nStrain rate \u03b5\u0307\n10\u207b\u2075 \u00b7 10\u207b\u2074 \u00b7 10\u207b\u00b3 /s\nDensity \u03c1\n2488 \u00b7 2619 \u00b7 2700 kg/m\u00b3; porosity inferred from density: 0 / 3 / 7.85 % (2700 / 2619 / 2488), pending confirmation by the professor\nShear modulus G\n23 314 \u00b7 24 541 \u00b7 25 300 MPa (inferred)\nOutput\nvon Mises stress Svm along axial strain E11 = 0\u201310 %\nUnits (\u00b0C, /s, kg/m\u00b3, MPa) inferred from the data, unconfirmed; stress units inferred as MPa (unconfirmed).\n9",
+      "speaker_notes": "The professor gave us a design matrix of 108 simulations; 73 have results, about 2.2 million rows of history. Every cell of temperature and strain rate has 9 combinations of density and shear modulus, except 200 degrees at the slowest rate, which has only one case, and 300 degrees, which has none. The porosity values next to density are our inference, assuming fully dense is 2700.\n9"
+    },
+    {
+      "slide": 10,
+      "text": "09 \u00b7 EXPLORATORY DATA ANALYSIS\nTemperature and strain rate drive the curves\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\n1\nStress falls with strain in every curve: \non average from 138 to 68 (inferred MPa) over 10 % strain.\n2\nHotter means weaker; \na faster rate starts higher but softens faster, so curves cross near 6 % strain.\n3\nCase 60 is irregular \nand the only case at 200 \u00b0C, 10\u207b\u2075 /s. We kept it.\nMean of the largest gap between paired curves that differ in one input by one level. Stress units inferred as MPa (unconfirmed).\n10",
+      "speaker_notes": "Left: all 73 curves. Stress falls with strain in every one, and hotter cases sit lower. Right: at 30 degrees, a faster rate starts higher but softens faster, so the curves cross. The chart compares pairs of cases that differ in one input only: one temperature step moves the curve by 22 units, which we infer to be megapascals, one rate step by 17, shear modulus by 3, and density by only 0.2. So this data says very little about porosity directly; that becomes important for the model.\n10"
+    },
+    {
+      "slide": 11,
+      "text": "10 \u00b7 PREPARING THE DATA\nFrom raw histories to a fair train-test split\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\n1\nResample\nEvery curve is interpolated to the same 120 strain points (0.02\u20139.99 %), so slow cases with 100 000 rows don't outweigh fast ones with 1 000.\n2\nSplit by case\nRandom 50/50 split of whole simulations, as the professor asked: 36 for training, 37 held out from fitting (seed 42).\n3\nScale\nInputs are standardised using training statistics only, so nothing about the test set leaks in.\n4\nLearn\nEach query is (T, log \u03b5\u0307, \u03c1, G, E11) \u2192 Svm: 36 \u00d7 120 = 4 320 training points from 36 independent simulations.\nAll 120 points of a simulation stay on the same side of the split.\n11",
+      "speaker_notes": "Before modelling, we resample every curve to 120 strain points so that each simulation counts equally. We split whole simulations, not rows, 36 for training and 37 held out from fitting, as the professor asked. Scaling uses training data only. That leaves 4,320 training points, but they come from just 36 independent simulations, which we keep in mind when judging accuracy.\n11"
+    },
+    {
+      "slide": 12,
+      "text": "11 \u00b7 CHOOSING THE NEURAL NETWORK\nWhy a physics-informed neural network (JC-PINN)\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\nPhysics only\nThe JC equation alone is readable but too rigid: 10.24 error even on training cases.\nData only (plain MLP)\nFits familiar conditions well (2.17), but errs badly on unseen temperature\u2013rate groups (11.90).\nJC-PINN (chosen)\nChosen for its generalisation on unseen temperature\u2013rate groups (6.24 vs 11.90 for the plain MLP) and its readable constants.\nSelection used training cases only; the 37 held-out cases were not used. Group-holdout errors were part of the selection score, so they are mildly optimistic. \nIn fairness: \nthe same network with the JC equation switched off scored slightly better on those groups (5.63) and on test (0.338 vs 0.439), so the accuracy comes from the training recipe (strong weight decay, log-space output), not from the physics. All errors are curve RMSE; stress units inferred as MPa (unconfirmed).\n12",
+      "speaker_notes": "We compared approaches using only the training cases. The JC equation alone is readable but too rigid, about 10 units of error even on training cases. A plain MLP fits familiar conditions well, 2.17, but when a whole temperature-rate group is hidden its error jumps to 11.9. The JC-PINN multiplies the JC equation by a small learned correction; it scored 6.24 on hidden groups and keeps readable constants, which is why we chose it. Two honest caveats: those group errors were part of the selection score, so they are mildly optimistic; and the same network with the equation switched off did slightly better, 5.63 on groups and 0.338 against 0.439 on test. So the accuracy comes from the training recipe, strong weight decay and a log-space output, not from the physics itself. Units are inferred as megapascals.\n12"
+    },
+    {
+      "slide": 13,
+      "text": "12 \u00b7 WHY JC-PINN\nJC-PINN versus a plain MLP\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\nModel\nRandom 37-case test\nUnseen temp/rate groups (9-group mean)\nNote\nPlain MLP, 5-16-16-1, 385 weights\n0.143\n11.90\ntried as an alternative; no physics\nJC-PINN (selected)\n0.439\n6.24\nJC equation \u00d7 learned correction, 5 seeds\nJC-PINN, JC equation switched off (control)\n0.338\n5.63\npost-hoc check, not used for selection\nJC equation alone\n7.37\n13.95\ntoo rigid: same curve shape for every condition\nFamiliar conditions\nThe plain MLP is more accurate on the random split: 0.143 vs 0.439.\nUnseen temperature\u2013rate groups\nJC-PINN halves the plain MLP's error: 6.24 vs 11.90 (mildly optimistic, see below).\nRandom-split scores measure interpolation between near-duplicate cases; the unseen-group test is closer to real prediction.\n  All errors: curve RMSE, inferred MPa (unconfirmed). Group-holdout errors were part of the selection score.\n13",
+      "speaker_notes": "All numbers are curve RMSE in stress units we infer to be megapascals. The plain MLP, 5-16-16-1 with 385 weights, scores 0.143 on the random 37-case test but 11.90 on the nine hidden temperature-rate groups. Our JC-PINN, the JC equation times a learned correction trained with 5 seeds, scores 0.439 on the test and 6.24 on hidden groups. A post-hoc control, the same network with the equation switched off, scored 0.338 and 5.63; it was not used for selection, and it shows the accuracy comes from the training recipe. The JC equation alone scores 7.37 and 13.95, because it gives the same curve shape for every condition. The random split mostly tests interpolation between near-duplicate cases, so the group test is the better guide to real prediction, though it is mildly optimistic because it fed the selection score.\n13"
+    },
+    {
+      "slide": 14,
+      "text": "13 \u00b7 DATA MODELLING\nJC-PINN: the Johnson\u2013Cook law with a learned correction\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\n\u03c3  =  \u03c3\nJC\n(\u03b8) \u00b7 exp( \u03b4 )\n\u03c3\nJC\n = [A \u2212 B\u03b5\u207f][1 + C ln(\u03b5\u0307/10\u207b\u2075)][1 \u2212 T*\u1d50][G/G\u2080]\nq\n[1 \u2212 \u03c6]\nr\n1\n\u03b4 network\n5 inputs \u2192 16 \u2192 16 \u2192 1, tanh; 385 weights per network\n2\nStarts at physics\n\u03b4 begins at zero, so the untrained model is exactly the JC law\n3\nFive seeds\nThe same network trained from 5 seeds; predictions combined by geometric mean\n4\nTraining\nAdam 1 500 steps, then L-BFGS 2 500 iterations; strong weight decay; JC constants learned jointly\nWatch it learn: \nat step 0 the model is the plain JC law (lines off the dots). Adam and then L-BFGS pull the four training curves towards the simulation data as the loss falls about 60-fold.\nAnimated in Slide Show (recorded training run, seed 0). Stress units inferred as MPa (unconfirmed).\n14",
+      "speaker_notes": "Our model multiplies the Johnson-Cook law by exp of delta, where delta is a small neural network: five inputs, two hidden layers of 16 tanh units, one output, 385 weights. Delta starts at zero, so before training the model is exactly the physics equation. We train five networks with different seeds and combine them by a geometric mean. The animation is the real recorded training run for seed 0: the lines start as the plain equation and are pulled onto the simulation dots as the loss drops about sixty-fold.\n14"
+    },
+    {
+      "slide": 15,
+      "text": "14 \u00b7 EVALUATION\nScored on 37 simulations held out from fitting\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\nAnimated in Slide Show: each frame is one held-out case; the right panel collects every point.\n0.44\nmean curve RMSE (inferred MPa)\n0.9995\nR\u00b2 over 4 440 test points\n94.9 %\nof points within \u00b11 (inferred MPa)\n37 / 37\ncases better than the JC law alone\nHow to read it: \n37 simulations held out from fitting; scored after the model was locked. \nNot a blind test: \nthe test cases were explored in earlier project stages. The JC law alone misses by 7.37 on the same cases, so the learned correction cuts the error about 17-fold. Group-holdout errors (slides 12\u201313) were part of the selection score, so they are mildly optimistic. Stress units inferred as MPa (unconfirmed).\n15",
+      "speaker_notes": "These 37 simulations were held out from fitting and scored after the model was locked. It is not a blind test: the same cases were explored in earlier stages of the project. The animation steps through every held-out case: the orange line is the prediction, the dots are the simulation. Mean curve RMSE is 0.44 in units we infer to be megapascals, R squared is 0.9995 over 4,440 points, and 94.9 percent of points are within plus or minus one unit. It beats the JC law alone, which scores 7.37, on every one of the 37 cases.\n15"
+    },
+    {
+      "slide": 16,
+      "text": "15 \u00b7 EVALUATION\nWhere the model is strongest, and where to be careful\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\nStrong\nEvery condition stays below 1. The best groups are the fast rates (0.14\u20130.18).\nWeakest\n30 \u00b0C at 10\u207b\u2074 /s (0.80): 8 test cases but only 1 training case at that condition.\nGaps in the data\nOne case at 200 \u00b0C \u00b7 10\u207b\u2075 /s and none at 300 \u00b0C: predictions there are extrapolation.\nPorosity\nDensity moves stress by only \u2248 0.2, so the fitted porosity exponent r \u2248 0. Porosity-labelled data is needed.\nA plain MLP scored lower on familiar conditions (0.143 vs 0.439 MPa test) but much higher on unseen temperature\u2013rate groups (11.90 vs 6.24). Group-holdout errors were part of the selection score, so they are mildly optimistic. Stress units inferred as MPa (unconfirmed).\n16",
+      "speaker_notes": "Broken down by condition, every held-out group stays under one unit, which we infer to be megapascals. The weakest group, 30 degrees at the middle rate, has eight test cases but only one in training. One case exists at 200 degrees and the slowest rate and none at 300 degrees, so predictions there are extrapolation. Density barely changes the curves, so the fitted porosity exponent is about zero; this data cannot teach the porosity effect on its own. A plain MLP did better on familiar conditions, 0.143 against 0.439, but far worse on unseen groups, 11.90 against 6.24, and those group numbers are mildly optimistic.\n16"
+    },
+    {
+      "slide": 17,
+      "text": "16 \u00b7 DEPLOYMENT \u00b7 PLANNED, NOT YET BUILT\nPlanned: a bracket-check tool for aerospace companies\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\n1\nCompany inputs\nCT-scan porosity and largest pore \u00b7 service temperature \u00b7 load rate\n\u203a\n2\nJC-PINN service\nWould predict the AlSi10Mg stress\u2013strain curve for those conditions, with range warnings\n\u203a\n3\nAnsys material card\nCurve exported as the JC-U hardening table (bridge script exists; integration planned)\n\u203a\n4\nBracket analysis\nExplicit run with the upper-half bore load gives peak \u03c3 at the bore\n\u203a\n5\nCL check\nCL = (1/\u03c0)(K\nIC\n \u2044 Y\u03c3)\u00b2 vs the largest pore, once K\nIC\n and Y are defined\nPLANNED DECISION FOR EACH PRINTED BRACKET\nAccept\nlargest pore well below CL\nInspect\npore close to CL: re-scan or test\nReject\npore at or above CL\nHOW IT WOULD BE DELIVERED (PLAN)\nWeb app and API around the locked JC-PINN\nAnsys material-card export from our bridge script\nRange checks flag inputs outside the training data\nRetrain as tested, porosity-labelled data arrive\nThe current Model Studio app still serves an earlier MLP; updating it to the JC-PINN is planned. Before release: validate against physical coupon and bracket tests, and define a K\nIC\n source for printed AlSi10Mg.\n17",
+      "speaker_notes": "This slide is a plan; the tool is not built yet. A company would scan a printed bracket and enter its porosity, largest pore, service temperature and load rate. The JC-PINN would predict the material curve, our existing bridge script would export it as the Ansys JC-U material card, the bracket analysis would give the stress at the bore, and the critical flaw length would be compared with the largest pore once toughness and the shape factor are defined. The tool would then say accept, inspect or reject. Today, the Model Studio app still serves an earlier MLP; moving it to the JC-PINN is planned, and physical validation must come first.\n17"
+    },
+    {
+      "slide": 18,
+      "text": "17 \u00b7 LIMITS AND OPEN QUESTIONS\nWhat we have not shown\nProblem\nCAD & Ansys\nEDA\nModel\nEvaluate\nDeploy\n1\nEvidence\nThe test set is not blind. Case 60 (200 \u00b0C, 10\u207b\u2075 /s) is a single irregular case the model cannot fully reproduce. There is no experimental validation.\n2\nDefinitions unconfirmed\nStress units, the meaning of Svm and Evm, why every curve ends below its start, whether density and G represent porosity, and the solver that generated the data.\n3\nPorosity\nThe fitted exponent r \u2248 0, so these data show almost no porosity effect through the JC formula. Porosity is fixed at 4 % as an assumption, not a model input.\n4\nCL not yet computed\nNeeds the flaw geometry, a K\nIC\n source, the Y factor, the stress at the critical location, and how porosity enters (flow stress, net section, pores as flaws, or toughness). To confirm with the professor.\n18",
+      "speaker_notes": "Before concluding, what we have not shown. First, evidence: the test set is not blind, case 60 is a single irregular case the model cannot fully reproduce, and nothing is validated against experiments. Second, definitions still to confirm: the stress units, what Svm and Evm mean, why every curve ends below where it starts, whether density and shear modulus stand for porosity, and which solver generated the data. Third, porosity: the fitted exponent is about zero, so the data show almost no porosity effect, and porosity is fixed at 4 percent as an assumption. Fourth, the critical flaw length is not computed yet: it needs the flaw geometry, a toughness source, the shape factor, the stress at the critical location and a rule for how porosity enters. We will confirm these with the professor.\n18"
+    },
+    {
+      "slide": 19,
+      "text": "CONCLUSION\nWhat we showed, and what comes next\n01\nRealistic bracket model\nUpper-half bore loading and fixed spar faces give a realistic load path; with plasticity the peak stress sits at the bore.\n02\nPlasticity matters\nElastic analysis overpredicts the peak by 1.85\u00d7; our user-defined JC matches Ansys' built-in JC within 0.94 %.\n03\nA material model with readable constants\nJC-PINN predicts 37 held-out simulations to 0.44 mean RMSE (R\u00b2 = 0.9995) and beats the plain MLP on unseen temperature\u2013rate groups (6.24 vs 11.90, mildly optimistic).\n04\nNext: CL against porosity \u00b7 PLANNED, not yet built\nPorosity sweep through JC-U, a K\nIC\n source, the flaw geometry and physical tests; then the bracket-check tool.\nAnsys results supplied by the team; not independently re-run. Material-data stress units inferred as MPa (unconfirmed).\n19",
+      "speaker_notes": "To conclude. Our bracket model loads the bore the way a pin does, and with plasticity the peak sits at the bore. Plasticity matters: an elastic analysis overpredicts the peak by 1.85 times, and our user-defined JC matches Ansys' own within one percent; those Ansys runs are the team's and were not re-run independently. The JC-PINN predicts the 37 held-out simulations to 0.44 mean error and beats the plain MLP on unseen groups, though that comparison is mildly optimistic. Next, and still planned: the porosity sweep, a toughness source, the flaw geometry and physical tests, then the bracket-check tool.\n19"
+    },
+    {
+      "slide": 20,
+      "text": "Thank you\nAny Questions?\nPranav Parasuram C  \u00b7  R Saravanan  \u00b7  Dinesh Y  \u00b7  Amit Narayan K\nMultiscale Modelling of Materials using Machine Learning  \u00b7  IIITDM Kancheepuram",
+      "speaker_notes": "Thank you. We are happy to take any questions.\n20"
+    }
+  ],
+  "independent_numpy_checks": {
+    "split_matches_data_split_json": true,
+    "train_test_disjoint": true,
+    "lock_hashes_match_files": true,
+    "lock_written_before_test": true,
+    "final_fit_uses_training_ids_only": true,
+    "selection_splits_isolated": true,
+    "folds_cover_training_once": true,
+    "groups_hold_out_whole_conditions": true,
+    "trial_scores_recomputed": true,
+    "selected_is_best_by_preregistered_rule": true,
+    "jc_pinn_predictions_reproduced_max_abs": 2.5579538487363607e-13,
+    "equation_only_predictions_reproduced_max_abs": 1.4210854715202004e-14,
+    "predictions_reproduced": true,
+    "test_metrics_jc_pinn": true,
+    "test_metrics_equation_only": true,
+    "test_metrics_lookup": true,
+    "cv_metrics_selected": true,
+    "cv_metrics_equation_only": true,
+    "curves_identical_to_2nov_curves": true,
+    "constants_within_physical_bounds": true,
+    "members": 5,
+    "parameters_per_member": 385,
+    "protected_artifacts_unchanged": true,
+    "protected_artifacts_archived": 13,
+    "all_boolean_checks_passed": true
+  },
+  "verifier_limitation": "Unmodified verifier reaches JSON serialization and fails on np.bool_ with local NumPy. Calculations above evaluated all boolean checks including np.bool_.",
+  "test_recomputed": {
+    "cases": 37,
+    "points": 4440,
+    "mean_curve_rmse": 0.43862877347121765,
+    "worst_curve_rmse": 0.8406385273479724,
+    "worst_case": 10,
+    "pooled_rmse": 0.5035501484072222,
+    "r2": 0.999516340874547,
+    "within_one_fraction": 0.9490990990990991,
+    "max_absolute_error": 2.9003809715547817
+  },
+  "selected": {
+    "physics": "none",
+    "lambda_phys": 0.0,
+    "theta_mode": "joint"
+  },
+  "selected_group_mean": 6.234866068039225,
+  "control_saved_summary": {
+    "cv_mean_rmse": 1.315051929639399,
+    "group_mean_rmse": 5.6290534301442,
+    "score": 3.4720526798917994,
+    "groups": [
+      {
+        "name": "T30_rate-5",
+        "temperature": 30.0,
+        "log10_rate": -5.0,
+        "mean_rmse": 3.5243766656084325
+      },
+      {
+        "name": "T30_rate-4",
+        "temperature": 30.0,
+        "log10_rate": -4.0,
+        "mean_rmse": 0.8942068339426194
+      },
+      {
+        "name": "T30_rate-3",
+        "temperature": 30.0,
+        "log10_rate": -3.0,
+        "mean_rmse": 1.1388194733849477
+      },
+      {
+        "name": "T100_rate-5",
+        "temperature": 100.0,
+        "log10_rate": -5.0,
+        "mean_rmse": 13.396955443427865
+      },
+      {
+        "name": "T100_rate-4",
+        "temperature": 100.0,
+        "log10_rate": -4.0,
+        "mean_rmse": 1.3593027748242876
+      },
+      {
+        "name": "T100_rate-3",
+        "temperature": 100.0,
+        "log10_rate": -3.0,
+        "mean_rmse": 0.4054466216750837
+      },
+      {
+        "name": "T200_rate-5",
+        "temperature": 200.0,
+        "log10_rate": -5.0,
+        "mean_rmse": 18.973171636900204
+      },
+      {
+        "name": "T200_rate-4",
+        "temperature": 200.0,
+        "log10_rate": -4.0,
+        "mean_rmse": 6.592572007582931
+      },
+      {
+        "name": "T200_rate-3",
+        "temperature": 200.0,
+        "log10_rate": -3.0,
+        "mean_rmse": 4.37662941395143
+      }
+    ],
+    "test": {
+      "mean_rmse": 0.3375431121298086,
+      "median_rmse": 0.362699833612574,
+      "worst_rmse": 0.6119686713280205,
+      "mean_mae": 0.25334685348582886,
+      "mean_nrmse": 0.0033331446728346783
+    }
+  },
+  "baseline_saved_summary": {
+    "single_mlp": {
+      "description": "single 5-16-16-1 tanh scikit-learn MLP, alpha 0.001 (2 Nov 2026)",
+      "test": {
+        "mean_rmse": 0.14266681115884045,
+        "median_rmse": 0.10201620508628796,
+        "worst_rmse": 0.4191297661904037,
+        "mean_mae": 0.12007198612722587,
+        "mean_nrmse": 0.0013627616578458948
+      },
+      "cv": 2.174491113800993,
+      "groups": [
+        {
+          "temperature": 30.0,
+          "log10_rate": -5.0,
+          "mean_rmse": 2.4879674674651597
+        },
+        {
+          "temperature": 30.0,
+          "log10_rate": -4.0,
+          "mean_rmse": 5.260719256761757
+        },
+        {
+          "temperature": 30.0,
+          "log10_rate": -3.0,
+          "mean_rmse": 6.267105490702295
+        },
+        {
+          "temperature": 100.0,
+          "log10_rate": -5.0,
+          "mean_rmse": 13.235630465262721
+        },
+        {
+          "temperature": 100.0,
+          "log10_rate": -4.0,
+          "mean_rmse": 6.228451411173699
+        },
+        {
+          "temperature": 100.0,
+          "log10_rate": -3.0,
+          "mean_rmse": 6.924733285027834
+        },
+        {
+          "temperature": 200.0,
+          "log10_rate": -5.0,
+          "mean_rmse": 43.23601154289212
+        },
+        {
+          "temperature": 200.0,
+          "log10_rate": -4.0,
+          "mean_rmse": 10.826334797669235
+        },
+        {
+          "temperature": 200.0,
+          "log10_rate": -3.0,
+          "mean_rmse": 12.633144249716286
+        }
+      ],
+      "test_case_rmse": {
+        "1": 0.09387863939482799,
+        "4": 0.09292394760330389,
+        "7": 0.08484265033222163,
+        "9": 0.02952780312115281,
+        "10": 0.3039230070905195,
+        "11": 0.30553068089705854,
+        "12": 0.2179159216763825,
+        "13": 0.2527205990180571,
+        "14": 0.23948893625723602,
+        "15": 0.14305521922798306,
+        "16": 0.20103646634243888,
+        "17": 0.15416024537709472,
+        "20": 0.10465548218702063,
+        "23": 0.09397925861321846,
+        "24": 0.08788684351019486,
+        "31": 0.04401748165674012,
+        "32": 0.045277562578617876,
+        "35": 0.04268322486380276,
+        "36": 0.066760002755982,
+        "37": 0.09187360217213841,
+        "39": 0.32457449567288954,
+        "42": 0.36245472868042117,
+        "44": 0.10201620508628796,
+        "45": 0.4191297661904037,
+        "47": 0.08523243564122407,
+        "48": 0.14778979805672976,
+        "50": 0.07751602028459788,
+        "51": 0.15227351204460984,
+        "54": 0.16225703623469695,
+        "67": 0.10356365125971047,
+        "68": 0.11627182665366163,
+        "71": 0.12535689851247767,
+        "73": 0.09122920331997611,
+        "74": 0.08212177062825446,
+        "75": 0.06283083984773856,
+        "77": 0.07819597919966287,
+        "79": 0.08972027088776188
+      }
+    },
+    "ensemble_mlp": {
+      "description": "five-network query MLP ensemble, scikit-learn (24 Oct 2026); CV used different folds",
+      "test": {
+        "mean_rmse": 0.05908515170863245,
+        "median_rmse": 0.05056665519928898,
+        "worst_rmse": 0.11330617910816165
+      },
+      "test_case_rmse": {
+        "1": 0.059144921904680625,
+        "4": 0.052487110782959714,
+        "7": 0.03828079909349248,
+        "9": 0.03662104410769011,
+        "10": 0.09199813814239718,
+        "11": 0.10102167178968877,
+        "12": 0.0488771211444131,
+        "13": 0.07886701808444067,
+        "14": 0.08516963641440979,
+        "15": 0.03594796695423663,
+        "16": 0.06592867138351252,
+        "17": 0.06806013003004495,
+        "20": 0.0394285849260151,
+        "23": 0.03318926668064992,
+        "24": 0.03561205225017871,
+        "31": 0.029980867102078285,
+        "32": 0.01474145089082245,
+        "35": 0.016780967031202687,
+        "36": 0.03498542954567024,
+        "37": 0.0429947678260928,
+        "39": 0.09869237832842553,
+        "42": 0.10614619878284123,
+        "44": 0.03640684904899228,
+        "45": 0.11330617910816165,
+        "47": 0.030840406996131428,
+        "48": 0.09132133299866164,
+        "50": 0.028439835648461958,
+        "51": 0.09074282694181485,
+        "54": 0.08452912072610344,
+        "67": 0.08038389223442054,
+        "68": 0.08026166526249535,
+        "71": 0.08269296145350453,
+        "73": 0.03913396021544695,
+        "74": 0.06307256987511871,
+        "75": 0.05056665519928898,
+        "77": 0.04911663825707004,
+        "79": 0.050379526057784924
+      },
+      "cv": 1.1582632139842857,
+      "loco_mean_rmse": 6.793602548421109,
+      "loco_by_condition": {
+        "100C_1e-3": 1.2609868331961849,
+        "100C_1e-4": 5.207714589852649,
+        "100C_1e-5": 6.121277165028661,
+        "200C_1e-3": 8.260869260419643,
+        "200C_1e-4": 9.083715677090753,
+        "200C_1e-5": 23.525128683227813,
+        "30C_1e-3": 4.9324063840284476,
+        "30C_1e-4": 0.8053840465736994,
+        "30C_1e-5": 1.9449402963721283
+      }
+    }
+  },
+  "control_verification_scope": "Control summary arithmetic checked; control weights and per-query predictions are not committed, so control inference was not independently reproduced.",
+  "parameters": {
+    "network_per_member": 385,
+    "joint_constants_per_member": 7,
+    "total_per_member": 392,
+    "members": 5
+  },
+  "coverage": {
+    "30": {
+      "-5": 9,
+      "-4": 9,
+      "-3": 9
+    },
+    "100": {
+      "-5": 9,
+      "-4": 9,
+      "-3": 9
+    },
+    "200": {
+      "-5": 1,
+      "-4": 9,
+      "-3": 9
+    },
+    "300": {
+      "-5": 0,
+      "-4": 0,
+      "-3": 0
+    }
+  },
+  "manifest_rows": 2197000,
+  "porosity": {
+    "case_values": [
+      0.0,
+      0.030000000000000027,
+      0.0784999999999999
+    ],
+    "study_density_for_phi_0p04": 2592.0
+  },
+  "final_scalers_match_training_queries": true,
+  "raw_recheck": {
+    "files": 73,
+    "hash_mismatch_ids": [],
+    "resampled_vs_saved_max_absolute_delta": 0.0,
+    "mean_first_stress": 138.34733150684934,
+    "mean_last_stress": 67.47747763013697,
+    "every_end_below_start": true,
+    "factor_effects": {
+      "temperature": {
+        "pairs": 46,
+        "mean_largest_gap": 22.114635833028863
+      },
+      "log10_strain_rate": {
+        "pairs": 46,
+        "mean_largest_gap": 17.45138229448301
+      },
+      "density": {
+        "pairs": 48,
+        "mean_largest_gap": 0.18806016281512697
+      },
+      "shear_modulus": {
+        "pairs": 48,
+        "mean_largest_gap": 3.3989656390056027
+      }
+    }
+  },
+  "geometry": {
+    "cad_sha_matches": false,
+    "cad_sha_matches_after_CRLF_normalization": true,
+    "envelope_mm": [
+      231.53353196466665,
+      230.00000020000004,
+      40.0000002
+    ],
+    "volume_cm3": 778.0445989504434,
+    "mass_kg_at_2700": 2.1007204171661975,
+    "semicylinder_area_mm2": 628.3185307179587
+  },
+  "ansys_arithmetic_only": {
+    "elastic_over_builtin": 1.85563764456498,
+    "jc_relative_difference_percent": 0.9414258549206589,
+    "builtin_reduction_from_elastic_percent": 46.11016849496866,
+    "status": "Peaks match embedded screenshots and presentation-branch source screenshots; Workbench confirms three explicit systems, but its companion solver folder is not committed."
+  },
+  "training_trace": {
+    "initial_loss": 0.1708775,
+    "final_loss": 0.0027958,
+    "reduction_factor": 61.11935760784032
+  },
+  "locked_run_files_unchanged": true
+}

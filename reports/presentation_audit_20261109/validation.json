@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-09",
+  "python": "3.13.15",
+  "numpy": "2.2.6",
+  "audit_script_exit_code": 0,
+  "raw_files_rechecked": 73,
+  "resampled_target_max_absolute_difference": 0.0,
+  "independent_prediction_max_absolute_difference": 2.5579538487363607e-13,
+  "test_report_rebuilt_in_excluded_scratch": true,
+  "test_summary_numeric_comparison_tolerance": 1e-09,
+  "test_summary_fields_outside_tolerance": 0,
+  "pytest": {
+    "passed": 19,
+    "skipped": 1,
+    "subtests_passed": 26,
+    "failed": 7,
+    "failure_reason": "PyTorch missing on first attempt; after CPU-only torch 2.15.0+cpu installation in excluded work/audit-python, Windows Application Control blocked torch/lib/shm.dll (WinError 4551). No policy changes attempted.",
+    "suite_certified_passing": false
+  },
+  "original_verifier": "Calculations complete; final serializer fails on numpy.bool_. Read-only audit evaluates all Boolean checks including numpy.bool_ and writes its own evidence.",
+  "presentation_modified": false,
+  "locked_run_modified": false,
+  "rendering": "Inspected presentation-branch companion PDF pages and embedded PPTX media; direct PowerPoint automation could not open the downloaded PPTX. Animated playback unverified."
+}

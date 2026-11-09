@@ -1,5 +1,11 @@
 # Changelog
 
+## 9 November 2026: audit of the supplied 20-slide final presentation
+
+Reviewed the exact downloaded PPTX against presentation branch commit b56ab26 and final-model main commit 66b89e0. Added `reports/presentation_audit_20261109/README.md`, numerical evidence and a reproducible read-only audit script. Reconstructed locked-weight predictions, headline test statistics and selection scores; all 73 original source hashes match and resampled curves reproduce saved targets exactly. Compared all 20 slides, speaker notes and companion PDF pages. Workbench/screenshot evidence supports the three explicit-system names and displayed peaks, but companion solver files are absent.
+
+Documented corrections for zero selected physics-loss weight, density-derived porosity versus the 4% study point, CL stress definitions, unverified Ansys coupling, misleading curve illustration, fast-rate errors, rounding, parameter counts and deployment status. Rebuilt the test report in scratch with no numeric differences beyond 1e-9. The existing NumPy verifier has a boolean-serialization portability failure; audit calculations pass without altering it. Pytest: 19 passed, 1 skipped and 26 subtests passed; 7 PyTorch tests are blocked by Windows Application Control after an isolated CPU-PyTorch install. Locked model and supplied presentation remain unchanged; no model fitting or selection was performed by the audit.
+
 ## 7–9 November 2026: final model release
 
 **Model** (locked 7 Nov; unchanged since):
