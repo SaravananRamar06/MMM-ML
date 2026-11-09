@@ -1,0 +1,57 @@
+{
+ "pptx": "Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx",
+ "sha256": "3ecaa89343091e849a641d2485540871c0a7e00e9be8a0ebbec4a7f173ceb66d",
+ "checks": {
+  "slide_count_20": true,
+  "notes_on_every_slide": true,
+  "1_lambda_zero_visible_slides_4_12_13_14_19": true,
+  "1_no_physics_benefit_statement": true,
+  "2_porosity_mapping_slides_9_14_18": true,
+  "2_case_values_and_study_point": true,
+  "2_old_fixed_4pct_claim_removed": true,
+  "3_single_peak_not_validation": true,
+  "3_old_matches_ansys_title_removed": true,
+  "3_ratio_1_86": true,
+  "4_crack_model_route": true,
+  "4_not_fatigue_criterion": true,
+  "4_no_peak_vm_into_formula": true,
+  "5_fast_rate_claim_fixed": true,
+  "6_group_mean_6_23": true,
+  "6_selection_bias_disclosed": true,
+  "7_e11_vs_eps_p_defined": true,
+  "7_eq_variables_defined": true,
+  "8_parameter_count": true,
+  "9_deployment_status": true,
+  "removed_wrong_model_studio_claim": true,
+  "removed_recipe_attribution": true,
+  "removed_never_seen_tested_once": true,
+  "no_other_models": true,
+  "kept_0_4386": true,
+  "kept_r2": true,
+  "kept_94_9": true,
+  "kept_37_of_37": true,
+  "kept_not_blind": true,
+  "kept_inferred_units": true,
+  "kept_ansys_peaks": true,
+  "gifs_embedded_animated": true
+ },
+ "all_pass": true,
+ "gifs": {
+  "ppt/media/image-14-1.gif": {
+   "frames": 36,
+   "total_ms": 13880,
+   "loop": 0,
+   "bytes": 739088
+  },
+  "ppt/media/image-15-1.gif": {
+   "frames": 37,
+   "total_ms": 27750,
+   "loop": 0,
+   "bytes": 634962
+  }
+ },
+ "not_checked": [
+  "Playback inside Microsoft PowerPoint Slide Show (no PowerPoint in this environment; GIF frames, timings and loop flag were checked from the embedded files)",
+  "Native PowerPoint layout: rendering was checked through LibreOffice; Calibri/Arial are metric-compatible (Carlito/Liberation)"
+ ]
+}
