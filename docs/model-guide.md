@@ -121,7 +121,8 @@ What this means:
 2. **The equation itself does not add accuracy.** The control has the same network and training with Equation 1 switched off, and it is
    better on every measure. The JC-PINN's numbers are even slightly optimistic, because it was the best of 14 settings. The gain over the
    earlier MLPs on unseen conditions (6.2 against 11.9 for the single MLP) comes from the training recipe: strong weight decay and log-space
-   output. Equation 1 in this separable form is **not supported** as the governing law of these simulations.
+   output. So Equation 1 works as the model's backbone, but in this separable form it contributes interpretability (named
+   constants, correct trends, a physical starting point), not accuracy.
 3. **Trade-off.** On the professor's random 50/50 test the earlier MLPs remain more precise (0.143 and 0.059 against 0.439). The balanced
    criterion we chose traded some interpolation precision for better behaviour on unseen temperature/rate combinations.
 4. **Porosity.** r settles at 0, so Equation 1's porosity term finds no usable effect. Density changes stress by only about 0.2 %
@@ -141,9 +142,13 @@ What this means:
 * The notebook's FAST mode, run locally with nbclient, reproduced the locked model weight for weight, with test RMSE 0.43862877347121765.
 * Hosted Colab and Kaggle runs still need to be done on your account.
 
+**Want it on paper?** The same story is in the [course report](../report/report.pdf), the [IEEE-format paper](../paper/paper.pdf)
+and the [slides](../presentation/JC-PINN.pdf). The narrated [explainer video](../reports/jc_pinn_20261107/video/jc_pinn_explainer.mp4)
+and [test-results video](../reports/jc_pinn_20261107/test_report/video/jc_pinn_test_results.mp4) walk through it in about three minutes each.
+
 ## 6. How to run it
 
-* **Full technical specs** (constants, architecture, scalers, training, selection, metrics, validity): [`docs/jc-pinn-spec.md`](jc-pinn-spec.md).
+* **Full technical specs** (constants, architecture, scalers, training, selection, metrics, validity): [`docs/spec.md`](spec.md).
 * **Read everything in one place:** `notebooks/jc_pinn_explained.ipynb`. It explains the data, the equation, the model, the loss, training, selection, the test results, the control and predictions, computing every number live. It is saved with its outputs and runs in about 20 s without the raw data. Part 9 can retrain from the professor's folder.
 * **Google Colab / Kaggle:** open `notebooks/jc_pinn_colab.ipynb`.
   * `MODE = 'PREDICT'` plots curves from the saved equation without any data, e.g. 4 % porosity.
@@ -152,7 +157,7 @@ What this means:
 
   On Colab, keep `TEAM_8_extracted_results_set_1` (or its ZIP) in My Drive. If it was shared with you, add a shortcut to My Drive.
   On Kaggle, add it as a Dataset input. The notebook finds the folder and checks that the curves match the verified run.
-* **Local:** `pip install -r requirements-pinn.txt`, then
+* **Local:** `pip install -r requirements.txt`, then
   `python src/jc_pinn.py --raw TEAM_8_extracted_results_set_1 --output reports/NEW --mode full`.
   Verify the result with `python scripts/verify_jc_pinn.py reports/NEW`.
 

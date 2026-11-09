@@ -1,6 +1,6 @@
 # JC-PINN model specification
 
-Full technical specification of the delivered Johnson–Cook-governed model (run `reports/jc_pinn_20261107`, locked 7 November 2026). Every value is read from `configs/jc_pinn.json` and the saved run files; see [jc-pinn.md](jc-pinn.md) for the explanation and [the run report](../reports/jc_pinn_20261107/README.md) for full tables.
+Full technical specification of the delivered Johnson–Cook-governed model (run `reports/jc_pinn_20261107`, locked 7 November 2026). Every value is read from `configs/jc_pinn.json` and the saved run files; see [model-guide.md](model-guide.md) for the explanation and [the run report](../reports/jc_pinn_20261107/README.md) for full tables.
 
 ## 1. Identity
 | Item | Value |
