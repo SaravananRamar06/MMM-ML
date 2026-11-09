@@ -215,12 +215,17 @@ ax.text(0.05, 1.05, "yield  →  hardening", fontsize=13, color=INK, weight="bol
 save(fig, "curve_jcb.png")
 
 fig, ax = curve_axes()
-pts_x = [0.0, eps_y, 0.2, 0.32, 0.46, 0.62, 0.8, 0.98]
-pts_y = [0.0, sig_y] + [jc(x, 1.0) * (1 + 0.03 * ((-1) ** i)) for i, x in enumerate(pts_x[2:])]
-ax.plot(pts_x, pts_y, color=STEEL, lw=2.6)
-ax.plot(pts_x[1:], pts_y[1:], "o", ms=8, mfc="white", mec=ORANGE, mew=2.2)
-ax.text(0.05, 1.05, "our curve, point by point", fontsize=13, color=INK, weight="bold")
-ax.text(0.5, 0.36, "(plastic strain, stress)\npairs from our model", fontsize=12, color=MUTED)
+# Schematic only: the team's JC-U table values are not archived, so no shape is implied.
+ax.set_xlabel("equivalent plastic strain  εp  (Ansys table input)", fontsize=13, color=INK)
+ax.set_ylabel("yield stress  σy", fontsize=14, color=INK)
+pts_x = [0.1, 0.24, 0.38, 0.52, 0.66, 0.80, 0.94]
+for x in pts_x:
+    ax.plot([x, x], [0.12, 0.98], color="#E3EAF2", lw=1, zorder=1)
+ax.plot(pts_x, [0.62] * len(pts_x), "o", ms=11, mfc="white", mec=ORANGE, mew=2.4, zorder=3)
+for x in pts_x:
+    ax.text(x, 0.62, "?", fontsize=11, color=ORANGE, ha="center", va="center", weight="bold", zorder=4)
+ax.text(0.03, 1.05, "schematic: (εp, σy) table rows", fontsize=13, color=INK, weight="bold")
+ax.text(0.03, 0.30, "team's table values not archived;\nnot the supplied ML curve, which\nuses total axial strain E11 and falls", fontsize=11.5, color=MUTED)
 save(fig, "curve_jcu.png")
 
 print("written:", sorted(p.name for p in OUT.glob("*.png")))

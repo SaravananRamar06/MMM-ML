@@ -1,3 +1,12 @@
+# Corrected final presentation (use this one)
+
+`Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx` and its PDF apply the 9 November 2026 audit
+(branch `codex/presentation-audit`, commit `118fdf5`). Build: `build/build_corrected.js`. Corrections, evidence and
+verification are in [`verification_corrected/README.md`](verification_corrected/README.md). The section below describes the
+uncorrected original, kept unchanged for reference.
+
+---
+
 # Final presentation (use this one)
 
 `Final Presentation - Porosity in an AM Wing Bracket.pptx`: 20 slides, 16:9, speaker notes on every slide, plus a PDF copy.
