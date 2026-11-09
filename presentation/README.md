@@ -1,20 +1,26 @@
 # Final presentation (use this one)
 
-`Final Presentation - Porosity in an AM Wing Bracket.pptx`: 18 slides, 16:9, speaker notes on every slide, plus a PDF copy.
+`Final Presentation - Porosity in an AM Wing Bracket.pptx`: 20 slides, 16:9, speaker notes on every slide, plus a PDF copy.
 The design uses a blueprint cover, navy/steel/orange colours, Arial headings with Calibri body text, and a life-cycle tracker on every
 content slide. Built by `build/build_final.js`.
 
 | # | Slide | Rests on |
 |---|---|---|
 | 1 | Title, team, course, instructor, college | Team roll numbers from the October deck; instructor Prof. Arul Kumar Mariyappan (course emails) |
-| 2–4 | Problem, objective, life cycle | CL = critical flaw length; φ = 4 % assumed |
+| 2–4 | Problem, objective, life cycle | CL = critical flaw length; φ = 4 % assumed; K_IC source and porosity dependence still to be defined |
 | 5 | CAD, loads and supports | `Rib Bracket.STEP` measured with gmsh; statics R = F, M = F × 210 mm; upper-half bore reasoning |
-| 6–8 | Ansys: EL, elasto-plastic JC, user-defined JC | `source/Comparison Study - Final.wbpj` and the contours in `source/results/` (595.27 / 320.79 / 323.81 MPa) |
-| 9–11 | EDA and data preparation | `source/model/` truth curves (all 73 cases) and `manifest.json`; one-level factor effects recomputed: T 22.1, rate 17.5, G 3.4, ρ 0.19 MPa |
-| 12–13 | Choosing the NN and the JC-PINN | `reports/jc_pinn_20261107/` (branch `claude/tender-hamilton-vd2qvm`): selection scores, architecture, recorded training trace (GIF) |
-| 14–15 | Evaluation | Locked test results: 0.44 MPa mean RMSE, R² 0.9995, 94.9 % within ±1 MPa; per-condition RMSE; test GIF from `test_predictions.csv` |
-| 16 | Deployment | Proposed bracket-check workflow for aerospace companies (not yet built as a service) |
-| 17–18 | Conclusion, Thank you / Any Questions? | |
+| 6–8 | Ansys: EL, elasto-plastic JC, user-defined JC | `source/Comparison Study - Final.wbpj` and the team's contours in `source/results/` (595.27 / 320.79 / 323.81 MPa), not independently re-run |
+| 9–11 | EDA and data preparation | `source/model/` curves (all 73 cases) and `manifest.json`; one-level factor effects recomputed: T 22.1, rate 17.5, G 3.4, ρ 0.19 (units inferred as MPa) |
+| 12 | Choosing the NN | Training-side scores: JC equation alone, one plain MLP, JC-PINN; switched-off control disclosed |
+| 13 | JC-PINN versus a plain MLP | Test 0.143 / 0.439 / 0.338 / 7.37 and unseen-group means 11.90 / 6.24 / 5.63 / 13.95 |
+| 14 | JC-PINN model | Architecture and the recorded training trace (GIF) from `reports/jc_pinn_20261107/` (branch `claude/tender-hamilton-vd2qvm`) |
+| 15–16 | Evaluation | 37 cases held out from fitting, scored after locking; not a blind test. 0.44 mean RMSE, R² 0.9995, per-condition RMSE, test GIF |
+| 17 | Deployment | Planned, not yet built; Model Studio still serves an earlier MLP |
+| 18 | Limits and open questions | Evidence, unconfirmed definitions, porosity (r ≈ 0), and what CL still needs |
+| 19–20 | Conclusion, Thank you / Any Questions? | |
+
+Units: stress in the material data is inferred to be MPa (unconfirmed). The porosity levels 0 / 3 / 7.85 % are inferred from density
+and await the professor's confirmation.
 
 The two GIFs (`assets/gif_training.gif`, `assets/gif_test.gif`) animate in PowerPoint Slide Show. `build/data_figures.py` regenerates them,
 the EDA figure and the cover background. It refits nothing.
