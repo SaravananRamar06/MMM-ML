@@ -60,8 +60,8 @@ def cond(i):
 
 
 def save(fig, name):
-    fig.savefig(OUT / f'{name}.pdf')
-    fig.savefig(OUT / f'{name}.png')
+    fig.savefig(OUT / f'{name}.pdf', metadata={'CreationDate': None})
+    fig.savefig(OUT / f'{name}.png', metadata={'Software': None})
     plt.close(fig)
     print('wrote', name)
 
@@ -74,6 +74,7 @@ for ax, lr in zip(axes, (-5.0, -4.0, -3.0)):
         if l == lr:
             ax.plot(grid, y, color=TCOL[T], lw=1.1, alpha=.9)
     ax.set(title=f'strain rate $10^{{{int(lr)}}}$ s$^{{-1}}$', xlabel='$E_{11}$ (axial strain)', xlim=(0, .1), ylim=(0, 170))
+    ax.set_xticks([0, .025, .05, .075, .1], ['0', '0.025', '0.05', '0.075', '0.1'])
 axes[0].set_ylabel('$S_{vm}$ (MPa)')
 for T, c in TCOL.items():
     axes[0].plot([], [], color=c, label=f'{T:g} °C')
@@ -194,19 +195,38 @@ axes[2].set(xlabel='$E_{11}$', ylabel='MPa', title='Error along the curve')
 axes[2].legend()
 save(fig, 'fig_test_points')
 
-# 7. best / median / worst test cases ----------------------------------------------------------------------
+# 7. best / median / worst test cases, and all 37 ---------------------------------------------------------
 rm = np.sqrt(np.mean(Err ** 2, axis=1))
 order = np.argsort(rm)
-fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.4))
+fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.5))
 for ax, k, name in zip(axes, (order[0], order[len(order) // 2], order[-1]), ('best', 'median', 'worst')):
     i = test[k]
     T, lr, _, _ = cond(i)
     ax.plot(grid, Y[k], color=INK, lw=1.8, label='simulation')
     ax.plot(grid, E1_te[i], '--', color=EQC, lw=1.3, label='Equation 1 alone')
     ax.plot(grid, P[k], color=MODEL, lw=1.4, label='JC-PINN')
-    ax.set(title=f'{name}: case {i}, {T:g} °C, $10^{{{int(lr)}}}$ — {rm[k]:.2f} MPa', xlabel='$E_{11}$')
+    ax.set_title(f'{name}: case {i}\n{T:g} °C, $10^{{{int(lr)}}}$ s$^{{-1}}$, RMSE {rm[k]:.2f} MPa', fontsize=8)
+    ax.set_xlabel('$E_{11}$')
 axes[0].set_ylabel('$S_{vm}$ (MPa)')
-axes[0].legend()
+axes[0].legend(fontsize=7)
+save(fig, 'fig_test_examples')
+
+fig, axes = plt.subplots(7, 6, figsize=(7.2, 9.0), sharex=True, layout='constrained')
+for ax in axes.flat[len(test):]:
+    ax.axis('off')
+for ax, k, i in zip(axes.flat, range(len(test)), test):
+    T, lr, rho, _ = cond(i)
+    ax.plot(grid, Y[k], color=INK, lw=1.6)
+    ax.plot(grid, P[k], '--', color=MODEL, lw=1.2)
+    ax.set_title(f'case {i}: {T:g} °C, 1e{int(lr)}', fontsize=6, pad=2)
+    ax.text(.96, .9, f'{rm[k]:.2f}', transform=ax.transAxes, ha='right', va='top', fontsize=6.5, color=MODEL)
+    ax.tick_params(labelsize=5, pad=1, length=2)
+    ax.set_xticks([0, .05, .1], ['0', '.05', '.1'])
+axes.flat[len(test)].plot([], [], color=INK, lw=1.6, label='simulation')
+axes.flat[len(test)].plot([], [], '--', color=MODEL, lw=1.2, label='JC-PINN')
+axes.flat[len(test)].legend(loc='center', fontsize=7, frameon=False)
+fig.supxlabel('$E_{11}$', fontsize=8)
+fig.supylabel('$S_{vm}$ (MPa)', fontsize=8)
 save(fig, 'fig_test_cases')
 
 # 8. unseen temperature/rate groups ------------------------------------------------------------------------
@@ -222,7 +242,8 @@ for k, (n, v, c) in enumerate(series):
     ax.bar(np.arange(9) + (k - 1.5) * w, v, w, color=c, label=f'{n} (mean {np.mean(v):.2f})')
 ax.set_xticks(range(9), names, fontsize=7.5)
 ax.set(ylabel='mean curve RMSE (MPa)', title='Hiding a whole temperature/rate group (training cases only)')
-ax.legend(ncol=2)
+ax.set_ylim(0, 62)
+ax.legend(ncol=2, loc='upper left')
 save(fig, 'fig_groups')
 
 # 9. model comparison on the 37 test cases -----------------------------------------------------------------
@@ -247,5 +268,5 @@ for ax, rate in zip(axes, (1e-5, 1e-4, 1e-3)):
         ax.plot(g, s[0], '--' if T > 200 else '-', color=TCOL.get(T, '#8a96a3'), lw=1.4, label=f'{T:g} °C' + (' (no data)' if T > 200 else ''))
     ax.set(title=f'φ = 4 %, $\\dot\\varepsilon$ = {rate:g} s$^{{-1}}$', xlabel='$E_{11}$')
 axes[0].set_ylabel('predicted $S_{vm}$ (MPa)')
-axes[0].legend()
+axes[2].legend(loc='lower left')
 save(fig, 'fig_study_point')
