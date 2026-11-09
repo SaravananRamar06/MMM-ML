@@ -22,12 +22,12 @@ for f in font_manager.findSystemFonts():
         font_manager.fontManager.addfont(f)
 plt.rcParams["font.family"] = "Carlito"
 
-INK = "#14213D"
-STEEL = "#2F5D8A"
-ORANGE = "#E8590C"
-FILL = "#DCE4EC"
-MUTED = "#6B7785"
-LINE = "#9AA6B2"
+INK = "#0B2545"
+STEEL = "#134074"
+ORANGE = "#F28C28"
+FILL = "#D9E6F2"
+MUTED = "#5C6B7A"
+LINE = "#A9B8C6"
 
 OUT = Path(__file__).resolve().parent.parent / "assets"
 OUT.mkdir(exist_ok=True)
@@ -224,3 +224,32 @@ ax.text(0.5, 0.36, "(plastic strain, stress)\npairs from our model", fontsize=12
 save(fig, "curve_jcu.png")
 
 print("written:", sorted(p.name for p in OUT.glob("*.png")))
+
+# ---------------------------------------------------------------- compact bore detail (CAD slide)
+fig, axes = plt.subplots(1, 2, figsize=(5.2, 2.15))
+for k, ax in enumerate(axes):
+    ax.add_patch(Rectangle((-11, -9), 22, 19, fc=FILL, ec="none"))
+    ax.add_patch(Circle((0, 0), 5, fc="white", ec=INK, lw=1.4, zorder=3))
+    if k == 0:
+        for a in range(0, 360, 30):
+            t = math.radians(a)
+            x0, y0 = 5 * math.cos(t), 5 * math.sin(t)
+            arrow(ax, (x0, y0), (x0, y0 + 3.0), ORANGE if y0 > 0.1 else MUTED, lw=1.4, ms=8)
+        ax.add_patch(Arc((0, 0), 10, 10, theta1=180, theta2=360, color=MUTED, lw=3, zorder=4))
+        ax.add_patch(Arc((0, 0), 10, 10, theta1=0, theta2=180, color=ORANGE, lw=3, zorder=4))
+        ax.set_title("Whole bore: lower half pulled", fontsize=12, color=MUTED, pad=4)
+    else:
+        ax.add_patch(Circle((0, 0.55), 4.4, fc=STEEL, ec="none", zorder=4))
+        ax.text(0, 0.4, "pin", fontsize=11, color="white", ha="center", va="center", weight="bold", zorder=5)
+        for a in range(30, 180, 30):
+            t = math.radians(a)
+            x0, y0 = 5 * math.cos(t), 5 * math.sin(t)
+            arrow(ax, (x0, y0), (x0, y0 + 3.0), ORANGE, lw=1.6, ms=8)
+        ax.add_patch(Arc((0, 0), 10, 10, theta1=0, theta2=180, color=ORANGE, lw=3.5, zorder=6))
+        ax.text(0, -7.3, "gap: no contact", fontsize=10.5, color=MUTED, ha="center")
+        ax.set_title("Upper half: pin bearing (used)", fontsize=12, color=ORANGE, pad=4, weight="bold")
+    ax.set_aspect("equal")
+    ax.set_xlim(-11, 11)
+    ax.set_ylim(-9, 10)
+    ax.axis("off")
+save(fig, "bore_compact.png")

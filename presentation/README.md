@@ -1,4 +1,27 @@
-# Presentation: Effect of Porosity on an AM Wing Rib Bracket
+# Final presentation (use this one)
+
+`Final Presentation - Porosity in an AM Wing Bracket.pptx`: 18 slides, 16:9, speaker notes on every slide, plus a PDF copy.
+The design uses a blueprint cover, navy/steel/orange colours, Arial headings with Calibri body text, and a life-cycle tracker on every
+content slide. Built by `build/build_final.js`.
+
+| # | Slide | Rests on |
+|---|---|---|
+| 1 | Title, team, course, instructor, college | Team roll numbers from the October deck; instructor Prof. Arul Kumar Mariyappan (course emails) |
+| 2–4 | Problem, objective, life cycle | CL = critical flaw length; φ = 4 % assumed |
+| 5 | CAD, loads and supports | `Rib Bracket.STEP` measured with gmsh; statics R = F, M = F × 210 mm; upper-half bore reasoning |
+| 6–8 | Ansys: EL, elasto-plastic JC, user-defined JC | `source/Comparison Study - Final.wbpj` and the contours in `source/results/` (595.27 / 320.79 / 323.81 MPa) |
+| 9–11 | EDA and data preparation | `source/model/` truth curves (all 73 cases) and `manifest.json`; one-level factor effects recomputed: T 22.1, rate 17.5, G 3.4, ρ 0.19 MPa |
+| 12–13 | Choosing the NN and the JC-PINN | `reports/jc_pinn_20261107/` (branch `claude/tender-hamilton-vd2qvm`): selection scores, architecture, recorded training trace (GIF) |
+| 14–15 | Evaluation | Locked test results: 0.44 MPa mean RMSE, R² 0.9995, 94.9 % within ±1 MPa; per-condition RMSE; test GIF from `test_predictions.csv` |
+| 16 | Deployment | Proposed bracket-check workflow for aerospace companies (not yet built as a service) |
+| 17–18 | Conclusion, Thank you / Any Questions? | |
+
+The two GIFs (`assets/gif_training.gif`, `assets/gif_test.gif`) animate in PowerPoint Slide Show. `build/data_figures.py` regenerates them,
+the EDA figure and the cover background. It refits nothing.
+
+---
+
+# Earlier deck: Effect of Porosity on an AM Wing Rib Bracket
 
 `Porosity in an AM Wing Rib Bracket.pptx` (15 slides, 16:9, speaker notes on every slide) and a PDF copy.
 It replaces the October deck, which used a home-made Python solver, treated CL as lift in one version and
@@ -35,7 +58,9 @@ pip install gmsh==4.15.2 matplotlib numpy pillow      # gmsh needs libGLU on Lin
 python presentation/build/extract_planform.py presentation/build/planform.json
 python presentation/build/diagrams.py presentation/build/planform.json
 python presentation/build/crop_results.py
-NODE_PATH=<dir containing pptxgenjs> node presentation/build/build_deck.js <pptx skill dir>
+python presentation/build/data_figures.py presentation/build/planform.json
+NODE_PATH=<dir containing pptxgenjs> node presentation/build/build_final.js <pptx skill dir>   # final deck
+NODE_PATH=<dir containing pptxgenjs> node presentation/build/build_deck.js <pptx skill dir>    # earlier deck
 ```
 
 Fonts: Calibri throughout, plus Carlito (metric-compatible with Calibri) inside the diagram images. Colours: navy `14213D`, steel `2F5D8A`, signal orange `E8590C` for loads and porosity.
