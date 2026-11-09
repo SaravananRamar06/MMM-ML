@@ -18,6 +18,8 @@ Commit and push code, tests, documentation, research decisions and relevant veri
 
 ## Checks before pushing
 
+Install `requirements.txt` and `requirements-dev.txt`. To re-execute the notebooks, run `python scripts/run_notebooks.py`.
+
 ```bash
 python -m pytest -q
 python scripts/verify_jc_pinn.py reports/jc_pinn_20261107

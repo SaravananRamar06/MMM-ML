@@ -22,3 +22,5 @@ report/*.blg
 *.fdb_latexmk
 *.fls
 *.toc
+# Notebook scratch output (local runs)
+jc_pinn_work/

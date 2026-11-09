@@ -84,6 +84,9 @@ python src/jc_pinn.py --raw TEAM_8_extracted_results_set_1 --output reports/my_r
 ## Verify
 
 ```bash
+pip install -r requirements-dev.txt
+```
+```bash
 python -m pytest -q
 ```
 ```bash

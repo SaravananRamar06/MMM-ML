@@ -1,8 +1,13 @@
 {
-  "notebook": "notebooks/jc_pinn_colab.ipynb",
-  "notebook_sha256": "cb4cab0f95adbc202785607db29ce129e42d10f42d981b6491704abd167d4253",
-  "executed_with": "nbclient, local Linux kernel (Python 3.13.18, torch 2.15.0+cu132); not hosted Colab/Kaggle",
-  "data": "work/raw_from_committed_curves (stand-in folder rebuilt from the committed 120-point curves)",
+  "executed_with": "nbclient, local Linux kernel (Python 3.13.18); not hosted Colab/Kaggle",
+  "data": "work/raw_from_committed_curves",
+  "explained": {
+    "errors": 0,
+    "seconds": 74,
+    "figures": 6,
+    "notebook_sha256": "c826448bcd613314568383d0567ae80d04ed06e5fec17fe24f6afbb2bf97f5d2"
+  },
+  "colab_notebook_sha256": "8c3ecbccf75ca1882904407dab38734dcf336445a6ddf605ee3a96bb2ddc7940",
   "modes": {
     "PREDICT": {
       "errors": 0,
@@ -11,7 +16,7 @@
     },
     "FAST": {
       "errors": 0,
-      "seconds": 31,
+      "seconds": 37,
       "figures": 3
     }
   },
@@ -19,10 +24,6 @@
     "test_mean_rmse": 0.43862877347121765,
     "reference_test_mean_rmse": 0.43862877347121765,
     "members_identical_to_locked_equation": true,
-    "theta_identical": true,
-    "fingerprint_max_error_train": 0.0,
-    "fingerprint_max_error_test": 0.0
-  },
-  "bug_found_and_fixed": "importlib.util.find_spec(\"google.colab\") raised ModuleNotFoundError outside Colab; replaced by a safe has_module() check",
-  "not_verified": "Hosted Google Colab and Kaggle execution, Drive mounting and Kaggle dataset discovery cannot be run from this container."
+    "theta_identical": true
+  }
 }
