@@ -40,6 +40,7 @@ The model was chosen on the 36 training simulations only, then locked before the
 - **Trade-off:**
   - On the random test split, the earlier data-driven MLPs are more precise.
   - At conditions it has never seen, the JC-PINN has about half the single MLP's error.
+- **Porosity:** lowering density from 2700 to 2488 (φ 0 → 7.85 %) lowers stress by only 0.34 %, but it does so in every matched case pair. Equation 1's porosity exponent fitted to 0; the network carries the effect (0.31 % predicted). G acts about 16 times more strongly. See the [porosity analysis](reports/jc_pinn_20261107/porosity_analysis.json).
 - **Honest control:** the same network without Equation 1 scored better on every measure. Equation 1 gives the model structure and interpretability (named constants, correct trends, a physical starting point), not accuracy.
 - **Limits:**
   - the test cases were explored in earlier project stages, so this is not a blind test;
@@ -56,7 +57,7 @@ The model was chosen on the 36 training simulations only, then locked before the
 | 📓 **Run it** | [`notebooks/jc_pinn_colab.ipynb`](notebooks/jc_pinn_colab.ipynb) runs on Colab, Kaggle or locally. It has three modes: `PREDICT` (no data needed), `FAST` (retrains the final model in minutes) and `FULL` (the whole selection). [Open in Colab](https://colab.research.google.com/github/SaravananRamar06/MMM-ML/blob/main/notebooks/jc_pinn_colab.ipynb) |
 | 📖 **Understand it** | [`notebooks/jc_pinn_explained.ipynb`](notebooks/jc_pinn_explained.ipynb) covers the data, the equation, the model, training, selection, the test and the control. It computes every number live and is saved with its outputs. |
 | 🎬 **Watch it** | [Explainer video](reports/jc_pinn_20261107/video/jc_pinn_explainer.mp4) (3:02) and [test-results video](reports/jc_pinn_20261107/test_report/video/jc_pinn_test_results.mp4) (3:00), both narrated and captioned. |
-| 📄 **Read it** | [Course report](report/report.pdf) (14 pages), [IEEE-format paper](paper/paper.pdf) (5 pages), [slides](presentation/JC-PINN.pdf) ([PowerPoint](presentation/JC-PINN.pptx), with speaker notes). |
+| 📄 **Read it** | [Course report](report/report.pdf) (15 pages), [IEEE-format paper](paper/paper.pdf) (5 pages), [slides](presentation/JC-PINN.pdf) (17 slides; [PowerPoint](presentation/JC-PINN.pptx), with speaker notes). |
 | 🔍 **Explore it** | Interactive [model viewer](reports/jc_pinn_20261107/model_viewer.html), [structure](reports/jc_pinn_20261107/model_structure.html) and [training animation](reports/jc_pinn_20261107/model_motion.html). Download them and open in a browser. |
 | 🧾 **Check it** | [Model guide](docs/model-guide.md), [full specification](docs/spec.md), [run report](reports/jc_pinn_20261107/README.md), [test report for all 37 cases](reports/jc_pinn_20261107/test_report/README.md), [errata](reports/jc_pinn_20261107/ERRATA.md). |
 

@@ -270,3 +270,35 @@ for ax, rate in zip(axes, (1e-5, 1e-4, 1e-3)):
 axes[0].set_ylabel('predicted $S_{vm}$ (MPa)')
 axes[2].legend(loc='lower left')
 save(fig, 'fig_study_point')
+
+# 11. how porosity (density) acts: data vs model, and against G and temperature ------------------------------
+PA = json.loads((RUN / 'porosity_analysis.json').read_text())
+fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.7), gridspec_kw={'width_ratios': [1.25, 1]})
+ax = axes[0]
+base = [p for p in PA['density_vs_model']['pairs_detail'] if p['density_high'] == 2700.0]
+for T, c in TCOL.items():
+    for k, (key, mk, lab) in enumerate((('data_rel_pct', 'o', 'simulation'), ('model_rel_pct', 'x', 'JC-PINN'))):
+        pts = [(p['dphi_pct'], p[key]) for p in base if p['temperature'] == T]
+        if not pts:
+            continue
+        x = np.array([q[0] for q in pts]) + (-.12 if k == 0 else .12)
+        ax.scatter(x, [q[1] for q in pts], marker=mk, s=22 if k == 0 else 26, color=c, alpha=.75, lw=1.2,
+                   facecolors='none' if k == 0 else c)
+        means = {dp: np.mean([q[1] for q in pts if abs(q[0] - dp) < .01]) for dp in sorted({round(q[0], 2) for q in pts})}
+        ax.plot([0] + list(means), [0] + list(means.values()), '-' if k == 1 else ':', color=c, lw=1.2)
+for T, c in TCOL.items():
+    ax.plot([], [], color=c, lw=1.4, label=f'{T:g} °C')
+ax.scatter([], [], marker='o', facecolors='none', color=INK, label='simulation (dotted)')
+ax.scatter([], [], marker='x', color=INK, label='JC-PINN (solid)')
+ax.set(xlabel='porosity φ = 1 − ρ/2700 (%)', ylabel='stress drop vs φ = 0 (%)', title='Porosity lowers stress, a little', xlim=(-.4, 8.4))
+ax.legend(fontsize=6.8, loc='upper left', ncol=2)
+ax = axes[1]
+fr, cmp_ = PA['density_vs_model']['full_range'], PA['comparison']
+bars = [('porosity\n0 → 7.85 %', fr['data_rel_pct'], MODEL), ('G\n25300 → 23314', cmp_['G_full_range_rel_pct'], MUTED),
+        ('temperature\n30 → 100 °C', -cmp_['T_30_to_100_rel_pct'], EQC)]
+ax.bar(range(3), [b[1] for b in bars], color=[b[2] for b in bars], width=.6)
+for k, b in enumerate(bars):
+    ax.text(k, b[1] + .25, f'{b[1]:.2f} %', ha='center', fontsize=8)
+ax.set_xticks(range(3), [b[0] for b in bars], fontsize=7.5)
+ax.set(ylabel='mean stress drop (%)', title='One variable changed at a time', ylim=(0, 12))
+save(fig, 'fig_porosity')

@@ -340,6 +340,25 @@ text(s, L, Inches(6.05), FULLW, Inches(0.8),
      'φ = 4 % → ρ = 2592 kg m⁻³, G = 24541 MPa  ·  dashed 300 °C curves have no data and are unvalidated  ·  bracket/tools/ansys_material_bridge.py writes a material card',
      size=15, color=MUTED, align=PP_ALIGN.CENTER)
 
+# 14b. Porosity ------------------------------------------------------------------------------------------
+s = slide('How porosity acts: small, consistent, carried by the network', 'Porosity',
+          f"Porosity enters only through density. In all {N['PorPairsLower']} pairs of cases that differ only in density, lower density "
+          f"gives lower stress, but the effect is small: {N['PorData']} percent from zero to 7.85 percent porosity, growing from "
+          f"{N['PorDataThirty']} at 30 °C to {N['PorDataTwoHundred']} at 200 °C. Equation 1's porosity exponent fitted to zero because this "
+          f"0.3 MPa effect is buried under its 10 MPa misfit; the data imply about {N['PorImpliedR']}. The correction network reproduces it: "
+          f"{N['PorModel']} against {N['PorData']} percent, correlation {N['PorFullCorr']}. G acts about {N['PorRatio']} times more strongly, "
+          'so for a real bracket the porosity effect depends mainly on how G falls with porosity, which the data do not define.')
+picture(s, 'fig_porosity', L, TOP, Inches(7.9), Inches(3.6))
+bullets(s, Inches(8.75), Inches(1.95), Inches(4.1), Inches(4.9), [
+    f"All {N['PorPairsLower']}/{N['PorPairs']} density-only pairs: lower density → lower stress",
+    f"φ 0 → 7.85 %: −{N['PorData']} % ({N['PorDataThirty']} % at 30 °C, {N['PorDataTwoHundred']} % at 200 °C)",
+    [('Equation 1: ', {'bold': True}), (f"r fitted 0 (data imply ≈ {N['PorImpliedR']})", {})],
+    [('JC-PINN: ', {'bold': True, 'color': BLUE}), (f"{N['PorModel']} % vs {N['PorData']} %, correlation {N['PorFullCorr']}", {})],
+], size=16)
+text(s, L, Inches(5.65), Inches(7.9), Inches(1.2),
+     f"G acts about {N['PorRatio']}× more strongly, so for a real bracket the porosity effect depends mainly on the relation G(φ), "
+     'which these simulations do not define.', size=15, color=MUTED)
+
 # 15. Limits ----------------------------------------------------------------------------------------------
 s = slide('What we can and cannot claim', 'Limits',
           'The test is not blind: earlier stages explored those cases, though nothing in this model used them. Agreement is with simulations, '
