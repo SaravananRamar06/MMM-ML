@@ -1,0 +1,29 @@
+{
+  "executed_with": "nbclient, local Linux kernel (Python 3.13.18); not hosted Colab/Kaggle",
+  "data": "work/raw_from_committed_curves",
+  "explained": {
+    "errors": 0,
+    "seconds": 74,
+    "figures": 6,
+    "notebook_sha256": "c826448bcd613314568383d0567ae80d04ed06e5fec17fe24f6afbb2bf97f5d2"
+  },
+  "colab_notebook_sha256": "8c3ecbccf75ca1882904407dab38734dcf336445a6ddf605ee3a96bb2ddc7940",
+  "modes": {
+    "PREDICT": {
+      "errors": 0,
+      "seconds": 2,
+      "figures": 1
+    },
+    "FAST": {
+      "errors": 0,
+      "seconds": 37,
+      "figures": 3
+    }
+  },
+  "fast_reproduction": {
+    "test_mean_rmse": 0.43862877347121765,
+    "reference_test_mean_rmse": 0.43862877347121765,
+    "members_identical_to_locked_equation": true,
+    "theta_identical": true
+  }
+}

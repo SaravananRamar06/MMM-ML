@@ -1,0 +1,4 @@
+# Only for rebuilding the videos and the presentation
+edge-tts>=7
+python-pptx>=1.0
+playwright>=1.40

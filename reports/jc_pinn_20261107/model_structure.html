@@ -1,0 +1,217 @@
+<title>JC-PINN Model Structure</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: engineering drawing sheet. Three figures top to bottom (one point's data path, the network's layers, how training updates it), each with a caption, then the parameter count. */
+:root {
+  --bg: #eef1f4; --surface: #ffffff; --ink: #18212b; --muted: #586575; --line: #c9d1db;
+  --model: #1d5ea8; --model-soft: #e4edf8; --eq: #a8620e; --eq-soft: #f8eedf; --chip: #e7edf4;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa6b3; --line: #344150;
+  --model: #6ea6f5; --model-soft: #1b2b40; --eq: #e3a548; --eq-soft: #33281a; --chip: #212b36; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa6b3; --line: #344150;
+  --model: #6ea6f5; --model-soft: #1b2b40; --eq: #e3a548; --eq-soft: #33281a; --chip: #212b36; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--body); margin: 0 }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 36px }
+h1, h2 { font-family: var(--display); margin: 0; text-wrap: balance; letter-spacing: -0.01em }
+h1 { font-size: clamp(26px, 4vw, 36px); font-weight: 700 }
+h2 { font-size: 20px; font-weight: 600 }
+p { margin: 0; max-width: 70ch }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted) }
+.lede { color: var(--muted); font-size: 16px }
+section { display: grid; gap: 12px }
+figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 10px }
+.scroll { overflow-x: auto }
+figure svg { display: block; width: 100%; height: auto; color: var(--ink) }
+.scroll svg { min-width: 760px }
+figcaption { font-size: 14px; color: var(--muted); max-width: 80ch }
+svg text { font-family: var(--mono); font-size: 12px; fill: currentColor }
+svg .lab { font-family: var(--body); font-size: 13px; font-weight: 600 }
+svg .sub { font-size: 11px; fill: var(--muted) }
+svg .eqfill { fill: var(--eq-soft); stroke: var(--eq) }
+svg .nnfill { fill: var(--model-soft); stroke: var(--model) }
+svg .box { fill: var(--surface); stroke: var(--line) }
+svg .wire { stroke: currentColor; stroke-width: 1.4; fill: none }
+svg .eqtext { fill: var(--eq) } svg .nntext { fill: var(--model) }
+table { border-collapse: collapse; width: 100%; font-size: 14px }
+th, td { padding: 7px 10px; text-align: left; border-bottom: 1px solid var(--line) }
+th { font: 600 12px var(--body); color: var(--muted); text-transform: uppercase; letter-spacing: .05em }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums }
+tr.total td { font-weight: 600 }
+.tablebox { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; overflow-x: auto }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13px; color: var(--muted) }
+.legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; border: 1.5px solid }
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:10px">
+    <div class="eyebrow">AlSi10Mg · JC-PINN · run 7 Nov 2026</div>
+    <h1>How the JC-PINN is put together</h1>
+    <p class="lede">One prediction takes five numbers (temperature, strain rate, density, shear modulus and strain) and returns a von Mises stress.
+      Five identical copies of the structure below each make a prediction, and their geometric mean is the answer.</p>
+    <div class="legend"><span><i style="background:var(--eq-soft);border-color:var(--eq)"></i>Your Equation 1 (physics backbone)</span><span><i style="background:var(--model-soft);border-color:var(--model)"></i>Neural-network correction</span></div>
+  </header>
+
+  <section>
+    <div class="eyebrow">Figure 1 · one prediction</div>
+    <h2>Inputs split into two branches that multiply at the end</h2>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 1060 470" role="img" aria-label="The five inputs feed Equation 1 and a standardising step; the network output delta is exponentiated and multiplies the Equation 1 stress; five members are combined by a geometric mean.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+        </defs>
+        <!-- inputs -->
+        <rect class="box" x="10" y="150" width="150" height="170" rx="6" stroke-width="1.5"/>
+        <text class="lab" x="85" y="174" text-anchor="middle">Inputs</text>
+        <text x="28" y="202">T   °C</text><text x="28" y="226">rate  1/s</text><text x="28" y="250">ρ   kg/m³</text><text x="28" y="274">G   MPa</text><text x="28" y="298">ε = E11</text>
+        <!-- equation branch -->
+        <rect class="eqfill" x="230" y="20" width="440" height="190" rx="6" stroke-width="1.6"/>
+        <text class="lab eqtext" x="246" y="44">Equation 1 backbone  σ_JC</text>
+        <text class="sub" x="246" y="62">fixed definitions turn inputs into dimensionless terms</text>
+        <rect class="box" x="246" y="76" width="200" height="24" rx="4"/><text x="256" y="93">A − B·εⁿ          strain</text>
+        <rect class="box" x="246" y="104" width="200" height="24" rx="4"/><text x="256" y="121">1 + C·ln(rate/10⁻⁵)</text>
+        <rect class="box" x="246" y="132" width="200" height="24" rx="4"/><text x="256" y="149">1 − T*ᵐ           heat</text>
+        <rect class="box" x="246" y="160" width="200" height="24" rx="4"/><text x="256" y="177">(G/25300)^q  ·  (ρ/2700)^r</text>
+        <text x="470" y="93">T* = (T − 30)/570</text>
+        <text x="470" y="117">1 − φ = ρ/2700</text>
+        <text x="470" y="141">B = A·β/0.1ⁿ, β ≤ 0.99</text>
+        <text x="470" y="165">7 constants θ, bounded</text>
+        <text class="sub" x="470" y="186">multiply the five factors</text>
+        <!-- network branch -->
+        <rect class="nnfill" x="230" y="250" width="440" height="200" rx="6" stroke-width="1.6"/>
+        <text class="lab nntext" x="246" y="274">Correction network  δ</text>
+        <rect class="box" x="246" y="292" width="96" height="140" rx="4"/>
+        <text x="294" y="316" text-anchor="middle">standardise</text><text class="sub" x="294" y="338" text-anchor="middle">z = (x − μ)/s</text><text class="sub" x="294" y="356" text-anchor="middle">training μ, s</text>
+        <rect class="box" x="360" y="292" width="64" height="140" rx="4"/><text x="392" y="356" text-anchor="middle">5</text><text class="sub" x="392" y="376" text-anchor="middle">inputs</text>
+        <rect class="box" x="442" y="292" width="64" height="140" rx="4"/><text x="474" y="356" text-anchor="middle">16</text><text class="sub" x="474" y="376" text-anchor="middle">tanh</text>
+        <rect class="box" x="524" y="292" width="64" height="140" rx="4"/><text x="556" y="356" text-anchor="middle">16</text><text class="sub" x="556" y="376" text-anchor="middle">tanh</text>
+        <rect class="box" x="606" y="336" width="50" height="52" rx="4"/><text x="631" y="360" text-anchor="middle">1</text><text class="sub" x="631" y="376" text-anchor="middle">δ</text>
+        <line class="wire" x1="342" y1="362" x2="358" y2="362" marker-end="url(#ar)"/>
+        <line class="wire" x1="424" y1="362" x2="440" y2="362" marker-end="url(#ar)"/>
+        <line class="wire" x1="506" y1="362" x2="522" y2="362" marker-end="url(#ar)"/>
+        <line class="wire" x1="588" y1="362" x2="604" y2="362" marker-end="url(#ar)"/>
+        <text class="sub" x="631" y="410" text-anchor="middle">zero init</text>
+        <!-- input wires -->
+        <path class="wire" d="M160 235 H195 V115 H228" marker-end="url(#ar)"/>
+        <path class="wire" d="M160 235 H195 V362 H244" marker-end="url(#ar)"/>
+        
+        <!-- exp and multiply -->
+        <circle class="box" cx="725" cy="362" r="26" stroke-width="1.5"/><text x="725" y="367" text-anchor="middle">exp</text>
+        <line class="wire" x1="656" y1="362" x2="697" y2="362" marker-end="url(#ar)"/>
+        <text class="sub" x="676" y="352" text-anchor="middle">δ</text>
+        <circle class="box" cx="800" cy="236" r="24" stroke-width="1.5"/><text x="800" y="242" text-anchor="middle" style="font-size:18px">×</text>
+        <path class="wire" d="M670 115 H800 V210" marker-end="url(#ar)"/>
+        <text x="690" y="106">σ_JC (MPa)</text>
+        <path class="wire" d="M751 362 H800 V262" marker-end="url(#ar)"/>
+        <text x="808" y="318">factor e^δ</text>
+        <!-- member output and ensemble -->
+        <line class="wire" x1="824" y1="236" x2="870" y2="236" marker-end="url(#ar)"/>
+        <text x="830" y="226">σ_k</text>
+        <rect class="box" x="872" y="176" width="178" height="120" rx="6" stroke-width="1.5"/>
+        <text class="lab" x="961" y="200" text-anchor="middle">5 members</text>
+        <text x="961" y="224" text-anchor="middle">seeds 0–4</text>
+        <text x="961" y="248" text-anchor="middle">σ = exp(mean ln σ_k)</text>
+        <text class="sub" x="961" y="272" text-anchor="middle">geometric mean</text>
+        <text class="lab" x="961" y="330" text-anchor="middle">Svm prediction (MPa)</text>
+        <line class="wire" x1="961" y1="296" x2="961" y2="314" marker-end="url(#ar)"/>
+      </svg>
+      </div>
+      <figcaption>Both branches read all five inputs. Equation 1 turns them into a physical stress σ_JC. The network turns them into a number δ, and exp(δ) is the correction factor. With δ = 0, which is how training starts, the model is exactly Equation 1.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="eyebrow">Figure 2 · the correction network</div>
+    <h2>5 → 16 → 16 → 1, fully connected</h2>
+    <figure>
+      <div class="scroll"><svg id="net" viewBox="0 0 900 420" role="img" aria-label="Fully connected network with 5 inputs, two hidden layers of 16 tanh units and one linear output."></svg></div>
+      <figcaption>Every unit connects to every unit in the next layer. The two hidden layers apply tanh, and the output is linear. In each copy that is 80 + 16 weights and biases into the first layer, 256 + 16 into the second and 16 + 1 into the output: 385 numbers.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="eyebrow">Figure 3 · training</div>
+    <h2>What the loss compares and what it updates</h2>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 1000 300" role="img" aria-label="The loss combines the data error over 4320 training points and weight decay; the physics term was tested but has weight zero in the selected model. Adam then L-BFGS update both the network weights and the seven Equation 1 constants.">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+        <rect class="box" x="10" y="20" width="250" height="70" rx="6" stroke-width="1.5"/>
+        <text class="lab" x="26" y="46">Data term</text><text x="26" y="68">36 cases × 120 points = 4,320</text><text class="sub" x="26" y="84">mean ((σ̂ − Svm)/27.38)²</text>
+        <rect class="box" x="10" y="115" width="250" height="70" rx="6" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text class="lab" x="26" y="141">Physics term  × λ</text><text x="26" y="163">4,096 collocation points</text><text class="sub" x="26" y="179">tested; selected λ = 0 (off)</text>
+        <rect class="box" x="10" y="210" width="250" height="70" rx="6" stroke-width="1.5"/>
+        <text class="lab" x="26" y="236">Weight decay</text><text x="26" y="258">α/N · Σ W²,  α = 1</text><text class="sub" x="26" y="274">keeps the network smooth</text>
+        <rect class="box" x="340" y="105" width="130" height="90" rx="6" stroke-width="1.5"/>
+        <text class="lab" x="405" y="145" text-anchor="middle">Loss</text><text class="sub" x="405" y="165" text-anchor="middle">sum of terms</text>
+        <path class="wire" d="M260 55 H300 V135 H338" marker-end="url(#ar2)"/>
+        <path class="wire" d="M260 150 H338" marker-end="url(#ar2)" stroke-dasharray="5 4"/>
+        <path class="wire" d="M260 245 H300 V165 H338" marker-end="url(#ar2)"/>
+        <rect class="box" x="550" y="105" width="190" height="90" rx="6" stroke-width="1.5"/>
+        <text class="lab" x="645" y="137" text-anchor="middle">Optimiser</text><text x="645" y="159" text-anchor="middle">1,500 Adam steps</text><text x="645" y="179" text-anchor="middle">then ≤ 2,500 L-BFGS</text>
+        <line class="wire" x1="470" y1="150" x2="548" y2="150" marker-end="url(#ar2)"/><text class="sub" x="509" y="140" text-anchor="middle">gradients</text>
+        <rect class="nnfill" x="820" y="40" width="170" height="80" rx="6" stroke-width="1.6"/>
+        <text class="lab nntext" x="905" y="72" text-anchor="middle">Network weights</text><text x="905" y="96" text-anchor="middle">385 per copy</text>
+        <rect class="eqfill" x="820" y="180" width="170" height="80" rx="6" stroke-width="1.6"/>
+        <text class="lab eqtext" x="905" y="212" text-anchor="middle">Equation 1 constants</text><text x="905" y="236" text-anchor="middle">7 per copy (joint)</text>
+        <path class="wire" d="M740 140 H780 V80 H818" marker-end="url(#ar2)"/><text class="sub" x="786" y="72">updates</text>
+        <path class="wire" d="M740 160 H780 V220 H818" marker-end="url(#ar2)"/><text class="sub" x="786" y="240">updates</text>
+      </svg>
+      </div>
+      <figcaption>Each copy is trained on all 4,320 training points at once. The selected setting switched the physics term off (λ = 0), because every tested physics weight raised the error on held-out cases. Training adjusts both the network weights and the seven Equation 1 constants, which is the "joint" setting.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="eyebrow">Parameter count</div>
+    <h2>Where the 1,960 trainable numbers live</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>Part</th><th>Shape</th><th class="num">Per copy</th><th class="num">× 5 copies</th></tr></thead>
+      <tbody>
+        <tr><td>Hidden layer 1 (weights + biases)</td><td>16 × 5 + 16</td><td class="num">96</td><td class="num">480</td></tr>
+        <tr><td>Hidden layer 2 (weights + biases)</td><td>16 × 16 + 16</td><td class="num">272</td><td class="num">1,360</td></tr>
+        <tr><td>Output layer (weights + bias)</td><td>1 × 16 + 1</td><td class="num">17</td><td class="num">85</td></tr>
+        <tr><td>Equation 1 constants A, B, n, C, m, q, r</td><td>7</td><td class="num">7</td><td class="num">35</td></tr>
+        <tr class="total"><td>Total trainable</td><td></td><td class="num">392</td><td class="num">1,960</td></tr>
+        <tr><td>Fixed (not trained)</td><td>reference rate, T_r, T_m, G₀, ρ₀ · input means/scales (10) · stress scale</td><td class="num">–</td><td class="num">–</td></tr>
+      </tbody>
+    </table></div>
+    <p style="color:var(--muted);font-size:13.5px">Source: reports/jc_pinn_20261107/equation.json and docs/spec.md in SaravananRamar06/MMM-ML.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+  const svg = document.getElementById('net');
+  const layers = [{ n: 5, x: 120, lab: ['T', 'log rate', 'ρ', 'G', 'E11'], name: 'inputs (standardised)' },
+                  { n: 16, x: 360, name: 'hidden 1 · tanh' }, { n: 16, x: 600, name: 'hidden 2 · tanh' },
+                  { n: 1, x: 800, lab: ['δ'], name: 'output · linear' }];
+  const top = 30, bot = 360;
+  const ys = n => Array.from({ length: n }, (_, i) => n === 1 ? (top + bot) / 2 : top + i * (bot - top) / (n - 1));
+  let s = '';
+  for (let l = 0; l < layers.length - 1; l++) {
+    const a = layers[l], b = layers[l + 1];
+    for (const y1 of ys(a.n)) for (const y2 of ys(b.n))
+      s += `<line x1="${a.x}" y1="${y1.toFixed(1)}" x2="${b.x}" y2="${y2.toFixed(1)}" stroke="currentColor" stroke-opacity="0.16" stroke-width="0.8"/>`;
+  }
+  layers.forEach((L, k) => {
+    const cls = k === 0 ? 'box' : 'nnfill';
+    ys(L.n).forEach((y, i) => {
+      s += `<circle class="${cls}" cx="${L.x}" cy="${y.toFixed(1)}" r="${L.n > 5 ? 8 : 13}" stroke-width="1.4"/>`;
+      if (L.lab) s += `<text x="${k === 0 ? L.x - 22 : L.x + 22}" y="${(y + 4).toFixed(1)}" text-anchor="${k === 0 ? 'end' : 'start'}">${L.lab[i]}</text>`;
+    });
+    s += `<text x="${L.x}" y="400" text-anchor="middle" class="sub">${L.name}</text>`;
+  });
+  svg.innerHTML = s;
+})();
+</script>

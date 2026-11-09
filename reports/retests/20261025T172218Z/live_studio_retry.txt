@@ -1,8 +1,0 @@
-test_bad_rate_lift_request_and_extrapolation_are_not_silent (live_model_app_check.LiveModelAppTests) ... ok
-test_health_identifies_the_final_model (live_model_app_check.LiveModelAppTests) ... ok
-test_user_query_reproduces_a_saved_test_prediction (live_model_app_check.LiveModelAppTests) ... ok
-
-----------------------------------------------------------------------
-Ran 3 tests in 0.044s
-
-OK

@@ -1,129 +1,347 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[margin=2.2cm]{geometry}
-\usepackage{graphicx,booktabs,amsmath,siunitx,hyperref,caption,float}
-\graphicspath{{figures/}{../reports/retests/20261025T172218Z/}}
-\captionsetup{justification=raggedright,singlelinecheck=false}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype}
+\usepackage{graphicx,booktabs,amsmath,amssymb,siunitx,caption,float,xcolor,enumitem}
+\usepackage{tabularx}
+\usepackage[section]{placeins}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\file}[1]{\nolinkurl{#1}}
+\graphicspath{{../figures/}}
+\captionsetup{font=small,labelfont=bf}
 \sisetup{group-separator={,},group-minimum-digits=4}
-\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=black}
+\setlist{nosep,leftmargin=1.4em}
+\input{numbers}
 
-\title{Data-driven surrogate for the stress response of AlSi10Mg\\
-\large Multiscale modelling of an additively manufactured wing-rib bracket — ML component}
+\newcommand{\sjc}{\sigma_{\mathrm{JC}}}
+
+\title{\textbf{JC-PINN: a customised Johnson--Cook equation as the governing law of a neural material model for AlSi10Mg}\\[4pt]
+\large Course report --- Multiscale Modelling of Materials using Machine Learning}
 \author{Team 8}
-\date{October 2026}
+\date{November 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We trained a small neural-network surrogate that predicts the von Mises stress response $S_{vm}$ of AlSi10Mg along the operational strain $E_{11}$, given temperature, strain rate, density and shear modulus. The final predictor averages five 5--16--16--1 tanh networks (385 parameters each). On a fixed split of 37 held-out simulations, the mean per-curve RMSE is 0.0591 (worst 0.1133, case 45). Performance is much weaker when whole temperature/rate conditions are held out (mean 6.79), so the model closely reproduces the 37 related test curves, but its reliability at other input combinations, even inside the numerical ranges, is not established. Units are inferred, the held-out set is not fully blind, and the link from material porosity to the bracket's critical flaw length $C_L$ has not been established. These limits are stated throughout.
+\noindent
+We build a material model for the simulated von Mises stress $S_{vm}$ of additively manufactured AlSi10Mg as a function of axial strain $E_{11}$, temperature, strain rate, density and shear modulus. Its governing law is our customised Johnson--Cook equation (Equation~1). The model multiplies Equation~1 by $\exp(\delta)$, where $\delta$ is a small neural correction (5--16--16--1, \nParams{} weights) whose output starts at zero, so the untrained model \emph{is} Equation~1. We call it a JC-PINN. Physics residuals were tested at \nColloc{} collocation points. The setting was chosen on the \nTrainCases{} training simulations alone, using a score that balances case-wise cross-validation with whole temperature/rate groups held out. The model was locked before the \nTestCasesSplit{} test simulations were read, and then scored once. Its mean per-curve RMSE is \nTestMean{}~MPa (median \nTestMedian{}, worst \nTestWorst{}); $R^2=\nTestRsq$ over \nTestPoints{} points, and \nTestWithinOne\,\% of points lie within $\pm1$~MPa. That is \nImprovement{} times more accurate than Equation~1 alone (\nTestEq{}~MPa). With whole conditions hidden, it is also better than our earlier single MLP (\nSelGroups{} against \nSingleGroups{}~MPa). On the random test split, purely data-driven MLPs remain more precise (\nSingleTest{} and \nEnsTest{}~MPa). A post-hoc control, the same network with Equation~1 switched off, scored better on every measure. Equation~1's separable form therefore buys interpretability and a physical backbone, not accuracy. We state the limits throughout: the test set is not blind, the data are simulations rather than experiments, the units are inferred, and nothing is validated above 200\,\textdegree C.
 \end{abstract}
 
-\section{Introduction and scope}
-The wider project studies how porosity in an additively manufactured AlSi10Mg wing-rib bracket affects its structural integrity, expressed as the critical flaw length $C_L$: the largest defect the bracket can carry at its design stress before fracture. This report covers only the machine-learning component: a fast surrogate for the material's simulated stress response, intended to replace repeated material simulations inside a larger multiscale workflow. The structural (ANSYS) analysis is reported separately and is not covered here. Throughout, $C_L$ means critical flaw length, not the aerodynamic coefficient of lift; the material data contains no flaw sizes or fracture-toughness values, so this report makes no $C_L$ prediction.
+\tableofcontents
+\newpage
 
+%=====================================================================
+\section{Introduction}
+The wider project asks how porosity in a laser-powder-bed-fused AlSi10Mg aircraft wing-rib bracket affects its structural integrity. Porosity in such parts lowers density and stiffness, and with them the flow stress~\cite{kempen2012}. A multiscale chain from material to component needs a material response that is fast to evaluate at any temperature, strain rate and porosity. This report covers that material link only.
+
+Classic data-driven surrogates fit the simulations closely but carry no physics: nothing in them says that stress should fall with temperature or with porosity. Physics-informed neural networks (PINNs) add known equations to the training of a network~\cite{raissi2019,karniadakis2021,willard2022}. Here the known equation is not a differential equation but a constitutive law, our customised form of the Johnson--Cook model~\cite{johnson1983}. We therefore ask a concrete question:
+
+\begin{quote}\itshape
+Can our Equation~1 serve as the governing equation of a machine-learning material model trained on the supplied simulations, and what does it gain or cost?
+\end{quote}
+
+\noindent Our contributions are:
+\begin{enumerate}
+\item a JC-PINN: Equation~1 multiplied by a bounded-input neural correction that starts as exactly Equation~1;
+\item a leakage-controlled protocol: selection on training cases only, a balanced score, a lock before testing, and an independent verifier;
+\item an honest account of the result, including a control that removes Equation~1, a screen for improvements, and the limits of the evidence.
+\end{enumerate}
+
+%=====================================================================
 \section{Data}
-The professor's design matrix planned 108 simulations; 73 were available, containing \num{2197000} raw history rows. Temperature coverage is uneven: 27 cases at 30, 27 at 100, 19 at 200 and none at 300 (units inferred as \si{\celsius}). Each case also varies strain rate ($10^{-5}$ to $10^{-3}$, inferred \si{\per\second}), density (2488.05 to 2700) and shear modulus $G$ (23313.95 to 25300).
+\label{sec:data}
+The instructor's design matrix planned 108 simulations over four temperatures, three strain rates and nine density/shear-modulus pairs; 73 were supplied (\texttt{TEAM\_8\_extracted\_results\_set\_1}). Coverage is uneven: 27 cases at 30\,\textdegree C, 27 at 100\,\textdegree C, 19 at 200\,\textdegree C and none at 300\,\textdegree C. Strain rate spans $10^{-5}$ to $10^{-3}$\,s$^{-1}$, density 2488.05 to 2700\,kg\,m$^{-3}$, and shear modulus $G$ 23313.95 to 25300\,MPa. Units are inferred from magnitudes; none is stated in the files.
 
-The target is $S_{vm}$ along operational $E_{11}$, not $S_{CAU11}$. Each history was interpolated onto a common grid of 120 $E_{11}$ values from 0.0002 to 0.0999, so long, slow-rate runs do not dominate by row count. The histories do not show a conventional zero-stress elastic loading segment, so the surrogate should not be read as a constitutive law.
+The target is $S_{vm}$ along the axial strain $E_{11}$, which is monotonic in every case. Each history is interpolated onto a common grid of 120 strains from 0.0002 to 0.0999, so that long, slow-rate runs do not dominate by row count and each curve counts equally. Fig.~\ref{fig:data} shows the training curves. Two features shape the whole study:
+\begin{itemize}
+\item \textbf{Every history softens.} Stress falls with strain in all 73 cases. There is no elastic loading segment, so the strain axis cannot be split into elastic and plastic parts.
+\item \textbf{The curve shape changes with condition.} At 30\,\textdegree C and $10^{-5}$\,s$^{-1}$ the stress at 10\,\% strain is 0.71 of its starting value. At 200\,\textdegree C and $10^{-4}$\,s$^{-1}$ it is 0.20, and case~60 (200\,\textdegree C, $10^{-5}$\,s$^{-1}$) collapses to 0.06.
+\end{itemize}
 
-\section{Method}
-\subsection{Split and leakage control}
-We used one fixed random split by simulation (seed 42): 36 training cases and 37 test cases, following the professor's requested 50/50 split as closely as 73 cases allow. All points from one simulation stay in one partition, and scalers were fitted on training cases only. The 36 training cases give \num{4320} query points; these are not independent simulations. Earlier exploration used all the data, so the 37 test cases were excluded from final fitting but are \emph{not} a fully blind holdout.
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_data}
+\caption{The 36 training curves, $S_{vm}$ against $E_{11}$, by strain rate and temperature. All soften, and the softening grows with temperature. The single 200\,\textdegree C, $10^{-5}$\,s$^{-1}$ training case (case~60) collapses.}
+\label{fig:data}
+\end{figure}
 
-\subsection{Model}
-Each network takes five inputs (temperature, $\log_{10}$ strain rate, density, $G$, and the query $E_{11}$) and outputs one $S_{vm}$ value. The architecture is 5--16--16--1 with tanh hidden layers and a linear output (385 parameters per network, \num{1925} in total). Five networks with seeds 0--4 are trained with scikit-learn~\cite{sklearn} using L-BFGS~\cite{lbfgs} and L2 penalty $\alpha = 0.001$, and their predictions are averaged. This is a data-driven surrogate: there is no physics-informed loss term.
+\paragraph{Split.} We use the same fixed random split by simulation as every earlier model in the project (seed 42): \nTrainCases{} training and \nTestCasesSplit{} test cases, as close to the requested 50/50 as 73 allows. All 120 points of a curve stay in one partition. Earlier project stages explored the test cases, so they were excluded from all fitting and selection here, but they are \emph{not} a blind holdout.
 
-\subsection{Model selection}
-Candidates were compared on training-side evidence only: case-wise cross-validation and a condition holdout (whole temperature/rate groups removed). Table~\ref{tab:candidates} lists the saved results. The query MLP was chosen because it had the best condition-holdout error, which matters most for use beyond the sampled conditions, while its case-CV error was competitive. A PCA + Gaussian-process~\cite{gp} model was better on case CV but much worse when conditions were held out.
+%=====================================================================
+\section{The governing equation}
+\subsection{Equation 1}
+Our customised Johnson--Cook law is
+\begin{equation}
+\sjc=\bigl[A-B\,\varepsilon_p^{\,n}\bigr]\bigl[1+C\ln\dot\varepsilon^*\bigr]\bigl[1-T^{*m}\bigr]\Bigl[\frac{G}{G_0}\Bigr]^{q}\bigl[1-\phi\bigr]^{r},
+\label{eq:jc}
+\end{equation}
+with the definitions in Table~\ref{tab:vars}. It departs from the classic model~\cite{johnson1983} in three ways:
+\begin{itemize}
+\item the strain term has a \emph{minus} sign, because the data soften rather than harden;
+\item a shear-modulus factor is added;
+\item a porosity factor is added.
+\end{itemize}
 
-\begin{table}[H]\centering
-\caption{Saved training-side comparison. Case CV is the mean curve RMSE over the 36 training cases; condition holdout is the unweighted mean of nine group-mean curve RMSEs (one per temperature/rate group), so it is neither a pooled nor a case-weighted error. Both are saved results, not a fresh evaluation of the delivered model.}
-\label{tab:candidates}
-\begin{tabular}{lrr}\toprule
-Candidate & Case CV & Condition holdout\\\midrule
-Query MLP (selected) & 1.158 & 6.794\\
-PCA + GP (6 components) & 0.664 & 10.962\\
-MLP/GP blend & 0.867 & 7.983\\
-Physics-style-input MLP & 1.536 & 8.609\\
-PCA-coefficient MLP (4) & 2.269 & 11.086\\
-PCA-coefficient MLP (6) & 2.004 & 11.205\\\bottomrule
+\begin{table}[H]\centering\small
+\caption{Variables of Equation~1 and how each maps to the data (decisions of 7~Nov~2026).}
+\label{tab:vars}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright}p{3.6cm}>{\raggedright\arraybackslash}X@{}}\toprule
+Symbol & Meaning & Mapping / value\\\midrule
+$\varepsilon_p$ & strain & axial strain $E_{11}$ (no elastic segment exists to subtract)\\
+$\dot\varepsilon^*$ & strain-rate ratio & $\dot\varepsilon/\dot\varepsilon_0$, $\dot\varepsilon_0=10^{-5}$\,s$^{-1}$, so $\ln\dot\varepsilon^*\in\{0,\,2.30,\,4.61\}$\\
+$T^*$ & homologous temperature & $(T-T_r)/(T_M-T_r)$, $T_r=30$\,\textdegree C, $T_M=600$\,\textdegree C\\
+$G/G_0$ & shear-modulus ratio & $G_0=25300$\,MPa\\
+$\phi$ & porosity & $1-\rho/\rho_0$ per case, $\rho_0=2700$\,kg\,m$^{-3}$ (0, 3 and 7.85\,\% in the data)\\
+$A,B,n$ & strain term & fitted; $B=A\beta/0.1^{n}$ with $0\le\beta\le0.99$\\
+$C,m,q,r$ & rate, temperature, modulus, porosity exponents & fitted, $C,q,r\ge 0$\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Bounds.} Writing $B=A\beta/0.1^n$ keeps $A-B\varepsilon^n>0$ for all strains up to 0.1. Non-negative $C$, $q$ and $r$ forbid trends of the wrong sign: without that bound the fit returned $r=-0.027$, a porosity effect pointing the wrong way. Constants are fitted by bounded least squares (SciPy~\cite{virtanen2020}) from eight starts.
+
+\subsection{Why Equation 1 alone is not enough}
+Equation~\ref{eq:jc} is a product of separate factors. Temperature, rate, $G$ and porosity can only scale a curve up or down; they cannot change its shape. The data's shape does change with condition (Section~\ref{sec:data}). Calibrated on its own, Equation~1 reaches a case-wise cross-validation error of \nEqCV{}~MPa, \nEqGroups{}~MPa with whole groups hidden, and \nTestEq{}~MPa on the test set. Fig.~\ref{fig:eqfail} shows the misfit. Its constants are $A=\nEqA$, $B=\nEqB$, $n=\nEqn$, $C=\nEqC$, $m=\nEqm$, $q=\nEqq$ and $r=\nEqr$, with $r$ at its lower bound. This is a property of the separable form, not a fitting failure, so a correction is needed.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_eq1_fail}
+\caption{Equation~1 calibrated alone (dashed) against three training simulations. A separable law cannot bend its curve differently at different conditions, so it misses most where softening is strongest.}
+\label{fig:eqfail}
+\end{figure}
+
+%=====================================================================
+\section{The JC-PINN model}
+\subsection{Structure}
+The model multiplies Equation~1 by a learned correction factor:
+\begin{equation}
+\hat\sigma(\mathbf x)=\sjc(\mathbf x;\theta)\cdot\exp\bigl(\delta(\mathbf z)\bigr),\qquad \mathbf z=\frac{\mathbf x-\boldsymbol\mu}{\mathbf s},\quad \mathbf x=(T,\log_{10}\dot\varepsilon,\rho,G,E_{11}).
+\label{eq:model}
+\end{equation}
+The correction $\delta$ is a fully connected tanh network with two hidden layers of 16 units (5--16--16--1, \nParams{} weights):
+\begin{equation}
+\delta(\mathbf z)=\mathbf w_3^{\top}\tanh\bigl(W_2\tanh(W_1\mathbf z+\mathbf b_1)+\mathbf b_2\bigr)+b_3 .
+\end{equation}
+Fig.~\ref{fig:arch} shows the structure. Three design choices matter:
+\begin{itemize}
+\item \textbf{Zero start.} The last layer ($\mathbf w_3$, $b_3$) is initialised to zero, so before training $\delta\equiv0$ and the model is exactly Equation~1. Training adds only what Equation~1 cannot explain.
+\item \textbf{Multiplicative form.} $\exp(\delta)$ is a correction factor: $\exp(\delta)=0.9$ means 10\,\% below Equation~1. It keeps the stress positive and works in log space, where Equation~1's factors become sums.
+\item \textbf{Ensemble.} Five copies are trained with seeds 0--4. Their stresses are combined by geometric mean, $\hat\sigma=\exp\bigl(\tfrac15\sum_k\ln\hat\sigma_k\bigr)$, which matches the log-space form.
+\end{itemize}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_architecture}
+\caption{The JC-PINN. Equation~1 (top) provides the backbone. A 5--16--16--1 tanh network (bottom) produces $\delta$, and the prediction is $\sjc\exp(\delta)$. Five such copies are averaged in log space.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Loss and physics residuals}
+Training minimises
+\begin{equation}
+\mathcal L=\underbrace{\frac1N\sum_i\Bigl(\frac{\hat\sigma_i-\sigma_i}{s_y}\Bigr)^{2}}_{\text{data}}
++\lambda\,\underbrace{\frac1M\sum_j R_j^{2}}_{\text{physics}}
++\underbrace{\frac{\alpha}{N}\sum W^{2}}_{\text{weight decay}},
+\end{equation}
+with $s_y$ the training stress scale and $\alpha=\nAlpha$. The physics residual $R$ is evaluated at \nColloc{} Sobol points~\cite{sobol1967}. These cover the whole planned design box (30--300\,\textdegree C, all rates, densities, moduli and strains), including the 35 conditions that have no simulation. No stress values are used at these points; they only ask the model to obey Equation~1 there. We compared two residuals:
+\begin{itemize}
+\item \textbf{level:} $R=\delta=\ln\hat\sigma-\ln\sjc$. The prediction should stay close to Equation~1.
+\item \textbf{trend:} $R=\partial\delta/\partial(T,\log_{10}\dot\varepsilon,\rho,G)$, computed by automatic differentiation. The model's \emph{sensitivities} to the conditions should equal Equation~1's, while the strain-shape correction stays free.
+\end{itemize}
+
+\noindent The constants $\theta$ were either \emph{frozen} (calibrated first, then fixed) or \emph{joint} (also adjusted by training). The selection in Section~\ref{sec:sel} decides between these options.
+
+\subsection{Training}
+Each copy is trained in PyTorch~\cite{paszke2019} in two stages:
+\begin{enumerate}
+\item Adam~\cite{kingma2014}: \nAdamSteps{} steps, learning rate \nAdamLR;
+\item full-batch L-BFGS~\cite{liu1989}: up to \nLbfgsIter{} iterations, history 50, strong-Wolfe line search.
+\end{enumerate}
+
+\noindent Fig.~\ref{fig:training} shows one copy learning. The loss falls by almost two orders of magnitude. On a 200\,\textdegree C training case the curve moves from Equation~1's shape to the simulation's.
+
+The weight decay $\alpha=1$ was fixed before the formal selection, by a development check on the training folds only. A weaker $\alpha=0.001$ (from the earlier MLP) let $\exp(\delta)$ grow very large away from the data.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_training}
+\caption{Training of copy~1 (seed~0). Left: loss through the Adam and L-BFGS stages. Right: on training case~64 the prediction starts as Equation~1 (step 0), is close by step 400, and matches the simulation at the end.}
+\label{fig:training}
+\end{figure}
+
+%=====================================================================
+\section{Selection without the test set}
+\label{sec:sel}
+\subsection{Protocol}
+The candidates were \nSettings{} settings:
+\begin{itemize}
+\item no physics loss;
+\item level residual with $\lambda\in\{10^{-3},10^{-2},10^{-1}\}$;
+\item trend residual with $\lambda\in\{10^{-4},10^{-3},10^{-2}\}$.
+\end{itemize}
+Each setting was run with frozen and with joint constants, and three seeds per split. Each was scored on the \nTrainCases{} training cases only:
+\begin{itemize}
+\item \textbf{case CV:} three folds of whole cases (seed 42), giving the mean per-curve RMSE on the held-out cases;
+\item \textbf{groups:} each of the nine temperature/rate groups present in training is held out in turn. The score is the mean of the nine group-mean RMSEs. This tests prediction at a condition the model has never seen.
+\end{itemize}
+The balanced score is $\tfrac12(\text{case CV}+\text{groups})$. The lowest score wins; exact ties prefer the larger $\lambda$, then frozen constants.
+
+\paragraph{Lock.} The selected setting and the final five-copy model were written to disk with a SHA-256 fingerprint (\file{selection_lock.json}) before any test curve was read. The test set was then scored once.
+
+\subsection{Result}
+Fig.~\ref{fig:selection} and Table~\ref{tab:sel} give the outcome. The best score went to \textbf{no physics loss with joint constants}: case CV \nSelCV{}, groups \nSelGroups{}, score \nSelScore{}~MPa. Two other settings came close: frozen constants (4.24) and the weakest trend residual (4.42). Every stronger physics weight was worse, both on case CV and on the hidden groups.
+
+The physics residual therefore did not help on this data. Equation~1 still shapes the model, through its backbone and through the zero start, but no penalty is applied at the collocation points. One consequence is that between 200 and 300\,\textdegree C nothing constrains the prediction except that backbone and the smooth network, so those curves are unvalidated extrapolation (see the errata in the run folder).
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_selection}
+\caption{Training-only selection. Each row is one setting; columns give case-CV error and the error on each hidden group (MPa); the score is in brackets. Row~1 was selected. 100\,\textdegree C and 200\,\textdegree C at $10^{-5}$\,s$^{-1}$ are hard for every setting, because hiding them removes most of the evidence for those shapes.}
+\label{fig:selection}
+\end{figure}
+
+\begin{table}[H]\centering\small
+\caption{Selection summary (training cases only, MPa).}
+\label{tab:sel}
+\begin{tabular}{lrrr}\toprule
+Model & Case CV & Groups & Score\\\midrule
+Equation 1 alone & \nEqCV & \nEqGroups & --\\
+Curve-copy lookup (nearest training curve) & \nLookupCV & \nLookupGroups & --\\
+\textbf{JC-PINN, selected (no physics loss, joint)} & \textbf{\nSelCV} & \textbf{\nSelGroups} & \textbf{\nSelScore}\\
+Single MLP of 2 Nov (same split, for reference) & \nSingleCV & \nSingleGroups & --\\\bottomrule
 \end{tabular}
 \end{table}
 
-\section{Results}
-On the 37 test cases the delivered model gives the errors in Table~\ref{tab:test}. Figure~\ref{fig:test} shows two of them, including the worst.
+\paragraph{Final constants.} Fitted jointly, the constants become $A=\nPinnA$, $B=\nPinnB$, $n=\nPinnn$, $C=\nPinnC$, $m=\nPinnm$, $q=\nPinnq$ and $r\approx0$. The porosity exponent stays at its lower bound in both fits. Once $G$ is in the equation, Equation~1 attributes no separate effect to $1-\phi$; any remaining porosity dependence is carried by the correction, which sees density as an input. On the test set the correction is substantial: the mean $|\delta|$ is \nDeltaMean{} and the largest is \nDeltaMax{}. With joint fitting the constants and $\delta$ share the work, so the constants are best read as a physical backbone rather than as stand-alone material constants.
 
-\begin{table}[H]\centering
-\caption{Test-set errors of the final model (inferred stress units).}
+%=====================================================================
+\section{Results on the test set}
+\subsection{Accuracy}
+Table~\ref{tab:test} gives the single, locked evaluation on the \nTestCases{} test cases (\nTestPoints{} points), and Fig.~\ref{fig:testpts} shows the point-wise picture:
+\begin{itemize}
+\item the mean per-curve RMSE is \nTestMean{}~MPa, the median \nTestMedian{};
+\item the worst case is case~\nTestWorstCase{} (\nTestWorst{}~MPa), the best is case~\nTestBestCase{} (\nTestBest{});
+\item \nTestWithinHalf\,\% of points are within $\pm0.5$~MPa, \nTestWithinOne\,\% within $\pm1$ and \nTestWithinTwo\,\% within $\pm2$;
+\item the mean absolute error is \nTestMeanPct\,\% of the stress, the largest single error \nTestMaxAbs{}~MPa (\nTestMaxPct\,\%).
+\end{itemize}
+
+\begin{table}[H]\centering\small
+\caption{Locked test-set evaluation of the JC-PINN (\nTestCases{} cases, scored once).}
 \label{tab:test}
-\begin{tabular}{lr}\toprule
-Metric & Value\\\midrule
-Mean per-curve RMSE & 0.05909\\
-Median per-curve RMSE & 0.05057\\
-Worst curve RMSE (case 45) & 0.11331\\
-Mean per-curve MAE & 0.04900\\
-Pooled RMSE (all points) & 0.06486\\
-Largest single-point error & 0.28832\\\bottomrule
+\begin{tabular}{lr@{\qquad}lr}\toprule
+Metric & Value & Metric & Value\\\midrule
+Mean curve RMSE & \nTestMean & Points within $\pm1$ MPa & \nTestWithinOne\,\%\\
+Median curve RMSE & \nTestMedian & Points within $\pm0.5$ MPa & \nTestWithinHalf\,\%\\
+Worst curve RMSE (case \nTestWorstCase) & \nTestWorst & $R^2$ (all points) & \nTestRsq\\
+Mean absolute error & \nTestMAE & Mean signed error (bias) & \nTestBias\\
+Training-set fit & \nTrainFit & Cases above / below & \nCasesHigh{} / \nCasesLow\\\bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth]{test_curves.png}
-\caption{Predicted vs.\ simulated $S_{vm}$ for test cases 42 and 45, with residuals below (fresh retest, 25 Oct 2026). Case 45 is the worst of the 37 test curves.}
-\label{fig:test}
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_test_points}
+\caption{Test points. Left: predicted against simulated stress for all \nTestPoints{} points. Centre: distribution of point errors. Right: mean absolute and mean signed error along the strain axis; errors grow only near the end of the curves, where softening is steepest.}
+\label{fig:testpts}
 \end{figure}
 
-\paragraph{Generalisation to new conditions.} Holding out whole temperature/rate groups raises the error to 6.79 (unweighted mean over the nine groups), about a hundred times the random-split error (Figure~\ref{fig:loco}). The hardest group, 200 at $10^{-5}$, gives 23.53. Its only available case (60) lies in the training half. The low random-split error therefore mainly shows interpolation between closely related simulated conditions.
-
-\begin{figure}[H]\centering
-\includegraphics[width=0.75\linewidth]{condition_holdout_Svm.png}
-\caption{Saved condition-holdout error of the selected query MLP by temperature/rate group (training half, $\alpha=0.001$), plotted from \texttt{runs/score/select\_mlp\_Svm.json} by \texttt{reports/plot\_report\_diagnostics.py}. This is a plot of saved diagnostics, not a fresh evaluation of the delivered model.}
-\label{fig:loco}
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{fig_test_cases}
+\caption{All \nTestCases{} test cases: simulation (solid) and JC-PINN (dashed). The blue number is each curve's RMSE in MPa. The model was locked before any of these were read.}
+\label{fig:testcases}
 \end{figure}
 
-\paragraph{Worked example.} At temperature 100, rate $10^{-4}$, density 2619 and $G = 24541$, the model predicts 136.20912 at the start of the grid, 99.41858716 at $E_{11} = 0.05$ (interpolated) and 75.23194 at the end of the grid.
+\subsection{Precision: bias and spread}
+The errors are not systematic. The mean signed error is \nTestBias{}~MPa; \nCasesHigh{} cases lie slightly above their simulation and \nCasesLow{} below. The five copies agree closely. Their mean spread is \nSpreadMean{}~MPa (largest \nSpreadMax). Individual copies score \nMemberBest{} to \nMemberWorst{}~MPa, and the ensemble is better than four of the five, and better than their average. Training-set and test errors are similar (\nTrainFit{} against \nTestMean{}), so the model is not over-fitted to its training curves.
 
-\paragraph{Reproducibility.} A separate refit with the frozen settings reproduced every weight and prediction exactly in 17.26\,s with no warnings. Thirteen model/parser/runtime unit tests and three live Model Studio tests pass. This is numerical reproducibility in the same environment, not physical, experimental or cross-platform validation.
+\subsection{Where the errors are}
+The eight worst test cases all sit at 30\,\textdegree C and $10^{-4}$\,s$^{-1}$, which has 8 test cases but only one training case. Table~\ref{tab:cond} breaks the error down by condition. Every condition is far better than Equation~1 alone.
 
-\section{Discussion}
-The surrogate is small, fast and reproducible, and closely reproduces the related test curves. Its reliability at other combinations of inputs is not established, even within the numerical ranges, because some groups are sparse and case 60 is irregular. Its main weakness is extrapolation: with 73 cases spread over three temperatures and three rates, some condition groups have very few cases, and errors grow sharply when a whole group is unseen. We propose adding simulations at the sparse and missing conditions (especially 200 and 300) as the first priority. We have not tested this against changing the model size.
+\begin{table}[H]\centering\small
+\caption{Test error by condition (mean curve RMSE, MPa).}
+\label{tab:cond}
+\begin{tabular}{rrrrrr}\toprule
+$T$ (\textdegree C) & rate (s$^{-1}$) & test cases & JC-PINN & Equation 1 alone & single MLP\\\midrule
+30 & $10^{-5}$ & 4 & 0.354 & 11.84 & 0.075\\
+30 & $10^{-4}$ & 8 & 0.803 & 6.25 & 0.227\\
+30 & $10^{-3}$ & 3 & 0.182 & 2.92 & 0.096\\
+100 & $10^{-5}$ & 4 & 0.434 & 9.14 & 0.050\\
+100 & $10^{-4}$ & 5 & 0.283 & 3.50 & 0.260\\
+100 & $10^{-3}$ & 5 & 0.454 & 3.43 & 0.125\\
+200 & $10^{-4}$ & 3 & 0.569 & 13.04 & 0.115\\
+200 & $10^{-3}$ & 5 & 0.143 & 11.22 & 0.081\\\bottomrule
+\end{tabular}
+\end{table}
 
-The model predicts stress along operational strain only. Turning it into an input for structural analysis needs the solver's stress/strain definitions, confirmed units and the receiving material model. Any ANSYS-format export remains an unvalidated template until those are confirmed. In particular, it must not invent a zero-origin elastic segment or label a total-strain curve as plastic strain.
-
-\section{Limitations and open questions}
+\subsection{Comparison and the control}
+Fig.~\ref{fig:comparison} places the JC-PINN among the alternatives on the same test split:
 \begin{itemize}
-\item Units (\si{\mega\pascal}, \si{\celsius}, \si{\per\second}) are inferred, not confirmed; the solver, material law and stress/strain definitions are unconfirmed.
-\item The 37 test cases were seen during earlier exploration, so the test score is not a fully independent generalisation estimate and may be optimistic.
-\item Whether density and modulus levels encode porosity, and the mapping if so, is unverified.
-\item There is no agreed $C_L$ calculation (flaw geometry, fracture toughness $K_{IC}$, stress at the critical location), and the material $\to$ structure $\to$ critical-flaw coupling is undefined.
-\item The ANSYS analyses have not been checked against this report's material model; no transfer of predictions into ANSYS has been validated.
-\item Stronger generalisation claims need independent experimental data or new simulations.
+\item it beats Equation~1 alone on all \nWinsEq{} cases;
+\item it beats the curve-copy lookup on \nWinsLookup{} of 37;
+\item it beats the earlier data-driven MLPs on none (single MLP \nSingleTest, five-network ensemble \nEnsTest~MPa).
+\end{itemize}
+The random split rewards close interpolation between neighbouring curves, which pure MLPs do best.
+
+Fig.~\ref{fig:groups} shows the harder question: prediction at conditions the model never saw. There the JC-PINN (\nSelGroups) is clearly better than the single MLP (\nSingleGroups), and much better than Equation~1 alone (\nEqGroups). Two caveats apply. Our group errors are slightly optimistic, because they were part of the selection score. The earlier five-network ensemble reported \nEnsGroups{}~MPa on similar holdouts with different folds.
+
+\paragraph{Control.} After the lock, we trained the same network with the same recipe but with Equation~1 replaced by a constant. This control was not used for selection. It scored better everywhere:
+\begin{itemize}
+\item case CV \nCtrlCV, groups \nCtrlGroups, score \nCtrlScore;
+\item test \nCtrlTest~MPa, against \nTestMean{} for the JC-PINN.
+\end{itemize}
+The honest reading is that, on these data, Equation~1's separable form does not improve accuracy. What it provides is a physically named backbone, with constants for strain, rate, temperature, modulus and porosity. It also gives a model that starts from a sensible law, has correct trends, and is easy to explain. We report the control rather than hide it.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_comparison}
+\caption{Mean curve RMSE on the 37 test cases (log scale). Grey bars are reference models on the same split.}
+\label{fig:comparison}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_groups}
+\caption{Hiding a whole temperature/rate group (training cases only). The JC-PINN halves the single MLP's error on unseen conditions. The control without Equation~1 is slightly better still.}
+\label{fig:groups}
+\end{figure}
+
+\subsection{Physical behaviour}
+In the observed range (30--200\,\textdegree C) we checked the signs of the model's derivatives at 2579 points. Stress falls with strain and with temperature, and rises with $G$ and with density, at every one of them. Between 200 and 300\,\textdegree C, where there are no data, 2.5\,\% of points show stress falling with density. Fig.~\ref{fig:study} shows the predicted curves at the project's study porosity $\phi=4\,\%$ ($\rho=2592$, $G=24541$). The 300\,\textdegree C curves are extrapolation and are shown dashed.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_study_point}
+\caption{Predicted curves at the study porosity $\phi=4\,\%$. The 300\,\textdegree C curves (dashed) have no supporting data and are unvalidated.}
+\label{fig:study}
+\end{figure}
+
+%=====================================================================
+\section{Could the model be improved?}
+After the lock, we screened possible improvements on the training cases only, without touching the test set:
+\begin{itemize}
+\item \textbf{Longer or different training.} 8000 L-BFGS iterations gave case CV \nScrIterLong, weaker weight decay ($\alpha=0.3$) \nScrAlphaLow, and a wider 32--32 network \nScrWide. All are worse than the locked \nSelCV.
+\item \textbf{The strain law itself.} Fitting $A-B\varepsilon^n$ to each training curve separately, with its own three constants, still leaves a mean RMSE of \nFloorJCMean~MPa (median \nFloorJCMedian). A cubic polynomial reaches \nFloorCubicMean. The power-law strain shape is therefore a floor the backbone cannot pass, which is why the correction is needed.
+\item \textbf{Other correction forms.} A bounded correction ($\exp(\delta)$ restricted to $\times\tfrac13$ to $\times3$) scored \nScrBoundedScore, against \nSelScore{} for the locked model. Additive forms and an extended backbone were also worse.
+\end{itemize}
+None beat the locked model, so we submit it unchanged. The evidence is in \file{reports/jc_pinn_20261107/improvement_screen.json}.
+
+%=====================================================================
+\section{Verification and reproducibility}
+\begin{itemize}
+\item \textbf{Independent re-implementation.} \file{scripts/verify_jc_pinn.py} rebuilds every prediction in plain NumPy~\cite{harris2020} from the saved weights. It agrees with PyTorch to \nNumpyTorchErr~MPa, checks the lock fingerprint, and recomputes every metric.
+\item \textbf{Deterministic rebuild.} The Colab/Kaggle notebook's FAST mode retrains the final model and reproduced the locked weights exactly. The full selection takes about \nRunMinutes~minutes on a 4-core CPU.
+\item \textbf{Provenance.} Every number in this report is generated from the saved run by \file{scripts/write_latex_numbers.py}, and every figure by \file{scripts/make_figures.py} (Matplotlib~\cite{hunter2007}).
 \end{itemize}
 
+%=====================================================================
+\section{Limitations}
+\begin{itemize}
+\item \textbf{Not a blind test.} The 37 test cases were explored in earlier project stages, although nothing in this model's fitting or selection used them.
+\item \textbf{Simulations, not experiments.} Agreement is with the supplied simulations; no experimental validation exists.
+\item \textbf{Units inferred} (\textdegree C, s$^{-1}$, MPa, kg\,m$^{-3}$).
+\item \textbf{No data above 200\,\textdegree C,} and no physics penalty acts there in the selected model. Curves at 300\,\textdegree C are unvalidated.
+\item \textbf{Strain is total axial strain} $E_{11}$, not plastic strain, because the histories have no elastic segment.
+\item \textbf{Porosity mapping.} Porosity and $G$ vary independently in the design, so the relation $G(\phi)$ needed for a real part is not defined by these data.
+\item \textbf{No fracture prediction.} The bracket's critical flaw length is not predicted: the data contain no flaw sizes or toughness.
+\item \textbf{Weak spot.} The model is weakest where training cases are scarce, notably at 30\,\textdegree C, $10^{-4}$\,s$^{-1}$.
+\end{itemize}
+
+%=====================================================================
 \section{Conclusion}
-A five-network MLP ensemble reproduces the simulated AlSi10Mg stress response with a mean test RMSE of 0.059 on related conditions and is exactly reproducible. Predictions at other input combinations, even within the simulated temperature, rate, density and modulus ranges, should be treated as unverified. Extending it to new conditions, porosity effects or critical-flaw-length prediction requires the missing definitions and data listed above.
+Equation~1 works as the governing law of a neural material model. Multiplying it by a zero-initialised correction gives a model that starts as the equation and keeps its named constants. It reaches \nTestMean~MPa on 37 locked test curves, \nImprovement{} times better than the equation alone. Its error on unseen conditions is roughly half that of our earlier single MLP. The physics residuals did not help on this data. A control without the equation is slightly more accurate, so the equation's contribution is interpretability and structure rather than accuracy. Data at 300\,\textdegree C, an experimental check and a defined porosity--modulus relation are the next steps that would make the model useful beyond the simulated range.
 
-\section*{Data source}
-The simulation data were supplied by the course instructor (unpublished, Team 8 course project, 2026). They are not a public dataset; see \texttt{data/manifest.json} for the case list.
-
-\begin{thebibliography}{9}
-\bibitem{sklearn} F.~Pedregosa et al., ``Scikit-learn: Machine learning in Python,'' \emph{J.\ Mach.\ Learn.\ Res.}, 12, 2825--2830, 2011. (Multilayer perceptron, Gaussian process and PCA implementations used.)
-\bibitem{lbfgs} D.~C.~Liu and J.~Nocedal, ``On the limited memory BFGS method for large scale optimization,'' \emph{Math.\ Program.}, 45, 503--528, 1989.
-\bibitem{gp} C.~E.~Rasmussen and C.~K.~I.~Williams, \emph{Gaussian Processes for Machine Learning}, MIT Press, 2006.
-\bibitem{numpy} C.~R.~Harris et al., ``Array programming with NumPy,'' \emph{Nature}, 585, 357--362, 2020.
-\bibitem{mpl} J.~D.~Hunter, ``Matplotlib: A 2D graphics environment,'' \emph{Comput.\ Sci.\ Eng.}, 9(3), 90--95, 2007.
-\end{thebibliography}
-
-\section*{Software and evidence}
-Code: \texttt{src/} (data processing and models) and \texttt{app/} (Model Studio).
-Evidence files:
-\begin{itemize}
-\item \texttt{data/split.json} and \texttt{data/manifest.json}
-\item \texttt{runs/score/}
-\item \texttt{reports/retests/20261025T172218Z/}
-\item \texttt{reports/model\_verification\_20261025.json}
-\item \texttt{reports/final\_training\_reproduction\_20261025.json}
-\end{itemize}
-Repository: \url{https://github.com/SaravananRamar06/MMM-ML}.
-
+\FloatBarrier
+\bibliographystyle{unsrt}
+\bibliography{refs}
 \end{document}

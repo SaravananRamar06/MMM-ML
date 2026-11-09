@@ -1,15 +1,20 @@
-# Course report source and build
+# Course report and shared LaTeX sources
 
-`report.tex` is the reviewed LaTeX source. `report.pdf` is the five-page compiled report. Final copies are in `../project files/Final Course Report.pdf` and `../project files/report.pdf`.
+| File | What it is |
+|---|---|
+| `report.pdf` / `report.tex` | Course report on the final JC-PINN model (14 pages). |
+| `numbers.tex` | Every number quoted in the report, paper and slides, generated from `reports/jc_pinn_20261107/` by `scripts/write_latex_numbers.py`. Do not edit by hand. |
+| `numbers.json` | The same values, for the slide builder. |
+| `refs.bib` | Bibliography shared with `paper/paper.tex`. Every entry was checked against its DOI, publisher page or arXiv record. |
 
-Build with Tectonic 0.17.0 from this directory:
+The IEEE-format paper is in [`../paper/`](../paper/paper.pdf). Figures come from [`../figures/`](../figures), written by `scripts/make_figures.py`.
+
+## Rebuild
 
 ```bash
-tectonic --keep-logs --keep-intermediates report.tex
+python scripts/make_figures.py
+python scripts/write_latex_numbers.py
+cd report && latexmk -pdf report.tex && cd ../paper && latexmk -pdf paper.tex
 ```
 
-The first build fetches the required TeX packages; later builds reuse the local cache. Obtain Tectonic from its official project releases. No compiler binary is included in this repository.
-
-Figures are resolved from `figures/` and `../reports/retests/20261025T172218Z/`. The condition chart is generated from saved diagnostics by `../reports/plot_report_diagnostics.py`, without refitting. Keep those paths when building from a clone.
-
-`build_verification.json` records the approved source/PDF hashes and rendering checks. The factual review is in `../reports/final_report_fact_check_20261025.md`. The report documents unconfirmed units, earlier holdout exposure and missing porosity/lift/ANSYS validation. It is the completed current-evidence report; submission-specific requirements still need professor confirmation.
+To get LaTeX on Debian or Ubuntu, install `texlive-latex-extra`, `texlive-publishers` (for IEEEtran), `texlive-science` and `latexmk`.

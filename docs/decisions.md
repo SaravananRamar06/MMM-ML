@@ -1,98 +1,47 @@
-# Decisions and requirement record
+# Decisions
 
-Date of initial record: **2026-10-24**. "Confirmed" refers to the user's account, not inspection of a written assignment.
+This file records the decisions behind the final JC-PINN model and this repository, with the date, who made each one, and its effect. Earlier decisions about superseded models are kept on branch `archive/pre-final-2026-11-07` (`docs/decisions.md`), and are summarised in [history.md](history.md).
 
-| ID | Status | Decision or constraint | Basis / consequence |
-| --- | --- | --- | --- |
-| D01 | Confirmed | Use professor-supplied AlSi10Mg data for the material ML work. | Dataset is independent of the bracket geometry. |
-| D02 | Corrected 2026-10-27 | Intended scope includes material stress–strain prediction and porosity-to-CL functionality; CL means **critical flaw length** (D19). | The porosity-to-CL connection remains unresolved. |
-| D03 | Confirmed | Random 50/50 train/test split by simulation case. | Professor's instruction as clarified by user. No row-level split. |
-| D04 | Tentative requirement | Choose a neural network; at most two models. | User is unsure of the exact maximum. Do not inherit five old regression comparisons as requirements. |
-| D05 | Confirmed | Physics-informed or first-principles methods are optional. | Phrase introduced by user, not professor. Use physics only with justified definitions. |
-| D06 | Confirmed | Treat current data folder as complete as supplied. | Do not block on obtaining all 108 matrix outputs. |
-| D07 | Evidence handling | Prior presentation results are historical and unverified here. | Professor data was not supplied to Claude; user did not run prior code. |
-| D08 | Observed / evidence handling | Longer handoff contains historical code excerpts that may be reviewed. | Their existence changes recoverability, not validation status. |
-| D09 | Superseded 2026-10-27 (D19) | CL was recorded as aerodynamic coefficient of lift. | Reversed by the user; see D19. |
-| D10 | Working convention | Preserve raw data, submitted PDF, and historical handoffs unchanged. | New documentation records corrections and uncertainties separately. |
-| D11 | Working convention | Use training-only preprocessing/tuning and case-level evaluation. | Prevent information leakage and row-count imbalance. |
-| D12 | Superseded 2026-10-27 (D19) | Retire the fracture interpretation as the current project target. | Reversed: critical flaw length is the current target again. Original submission files stay preserved. |
-| D13 | Research recommendation, 2026-10-24 | First material model: compact query MLP, `(T, log10(rate), density, G, E11) -> Svm`; candidate `5–16–16–1`. | Literature plus all-file audit; not user approval of exact settings or empirical model selection. See `research.md`. |
-| D14 | Conditional research recommendation | Reserve a second model for a PCA-coefficient MLP if training-side reconstruction preserves important curve features. | Full-data exploratory PCA is not a final basis or prediction score. Retain case 60. |
-| D15 | Implemented | Random 36-training/37-test split, seed 42, three internal case folds; `data/split.json`. | Training-side selection is saved; earlier all-data exploration must still be disclosed. |
-| D16 | Selected after bounded comparison | Deliver the Svm query MLP ensemble: five 5–16–16–1 tanh networks, alpha 0.001. | Saved final artifact in `runs/score/final_Svm/`; PCA-coefficient MLP rejected, GP kept as a reference. |
-| D17 | User-authorised publishing | Publish code/current results to private MMM-ML; reusable room to private AI-GroupChat. | Claude is MMM-ML publisher; Codex is chat publisher. Exclude raw data and runtime chat/telemetry from exports. |
-| D18 | User-confirmed identity | Display the Antigravity/agy collaborator as Gemini (`gemini`). | No Gemini CLI installation is required to name or join the existing agent session. |
-| D19 | User correction, 2026-10-27 | CL means **critical flaw length**: the largest defect the bracket can carry at its design stress before fracture. | Overrides D09 and D12. Do not reintroduce aerodynamic lift. C_L0 (Cockcroft–Latham damage) remains a separate quantity. |
+## Project scope
 
-## Decisions not yet made
+| ID | Date | Decision | Made by | Effect |
+|---|---|---|---|---|
+| S1 | Oct 2026 | Use the instructor's AlSi10Mg simulations (`TEAM_8_extracted_results_set_1`, 73 of 108 planned cases) as complete as supplied. | User | The 35 missing conditions are not requested again. |
+| S2 | Oct 2026 | Random 50/50 split by simulation: 36 training and 37 test cases, seed 42 (`data/split.json`). | Instructor, via user | The same split is used for every model, so results are comparable. |
+| S3 | 27 Oct 2026 | CL means **critical flaw length**, not coefficient of lift. | User | The bracket workflow has no lift path. The material model does not predict CL (no flaw or toughness data). |
+| S4 | Oct 2026 | Target: von Mises stress `Svm` along axial strain `E11`, resampled to 120 strains from 0.0002 to 0.0999. | Agreed | Each curve counts equally. |
 
-- Exact stress/strain target definitions and unit conversions.
-- Meaning of density and modulus variation; whether a porosity mapping is valid.
-- Fracture setup for CL: flaw geometry (surface or embedded), fracture toughness K_IC, the stress at the bracket's critical location, and how porosity feeds that stress.
-- Whether the professor's tentative two-model limit includes exploratory references; only one final neural-network family is selected.
-- Material constants, build/heat-treatment conditions, and bracket coupling.
-- Final deadline and verified ANSYS outputs available for the final report.
+## The final model (7 November 2026)
 
-## Superseded assumptions
+| ID | Decision | Made by | Effect |
+|---|---|---|---|
+| M1 | Use **Equation 1** of the user's customised Johnson–Cook notes as the governing equation. | User | `σ_JC = [A − Bεⁿ][1 + C ln ε̇*][1 − T*ᵐ][G/G₀]^q[1 − φ]^r` |
+| M2 | Constants: ε̇₀ = 1e-5 s⁻¹, T_r = 30 °C, T_M = 600 °C, G₀ = 25300 MPa, ρ₀ = 2700 kg/m³. | User (notes) | Fixed in `configs/jc_pinn.json`. |
+| M3 | Build: Equation 1 backbone **×** a learned correction exp(δ). | User (chosen over residual or penalty-only forms) | The untrained model is exactly Equation 1. |
+| M4 | ε_p = `E11`. ε̇* is the strain-rate ratio ε̇/ε̇₀. | User | There is no elastic segment, so the strain is total. |
+| M5 | φ = 1 − ρ/2700 per case (0, 3, 7.85 %); the study point is φ = 4 %. | User | Whether the generator intended density to stand for porosity is still unconfirmed (see open questions). |
+| M6 | Selection by a **balanced score**: ½ (case CV + mean of nine temperature/rate group holdouts), on training cases only. | User | The setting has to interpolate and also predict unseen conditions. |
+| M7 | Test set: **lock first, score once, disclose** that earlier stages explored it. | User | `selection_lock.json` is written before any test file is read. |
+| M8 | Weight decay α = 1 and the trend residual form were fixed from training-fold development checks before the formal run. | Claude, recorded in config | α = 0.001 let exp(δ) blow up. |
+| M9 | Selected by the score: **no physics loss (λ = 0), constants trained jointly**. | Protocol | Score 4.166; every physics weight scored worse. |
 
-- "CL means coefficient of lift" (recorded 24 October 2026) is incorrect for this project. On 27 October the user confirmed CL = critical flaw length (D19).
-- "There is no historical code available" is too strong: the longer handoff contains embedded code. There are no standalone recovered/validated scripts yet.
-- "The submitted presentation is an ANSYS results deck" is not established: its own provenance slide says Python. Resolve the user's broader submission description separately.
-- Historical five-fold CV is not the current required final evaluation; the user clarified a random 50/50 case holdout.
+## After the lock
 
-Append future decisions with date, reason, and affected artifacts. Do not turn a proposal into a confirmed requirement without evidence.
+| ID | Date | Decision | Made by | Evidence |
+|---|---|---|---|---|
+| A1 | 7 Nov | Run a post-hoc control (same network, Equation 1 off) and report it, even though it scored better. | Claude, accepted | `reports/jc_pinn_20261107/control_no_equation.json` |
+| A2 | 7 Nov | Screen for improvements on training cases only: recipe, strain-law floor, correction forms. | Claude | `reports/jc_pinn_20261107/improvement_screen.json`. None beat the locked model. |
+| A3 | 7 Nov | **Submit the locked model unchanged.** | User ("the model is fine to submit") | No model changes after the lock. |
+| A4 | 7 Nov | Correct the λ = 0 extrapolation note in an errata file rather than editing locked files. | Claude | `reports/jc_pinn_20261107/ERRATA.md`; the lock hash stays valid. |
 
+## Repository (7 November 2026)
 
-## 25 October 2026 — Documentation and retest
+| ID | Decision | Made by |
+|---|---|---|
+| R1 | Rewrite the whole repository, including `main`, around the final model only: code, notebooks, videos, report, paper, slides, README. | User |
+| R2 | Archive the earlier state first, on branch `archive/pre-final-2026-11-07` (commit `ee1f001`). A tag was refused by the Git server (403), so the archive is the branch only. | User; tag blocked |
+| R3 | Keep the ANSYS project and CAD unchanged, in `bracket/`. Port the porosity workflow and ANSYS bridge to the JC-PINN, and remove the withdrawn lift path. | User |
+| R4 | Rewrite both the course report and the IEEE paper for the final model. Generate every number from the saved run. | User |
+| R5 | Merge into `main` after all checks. | User |
 
-- User requested team-voice README text without contribution credits and a simple first-person explanation. Both README source versions now match; existing detailed guides are preserved alongside the new concise guide.
-- Keep the delivered predictor and fixed split unchanged. A retest uses a separate in-memory frozen-settings fit and timestamped evidence, with hashes verifying artifact preservation. Repeating the same holdout does not create independent validation.
-- User input questions should be posted in the group chat. No scientific definition was invented to complete the documentation.
-
-## 26 October 2026 — Scope of implemented porosity extension
-Keep the final material model intact. A density-derived porosity relation requires explicit source confirmation or an explicitly accepted exploratory assumption; require a separate phi/G relation. Imported solver values are identified as supplied evidence. No structural or aerodynamic labels are fabricated from material stress curves, and no further NN is trained before target data exists. CAD face identities are preparation data, not inferred boundary conditions.
-
-## 31 October 2026 — Colab choices and conditional porosity extension
-
-- User-selected: a fresh library-based Colab notebook, scikit-learn, one neural
-  network and Svm against E11. The notebook remains planned, not implemented.
-- Proposed future porosity route: establish per-case phi provenance first.
-  Replace density if phi is an exact transform of it; add a sixth input only
-  when phi supplies distinct information and paired response data exists.
-  These are conditional recommendations, not a confirmed physical mapping or
-  an instruction to train the extension. Preserve the existing model/version.
-- User instruction later in the same discussion: "we will assume porosity is
-  4%". Adopt fixed nominal `phi = 0.04` as a study assumption, stored in
-  `configs/study_assumptions.json`. This does not confirm source-history
-  porosity, a reference density or a G(phi) law. Keep this constant in metadata
-  rather than adding it as a learned feature. A porosity-dependent extension
-  still needs response data spanning known phi values.
-
-## 31 October 2026 — MLP versus PINN, governing equation first
-
-- User requests a step-by-step Colab comparison of MLP and PINN and explicitly
-  requires a governing equation before model creation. This replaces the
-  single-model Colab choice; the delivered predictor remains preserved.
-- User confirms all files are supplied and no original VPSC inputs/run logs
-  are available. Do not require further user files to produce the plan.
-- Proposed workflow: qualify a sourced constitutive hypothesis on training
-  cases before creating networks, then use a common PyTorch implementation
-  for a controlled data-loss versus physics-residual comparison.
-- No constitutive law is selected yet. Recovery/saturation is a research
-  candidate; VPSC-like names/columns do not confirm the generator or its law.
-  Fixed 4% porosity does not establish material mappings or equation constants.
-
-
-## 31 October 2026 - Effective-equation qualification result
-
-User chose "Effective law (Recommended)" and authorized checking it using the 36 training cases before creating MLP/PINN. Preserve the exact 36/37 split. Tested a simple exponential and Hockett-Sherby-type softening adaptation with fitting-only positive condition-dependent maps. Prospective research screens: mean normalized error <5%, worst <10%, baseline improvement, convergence and numerical correctness. Both candidates fail the error screens. Do not create the planned networks with these equations yet. Rejection applies to the tested families/maps/protocol, not all effective laws. Keep 4% porosity as assumed metadata. See effective-equation-check.md.
-
-
-## 2 November 2026 - Test the single MLP proposal
-
-User selected "MLP equation (Recommended)" and requested "test this" after asking for the best plan. Execute the specified single 5-16-16-1, seed-42 scikit-learn model with alpha selected only on 36 training cases; compare with the existing curve-copy baseline and diagnose omitted condition groups through nested selection. Export the exact empirical equation. Preserve 37 test cases until the selected fitted weights are saved/locked. This is a fresh experiment, not a universal-best-model claim.
-
-
-## 2 November - Single MLP test conclusion
-
-The specified single MLP improves mean RMSE over the lookup baseline in training-case CV (2.174491 versus 3.602695) and the 37-case test (0.142667 versus 1.378978). It supports within-design interpolation; nested condition holdouts are much weaker, including 43.236012 at 200/-5, and do not justify a universal-best or new-regime claim. The exported JSON equation exactly reproduces the final network. The recovered fit is weight-for-weight identical to the preserved first fit; the rerun addressed reporting only. Keep the previous ensemble and its results as a separate artifact. Hosted Colab remains unverified following a browser policy stop.
+Append new decisions with the date, who made them, and the evidence.
