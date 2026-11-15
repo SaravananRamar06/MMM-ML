@@ -1,4 +1,4 @@
-# JC-PINN: our Johnson–Cook equation as the governing law of an AlSi10Mg material model
+# JC-PINN: our Johnson–Cook equation as the governing law of an AlSi10Mg material model.
 
 **Team 8 · Multiscale Modelling of Materials using Machine Learning · November 2026**
 
