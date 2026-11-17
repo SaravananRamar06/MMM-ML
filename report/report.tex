@@ -25,7 +25,7 @@
 
 \begin{abstract}
 \noindent
-We build a material model for the simulated von Mises stress $S_{vm}$ of additively manufactured AlSi10Mg as a function of axial strain $E_{11}$, temperature, strain rate, density and shear modulus. Its governing law is our customised Johnson--Cook equation (Equation~1). The model multiplies Equation~1 by $\exp(\delta)$, where $\delta$ is a small neural correction (5--16--16--1, \nParams{} weights) whose output starts at zero, so the untrained model \emph{is} Equation~1. We call it a JC-PINN. Physics residuals were tested at \nColloc{} collocation points. The setting was chosen on the \nTrainCases{} training simulations alone, using a score that balances case-wise cross-validation with whole temperature/rate groups held out. The model was locked before the \nTestCasesSplit{} test simulations were read, and then scored once. Its mean per-curve RMSE is \nTestMean{}~MPa (median \nTestMedian{}, worst \nTestWorst{}); $R^2=\nTestRsq$ over \nTestPoints{} points, and \nTestWithinOne\,\% of points lie within $\pm1$~MPa. That is \nImprovement{} times more accurate than Equation~1 alone (\nTestEq{}~MPa). With whole conditions hidden, it is also better than our earlier single MLP (\nSelGroups{} against \nSingleGroups{}~MPa). On the random test split, purely data-driven MLPs remain more precise (\nSingleTest{} and \nEnsTest{}~MPa). A post-hoc control, the same network with Equation~1 switched off, scored better on every measure. Equation~1's separable form therefore buys interpretability and a physical backbone, not accuracy. We state the limits throughout: the test set is not blind, the data are simulations rather than experiments, the units are inferred, and nothing is validated above 200\,\textdegree C.
+We build a material model for the simulated von Mises stress $S_{vm}$ of additively manufactured AlSi10Mg as a function of axial strain $E_{11}$, temperature, strain rate, density and shear modulus. Its governing law is our customised Johnson--Cook equation (Equation~1). The model multiplies Equation~1 by $\exp(\delta)$, where $\delta$ is a small neural correction (5--16--16--1, \nParams{} weights) whose output starts at zero, so the untrained model \emph{is} Equation~1. We call it a JC-PINN. Physics residuals were tested at \nColloc{} collocation points. The setting was chosen on the \nTrainCases{} training simulations alone, using a score that balances case-wise cross-validation with whole temperature/rate groups held out. The model was locked before the \nTestCasesSplit{} test simulations were read, and then scored once. Its mean per-curve RMSE is \nTestMean{}~MPa (median \nTestMedian{}, worst \nTestWorst{}); $R^2=\nTestRsq$ over \nTestPoints{} points, and \nTestWithinOne\,\% of points lie within $\pm1$~MPa. That is \nImprovement{} times more accurate than Equation~1 alone (\nTestEq{}~MPa). With whole conditions hidden, it is also better than our earlier single MLP (\nSelGroups{} against \nSingleGroups{}~MPa). On the random test split, purely data-driven MLPs remain more precise (\nSingleTest{} and \nEnsTest{}~MPa). A post-hoc control, the same network with Equation~1 switched off, scored better on every measure. Equation~1's separable form therefore buys interpretability and a physical backbone, not accuracy. After the lock, and without changing the model, we generated an Abaqus UMAT and an ANSYS USERMAT from its weights. They reproduce the model offline to a relative error of \num{\nVerStressErr}. In MAPDL~2024~R1 a single element matches the offline result to \num{\nSeMaxDiff}~MPa. On the project's wing-rib bracket at $\phi=4\,\%$, the reaction peaks at \nBrUsermatPeakkN~kN and then softens. Density alone ($\phi=0$ to 7.85\,\% at fixed $G$) changes that peak by only $\nPorDensPeakChangePct\,\%$. Halving the element size changes the peak by $\nBrMeshPeakChangePct\,\%$, while a hardening material changes by at most \nMeshEpMaxChangePct\,\%. The response after yield is therefore mesh dependent, and the bracket forces are not a converged strength. We state the limits throughout: the test set is not blind, the data are simulations rather than experiments, the units were confirmed by the user without documentation of the generator, nothing is validated above 200\,\textdegree C, and nothing is validated experimentally.
 \end{abstract}
 
 \tableofcontents
@@ -45,13 +45,14 @@ Can our Equation~1 serve as the governing equation of a machine-learning materia
 \begin{enumerate}
 \item a JC-PINN: Equation~1 multiplied by a bounded-input neural correction that starts as exactly Equation~1;
 \item a leakage-controlled protocol: selection on training cases only, a balanced score, a lock before testing, and an independent verifier;
-\item an honest account of the result, including a control that removes Equation~1, a screen for improvements, and the limits of the evidence.
+\item an honest account of the result, including a control that removes Equation~1, a screen for improvements, and the limits of the evidence;
+\item after the lock, a finite-element material generated from the locked weights, checked offline and in ANSYS. We used it on the project's bracket, to compare porosity levels and to test how the result depends on the mesh.
 \end{enumerate}
 
 %=====================================================================
 \section{Data}
 \label{sec:data}
-The instructor's design matrix planned 108 simulations over four temperatures, three strain rates and nine density/shear-modulus pairs; 73 were supplied (\texttt{TEAM\_8\_extracted\_results\_set\_1}). Coverage is uneven: 27 cases at 30\,\textdegree C, 27 at 100\,\textdegree C, 19 at 200\,\textdegree C and none at 300\,\textdegree C. Strain rate spans $10^{-5}$ to $10^{-3}$\,s$^{-1}$, density 2488.05 to 2700\,kg\,m$^{-3}$, and shear modulus $G$ 23313.95 to 25300\,MPa. Units are inferred from magnitudes; none is stated in the files.
+The instructor's design matrix planned 108 simulations over four temperatures, three strain rates and nine density/shear-modulus pairs; 73 were supplied (\texttt{TEAM\_8\_extracted\_results\_set\_1}). Coverage is uneven: 27 cases at 30\,\textdegree C, 27 at 100\,\textdegree C, 19 at 200\,\textdegree C and none at 300\,\textdegree C. Strain rate spans $10^{-5}$ to $10^{-3}$\,s$^{-1}$, density 2488.05 to 2700\,kg\,m$^{-3}$, and shear modulus $G$ 23313.95 to 25300\,MPa. No unit is stated in the files. The units (\textdegree C, s$^{-1}$, MPa, kg\,m$^{-3}$) were confirmed by the user, but no documentation of the generator was seen. Density stands for porosity, $\phi=1-\rho/2700$, also as confirmed by the user. No simulations above 200\,\textdegree C will be added, so 200--300\,\textdegree C remains unvalidated extrapolation.
 
 The target is $S_{vm}$ along the axial strain $E_{11}$, which is monotonic in every case. Each history is interpolated onto a common grid of 120 strains from 0.0002 to 0.0999, so that long, slow-rate runs do not dominate by row count and each curve counts equally. Fig.~\ref{fig:data} shows the training curves. Two features shape the whole study:
 \begin{itemize}
@@ -309,7 +310,7 @@ In the observed range (30--200\,\textdegree C) we checked the signs of the model
 %=====================================================================
 \subsection{How porosity acts}
 \label{sec:porosity}
-Porosity enters the data only through density, as $\phi=1-\rho/2700$ (0, 3 and 7.85\,\%). To isolate its effect, we compared every pair of simulations that differ in density alone, with the same temperature, rate and $G$. This analysis is post-hoc and descriptive: it uses all 73 curves, and fits or changes nothing. Fig.~\ref{fig:porosity} and Table~\ref{tab:porosity} give the result:
+Porosity enters the data only through density, as $\phi=1-\rho/2700$ (0, 3 and 7.85\,\%; confirmed by the user). To isolate its effect, we compared every pair of simulations that differ in density alone, with the same temperature, rate and $G$. This analysis is post-hoc and descriptive: it uses all 73 curves, and fits or changes nothing. Fig.~\ref{fig:porosity} and Table~\ref{tab:porosity} give the result:
 \begin{itemize}
 \item \textbf{The effect is real and consistent.} In all \nPorPairsLower{} of \nPorPairs{} pairs, lower density gives lower stress.
 \item \textbf{The effect is small.} Going from $\phi=0$ to 7.85\,\% lowers the stress by \nPorData\,\% on average (\nPorMPa~MPa).
@@ -354,29 +355,137 @@ After the lock, we screened possible improvements on the training cases only, wi
 None beat the locked model, so we submit it unchanged. The evidence is in \file{reports/jc_pinn_20261107/improvement_screen.json}.
 
 %=====================================================================
+\section{From model to finite-element material}
+\label{sec:fe}
+The work in this section and the next was done after the lock. It uses the locked weights as they are: nothing is refitted, and no test case is touched.
+
+\subsection{UMAT and USERMAT}
+\file{scripts/write_umat.py} writes the locked JC-PINN into two Fortran user materials:
+\begin{itemize}
+\item an Abaqus UMAT, \file{umat/jc_pinn_umat.f};
+\item an ANSYS USERMAT, \file{umat/jc_pinn_usermat3d.F}, for 3D, plane-strain and axisymmetric elements.
+\end{itemize}
+Both share one generated core. It holds the five networks' weights, Equation~1 and its constants, and evaluates the flow stress, with its analytic slope, as the model's prediction at the current equivalent plastic strain. Around that core is J2 plasticity with a radial return and a consistent tangent. Three choices follow the model's own definitions:
+\begin{itemize}
+\item \textbf{Strain.} The data's total strain $E_{11}$ is read as equivalent plastic strain (the decision of 7~Nov). Elastic stiffness comes from $G$ and an \emph{assumed} Poisson's ratio of 0.33.
+\item \textbf{Range.} Below the strain grid the flow stress is held at $\sigma(0.0002)$, and above it at $\sigma(0.0999)$. Conditions outside the data are \emph{flagged} in a state variable, not clamped.
+\item \textbf{Fixed condition.} Temperature, strain rate, density and $G$ are material constants of a run.
+\end{itemize}
+
+\subsection{Verification}
+The two routines were compiled with an offline driver and checked against the Python model (\file{umat/verification.json}; all checks \nVerPassed):
+\begin{itemize}
+\item the flow stress agrees at \nVerFlowPoints{} points to a relative error of \num{\nVerStressErr}, and its slope agrees with finite differences to \num{\nVerSlopeErr};
+\item in single-element uniaxial tests, the stress stays on the flow curve to \num{\nVerCurveErr}, and the result does not depend on the increment size (spread \num{\nVerIncSpread}~MPa);
+\item the consistent tangent agrees with finite differences to \num{\nVerTangentErr};
+\item all \nVerFlagChecks{} range-flag cases set the expected flag.
+\end{itemize}
+The USERMAT was then built for MAPDL~2024~R1 and run on one SOLID185 element pulled to $\varepsilon_{11}=0.12$ at the study point (100\,\textdegree C, $10^{-4}$\,s$^{-1}$, $\rho=2592$, $G=24541$). At all \nSePoints{} substeps, MAPDL's $\sigma_{11}$ matches the offline result to \num{\nSeMaxDiff}~MPa, against a tolerance of \nSeTol~MPa. The final values are $\sigma_{11}=\nSeSFinal$~MPa, plastic strain \nSeEqpsFinal{} and flag \nSeFlagFinal{} (strain beyond the data). The evidence is in \file{umat/ansys_test/results_2026-11-17/}. The Abaqus UMAT has been checked offline only.
+
+%=====================================================================
+\section{Bracket results}
+\label{sec:bracket}
+The wing-rib bracket is the project's ANSYS Workbench model, used unchanged:
+\begin{itemize}
+\item \nMeshElemCoarse{} quadratic SOLID186 elements of about 5~mm;
+\item a fixed support on the mounting faces;
+\item an imposed displacement $U_X=-2$~mm on a small patch at the bore;
+\item small strain.
+\end{itemize}
+We ran its solver input in MAPDL~2024~R1 batch three times, changing only the material. All three runs converged to $-2$~mm. The scripts and evidence are in \file{bracket/ansys_usermat/}.
+
+\subsection{Three materials on the bracket}
+Fig.~\ref{fig:bracket} compares the reaction at the support:
+\begin{itemize}
+\item \textbf{Elastic} (the project's ``AlSi10Mg -- E''): linear, \nBrElasticFinalkN~kN at $-2$~mm.
+\item \textbf{Elastic-plastic} (the project's ``AlSi10Mg -- EP'' multilinear card): hardens to \nBrEpFinalkN~kN.
+\item \textbf{JC-PINN USERMAT} at the study point: peaks at \nBrUsermatPeakkN~kN at $U_X=-\nBrUsermatPeakUX$~mm, then softens to \nBrUsermatFinalkN~kN.
+\end{itemize}
+Two checks tie the bracket run to the material. The initial stiffness ratio, \nBrStiffRatio, equals the USERMAT's $E=2G(1+\nu)$ divided by the Workbench modulus. The peak element stress, \nBrUsermatPeakStress~MPa, matches the single-element peak of the flow curve.
+
+The EP card is a \emph{different material condition}: yield 251~MPa, hardening, and no recorded source. The comparison only shows that the three decks behave alike apart from the material. It is not a validation of the JC-PINN. At $-2$~mm, \nBrUsermatFlagged{} elements are beyond the data's plastic-strain range (peak \nBrUsermatEqps). There the flow stress is held flat, which is extrapolation.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_bracket}
+\caption{Bracket on the 5~mm mesh, same load and supports. Left: reaction at the fixed support against imposed displacement. Right: largest element von Mises stress. The JC-PINN (study point) softens after its peak. The EP card is a different material condition, shown for reference only.}
+\label{fig:bracket}
+\end{figure}
+
+\subsection{Porosity on the bracket: density only}
+Five USERMAT runs differ only in density and $G$ (Fig.~\ref{fig:brporosity}). At fixed $G=24541$~MPa, going from $\phi=0$ to 7.85\,\% changes the peak reaction by $\nPorDensPeakChangePct\,\%$ (\nPorBrPhiZeroPeakkN{} to \nPorBrDensMinPeakkN~kN), and $\phi=4\,\%$ alone by $\nPorFourPeakChangePct\,\%$. This matches the model's single-element change near first yield, $\nPorSeDensYieldPct\,\%$. At $-2$~mm the change is $\nPorDensFinalChangePct\,\%$, inside the single-element range at large strain (up to $\nPorSeDensLimitPct\,\%$).
+
+At $\phi=4\,\%$, the data's range of $G$ ($\nPorGLowStepPct$ and $\nPorGHighStepPct\,\%$ in $G$) moves the peak by $\nPorGLowPeakChangePct$ and $\nPorGHighPeakChangePct\,\%$. Part of this comes from elastic stiffness, which also scales with $G$. Per percent change of the input, $G$ acts about \nPorBrGOverDens{} times more strongly than density.
+
+These numbers are the \emph{density-only} part of the porosity effect. In a printed part $G$ also falls with porosity, but $G(\phi)$ is unknown, so the real porosity effect on the bracket is not predicted here.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_bracket_porosity}
+\caption{Bracket reaction for porosity cases at the study conditions. Left: density only, $G$ fixed. Right: the data's range of $G$ at $\phi=4\,\%$, which also changes the elastic stiffness. Insets: the peak region.}
+\label{fig:brporosity}
+\end{figure}
+
+\subsection{Mesh dependence}
+To test how the result depends on the mesh, each element was split 2$\times$2$\times$2 in its own shape functions. That gives \nMeshElemFine{} elements of about 2.5~mm, with the same geometry, supports and load. This is a uniform refinement, not a Workbench remesh. An elastic run confirms the supports and load carried over: the stiffness changes by $\nMeshStiffChangePct\,\%$.
+
+With the JC-PINN USERMAT (Fig.~\ref{fig:mesh}), the finer mesh changes:
+\begin{itemize}
+\item the peak reaction by $\nBrMeshPeakChangePct\,\%$ (to \nMeshPeakFinekN~kN, reached earlier at $-\nMeshPeakFineUX$~mm);
+\item the reaction at $-\nBrUsermatPeakUX$~mm (the coarse mesh's peak) and at $-1$~mm by $\nMeshForceMidChangePct$ and $\nMeshForceOneChangePct\,\%$;
+\item the peak plastic strain from \nMeshEqpsCoarse{} to \nMeshEqpsFine. It is still rising, and \nMeshFlagFine{} elements are now beyond the data.
+\end{itemize}
+The two meshes meet again at $-2$~mm ($\nMeshFinalChangePct\,\%$) only because most of the yielded zone is then on the flat stress beyond the data.
+
+The same refinement with the hardening EP material changes the force by at most \nMeshEpMaxChangePct\,\% (Fig.~\ref{fig:meshep}). So \nMeshSofteningShareMin--\nMeshSofteningShareMax\,\% of the JC-PINN's change comes from its softening. The peak plastic strain sits next to the loaded patch for both materials. It grows $\times\nMeshEpStrainRatio$ with EP and $\times\nMeshUmStrainRatio$ with the JC-PINN, so the patch edge adds a strain concentration of its own.
+
+The conclusion is plain: the bracket forces after yield, including the peak, are specific to the mesh. They are not a converged strength. A regularised softening law, with a length scale or a non-local or gradient form, would be needed for a result that does not depend on the mesh. That is future work.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_mesh}
+\caption{JC-PINN USERMAT on the 5~mm mesh and on its uniform 2$\times$2$\times$2 refinement. Left: reaction (elastic runs dashed). Right: peak element plastic strain against the data's limit of 0.0999. The response after yield depends on the mesh.}
+\label{fig:mesh}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_mesh_ep}
+\caption{The same refinement with the hardening EP card (blue) and the JC-PINN (red); solid 5~mm, dashed 2.5~mm. The EP force barely moves, so the force's mesh dependence comes from the JC-PINN's softening.}
+\label{fig:meshep}
+\end{figure}
+
+%=====================================================================
 \section{Verification and reproducibility}
 \begin{itemize}
 \item \textbf{Independent re-implementation.} \file{scripts/verify_jc_pinn.py} rebuilds every prediction in plain NumPy~\cite{harris2020} from the saved weights. It agrees with PyTorch to \nNumpyTorchErr~MPa, checks the lock fingerprint, and recomputes every metric.
 \item \textbf{Deterministic rebuild.} The Colab/Kaggle notebook's FAST mode retrains the final model and reproduced the locked weights exactly. The full selection takes about \nRunMinutes~minutes on a 4-core CPU.
-\item \textbf{Provenance.} Every number in this report is generated from the saved run by \file{scripts/write_latex_numbers.py}, and every figure by \file{scripts/make_figures.py} (Matplotlib~\cite{hunter2007}).
+\item \textbf{Provenance.} \file{scripts/write_latex_numbers.py} generates every number in this report. Model numbers come from the saved run. Finite-element numbers come from the saved verification file, MAPDL histories and summaries (\file{umat/verification.json}, \file{umat/ansys_test/}, \file{bracket/ansys_usermat/}). \file{scripts/make_figures.py} (Matplotlib~\cite{hunter2007}) generates every figure. It copies the bracket figures unchanged from the plots committed with those runs.
 \end{itemize}
 
 %=====================================================================
 \section{Limitations}
 \begin{itemize}
 \item \textbf{Not a blind test.} The 37 test cases were explored in earlier project stages, although nothing in this model's fitting or selection used them.
-\item \textbf{Simulations, not experiments.} Agreement is with the supplied simulations; no experimental validation exists.
-\item \textbf{Units inferred} (\textdegree C, s$^{-1}$, MPa, kg\,m$^{-3}$).
-\item \textbf{No data above 200\,\textdegree C,} and no physics penalty acts there in the selected model. Curves at 300\,\textdegree C are unvalidated.
-\item \textbf{Strain is total axial strain} $E_{11}$, not plastic strain, because the histories have no elastic segment.
-\item \textbf{Porosity mapping.} Porosity and $G$ vary independently in the design, so the relation $G(\phi)$ needed for a real part is not defined by these data. Since $G$ acts about \nPorRatio{} times more strongly than density, this relation dominates any bracket-level porosity effect. Whether the generator intended density to represent porosity is also unconfirmed.
-\item \textbf{No fracture prediction.} The bracket's critical flaw length is not predicted: the data contain no flaw sizes or toughness.
+\item \textbf{Simulations, not experiments.} Agreement is with the supplied simulations. Nothing here is experimentally validated, neither the model nor the bracket results.
+\item \textbf{Units confirmed by the user} (\textdegree C, s$^{-1}$, MPa, kg\,m$^{-3}$), but no documentation of the generator was seen. Which solver and constitutive model produced the histories, and why every one softens, is still open.
+\item \textbf{No data above 200\,\textdegree C,} and none will be added. No physics penalty acts there in the selected model, so 200--300\,\textdegree C is unvalidated extrapolation (flagged by the UMAT/USERMAT).
+\item \textbf{Strain is total axial strain} $E_{11}$, read as plastic strain because the histories have no elastic segment. The finite-element material adds elasticity from $G$ and an assumed Poisson's ratio of 0.33.
+\item \textbf{Porosity mapping.} Density stands for porosity (confirmed by the user). Porosity and $G$ vary independently in the design, so the relation $G(\phi)$ needed for a real part is not defined by these data. Since $G$ acts about \nPorRatio{} times more strongly than density (about \nPorBrGOverDens{} times on the bracket), this relation dominates any bracket-level porosity effect. The bracket porosity results are density-only.
+\item \textbf{Mesh dependence.} The JC-PINN softens, so on the bracket the response after yield, including the peak force, depends on the mesh. Bracket forces are mesh-specific, not a converged strength. The finer mesh is a uniform split, not a Workbench remesh. A regularised softening law is future work.
+\item \textbf{Finite-element scope.} Only ANSYS was run, at one material condition, with an imposed displacement and small strain. The Abaqus UMAT is checked offline only.
+\item \textbf{No fracture prediction.} The bracket's critical flaw length is not predicted. That needs a method (flaw geometry, LEFM or J-integral) and a toughness value, and the data contain neither flaw sizes nor toughness.
+\item \textbf{Open choices.} Whether Equation~1 should depend on temperature and rate (its $B$ and $n$) is still a user decision; a screen showed no gain from the forms tried. The notebooks pass locally, but have not yet been run on hosted Colab or Kaggle.
 \item \textbf{Weak spot.} The model is weakest where training cases are scarce, notably at 30\,\textdegree C, $10^{-4}$\,s$^{-1}$.
 \end{itemize}
 
 %=====================================================================
 \section{Conclusion}
-Equation~1 works as the governing law of a neural material model. Multiplying it by a zero-initialised correction gives a model that starts as the equation and keeps its named constants. It reaches \nTestMean~MPa on 37 locked test curves, \nImprovement{} times better than the equation alone. Its error on unseen conditions is roughly half that of our earlier single MLP. The data's small but consistent porosity effect (\nPorData\,\% over 0--7.85\,\%) is missed by Equation~1's porosity term ($r=0$) but captured by the correction. The physics residuals did not help on this data. A control without the equation is slightly more accurate, so the equation's contribution is interpretability and structure rather than accuracy. Data at 300\,\textdegree C, an experimental check and a defined porosity--modulus relation are the next steps that would make the model useful beyond the simulated range.
+Equation~1 works as the governing law of a neural material model. Multiplying it by a zero-initialised correction gives a model that starts as the equation and keeps its named constants. It reaches \nTestMean~MPa on 37 locked test curves, \nImprovement{} times better than the equation alone. Its error on unseen conditions is roughly half that of our earlier single MLP. The data's small but consistent porosity effect (\nPorData\,\% over 0--7.85\,\%) is missed by Equation~1's porosity term ($r=0$) but captured by the correction. The physics residuals did not help on this data. A control without the equation is slightly more accurate, so the equation's contribution is interpretability and structure rather than accuracy.
+
+The locked model now runs as a finite-element material. Generated from its weights, the USERMAT reproduces it offline and in MAPDL, and it solves the project's bracket. There, density alone changes the peak reaction by only $\nPorDensPeakChangePct\,\%$ over 0--7.85\,\% porosity. Because the model softens, the bracket's response after yield depends on the mesh: the peak changes by $\nBrMeshPeakChangePct\,\%$ when the elements are halved, against at most \nMeshEpMaxChangePct\,\% for a hardening material. The next steps that would make the model useful for the bracket are:
+\begin{itemize}
+\item a measured relation $G(\phi)$;
+\item a regularised softening law, for results that do not depend on the mesh;
+\item a method and toughness for the critical flaw length;
+\item an experimental check.
+\end{itemize}
 
 \FloatBarrier
 \bibliographystyle{unsrt}
