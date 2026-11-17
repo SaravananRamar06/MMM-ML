@@ -5,17 +5,18 @@
 verification are in [`verification_corrected/README.md`](verification_corrected/README.md). The section below describes the
 uncorrected original, kept unchanged for reference.
 
-**Update of 17 November 2026 (now 23 slides).**
+**Update of 17 November 2026 (now 24 slides).**
 - The units wording now says the units were confirmed by the user (no generator documentation), and that density stands for porosity (also confirmed). The phrase "units inferred" no longer appears.
-- Three slides were added after the evaluation, with speaker notes. Their numbers are read from `report/numbers.json`, and their figures come from `figures/`:
+- Four slides were added after the evaluation, with speaker notes. Their numbers are read from `report/numbers.json`, and their figures come from `figures/`:
   - **17:** the locked model as an ANSYS/Abaqus user material, with the offline and MAPDL single-element checks;
   - **18:** the bracket with the JC-PINN and the density-only porosity comparison;
-  - **19:** the mesh study (the response after yield is mesh dependent).
+  - **19:** porosity with G coupled by the assumed G = 25300 (1 − φ) (decision D5);
+  - **20:** the mesh study (the response after yield is mesh dependent).
 - The deployment slide now shows the bracket coupling as existing but unvalidated, and Limits and the conclusion add the mesh dependence.
 - Build: `NODE_PATH=<dir with node_modules/pptxgenjs> node presentation/build/build_corrected.js <pptx skill dir with scripts/apply_theme.js>`.
 - PDF: `soffice --headless --convert-to pdf`.
 
-`JC-PINN.pptx` (built by `scripts/build_deck.py` from `report/numbers.json`) got the same three topics and the units fix.
+`JC-PINN.pptx` (built by `scripts/build_deck.py` from `report/numbers.json`) got the same four topics and the units fix (21 slides).
 
 ---
 

@@ -390,7 +390,7 @@ s = slide('The bracket with the JC-PINN, and what density alone does', 'Bracket'
           f"then softens to {N['BrUsermatFinalkN']} kN. The Workbench EP card is a different material condition: it yields at 251 MPa and "
           f"hardens. It is a reference, not a validation. With G fixed, going from 0 to 7.85 percent porosity changes the peak by only "
           f"{N['PorDensPeakChangePct']} percent, matching the single-element {N['PorSeDensYieldPct']} percent. Per percent change, G acts about "
-          f"{N['PorBrGOverDens']} times more strongly, and G of phi is unknown, so this is only the density part of the porosity effect.")
+          f"{N['PorBrGOverDens']} times more strongly; the next slide couples G to porosity.")
 picture(s, 'fig_bracket', L, TOP, Inches(6.3), Inches(2.9))
 picture(s, 'fig_bracket_porosity', Inches(6.95), TOP, Inches(5.8), Inches(2.9))
 bullets(s, L, Inches(4.85), FULLW, Inches(2.1), [
@@ -399,7 +399,24 @@ bullets(s, L, Inches(4.85), FULLW, Inches(2.1), [
     [('Density only, G fixed: ', {'bold': True}),
      (f"φ 0 → 7.85 % changes the peak by {sgn(N['PorDensPeakChangePct'])} % (single element: {sgn(N['PorSeDensYieldPct'])} %)", {})],
     [('G matters more: ', {'bold': True, 'color': AMBER}),
-     (f"about {N['PorBrGOverDens']}× per percent; G(φ) is unknown, so this is the density part only", {})],
+     (f"about {N['PorBrGOverDens']}× per percent; with G coupled (next slide) porosity acts mainly through G", {})],
+], size=16)
+
+# 14d2. Porosity with G coupled (decision D5) ---------------------------------------------------------------------
+s = slide('Porosity with G coupled: G = 25300 (1 − φ)', 'Bracket porosity',
+          "The data's three G levels are exactly 25300 times one minus porosity, at its three densities. We adopted that linear "
+          'rule, which is the upper bound on G for any pore shape, so the result is a lower estimate. Coupling density and G, '
+          f"0 to 7.85 percent porosity lowers the bracket's stiffness by {N['GphiStiffChangePct']} percent, its peak force by "
+          f"{N['GphiPeakChangePct']} percent and its force at 2 mm by {N['GphiFinalChangePct']} percent. Density alone gave only "
+          f"{N['PorDensPeakChangePct']} percent, so porosity acts almost entirely through G. Real pores lower G faster than this bound, "
+          'and a measured G of phi would replace it.')
+picture(s, 'fig_bracket_porosity_gphi', L, TOP, FULLW, Inches(3.4))
+bullets(s, L, Inches(5.3), FULLW, Inches(1.6), [
+    [('φ 0 → 7.85 %, G coupled: ', {'bold': True, 'color': BLUE}),
+     (f"stiffness {sgn(N['GphiStiffChangePct'])} %, peak {sgn(N['GphiPeakChangePct'])} % ({N['GphiPeakZerokN']} → {N['GphiPeakMaxPorkN']} kN), "
+      f"force at −2 mm {sgn(N['GphiFinalChangePct'])} %; density alone {sgn(N['PorDensPeakChangePct'])} %", {})],
+    [('Assumption: ', {'bold': True, 'color': AMBER}),
+     ("G = 25300 (1 − φ) is the upper bound (the data's G levels follow it exactly), so this is a lower estimate; not measured", {})],
 ], size=16)
 
 # 14e. Mesh dependence -------------------------------------------------------------------------------------------
@@ -437,7 +454,7 @@ bullets(s, Inches(6.9), TOP, Inches(5.9), BODYH, [
     [('Cannot: ', {'bold': True, 'color': AMBER}), ('a blind test (cases explored earlier)', {})],
     [('Cannot: ', {'bold': True, 'color': AMBER}), ('experimental validity (units confirmed by the user, no generator documentation)', {})],
     [('Cannot: ', {'bold': True, 'color': AMBER}), ('anything above 200 °C', {})],
-    [('Cannot: ', {'bold': True, 'color': AMBER}), ('plastic strain, a G(φ) law, or critical flaw length', {})],
+    [('Cannot: ', {'bold': True, 'color': AMBER}), ('plastic strain, a measured G(φ) (ours is an assumed bound), or critical flaw length', {})],
     [('Cannot: ', {'bold': True, 'color': AMBER}), ('a mesh-converged bracket strength (softening)', {})],
 ], size=18)
 

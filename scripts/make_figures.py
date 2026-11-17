@@ -309,6 +309,7 @@ save(fig, 'fig_porosity')
 FE_FIGURES = {
     'fig_bracket': 'bracket/ansys_usermat/results_2026-11-17/force_displacement.png',
     'fig_bracket_porosity': 'bracket/ansys_usermat/porosity_2026-11-17/porosity_force_displacement.png',
+    'fig_bracket_porosity_gphi': 'bracket/ansys_usermat/porosity_gphi_2026-11-17/porosity_gphi_force_displacement.png',
     'fig_mesh': 'bracket/ansys_usermat/mesh_2026-11-17/mesh_force_displacement.png',
     'fig_mesh_ep': 'bracket/ansys_usermat/mesh_ep_2026-11-17/mesh_ep_force_displacement.png',
 }
