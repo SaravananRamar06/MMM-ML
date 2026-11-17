@@ -1,0 +1,47 @@
+digraph JCPINN {
+  graph [rankdir=TB, bgcolor="white", pad=0.35, nodesep=0.48, ranksep=0.5,
+    fontname="Arial", fontsize=22, labelloc=t,
+    label="C · Flow-stress evaluator inside USERMAT\nJCPFLW range handling + JCPSIG locked ensemble"];
+  node [shape=box, style="rounded,filled", fillcolor="#f2edf9", color="#705190",
+    fontname="Arial", fontsize=13, margin="0.20,0.14", penwidth=1.3];
+  edge [fontname="Arial", fontsize=11, color="#42566b", arrowsize=0.8];
+
+  input [label="Called from B at p, or at a trial p + dp during radial return\nInputs: T, log10(fixed rate), density ρ, model G and current p_eval"];
+  flags [label="JCPFLW: start this evaluation with flag = 0\nSet condition-range bits; keep T, rate, density and G inputs unchanged"];
+  flagdetail [shape=note, fillcolor="#fff5df", color="#936818", fontsize=12,
+    label="Exact flag categories\nBit 2: T < 30 or T > 300 °C; or rate / ρ / G outside their ranges\nBit 4: 200 < T ≤ 300 °C (unvalidated extrapolation)\nrate: 10⁻⁵–10⁻³ s⁻¹; ρ: 2488.05–2700 kg/m³; G: 23313.95–25300 MPa\nImplementation allows tiny numeric tolerances for rate / ρ / G.\nFlags identify range excursions; they do not establish validity."];
+  low [shape=diamond, style=filled, label="p_eval < 0.0002?"];
+  lower [label="Evaluate at e = 0.0002\nConstant initial-yield extension\nNo strain-range flag from this lower extension"];
+  high [shape=diamond, style=filled, label="p_eval > 0.0999?"];
+  upper [label="Evaluate at e = 0.0999\nConstant flow-stress extension; set flag bit 1"];
+  inside [label="Evaluate at e = p_eval"];
+  scale [label="JCPSIG: x = [T, log10(rate), ρ, G, e]\nStandardise using the saved training mean and scale\nEquation 1 uses T* = max((T − 30) / 570, 0)"];
+  each [label="For each of the five locked members k:\nb_k = (A_k - B_k * e^(n_k)) * [1 + C_k * ln(rate / 1e-5)]\n          * [1 - (T*)^(m_k)] * (G / 25300)^(q_k) * (ρ / 2700)^(r_k)\nEach member has its own jointly trained Equation 1 constants"];
+  positive [shape=diamond, style=filled,
+    label="Backbone b_k > 0 and\nstrain term A_k - B_k * e^(n_k) > 0?\n(check every member)"];
+  net [label="Compute δ_k with the saved 5 → 16 → 16 → 1 tanh MLP\nCompute dδ_k/de and d ln(b_k)/de analytically\nAccumulate log stress: ln(b_k) + δ_k, and its strain derivative"];
+  ensemble [label="After all five members:\nσy = exp{ mean_k[ln(b_k) + δ_k] }\nH_raw = σy · mean_k[d ln(b_k)/de + dδ_k/de]\nThis is the geometric mean of member stresses, not an arithmetic mean"];
+  derivative [label="JCPFLW returns H = 0 strictly outside [0.0002, 0.0999]\nInside the interval, including its endpoints: H = H_raw\nReturn σy, H and this evaluation's flag bits to B"];
+  fail [label="JCPSIG: set IERR = 1 and return\nJCPRM maps this to ISTAT = 2\nANSYS wrapper reports the material error → B / A",
+    fillcolor="#fceeed", color="#a43d36"];
+  semantics [shape=note, fillcolor="#f7f7f7", color="#8a939c", fontsize=12,
+    label="Meaning and limits\nTraining coordinate: total axial E11; USERMAT input: equivalent plastic strain.\nThat mapping is an explicit assumption, not a measured equivalence.\nWeights and constants are embedded in Fortran: no Python call or retraining.\nSelected training physics penalty λ = 0; the Equation 1 backbone remains.\nSoftening is not regularised: the bracket post-yield response is mesh dependent.\nTest was not blind; units user-confirmed without generator documentation.\nNo experimental validation, no validation above 200 °C, no critical-flaw prediction."];
+
+  input -> flags;
+  flags -> low;
+  flags -> flagdetail [style=dashed, arrowhead=none, constraint=false];
+  low -> lower [label="yes"];
+  low -> high [label="no"];
+  high -> upper [label="yes"];
+  high -> inside [label="no"];
+  lower -> scale;
+  upper -> scale;
+  inside -> scale;
+  scale -> each -> positive;
+  positive -> net [label="yes"];
+  positive -> fail [label="no", color="#a43d36"];
+  net -> each [label="next member, until k = 5", constraint=false];
+  net -> ensemble [label="all members processed"];
+  ensemble -> derivative;
+  derivative -> semantics [style=invis];
+}

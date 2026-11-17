@@ -1,0 +1,38 @@
+{
+  "checks": [
+    {
+      "panel": "panel-0",
+      "visible": true,
+      "nodes": 18,
+      "edges": 20,
+      "textOutsideNodeBounds": []
+    },
+    {
+      "panel": "panel-1",
+      "visible": true,
+      "nodes": 21,
+      "edges": 19,
+      "textOutsideNodeBounds": []
+    },
+    {
+      "panel": "panel-2",
+      "visible": true,
+      "nodes": 16,
+      "edges": 17,
+      "textOutsideNodeBounds": []
+    },
+    {
+      "panel": "panel-3",
+      "visible": true,
+      "nodes": 16,
+      "edges": 15,
+      "textOutsideNodeBounds": []
+    }
+  ],
+  "zoom": "150%",
+  "narrow": {
+    "documentWidth": 390,
+    "viewport": 390
+  },
+  "errors": []
+}
