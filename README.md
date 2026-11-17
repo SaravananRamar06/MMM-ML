@@ -115,7 +115,7 @@ The notebook's FAST mode retrained the model and reproduced the locked weights e
 | `figures/` | Every figure, written by `scripts/make_figures.py`. |
 | `scripts/` | Verifier, test report, control, improvement screen, figure, number and deck builders, notebook builders. |
 | `tests/` | Unit tests for the model and the bracket tools. |
-| `umat/` | Abaqus UMAT generated from the locked weights (J2 radial return, JC-PINN flow stress, consistent tangent), its offline test driver and verification. See [umat/README.md](umat/README.md). |
+| `umat/` | Abaqus UMAT and ANSYS USERMAT (`usermat3d`) generated from the locked weights (J2 radial return, JC-PINN flow stress, consistent tangent), their offline test driver and verification. See [umat/README.md](umat/README.md). |
 | `bracket/` | The structural side: ANSYS Workbench project, CAD, geometry report, an ANSYS material-card writer and a porosity workflow, both using the JC-PINN. See [bracket/README.md](bracket/README.md). |
 | `docs/` | [Model guide](docs/model-guide.md), [spec](docs/spec.md), [decisions](docs/decisions.md), [open questions](docs/open-questions.md), [history](docs/history.md), [changelog](docs/changelog.md). |
 

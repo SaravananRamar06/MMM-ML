@@ -51,5 +51,6 @@ This file records the decisions behind the final JC-PINN model and this reposito
 | U1 | Write the user material as an Abaqus UMAT generated from the locked weights, not a refit. | User request; Claude | `umat/jc_pinn_umat.f` reproduces `equation_predict` to 2e-15. |
 | U2 | Flow stress versus equivalent plastic strain uses decision M4 (ε_p = E11). Held at σ(0.0002) below the grid and at σ(0.0999) above it, with a flag. | Claude, following M4 | The elastic part comes from G (PROPS 4 or 7) and an assumed ν (PROPS 5). |
 | U3 | Conditions outside the data range are flagged in STATEV 3, not clamped, matching the Python model. | Claude | Extrapolation is visible in the results. |
+| U4 | Add an ANSYS USERMAT (`usermat3d`) sharing one generated core with the UMAT. Only `usermat3d` is provided: 3D, plane strain and axisymmetric. | User request; Claude | `umat/jc_pinn_usermat3d.F`; same offline checks pass. |
 
 Append new decisions with the date, who made them, and the evidence.
