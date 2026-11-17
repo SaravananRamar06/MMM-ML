@@ -1,5 +1,13 @@
 # Changelog
 
+## 17 November 2026: mesh check with the hardening EP material (Q9)
+- `make_decks.py --source … --kinds ep_miso` builds an EP deck from a refined SYS deck. The defaults are unchanged.
+- The refined EP mesh is identical to the refined elastic mesh. New `plot_mesh_ep.py`.
+- **5 mm → 2.5 mm with the Workbench EP material:** force −0.07 % to −0.28 %, peak plastic strain ×1.64.
+- **The USERMAT on the same meshes:** force −7.7 % to −12.1 %, peak plastic strain ×2.77.
+- The force mesh dependence comes from the JC-PINN softening. The load-patch concentration affects the local peak strain for both materials.
+- Evidence: `bracket/ansys_usermat/mesh_ep_2026-11-17/`. Q9 stays open.
+
 ## 17 November 2026: bracket mesh study, the post-peak response is mesh dependent (Q9)
 - New tools:
   - `refine_mesh.py` refines the Workbench mesh uniformly (2 × 2 × 2: hexes in parametric space, prisms as 15-node wedges). This replaced a Workbench remesh, because Workbench 2026 R1 is not on this machine.

@@ -1,0 +1,106 @@
+# bracket.out (ep_miso_5mm), MAPDL 2024 R1 batch - deck headers and material, key lines, then the last 60 lines
+# full file: 1112 lines
+deck: nblock,3,,38239
+deck: eblock,19,solid,,7304     ! rewritten from COMPACT by make_decks.py
+deck: TB,PLAS,1,,8,MISO
+deck: TBPT,,0,251.45
+deck: TBPT,,0.002,275.8
+deck: TBPT,,0.005,296.8
+deck: TBPT,,0.01,324.1
+deck: TBPT,,0.02,367.9
+deck: TBPT,,0.03,404.8
+deck: TBPT,,0.05,468.5
+deck: TBPT,,0.07,524.3
+deck: CMBLOCK,_FIXEDSU,NODE,       31
+deck: CMBLOCK,_CM35UX_XP,NODE,       12
+
+   124: Note - This MAPDL version was linked by Licensee
+   272: 49638  /com,--- Total number of nodes = %_numnode%
+   273: 49639  /com,--- Total number of elements = %_numelem%
+   418: Note - This MAPDL version was linked by Licensee
+   436: Note - This MAPDL version was linked by Licensee
+   605: Note - This MAPDL version was linked by Licensee
+   747: *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
+   756: *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      3
+   765: *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      4
+   778: *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =      6
+   794: *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =      9
+   810: *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     12
+   823: *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =     14
+   836: *** LOAD STEP     1   SUBSTEP     8  COMPLETED.    CUM ITER =     16
+   846: *** LOAD STEP     1   SUBSTEP     9  COMPLETED.    CUM ITER =     17
+   856: *** LOAD STEP     1   SUBSTEP    10  COMPLETED.    CUM ITER =     18
+   866: *** LOAD STEP     1   SUBSTEP    11  COMPLETED.    CUM ITER =     19
+   876: *** LOAD STEP     1   SUBSTEP    12  COMPLETED.    CUM ITER =     20
+   910: Note - This MAPDL version was linked by Licensee
+   964: --- Total number of nodes = 34763
+   965: --- Total number of elements = 7304
+   980: Note - This MAPDL version was linked by Licensee
+   998: Note - This MAPDL version was linked by Licensee
+  1041: NUMBER OF WARNING MESSAGES ENCOUNTERED=          2
+  1042: NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+  1046: Release: 2024 R1            Build: 24.1       Update: UP20231106   Platform: WINDOWS x64
+  1052: Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+  1110: |        Elapsed Time (sec) =         26.000       Date  =  11/17/2026        |
+
+----- tail -----
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191125
+          BLAS Library supplied by Intel(R) MKL
+
+Number of machines requested            :    1
+Total number of cores available         :   32
+Number of physical cores available      :   24
+Number of processes requested           :    1
+Number of threads per process requested :    4
+Total number of cores requested         :    4 (Shared Memory Parallel)
+
+GPU Acceleration: Not Requested
+
+Job Name: bracket
+Input File: bracket.dat
+Working Directory: C:\Users\amitn\jcpinn_bracket_run\ep_miso
+
+Total CPU time for main thread                    :       22.6 seconds
+Total CPU time summed for all threads             :       71.4 seconds
+
+Elapsed time spent obtaining a license            :        1.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.1 seconds
+Elapsed time spent solution - preprocessing       :        0.1 seconds
+Elapsed time spent computing solution             :       22.4 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        1.2 seconds
+
+Equation solver used                              :            PCG (symmetric)
+Equation solver computational rate                :       18.1 Gflops
+
+Sum of disk space used on all processes           :      171.5 MB
+
+Sum of memory used on all processes               :      223.0 MB
+Sum of memory allocated on all processes          :     2112.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        2.4 GB
+Total amount of I/O read from disk                :        2.9 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2024 R1         Build 24.1         UP20231106    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used      40 MB     Maximum Scratch Memory Used    183 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =         71.406       Time  =  19:18:45          |
+ |        Elapsed Time (sec) =         26.000       Date  =  11/17/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
