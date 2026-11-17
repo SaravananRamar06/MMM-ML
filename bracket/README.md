@@ -9,6 +9,7 @@ The ML model in this repository predicts the AlSi10Mg material response. This fo
 | `geometry_report/parts_20261026.json` | Volumes, bounding boxes and face tags measured from the STEP files with OpenCASCADE/Gmsh (`tools/inspect_geometry.py`). |
 | `tools/ansys_material_bridge.py` | Writes a stress–strain material card from the JC-PINN for ANSYS Engineering Data: CSV, APDL (`TB,MISO` / `TB,PLAS`) or XML. |
 | `tools/inspect_geometry.py` | Re-measures the STEP files. Needs `pip install -r bracket/requirements-geometry.txt` (Gmsh). |
+| `ansys_usermat/` | Runs this Workbench model in MAPDL batch with the JC-PINN USERMAT, plus elastic and EP baselines on the same mesh and load. It reads `ansys/` and does not change it. Results of 17 Nov 2026 (one mesh): `ansys_usermat/results_2026-11-17/README.md`. Porosity comparison (density only, G fixed): `ansys_usermat/porosity_2026-11-17/README.md`. Mesh study (5 mm vs 2.5 mm; the response after yield is mesh dependent): `ansys_usermat/mesh_2026-11-17/README.md`. The same check with the hardening EP material, which shows the force dependence comes from the softening: `ansys_usermat/mesh_ep_2026-11-17/README.md`. |
 | `workflow/` | A local page and CLI for porosity material studies with the JC-PINN, and for comparing bracket results exported from your solver. |
 
 ## Material card for ANSYS

@@ -152,10 +152,12 @@ stat(s, Inches(10.0) + Inches(0.9), Inches(3.75), '5', 'inputs: T, rate, ρ, G, 
 s = slide('Every curve softens, and the shape changes with condition', 'Data',
           'These are the 36 training curves: von Mises stress against axial strain E11. All of them soften. Softening grows with '
           'temperature: at 30 °C the stress at 10 % strain is about 0.7 of its start, at 200 °C about 0.2, and case 60 collapses '
-          'to 0.06. Coverage is uneven: 27, 27 and 19 cases at 30, 100 and 200 °C, and none at 300 °C. Units are inferred.')
+          'to 0.06. Coverage is uneven: 27, 27 and 19 cases at 30, 100 and 200 °C, and none at 300 °C, and none will be added. '
+          'The units, degrees C, per second, MPa and kilograms per cubic metre, were confirmed by the user, but we never saw the '
+          "generator's documentation.")
 picture(s, 'fig_data', L, TOP, FULLW, Inches(3.9))
 text(s, L, Inches(5.85), FULLW, Inches(1.0),
-     'Coverage: 27 cases at 30 °C, 27 at 100 °C, 19 at 200 °C, none at 300 °C  ·  rate 1e-5 to 1e-3 s⁻¹  ·  ρ 2488–2700  ·  G 23314–25300 MPa (units inferred)',
+     'Coverage: 27 cases at 30 °C, 27 at 100 °C, 19 at 200 °C, none at 300 °C  ·  rate 1e-5 to 1e-3 s⁻¹  ·  ρ 2488–2700  ·  G 23314–25300 MPa (units confirmed by the user; no generator documentation)',
      size=15, color=MUTED, align=PP_ALIGN.CENTER)
 
 # 4. Equation 1 -------------------------------------------------------------------------------------------
@@ -359,11 +361,73 @@ text(s, L, Inches(5.65), Inches(7.9), Inches(1.2),
      f"G acts about {N['PorRatio']}× more strongly, so for a real bracket the porosity effect depends mainly on the relation G(φ), "
      'which these simulations do not define.', size=15, color=MUTED)
 
+sgn = lambda v: v.replace('-', '−')  # typographic minus for signed changes
+
+# 14c. FE material and verification (post-hoc, model unchanged) ------------------------------------------------
+s = slide('From model to finite-element material', 'After the lock',
+          'After the lock, without refitting, we generated an Abaqus UMAT and an ANSYS USERMAT from the locked weights. Both are J2 plasticity '
+          'with a radial return, and their flow stress is the JC-PINN prediction at the current plastic strain. Elasticity comes from G and an '
+          f"assumed Poisson's ratio of 0.33. Offline, they reproduce the Python model to a relative error of {N['VerStressErr']}, with the "
+          f"tangent to {N['VerTangentErr']}. Built into MAPDL 2024 R1, one element pulled to 12 percent strain matches the offline result to "
+          f"{N['SeMaxDiff']} MPa at all {N['SePoints']} substeps, against a {N['SeTol']} MPa tolerance. The Abaqus UMAT has only been checked offline.")
+bullets(s, L, TOP, Inches(6.3), BODYH, [
+    [('Generated, not refitted: ', {'bold': True}), ('UMAT (Abaqus) and USERMAT (ANSYS) written from the locked weights', {})],
+    'J2 plasticity, radial return, consistent tangent; flow stress = JC-PINN at the current plastic strain',
+    'Elastic part from G and an assumed ν = 0.33; outside the data the routines flag, they do not clamp',
+    [('Offline check: ', {'bold': True}), (f"stress {N['VerStressErr']}, slope {N['VerSlopeErr']}, tangent {N['VerTangentErr']} (relative)", {})],
+], size=17)
+stat(s, Inches(7.4), Inches(2.0), f"{N['SeMaxDiff']} MPa", f"MAPDL 2024 R1 single element vs offline ({N['SePoints']} substeps)", w=Inches(2.6))
+stat(s, Inches(10.15), Inches(2.0), f"{N['SeSFinal']} MPa", f"final σ11 at ε11 = 0.12 (EQPS {N['SeEqpsFinal']})", color=INK, w=Inches(2.6))
+stat(s, Inches(7.4), Inches(3.75), N['VerFlagChecks'] + ' / ' + N['VerFlagChecks'], 'range-flag cases set correctly', color=INK, w=Inches(2.6))
+stat(s, Inches(10.15), Inches(3.75), 'offline', 'Abaqus UMAT checked only offline', color=AMBER, w=Inches(2.6))
+text(s, Inches(7.4), Inches(5.5), Inches(5.35), Inches(1.3),
+     'umat/verification.json  ·  umat/ansys_test/results_2026-11-17/', size=14, color=MUTED)
+
+# 14d. Bracket and porosity --------------------------------------------------------------------------------------
+s = slide('The bracket with the JC-PINN, and what density alone does', 'Bracket',
+          f"This is the project's Workbench bracket, unchanged: {N['MeshElemCoarse']} SOLID186 elements, a fixed support, and an imposed "
+          f"2 mm displacement, solved in MAPDL with three materials. The JC-PINN at the 4 percent study point peaks at {N['BrUsermatPeakkN']} kN, "
+          f"then softens to {N['BrUsermatFinalkN']} kN. The Workbench EP card is a different material condition: it yields at 251 MPa and "
+          f"hardens. It is a reference, not a validation. With G fixed, going from 0 to 7.85 percent porosity changes the peak by only "
+          f"{N['PorDensPeakChangePct']} percent, matching the single-element {N['PorSeDensYieldPct']} percent. Per percent change, G acts about "
+          f"{N['PorBrGOverDens']} times more strongly, and G of phi is unknown, so this is only the density part of the porosity effect.")
+picture(s, 'fig_bracket', L, TOP, Inches(6.3), Inches(2.9))
+picture(s, 'fig_bracket_porosity', Inches(6.95), TOP, Inches(5.8), Inches(2.9))
+bullets(s, L, Inches(4.85), FULLW, Inches(2.1), [
+    [('JC-PINN at φ = 4 %: ', {'bold': True, 'color': BLUE}),
+     (f"peak {N['BrUsermatPeakkN']} kN at −{N['BrUsermatPeakUX']} mm, then softens to {N['BrUsermatFinalkN']} kN; EP card (different material) hardens to {N['BrEpFinalkN']} kN", {})],
+    [('Density only, G fixed: ', {'bold': True}),
+     (f"φ 0 → 7.85 % changes the peak by {sgn(N['PorDensPeakChangePct'])} % (single element: {sgn(N['PorSeDensYieldPct'])} %)", {})],
+    [('G matters more: ', {'bold': True, 'color': AMBER}),
+     (f"about {N['PorBrGOverDens']}× per percent; G(φ) is unknown, so this is the density part only", {})],
+], size=16)
+
+# 14e. Mesh dependence -------------------------------------------------------------------------------------------
+s = slide('The softening makes the bracket result mesh dependent', 'Mesh study',
+          f"We split every element 2 by 2 by 2, which gives {N['MeshElemFine']} elements with the same geometry, supports and load. This is a uniform "
+          f"split, not a Workbench remesh. With the JC-PINN the peak force changes by {N['BrMeshPeakChangePct']} percent, and later forces by "
+          f"{N['MeshForceMidChangePct']} and {N['MeshForceOneChangePct']} percent. The peak plastic strain rises from {N['MeshEqpsCoarse']} to "
+          f"{N['MeshEqpsFine']}. The same split with the hardening EP card changes the force by at most {N['MeshEpMaxChangePct']} percent, so "
+          'the softening causes it. Bracket forces after yield are specific to the mesh, not a converged strength. A regularised softening law is future work.')
+picture(s, 'fig_mesh_ep', L, TOP, Inches(7.9), Inches(3.4))
+bullets(s, Inches(8.75), Inches(1.95), Inches(4.1), Inches(4.9), [
+    f"5 mm → 2.5 mm ({N['MeshElemCoarse']} → {N['MeshElemFine']} elements), uniform split",
+    [('JC-PINN: ', {'bold': True, 'color': BLUE}),
+     (f"peak {sgn(N['BrMeshPeakChangePct'])} %, later forces {sgn(N['MeshForceMidChangePct'])} / {sgn(N['MeshForceOneChangePct'])} %", {})],
+    [('Hardening EP: ', {'bold': True}), (f"≤ {N['MeshEpMaxChangePct']} %, so the cause is the softening", {})],
+    f"Peak plastic strain {N['MeshEqpsCoarse']} → {N['MeshEqpsFine']}, still rising",
+], size=16)
+text(s, L, Inches(5.5), Inches(7.9), Inches(1.4),
+     [[('Bracket forces after yield are mesh-specific, not a converged strength.  ', {'bold': True, 'color': AMBER}),
+       ('Future work: a regularised softening law. One material condition, small strain, ν = 0.33 assumed, nothing validated experimentally.', {})]],
+     size=15, color=INK)
+
 # 15. Limits ----------------------------------------------------------------------------------------------
 s = slide('What we can and cannot claim', 'Limits',
           'The test is not blind: earlier stages explored those cases, though nothing in this model used them. Agreement is with simulations, '
-          'not experiments, and units are inferred. Nothing is validated above 200 °C. Strain is total, not plastic. The porosity to modulus '
-          'relation for a real part is not defined by the data, and we do not predict critical flaw length.')
+          "not experiments. The units were confirmed by the user, but we never saw the generator's documentation. Nothing is validated above "
+          '200 °C, and no such data will be added. Strain is total, not plastic. The porosity to modulus relation for a real part is not '
+          'defined by the data. On the bracket, results after yield depend on the mesh. We do not predict critical flaw length.')
 bullets(s, L, TOP, Inches(6.0), BODYH, [
     [('Can claim: ', {'bold': True, 'color': BLUE}), (f"{N['TestMean']} MPa on 37 locked test curves; correct trends in 30–200 °C", {})],
     [('Can claim: ', {'bold': True, 'color': BLUE}), ('about half the single-MLP error at unseen conditions', {})],
@@ -371,24 +435,28 @@ bullets(s, L, TOP, Inches(6.0), BODYH, [
 ], size=18)
 bullets(s, Inches(6.9), TOP, Inches(5.9), BODYH, [
     [('Cannot: ', {'bold': True, 'color': AMBER}), ('a blind test (cases explored earlier)', {})],
-    [('Cannot: ', {'bold': True, 'color': AMBER}), ('experimental validity; units are inferred', {})],
+    [('Cannot: ', {'bold': True, 'color': AMBER}), ('experimental validity (units confirmed by the user, no generator documentation)', {})],
     [('Cannot: ', {'bold': True, 'color': AMBER}), ('anything above 200 °C', {})],
     [('Cannot: ', {'bold': True, 'color': AMBER}), ('plastic strain, a G(φ) law, or critical flaw length', {})],
+    [('Cannot: ', {'bold': True, 'color': AMBER}), ('a mesh-converged bracket strength (softening)', {})],
 ], size=18)
 
 # 16. Conclusion ------------------------------------------------------------------------------------------
 s = slide('Conclusion', 'Summary',
           f"Equation 1 works as the governing law of a neural material model. The JC-PINN is {N['Improvement']} times better than the "
           'equation alone, about half the single-MLP error at unseen conditions, and keeps physically named constants. Physics residuals did '
-          'not help here, and a law-free control was slightly more accurate, so the gain is structure, not accuracy. Next: data at 300 °C, '
-          'experiments, and a measured porosity–modulus relation. Everything, including the notebook, videos and verifier, is in the repository.')
+          'not help here, and a law-free control was slightly more accurate, so the gain is structure, not accuracy. The locked model now '
+          'runs as an ANSYS material on the bracket, where its softening makes results after yield mesh dependent. Next: a measured '
+          'porosity–modulus relation, a regularised softening law, a fracture criterion, and experiments. Everything, including the notebook, '
+          'videos and verifier, is in the repository.')
 bullets(s, L, TOP, Inches(7.4), BODYH, [
     'Equation 1 works as the governing backbone; the network learns only the shape it misses',
     f"{N['TestMean']} MPa on 37 locked test curves, {N['Improvement']}× better than Equation 1 alone",
     f"About half the single-MLP error at unseen conditions ({N['SelGroups']} vs {N['SingleGroups']} MPa)",
     'Physics residuals did not help; the gain is structure and interpretability',
-    [('Next: ', {'bold': True}), ('300 °C data, experiments, a measured G(φ)', {})],
-], size=19)
+    'Runs as an ANSYS USERMAT on the bracket; results after yield are mesh dependent',
+    [('Next: ', {'bold': True}), ('a measured G(φ), a regularised softening law, experiments', {})],
+], size=18)
 card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(8.5), Inches(2.0), Inches(4.25), Inches(4.4))
 card.adjustments[0] = 0.05
 card.fill.solid()

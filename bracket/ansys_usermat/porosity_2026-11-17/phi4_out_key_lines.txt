@@ -1,0 +1,95 @@
+# bracket.out (phi4), MAPDL 2024 R1 batch - TBDATA used, key lines, then the last 60 lines
+# full file: 1186 lines
+deck: ! Porosity case phi4: 100 degC, 1e-4 /s, density 2592 kg/m3 (phi = 4.00 %), G 24541 MPa, nu 0.33 (assumed). Main set: density only, G fixed (the study point).
+deck: TBDATA,1,100,1.0E-4,2592,24541,0.33,0
+
+   120: User Link path (ANS_USER_PATH): C:\Users\amitn\jcpinn_usermat_build
+   124: Note - This MAPDL version was linked by Licensee
+   418: Note - This MAPDL version was linked by Licensee
+   580: Note - This MAPDL version was linked by Licensee
+   729: *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
+   738: *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      3
+   754: *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      6
+   778: *** LOAD STEP     1   SUBSTEP     4  NOT COMPLETED.  CUM ITER =     10
+   779: *** BEGIN BISECTION NUMBER   1    NEW TIME INCREMENT=  0.26250E-01
+   795: *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =     13
+   815: *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =     16
+   831: *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     19
+   844: *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =     21
+   866: *** LOAD STEP     1   SUBSTEP     8  COMPLETED.    CUM ITER =     26
+   882: *** LOAD STEP     1   SUBSTEP     9  COMPLETED.    CUM ITER =     29
+   898: *** LOAD STEP     1   SUBSTEP    10  COMPLETED.    CUM ITER =     32
+   911: *** LOAD STEP     1   SUBSTEP    11  COMPLETED.    CUM ITER =     34
+   924: *** LOAD STEP     1   SUBSTEP    12  COMPLETED.    CUM ITER =     36
+   937: *** LOAD STEP     1   SUBSTEP    13  COMPLETED.    CUM ITER =     38
+   950: *** LOAD STEP     1   SUBSTEP    14  COMPLETED.    CUM ITER =     40
+   984: Note - This MAPDL version was linked by Licensee
+  1054: Note - This MAPDL version was linked by Licensee
+  1072: Note - This MAPDL version was linked by Licensee
+  1115: NUMBER OF WARNING MESSAGES ENCOUNTERED=          3
+  1116: NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+  1120: Release: 2024 R1            Build: 24.1       Update: UP20231106   Platform: WINDOWS x64
+  1126: Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+  1184: |        Elapsed Time (sec) =         73.000       Date  =  11/17/2026        |
+
+----- tail -----
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191125
+          BLAS Library supplied by Intel(R) MKL
+
+Number of machines requested            :    1
+Total number of cores available         :   32
+Number of physical cores available      :   24
+Number of processes requested           :    1
+Number of threads per process requested :    4
+Total number of cores requested         :    4 (Shared Memory Parallel)
+
+GPU Acceleration: Not Requested
+
+Job Name: bracket
+Input File: bracket.dat
+Working Directory: C:\Users\amitn\jcpinn_porosity_run\phi4
+
+Total CPU time for main thread                    :       65.9 seconds
+Total CPU time summed for all threads             :      212.2 seconds
+
+Elapsed time spent obtaining a license            :        1.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.1 seconds
+Elapsed time spent solution - preprocessing       :        0.1 seconds
+Elapsed time spent computing solution             :       67.8 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        1.6 seconds
+
+Equation solver used                              :            PCG (symmetric)
+Equation solver computational rate                :       17.8 Gflops
+
+Sum of disk space used on all processes           :      264.3 MB
+
+Sum of memory used on all processes               :     1126.0 MB
+Sum of memory allocated on all processes          :     2930.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        4.0 GB
+Total amount of I/O read from disk                :        4.6 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2024 R1         Build 24.1         UP20231106    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used      43 MB     Maximum Scratch Memory Used   1083 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =        212.188       Time  =  19:41:33          |
+ |        Elapsed Time (sec) =         73.000       Date  =  11/17/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

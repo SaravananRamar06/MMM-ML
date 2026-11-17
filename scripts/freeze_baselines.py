@@ -48,5 +48,5 @@ out = dict(
     ensemble_mlp=dict(description='five-network query MLP ensemble, scikit-learn (24 Oct 2026); CV used different folds',
                       test=dict(mean_rmse=E['test_mean_rmse'], median_rmse=E['test_median_rmse'], worst_rmse=E['test_worst_rmse']),
                       test_case_rmse=E['per_case'], cv=ES['cv_mean_rmse'], loco_mean_rmse=ES['loco_mean_rmse'], loco_by_condition=ES['loco_by_condition']))
-(run / 'baselines.json').write_text(json.dumps(out, indent=1) + '\n')
+(run / 'baselines.json').write_text(json.dumps(out, indent=1) + '\n', newline='\n')  # LF on every OS: reports/** is byte-checked (.gitattributes)
 print('written; single test', round(out['single_mlp']['test']['mean_rmse'], 4), 'ensemble test', round(out['ensemble_mlp']['test']['mean_rmse'], 4), 'curves identical', identical)

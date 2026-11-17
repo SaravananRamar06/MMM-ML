@@ -1,6 +1,8 @@
 """Write report/numbers.tex: LaTeX macros for every number quoted in the report, paper and deck.
 
-All values are read from the saved run in reports/jc_pinn_20261107/, so no result is typed by hand.
+All values are read from saved files, so no result is typed by hand: the locked run in
+reports/jc_pinn_20261107/ (collect), and the post-hoc finite-element work in umat/ and
+bracket/ansys_usermat/ (collect_fe; it does not change the model).
 Run from the repository root:  python scripts/write_latex_numbers.py
 """
 import json
@@ -103,14 +105,131 @@ def collect():
     return n
 
 
+def read_json(rel):
+    return json.loads((ROOT / rel).read_text())
+
+
+def read_csv(rel):
+    import csv
+    with (ROOT / rel).open() as f:
+        return [{k.strip(): float(v) for k, v in r.items()} for r in csv.DictReader(f)]
+
+
+def collect_fe():
+    """Post-hoc finite-element work (the model is unchanged): UMAT/USERMAT checks and the bracket runs.
+
+    Sources: umat/verification.json, umat/ansys_test/, bracket/ansys_usermat/{results,porosity,mesh,mesh_ep}_2026-11-17/.
+    Macro names use letters only (LaTeX). Signed changes keep their sign, e.g. -7.7.
+    """
+    import numpy as np
+    n = {}
+    sci = lambda v: f'{v:.0e}'.replace('e-0', 'e-').replace('e+0', 'e+')
+    pct1, pct2 = (lambda v: f'{v:+.1f}'), (lambda v: f'{v:+.2f}')
+    kN = lambda v: f'{v / 1e3:.1f}'
+
+    # Offline verification of the generated UMAT and USERMAT (same core; worst case over both).
+    ver = read_json('umat/verification.json')
+    sv = list(ver['solvers'].values())
+    runs = [r for s in sv for c in s['uniaxial'] for r in c['runs'].values()]
+    n['VerPassed'] = 'yes' if ver['passed'] and all(s['passed'] for s in sv) else 'no'
+    n['VerFlowPoints'] = f"{sv[0]['flow']['points']:,}".replace(',', '{,}')
+    n['VerStressErr'] = sci(max(s['flow']['max_rel_stress_error'] for s in sv))
+    n['VerSlopeErr'] = sci(max(s['flow']['max_rel_slope_error_vs_fd'] for s in sv))
+    n['VerCurveErr'] = sci(max(r['on_flow_curve_rel_error'] for r in runs))
+    n['VerIncSpread'] = sci(max(c['increment_size_spread_MPa'] for s in sv for c in s['uniaxial']))
+    n['VerTangentErr'] = sci(max(t['rel_error'] for s in sv for t in s['tangent']))
+    n['VerFlagChecks'] = str(len(sv[0]['flags']))
+
+    # MAPDL 2024 R1 single-element test (USERMAT): compared as in umat/ansys_test/compare.py.
+    got = read_csv('umat/ansys_test/results_2026-11-17/jcpinn_single_element.csv')
+    ref = read_csv('umat/ansys_test/expected_single_element.csv')
+    want = np.interp([g['eps11'] for g in got], [r['eps11'] for r in ref], [r['S11_MPa'] for r in ref])
+    n['SePoints'] = str(len(got))
+    n['SeMaxDiff'] = f"{max(abs(g['S11_MPa'] - w) for g, w in zip(got, want)):.1e}".replace('e-0', 'e-')
+    n['SeTol'] = '0.1'  # tolerance fixed in compare.py
+    n['SeSFinal'], n['SeEqpsFinal'], n['SeFlagFinal'] = f"{got[-1]['S11_MPa']:.2f}", f"{got[-1]['EQPS']:.4f}", f"{got[-1]['FLAG']:.0f}"
+
+    # Bracket on the 5 mm Workbench mesh: elastic, Workbench EP (MISO) and the USERMAT at the study point.
+    br = read_json('bracket/ansys_usermat/results_2026-11-17/summary.json')
+    el, ep, um = br['elastic'], br['ep_miso'], br['usermat']
+    n['BrElasticStiff'] = f"{el['initial_stiffness_N_per_mm'] / 1e3:.1f}"
+    n['BrUsermatStiff'] = f"{um['initial_stiffness_N_per_mm'] / 1e3:.1f}"
+    n['BrStiffRatio'] = f"{um['initial_stiffness_N_per_mm'] / el['initial_stiffness_N_per_mm']:.3f}"
+    n['BrElasticFinalkN'], n['BrEpFinalkN'] = kN(el['final_RFX_N']), kN(ep['final_RFX_N'])
+    n['BrUsermatPeakkN'], n['BrUsermatPeakUX'] = kN(um['peak_RFX_N']), f"{-um['peak_at_ux_mm']:.3f}"
+    n['BrUsermatFinalkN'] = kN(um['final_RFX_N'])
+    n['BrEpEqps'], n['BrUsermatEqps'] = f"{ep['final_eppl_eqv_max_elem']:.3f}", f"{um['final_svar1_max_elem']:.2f}"
+    n['BrUsermatFlagged'] = str(um['final_n_elem_flag'])
+    hist = read_csv('bracket/ansys_usermat/results_2026-11-17/usermat_history.csv')
+    n['BrUsermatPeakStress'] = f"{max(h['seqv_max_elem_MPa'] for h in hist):.1f}"
+    n['BrElasticFinalStress'] = f"{el['final_seqv_max_elem_MPa']:.0f}"
+    n['BrEpFinalStress'] = f"{ep['final_seqv_max_elem_MPa']:.0f}"
+
+    # Porosity on the bracket: density only at fixed G, plus the G sensitivity (porosity_2026-11-17).
+    po = read_json('bracket/ansys_usermat/porosity_2026-11-17/porosity_summary.json')
+    n['PorBrPhiZeroPeakkN'] = kN(po['phi0']['peak_RFX_N'])
+    n['PorBrDensMinPeakkN'] = kN(po['phi785']['peak_RFX_N'])
+    n['PorFourPeakChangePct'] = f"{po['phi4']['peak_RFX_change_vs_phi0_pct']:+.2f}"
+    n['PorDensPeakChangePct'] = f"{po['phi785']['peak_RFX_change_vs_phi0_pct']:+.2f}"
+    n['PorDensFinalChangePct'] = f"{po['phi785']['RFX_at_final_change_vs_phi0_pct']:+.2f}"
+    n['PorGLowPeakChangePct'], n['PorGHighPeakChangePct'] = (f"{po[c]['peak_RFX_change_vs_phi0_pct'] - po['phi4']['peak_RFX_change_vs_phi0_pct']:+.2f}" for c in ('G_lo', 'G_hi'))
+    n['PorGLowStepPct'] = f"{100 * (po['G_lo']['G_MPa'] / po['phi4']['G_MPa'] - 1):+.1f}"
+    n['PorGHighStepPct'] = f"{100 * (po['G_hi']['G_MPa'] / po['phi4']['G_MPa'] - 1):+.1f}"
+    n['PorDensStepPct'] = f"{100 * (po['phi785']['density_kg_m3'] / po['phi0']['density_kg_m3'] - 1):+.2f}"
+    # change in peak force per 1 % change of the input: G (G_lo vs phi4) against density (phi785 vs phi0)
+    g_per = abs((po['G_lo']['peak_RFX_N'] / po['phi4']['peak_RFX_N'] - 1) / (po['G_lo']['G_MPa'] / po['phi4']['G_MPa'] - 1))
+    d_per = abs((po['phi785']['peak_RFX_N'] / po['phi0']['peak_RFX_N'] - 1) / (po['phi785']['density_kg_m3'] / po['phi0']['density_kg_m3'] - 1))
+    n['PorBrGOverDens'] = f'{g_per / d_per:.0f}'
+    exp = read_csv_mixed('bracket/ansys_usermat/porosity_2026-11-17/expected_flow_stress.csv')
+    pick = lambda case, e: next(r for r in exp if r['case'] == case and abs(float(r['eqps']) - e) < 1e-12)
+    n['PorSeDensYieldPct'] = f"{float(pick('phi785', 0.0002)['change_vs_phi0_pct']):+.2f}"
+    n['PorSeDensLimitPct'] = f"{float(pick('phi785', 0.0999)['change_vs_phi0_pct']):+.2f}"
+
+    # Mesh study: 5 mm vs uniform 2x2x2 refinement (mesh_2026-11-17, mesh_ep_2026-11-17).
+    ms = read_json('bracket/ansys_usermat/mesh_2026-11-17/mesh_summary.json')
+    me = read_json('bracket/ansys_usermat/mesh_ep_2026-11-17/mesh_ep_summary.json')
+    c, f = ms['5mm'], ms['2p5mm']
+    n['MeshElemCoarse'], n['MeshElemFine'] = (f"{s['elements']:,}".replace(',', '{,}') for s in (c, f))
+    n['MeshNodesFine'] = f"{f['nodes']:,}".replace(',', '{,}')
+    n['MeshStiffChangePct'] = f"{f['pct_vs_5mm']['initial_stiffness_N_per_mm']:+.2f}"
+    n['BrMeshPeakChangePct'] = pct1(f['pct_vs_5mm']['peak_RFX_N'])
+    n['MeshPeakFinekN'], n['MeshPeakFineUX'] = kN(f['peak_RFX_N']), f"{-f['peak_at_ux_mm']:.3f}"
+    um_p = me['usermat']['2p5mm']['pct_vs_5mm']
+    n['MeshForceMidChangePct'] = pct1(um_p['RFX_at_ux_0.455mm_N'])
+    n['MeshForceOneChangePct'] = pct1(um_p['RFX_at_ux_1mm_N'])
+    n['MeshFinalChangePct'] = pct1(f['pct_vs_5mm']['RFX_at_final_N'])
+    n['MeshEqpsCoarse'], n['MeshEqpsFine'] = f"{c['max_elem_eqps_svar1']:.2f}", f"{f['max_elem_eqps_svar1']:.2f}"
+    n['MeshFlagFine'] = f"{f['n_elem_flagged']:,}".replace(',', '{,}')
+    ep_p = me['ep_miso']['2p5mm']['pct_vs_5mm']
+    ep_force = [k for k in ep_p if k.startswith('RFX') or k == 'peak_RFX_N']
+    n['MeshEpMaxChangePct'] = f"{max(abs(ep_p[k]) for k in ep_force):.1f}"
+    n['MeshEpStrainRatio'] = f"{me['ep_miso']['2p5mm']['max_elem_eppl_eqv'] / me['ep_miso']['5mm']['max_elem_eppl_eqv']:.2f}"
+    n['MeshUmStrainRatio'] = f"{me['usermat']['2p5mm']['max_elem_eppl_eqv'] / me['usermat']['5mm']['max_elem_eppl_eqv']:.2f}"
+    share = [100 * (1 - abs(ep_p[k]) / abs(um_p[k])) for k in ('peak_RFX_N', 'RFX_at_ux_0.455mm_N', 'RFX_at_ux_1mm_N')]
+    n['MeshSofteningShareMin'], n['MeshSofteningShareMax'] = f'{min(share):.0f}', f'{max(share):.0f}'
+    n['MeshFineWallMin'] = f"{f['wall_time_s'] / 60:.0f}"
+    return n
+
+
+def read_csv_mixed(rel):
+    import csv
+    with (ROOT / rel).open() as f:
+        return list(csv.DictReader(f))
+
+
 def main():
     n = collect()
+    fe = collect_fe()
+    clash = set(n) & set(fe)
+    assert not clash, f'macro names used twice: {clash}'
+    assert all(k.isalpha() for k in fe), [k for k in fe if not k.isalpha()]
+    n.update(fe)
     lines = ['% Generated by scripts/write_latex_numbers.py from reports/jc_pinn_20261107/. Do not edit by hand.']
     lines += [f'\\newcommand{{\\n{k}}}{{{v}}}' for k, v in sorted(n.items())]
     out = ROOT / 'report/numbers.tex'
     out.parent.mkdir(exist_ok=True)
-    out.write_text('\n'.join(lines) + '\n')
-    (ROOT / 'report/numbers.json').write_text(json.dumps(n, indent=1, sort_keys=True) + '\n')
+    out.write_text('\n'.join(lines) + '\n', newline='\n')  # LF on every OS (committed files are LF)
+    (ROOT / 'report/numbers.json').write_text(json.dumps(n, indent=1, sort_keys=True) + '\n', newline='\n')
     print(f'wrote {len(n)} macros to {out.relative_to(ROOT)}')
 
 

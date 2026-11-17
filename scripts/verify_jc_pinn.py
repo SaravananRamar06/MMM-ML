@@ -93,7 +93,10 @@ for i, d in test.items():
     worst_eq1 = max(worst_eq1, np.max(np.abs(eq1(list(EO['theta'].values()), T, lr, rho, G, d['E11'], c) - d['equation_only'])))
 checks['jc_pinn_predictions_reproduced_max_abs'] = float(worst_pinn)
 checks['equation_only_predictions_reproduced_max_abs'] = float(worst_eq1)
-checks['predictions_reproduced'] = worst_pinn < 1e-9 and worst_eq1 < 1e-9
+# Compare the Python floats: comparing NumPy scalars gives np.bool_, which json cannot write and
+# which the isinstance(v, bool) filter for all_passed below would silently skip.
+checks['predictions_reproduced'] = checks['jc_pinn_predictions_reproduced_max_abs'] < 1e-9 and \
+    checks['equation_only_predictions_reproduced_max_abs'] < 1e-9
 
 # 4. metrics recomputed from the saved CSVs
 ids = split['test']
@@ -150,6 +153,8 @@ checks['protected_artifacts_archived'] = len(archived)
 
 passed = all(v for k, v in checks.items() if isinstance(v, bool))
 checks['all_passed'] = passed
-(run / 'verification.json').write_text(json.dumps(checks, indent=2) + '\n')
+# newline='\n': write LF on every OS. reports/** is checked out byte for byte (.gitattributes -text),
+# so text-mode CRLF on Windows would show every line of the file as changed.
+(run / 'verification.json').write_text(json.dumps(checks, indent=2) + '\n', newline='\n')
 print(json.dumps(checks, indent=2))
 sys.exit(0 if passed else 1)

@@ -77,5 +77,5 @@ result = dict(
     jc_pinn=dict(cv_mean_rmse=sel['cv']['mean_rmse'], group_mean_rmse=sel['group_mean_rmse'], score=sel['score'],
                  test={k: R['test']['jc_pinn'][k] for k in ('mean_rmse', 'median_rmse', 'worst_rmse', 'mean_mae', 'mean_nrmse')}),
     caveat='The JC-PINN figures include selection among 14 settings using these same splits; the control had no selection.')
-(run / 'control_no_equation.json').write_text(J.json_text(result))
+(run / 'control_no_equation.json').write_text(J.json_text(result), newline='\n')  # LF on every OS: reports/** is byte-checked (.gitattributes)
 print(J.json_text({k: v for k, v in result.items() if k != 'purpose'}))

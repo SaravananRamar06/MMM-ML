@@ -1,0 +1,149 @@
+# bracket.out (elastic_5mm), MAPDL 2024 R1 batch - deck headers, key lines, then the last 60 lines
+# full file: 10660 lines
+deck: nblock,3,,38239
+deck: eblock,19,solid,,7304     ! rewritten from COMPACT by make_decks.py
+deck: CMBLOCK,_FIXEDSU,NODE,       31
+deck: CMBLOCK,_CM32UX_XP,NODE,       12
+
+   120: User Link path (ANS_USER_PATH): C:\Users\amitn\jcpinn_usermat_build
+   124: Note - This MAPDL version was linked by Licensee
+   271: 49627  /com,--- Total number of nodes = %_numnode%
+   272: 49628  /com,--- Total number of elements = %_numelem%
+   417: Note - This MAPDL version was linked by Licensee
+   575: Note - This MAPDL version was linked by Licensee
+   696: *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      1
+   700: *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      2
+   704: *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      3
+   708: *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =      4
+   712: *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =      5
+   716: *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =      6
+   720: *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =      7
+   724: *** LOAD STEP     1   SUBSTEP     8  COMPLETED.    CUM ITER =      8
+   728: *** LOAD STEP     1   SUBSTEP     9  COMPLETED.    CUM ITER =      9
+   732: *** LOAD STEP     1   SUBSTEP    10  COMPLETED.    CUM ITER =     10
+   736: *** LOAD STEP     1   SUBSTEP    11  COMPLETED.    CUM ITER =     11
+   768: Note - This MAPDL version was linked by Licensee
+   822: --- Total number of nodes = 34763
+   823: --- Total number of elements = 7304
+   838: Note - This MAPDL version was linked by Licensee
+   938: Note - This MAPDL version was linked by Licensee
+   992: Note - This MAPDL version was linked by Licensee
+  1046: Note - This MAPDL version was linked by Licensee
+  1100: Note - This MAPDL version was linked by Licensee
+  1154: Note - This MAPDL version was linked by Licensee
+  1208: Note - This MAPDL version was linked by Licensee
+  1262: Note - This MAPDL version was linked by Licensee
+  1316: Note - This MAPDL version was linked by Licensee
+  1370: Note - This MAPDL version was linked by Licensee
+  1424: Note - This MAPDL version was linked by Licensee
+  1478: Note - This MAPDL version was linked by Licensee
+  1532: Note - This MAPDL version was linked by Licensee
+  1586: Note - This MAPDL version was linked by Licensee
+  1640: Note - This MAPDL version was linked by Licensee
+  1694: Note - This MAPDL version was linked by Licensee
+  1748: Note - This MAPDL version was linked by Licensee
+  1802: Note - This MAPDL version was linked by Licensee
+  1856: Note - This MAPDL version was linked by Licensee
+  1910: Note - This MAPDL version was linked by Licensee
+  1964: Note - This MAPDL version was linked by Licensee
+  2018: Note - This MAPDL version was linked by Licensee
+  2072: Note - This MAPDL version was linked by Licensee
+  2126: Note - This MAPDL version was linked by Licensee
+  2180: Note - This MAPDL version was linked by Licensee
+  2234: Note - This MAPDL version was linked by Licensee
+  2288: Note - This MAPDL version was linked by Licensee
+  2342: Note - This MAPDL version was linked by Licensee
+  2396: Note - This MAPDL version was linked by Licensee
+  2450: Note - This MAPDL version was linked by Licensee
+  2504: Note - This MAPDL version was linked by Licensee
+  2558: Note - This MAPDL version was linked by Licensee
+  2612: Note - This MAPDL version was linked by Licensee
+  2666: Note - This MAPDL version was linked by Licensee
+  2720: Note - This MAPDL version was linked by Licensee
+  2774: Note - This MAPDL version was linked by Licensee
+  2828: Note - This MAPDL version was linked by Licensee
+  2882: Note - This MAPDL version was linked by Licensee
+  2936: Note - This MAPDL version was linked by Licensee
+  2990: Note - This MAPDL version was linked by Licensee
+  3044: Note - This MAPDL version was linked by Licensee
+  3098: Note - This MAPDL version was linked by Licensee
+  3152: Note - This MAPDL version was linked by Licensee
+  3206: Note - This MAPDL version was linked by Licensee
+  3260: Note - This MAPDL version was linked by Licensee
+  3314: Note - This MAPDL version was linked by Licensee
+  3368: Note - This MAPDL version was linked by Licensee
+  3422: Note - This MAPDL version was linked by Licensee
+  3476: Note - This MAPDL version was linked by Licensee
+  3530: Note - This MAPDL version was linked by Licensee
+  3584: Note - This MAPDL version was linked by Licensee
+  3638: Note - This MAPDL version was linked by Licensee
+  3692: Note - This MAPDL version was linked by Licensee
+  3746: Note - This MAPDL version was linked by Licensee
+  3800: Note - This MAPDL version was linked by Licensee
+  3854: Note - This MAPDL version was linked by Licensee
+  3908: Note - This MAPDL version was linked by Licensee
+  3962: Note - This MAPDL version was linked by Licensee
+  4016: Note - This MAPDL version was linked by Licensee
+  4070: Note - This MAPDL version was linked by Licensee
+
+----- tail -----
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191125
+          BLAS Library supplied by Intel(R) MKL
+
+Number of machines requested            :    1
+Total number of cores available         :   32
+Number of physical cores available      :   24
+Number of processes requested           :    1
+Number of threads per process requested :    4
+Total number of cores requested         :    4 (Shared Memory Parallel)
+
+GPU Acceleration: Not Requested
+
+Job Name: bracket
+Input File: bracket.dat
+Working Directory: C:\Users\amitn\jcpinn_bracket_run\elastic
+
+Total CPU time for main thread                    :        9.2 seconds
+Total CPU time summed for all threads             :       25.4 seconds
+
+Elapsed time spent obtaining a license            :        1.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.1 seconds
+Elapsed time spent solution - preprocessing       :        0.1 seconds
+Elapsed time spent computing solution             :        8.0 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        1.2 seconds
+
+Equation solver used                              :            PCG (symmetric)
+Equation solver computational rate                :       18.0 Gflops
+
+Sum of disk space used on all processes           :       75.4 MB
+
+Sum of memory used on all processes               :      217.0 MB
+Sum of memory allocated on all processes          :     2112.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        0.2 GB
+Total amount of I/O read from disk                :        0.2 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2024 R1         Build 24.1         UP20231106    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used      37 MB     Maximum Scratch Memory Used    180 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =         25.375       Time  =  19:18:19          |
+ |        Elapsed Time (sec) =         12.000       Date  =  11/17/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

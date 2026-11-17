@@ -1,0 +1,115 @@
+# bracket.out (usermat_2p5mm), MAPDL 2024 R1 batch - deck headers, key lines, then the last 60 lines
+# full file: 1715 lines
+deck: nblock,3,,255111
+deck: eblock,19,solid,,58432     ! refine_mesh.py: 2x2x2 refinement of the Workbench mesh
+deck: TBDATA,1,100,1.0E-4,2592,24541,0.33,0
+deck: CMBLOCK,_FIXEDSU,NODE,     2066
+deck: CMBLOCK,_CM32UX_XP,NODE,      800
+
+   120: User Link path (ANS_USER_PATH): C:\Users\amitn\jcpinn_usermat_build
+   124: Note - This MAPDL version was linked by Licensee
+   625: 372593  /com,--- Total number of nodes = %_numnode%
+   626: 372594  /com,--- Total number of elements = %_numelem%
+   771: Note - This MAPDL version was linked by Licensee
+   933: Note - This MAPDL version was linked by Licensee
+  1086: *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
+  1098: *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      4
+  1121: *** LOAD STEP     1   SUBSTEP     3  NOT COMPLETED.  CUM ITER =      9
+  1122: *** BEGIN BISECTION NUMBER   1    NEW TIME INCREMENT=  0.26250E-01
+  1138: *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =     12
+  1158: *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =     15
+  1177: *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =     19
+  1200: *** LOAD STEP     1   SUBSTEP     6  NOT COMPLETED.  CUM ITER =     24
+  1201: *** BEGIN BISECTION NUMBER   1    NEW TIME INCREMENT=  0.20672E-01
+  1220: *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     28
+  1240: *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =     31
+  1259: *** LOAD STEP     1   SUBSTEP     8  COMPLETED.    CUM ITER =     35
+  1279: *** LOAD STEP     1   SUBSTEP     9  NOT COMPLETED.  CUM ITER =     39
+  1280: *** BEGIN BISECTION NUMBER   1    NEW TIME INCREMENT=  0.16279E-01
+  1299: *** LOAD STEP     1   SUBSTEP     9  COMPLETED.    CUM ITER =     43
+  1316: *** LOAD STEP     1   SUBSTEP    10  COMPLETED.    CUM ITER =     45
+  1329: *** LOAD STEP     1   SUBSTEP    11  COMPLETED.    CUM ITER =     47
+  1342: *** LOAD STEP     1   SUBSTEP    12  COMPLETED.    CUM ITER =     49
+  1355: *** LOAD STEP     1   SUBSTEP    13  COMPLETED.    CUM ITER =     51
+  1368: *** LOAD STEP     1   SUBSTEP    14  COMPLETED.    CUM ITER =     53
+  1381: *** LOAD STEP     1   SUBSTEP    15  COMPLETED.    CUM ITER =     55
+  1394: *** LOAD STEP     1   SUBSTEP    16  COMPLETED.    CUM ITER =     57
+  1407: *** LOAD STEP     1   SUBSTEP    17  COMPLETED.    CUM ITER =     59
+  1420: *** LOAD STEP     1   SUBSTEP    18  COMPLETED.    CUM ITER =     61
+  1433: *** LOAD STEP     1   SUBSTEP    19  COMPLETED.    CUM ITER =     63
+  1446: *** LOAD STEP     1   SUBSTEP    20  COMPLETED.    CUM ITER =     65
+  1459: *** LOAD STEP     1   SUBSTEP    21  COMPLETED.    CUM ITER =     67
+  1469: *** LOAD STEP     1   SUBSTEP    22  COMPLETED.    CUM ITER =     68
+  1479: *** LOAD STEP     1   SUBSTEP    23  COMPLETED.    CUM ITER =     69
+  1513: Note - This MAPDL version was linked by Licensee
+  1567: --- Total number of nodes = 255111
+  1568: --- Total number of elements = 58432
+  1583: Note - This MAPDL version was linked by Licensee
+  1601: Note - This MAPDL version was linked by Licensee
+  1644: NUMBER OF WARNING MESSAGES ENCOUNTERED=          3
+  1645: NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+  1649: Release: 2024 R1            Build: 24.1       Update: UP20231106   Platform: WINDOWS x64
+  1655: Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+  1713: |        Elapsed Time (sec) =       1630.000       Date  =  11/17/2026        |
+
+----- tail -----
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191125
+          BLAS Library supplied by Intel(R) MKL
+
+Number of machines requested            :    1
+Total number of cores available         :   32
+Number of physical cores available      :   24
+Number of processes requested           :    1
+Number of threads per process requested :    4
+Total number of cores requested         :    4 (Shared Memory Parallel)
+
+GPU Acceleration: Not Requested
+
+Job Name: bracket
+Input File: bracket.dat
+Working Directory: C:\Users\amitn\jcpinn_mesh_run\usermat_fine
+
+Total CPU time for main thread                    :     1548.6 seconds
+Total CPU time summed for all threads             :     5335.4 seconds
+
+Elapsed time spent obtaining a license            :        1.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.4 seconds
+Elapsed time spent solution - preprocessing       :        0.5 seconds
+Elapsed time spent computing solution             :     1607.5 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :       17.6 seconds
+
+Equation solver used                              :            PCG (symmetric)
+Equation solver computational rate                :       16.2 Gflops
+
+Sum of disk space used on all processes           :     2421.0 MB
+
+Sum of memory used on all processes               :    14401.0 MB
+Sum of memory allocated on all processes          :    17707.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :       52.5 GB
+Total amount of I/O read from disk                :       60.2 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2024 R1         Build 24.1         UP20231106    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used     330 MB     Maximum Scratch Memory Used  14071 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =       5335.391       Time  =  20:34:59          |
+ |        Elapsed Time (sec) =       1630.000       Date  =  11/17/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

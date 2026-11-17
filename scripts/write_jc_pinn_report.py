@@ -163,10 +163,10 @@ L += [f"NumPy equation versus torch: {R['checks']['numpy_vs_torch_max_error']:.1
       '```bash',
       'python scripts/build_raw_from_committed_curves.py            # only if the real raw folder is absent',
       'python src/jc_pinn.py --raw TEAM_8_extracted_results_set_1 --output reports/NEW --mode full --workers 4',
-      f'python src/jc_pinn.py --raw TEAM_8_extracted_results_set_1 --output reports/NEW --mode fast --selected-from {run.relative_to(root)}/results.json',
-      f'python scripts/verify_jc_pinn.py {run.relative_to(root)}',
+      f'python src/jc_pinn.py --raw TEAM_8_extracted_results_set_1 --output reports/NEW --mode fast --selected-from {run.relative_to(root).as_posix()}/results.json',
+      f'python scripts/verify_jc_pinn.py {run.relative_to(root).as_posix()}',
       '```', '',
       'Colab/Kaggle: `notebooks/jc_pinn_colab.ipynb` (PREDICT needs no data; FAST and FULL read the professor folder).',
       f"Run time {R['elapsed_seconds'] / 60:.1f} min on 4 CPU workers; " + ', '.join(f'{k} {v}' for k, v in R['versions'].items()) + '.', '']
-(run / 'README.md').write_text('\n'.join(L))
+(run / 'README.md').write_text('\n'.join(L), encoding='utf-8', newline='\n')  # UTF-8 and LF on every OS: reports/** is byte-checked
 print(run / 'README.md')

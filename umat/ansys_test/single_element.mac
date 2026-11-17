@@ -1,0 +1,65 @@
+! ======================================================================
+! JC-PINN USERMAT - single-element uniaxial test (Mechanical APDL)
+! One SOLID185 unit cube, free lateral faces, pulled to eps11 = 0.12
+! at the 4 % porosity study point (100 degC, 1e-4 /s, rho 2592,
+! G 24541 MPa, nu 0.33 assumed). Writes jcpinn_single_element.csv
+! (eps11, S11, EQPS, SIGY, FLAG) for comparison with
+! expected_single_element.csv. Requires the USERMAT library built
+! from umat/jc_pinn_usermat3d.F and ANS_USER_PATH set (umat/README.md).
+! Run in MAPDL 2024 R1 on 17 Nov 2026: PASS (results_2026-11-17/).
+! ======================================================================
+FINISH
+/CLEAR,NOSTART
+/PREP7
+ET,1,SOLID185
+TB,USER,1,1,7
+TBTEMP,0
+TBDATA,1,100,1.0E-4,2592,24541,0.33,0
+TBDATA,7,0
+TB,STATE,1,,4
+MP,EX,1,65279.06          ! E = 2G(1+nu); the solver uses the USERMAT
+MP,NUXY,1,0.33
+BLOCK,0,1,0,1,0,1
+ESIZE,1
+VMESH,ALL
+NSEL,S,LOC,X,0
+D,ALL,UX,0
+NSEL,S,LOC,Y,0
+D,ALL,UY,0
+NSEL,S,LOC,Z,0
+D,ALL,UZ,0
+NSEL,S,LOC,X,1
+D,ALL,UX,0.12
+*GET,NTIP,NODE,0,NUM,MAX
+ALLSEL
+FINISH
+/SOLU
+ANTYPE,STATIC
+NLGEOM,OFF
+NSUBST,240,2000,240
+OUTRES,ALL,ALL
+OUTRES,SVAR,ALL           ! OUTRES,ALL does not write state variables
+SOLVE
+FINISH
+/POST26
+NUMVAR,10
+NSOL,2,NTIP,U,X,UX
+ESOL,3,1,NTIP,S,X,S11
+ESOL,4,1,NTIP,SVAR,1,EQPS
+ESOL,5,1,NTIP,SVAR,2,SIGY
+ESOL,6,1,NTIP,SVAR,3,FLAG
+STORE,MERGE               ! store now, so *GET NSETS sees the data
+*GET,NROW,VARI,2,NSETS
+*DIM,RES,ARRAY,NROW,5
+VGET,RES(1,1),2
+VGET,RES(1,2),3
+VGET,RES(1,3),4
+VGET,RES(1,4),5
+VGET,RES(1,5),6
+*CFOPEN,jcpinn_single_element,csv
+*VWRITE
+('eps11,S11_MPa,EQPS,SIGY_MPa,FLAG')
+*VWRITE,RES(1,1),RES(1,2),RES(1,3),RES(1,4),RES(1,5)
+(E16.8,',',E16.8,',',E16.8,',',E16.8,',',F4.0)
+*CFCLOS
+FINISH

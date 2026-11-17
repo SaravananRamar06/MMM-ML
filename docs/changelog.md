@@ -1,5 +1,71 @@
 # Changelog
 
+## 17 November 2026: report, paper and slides brought up to date
+- **`write_latex_numbers.py`:** now also reads `umat/verification.json`, the MAPDL single-element CSVs and the bracket summaries (results, porosity, mesh, mesh_ep). It writes 60 new macros (164 in total). All 104 existing macros keep exactly the same values. `numbers.tex` and `numbers.json` are written with LF.
+- **`make_figures.py`:** copies the four committed bracket plots into `figures/` (`fig_bracket*`, `fig_mesh*`) without redrawing them. The existing figures were left as committed, because the data are unchanged and re-rendering with this machine's Matplotlib only changed their bytes.
+- **Report (19 pages):**
+  - new sections "From model to finite-element material" (UMAT/USERMAT, offline verification, MAPDL single element) and "Bracket results" (three materials, density-only porosity, mesh study);
+  - updated abstract, limitations and conclusion;
+  - wording for the units confirmed by the user, density as porosity, and no data above 200 °C (D1–D3).
+- **Paper (5 pages):** a new section and figure for the finite-element material and bracket, plus an updated abstract, limits and conclusion. Other text was condensed to stay within 5 pages, and no limit was dropped.
+- **Slides:**
+  - `JC-PINN.pptx`: 17 → 20 slides, built with `build_deck.py` from `numbers.json`;
+  - the corrected final deck: 20 → 23 slides, built with `build_corrected.js`. Its new slides read `numbers.json`, and its deployment slide now shows the USERMAT coupling as existing but unvalidated;
+  - both decks have the three new topics with speaker notes, and "units inferred" is gone. Both PDFs were exported with LibreOffice.
+- Q9's "what would close it" no longer lists the hardening-material run, which has been done.
+
+## 17 November 2026: mesh check with the hardening EP material (Q9)
+- `make_decks.py --source … --kinds ep_miso` builds an EP deck from a refined SYS deck. The defaults are unchanged.
+- The refined EP mesh is identical to the refined elastic mesh. New `plot_mesh_ep.py`.
+- **5 mm → 2.5 mm with the Workbench EP material:** force −0.07 % to −0.28 %, peak plastic strain ×1.64.
+- **The USERMAT on the same meshes:** force −7.7 % to −12.1 %, peak plastic strain ×2.77.
+- The force mesh dependence comes from the JC-PINN softening. The load-patch concentration affects the local peak strain for both materials.
+- Evidence: `bracket/ansys_usermat/mesh_ep_2026-11-17/`. Q9 stays open.
+
+## 17 November 2026: bracket mesh study, the post-peak response is mesh dependent (Q9)
+- New tools:
+  - `refine_mesh.py` refines the Workbench mesh uniformly (2 × 2 × 2: hexes in parametric space, prisms as 15-node wedges). This replaced a Workbench remesh, because Workbench 2026 R1 is not on this machine.
+  - `make_decks.py --source PATH --label NAME` builds elastic and USERMAT decks from any `ds.dat`. Its default and `--porosity` outputs are unchanged.
+  - `plot_mesh.py` compares the meshes.
+- **5 mm → 2.5 mm** (7,304 → 58,432 elements):
+  - elastic stiffness −0.07 %;
+  - peak reaction −7.7 %;
+  - reaction after the peak up to −14.9 %;
+  - max EQPS 0.36 → 0.99.
+
+  The response after yield is mesh dependent. A regularised softening law would be needed. Q9 restated. Evidence: `bracket/ansys_usermat/mesh_2026-11-17/`.
+
+## 17 November 2026: bracket porosity comparison (density only, one mesh)
+- `make_decks.py --porosity` writes five USERMAT decks that differ only in TBDATA:
+  - φ = 0, 4 and 7.85 % at G = 24541 MPa;
+  - G = 23313.95 and 25300 MPa at φ = 4 %.
+
+  Without the flag it writes byte-identical decks to before. New `expected_flow_stress.py` gives the single-element expectation and `plot_porosity.py` the plot and summary.
+- **Bracket:** φ 0 → 7.85 % at fixed G lowers the peak reaction by 0.16 % (190.53 → 190.23 kN), the same as the single-element change near yield (−0.15 %). At −2 mm the drop is 0.34 %, which is post-peak and mesh dependent. G −5.0 % and +3.1 % move the peak by −1.76 % and +0.98 %.
+- **Runs:** all converge with 0 errors, and phi4 repeats the earlier study-point run exactly.
+- This is the density-only part of the porosity effect; G(φ) is still unknown (Q4). Evidence: `bracket/ansys_usermat/porosity_2026-11-17/`.
+
+## 17 November 2026: bracket solved with the JC-PINN USERMAT (one mesh)
+- New `bracket/ansys_usermat/`:
+  - `make_decks.py` writes MAPDL decks from the committed Workbench `ds.dat` files without changing them. The decks are elastic, EP (MISO) and USERMAT at the study point. It rewrites the 2026 R1 `eblock,COMPACT` block so that MAPDL 2024 R1 can read it.
+  - `post_bracket.mac` writes the per-substep histories, and `plot_results.py` plots them.
+- On the Workbench mesh (7,304 SOLID186 elements) and its −2 mm imposed UX, the USERMAT run converges to the end with one bisection. The reaction peaks at 190.4 kN at −0.455 mm and is 136.7 kN at −2 mm. Peak element stress is 136 MPa, and peak EQPS is 0.36. 190 elements end beyond EQPS 0.0999.
+- The elastic and EP decks repeat the original Workbench solves substep for substep.
+- Evidence: `bracket/ansys_usermat/results_2026-11-17/`. Q9 is narrowed; mesh dependence is still open.
+
+## 17 November 2026: verifier fix for NumPy 2
+- `scripts/verify_jc_pinn.py` crashed under NumPy 2.5 because `predictions_reproduced` was a NumPy `bool_`, which `json` cannot write. `all_passed` also skipped it, because its filter only accepts Python `bool`. The check now compares the Python floats it already stores. On the locked run every check passes, with predictions reproduced to 2.6e-13. The locked run's files are unchanged.
+
+## 17 November 2026: ANSYS single-element test passes
+- The USERMAT was built and run in MAPDL 2024 R1 on the user's machine. ifx 2026.2 replaced the ifort 2023 that the UPF guide asks for, because that version is no longer downloadable. The single-element S11 matches `expected_single_element.csv` to 1.2×10⁻⁵ MPa at all 240 substeps. Final values: S11 = 75.41 MPa, EQPS = 0.1188, flag 1. The evidence is in `umat/ansys_test/results_2026-11-17/`. Q10 is closed.
+- `single_element.mac` fixes: `OUTRES,SVAR,ALL`, so the state variables are saved, and `STORE,MERGE` before `*GET ... NSETS`, so the CSV gets all rows.
+- `umat/README.md` now describes the v241 layout, where `usermat3d` lives inside `usermat.F`.
+- The Fortran, the model, the expected curve and the tolerance are unchanged.
+
+## 17 November 2026: user answers recorded
+- The user confirmed the units, confirmed density as porosity, and declined data above 200 °C (decisions D1–D3). Q1, Q3 and Q6 are closed.
+- The report, paper and slides still say "units inferred". Updating them needs a rebuild of the numbers and PDFs.
+
 ## 17 November 2026: ANSYS USERMAT
 - New `umat/jc_pinn_usermat3d.F`, an ANSYS `usermat3d` wrapper around the same core as the UMAT. It returns plastic strain, `epseq`, energies and the consistent tangent, and sets `keycut` for bisection.
 - The generator now builds both files from a shared core template plus one wrapper per solver. The Abaqus file was regenerated; its numbers are unchanged.

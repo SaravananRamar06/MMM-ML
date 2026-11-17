@@ -1,0 +1,82 @@
+! ======================================================================
+! Post-processing appended to each bracket deck by make_decks.py.
+! For every saved substep it writes bracket_history.csv with:
+!   the applied UX on the loaded face (-2 mm x time),
+!   the reaction force (RF) summed over the fixed-support nodes,
+!   the largest nodal and element-centroid von Mises stress,
+!   the largest element-centroid equivalent plastic strain (EPPL,EQV;
+!   the NL items are not on the results file with Workbench's OUTRES).
+! With _USERMAT = 1 it also writes the largest SVAR1 (EQPS) and the
+! number of elements whose SVAR3 (FLAG) is not zero.
+! The fixed support is a sharp corner, so the nodal peaks there are
+! singular. Use the centroid values for comparisons.
+! ======================================================================
+/POST1
+/NOPR
+*GET,_NS,ACTIVE,0,SET,NSET
+*CFOPEN,bracket_history,csv
+*VWRITE
+('set,time,ux_applied_mm,RFX_N,RFY_N,RFZ_N,seqv_max_node_MPa,seqv_max_elem_MPa,eppl_eqv_max_elem,svar1_max_elem,n_elem_flag')
+*DO,_I,1,_NS
+  SET,,,,,,,_I
+  *GET,_T,ACTIVE,0,SET,TIME
+  ! reaction forces (saved by outres,rsol), summed over the fixed-support nodes
+  CMSEL,S,_FIXEDSU
+  *GET,_NN,NODE,0,COUNT
+  _RX=0
+  _RY=0
+  _RZ=0
+  _ND=0
+  *DO,_J,1,_NN
+    _ND=NDNEXT(_ND)
+    *GET,_F,NODE,_ND,RF,FX
+    _RX=_RX+_F
+    *GET,_F,NODE,_ND,RF,FY
+    _RY=_RY+_F
+    *GET,_F,NODE,_ND,RF,FZ
+    _RZ=_RZ+_F
+  *ENDDO
+  ALLSEL,ALL
+  NSORT,S,EQV,0,1
+  *GET,_SN,SORT,0,MAX
+  NUSORT
+  ETABLE,_SE,S,EQV
+  ESORT,ETAB,_SE,0,1
+  *GET,_SEM,SORT,0,MAX
+  EUSORT
+  _EPM=0
+  ETABLE,_EP,EPPL,EQV
+  ESORT,ETAB,_EP,0,1
+  *GET,_EPM,SORT,0,MAX
+  EUSORT
+  _SV1=0
+  _NFL=0
+  *IF,_USERMAT,EQ,1,THEN
+    ETABLE,_Q1,SVAR,1
+    ESORT,ETAB,_Q1,0,1
+    *GET,_SV1,SORT,0,MAX
+    EUSORT
+    ETABLE,_Q3,SVAR,3
+    ESEL,S,ETAB,_Q3,0.001,1.0E9
+    *GET,_NFL,ELEM,0,COUNT
+    ALLSEL,ALL
+  *ENDIF
+  _UX=-2*_T
+  *VWRITE,_I,_T,_UX,_RX,_RY,_RZ,_SN,_SEM,_EPM,_SV1,_NFL
+(F5.0,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',F8.0)
+*ENDDO
+*CFCLOS
+! Final substep: the 10 elements with the largest accumulated plastic strain
+SET,LAST
+ETABLE,_EP,EPPL,EQV
+ETABLE,_SE,S,EQV
+*IF,_USERMAT,EQ,1,THEN
+  ETABLE,_Q1,SVAR,1
+  ETABLE,_Q2,SVAR,2
+  ETABLE,_Q3,SVAR,3
+*ENDIF
+/GOPR
+ESORT,ETAB,_EP,0,1,10
+PRETAB
+EUSORT
+FINISH

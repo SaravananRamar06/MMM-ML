@@ -1,0 +1,90 @@
+{
+  "ep_miso": {
+    "5mm": {
+      "element_size_mm": 5.0,
+      "initial_stiffness_N_per_mm": 650433.3999999999,
+      "peak_RFX_N": 513469.3,
+      "peak_at_ux_mm": -2.0,
+      "RFX_at_final_N": 513469.3,
+      "RFX_at_ux_0.455mm_N": 285856.1,
+      "RFX_at_ux_1mm_N": 439707.425,
+      "max_elem_eppl_eqv": 0.03706908,
+      "substeps": 12,
+      "bisections": 0,
+      "wall_time_s": 26.0,
+      "pct_vs_5mm": {
+        "initial_stiffness_N_per_mm": 0.0,
+        "peak_RFX_N": 0.0,
+        "RFX_at_final_N": 0.0,
+        "max_elem_eppl_eqv": 0.0,
+        "RFX_at_ux_0.455mm_N": 0.0,
+        "RFX_at_ux_1mm_N": 0.0
+      }
+    },
+    "2p5mm": {
+      "element_size_mm": 2.5,
+      "initial_stiffness_N_per_mm": 649958.5,
+      "peak_RFX_N": 512616.1,
+      "peak_at_ux_mm": -2.0,
+      "RFX_at_final_N": 512616.1,
+      "RFX_at_ux_0.455mm_N": 285044.4125,
+      "RFX_at_ux_1mm_N": 439022.65,
+      "max_elem_eppl_eqv": 0.06087466,
+      "substeps": 12,
+      "bisections": 0,
+      "wall_time_s": 229.0,
+      "pct_vs_5mm": {
+        "initial_stiffness_N_per_mm": -0.073,
+        "peak_RFX_N": -0.166,
+        "RFX_at_final_N": -0.166,
+        "max_elem_eppl_eqv": 64.22,
+        "RFX_at_ux_0.455mm_N": -0.284,
+        "RFX_at_ux_1mm_N": -0.156
+      }
+    }
+  },
+  "usermat": {
+    "5mm": {
+      "element_size_mm": 5.0,
+      "initial_stiffness_N_per_mm": 554304.0,
+      "peak_RFX_N": 190373.5,
+      "peak_at_ux_mm": -0.455,
+      "RFX_at_final_N": 136679.2,
+      "RFX_at_ux_0.455mm_N": 190373.5,
+      "RFX_at_ux_1mm_N": 160556.61728395062,
+      "max_elem_eppl_eqv": 0.3584594,
+      "substeps": 14,
+      "bisections": 1,
+      "wall_time_s": 75.0,
+      "pct_vs_5mm": {
+        "initial_stiffness_N_per_mm": 0.0,
+        "peak_RFX_N": 0.0,
+        "RFX_at_final_N": 0.0,
+        "max_elem_eppl_eqv": 0.0,
+        "RFX_at_ux_0.455mm_N": 0.0,
+        "RFX_at_ux_1mm_N": 0.0
+      }
+    },
+    "2p5mm": {
+      "element_size_mm": 2.5,
+      "initial_stiffness_N_per_mm": 553899.2,
+      "peak_RFX_N": 175647.8,
+      "peak_at_ux_mm": -0.38375,
+      "RFX_at_final_N": 137592.7,
+      "RFX_at_ux_0.455mm_N": 169874.12336486575,
+      "RFX_at_ux_1mm_N": 141189.9838266728,
+      "max_elem_eppl_eqv": 0.994257,
+      "substeps": 23,
+      "bisections": 3,
+      "wall_time_s": 1630.0,
+      "pct_vs_5mm": {
+        "initial_stiffness_N_per_mm": -0.073,
+        "peak_RFX_N": -7.735,
+        "RFX_at_final_N": 0.668,
+        "max_elem_eppl_eqv": 177.369,
+        "RFX_at_ux_0.455mm_N": -10.768,
+        "RFX_at_ux_1mm_N": -12.062
+      }
+    }
+  }
+}

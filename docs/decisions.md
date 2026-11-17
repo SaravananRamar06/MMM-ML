@@ -53,4 +53,12 @@ This file records the decisions behind the final JC-PINN model and this reposito
 | U3 | Conditions outside the data range are flagged in STATEV 3, not clamped, matching the Python model. | Claude | Extrapolation is visible in the results. |
 | U4 | Add an ANSYS USERMAT (`usermat3d`) sharing one generated core with the UMAT. Only `usermat3d` is provided: 3D, plane strain and axisymmetric. | User request; Claude | `umat/jc_pinn_usermat3d.F`; same offline checks pass. |
 
+## User answers (17 November 2026)
+
+| ID | Decision | Made by | Effect |
+|---|---|---|---|
+| D1 | The data units are °C, s⁻¹, MPa and kg/m³. | User | Closes Q1. Stresses are MPa as confirmed by the user, though the generator's documentation was never seen. |
+| D2 | Density stands for porosity, φ = 1 − ρ/2700. | User | Closes Q3 and confirms decision M5. |
+| D3 | No simulations above 200 °C will be requested. | User | Closes Q6. 200–300 °C stays unvalidated extrapolation, flagged by the code (UMAT/USERMAT flag 4). |
+
 Append new decisions with the date, who made them, and the evidence.
