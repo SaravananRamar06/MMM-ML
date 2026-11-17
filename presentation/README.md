@@ -1,10 +1,13 @@
 # Slide deck
 
-The project has one slide deck: **`Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx`** and its PDF. It is 16:9, with speaker notes on every slide, and is built by `build/build_corrected.js`.
+The project's full slide deck is **`Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx`** and its PDF (24 slides). The shorter submission deck below is cut from it. It is 16:9, with speaker notes on every slide, and is built by `build/build_corrected.js`.
 
-The numbers on the finite-element slides (16–18) are read from `report/numbers.json`. Their figures come from `figures/`.
+The numbers on the finite-element slides (16–19) are read from `report/numbers.json`. Their figures come from `figures/`.
 
 ## Slides
+
+**Submission deck (18 November 2026).** `scripts/make_submission_deck.py` writes `submission/Team8_Presentation_source.pptx`: cover, 15 content slides (2, 3, 5, 7, 9, 10, 12, 14, 15, 17–20, 22, 23 of the corrected deck, renumbered 1–15) and the thank-you slide. That file was imported into Canva and exported as `Team8_Presentation.pptx` / `.pdf`; the exports are part of the submission folders built by `scripts/build_submission.py` and are not committed.
+
 
 | Section | Slides |
 |---|---|
@@ -13,7 +16,7 @@ The numbers on the finite-element slides (16–18) are read from `report/numbers
 | EDA | The dataset, curves and factor effects, data preparation |
 | Model | Choosing the network; JC-PINN against a plain MLP (the one baseline); data modelling and training |
 | Evaluate | Test results; results by condition and limits |
-| Deploy | 16: the locked model as an ANSYS user material (USERMAT) and its checks · 17: the bracket with the JC-PINN, and the density-only porosity comparison · 18: the mesh study (the response after yield is mesh dependent) · 19: what exists and what is planned |
+| Deploy | 16: the locked model as an ANSYS user material (USERMAT) and its checks · 17: the bracket with the JC-PINN, and the density-only porosity comparison · 18: porosity with G coupled by the assumed G = 25300 (1 − φ) (decision D5) · 19: the mesh study (the response after yield is mesh dependent) · 20: what exists and what is planned |
 | Limits | Limits and open questions, conclusion, thank you |
 
 ## Wording and limits on the slides

@@ -1,5 +1,4 @@
-// Builds "Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx" (23 slides), applying the
-// Builds "Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx", the project's only slide deck.
+// Builds "Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx", the project's full slide deck.
 // Started from the 9 Nov 2026 presentation audit; numbers for the FE slides come from report/numbers.json.
 // Run: NODE_PATH=<dir containing pptxgenjs> node build_corrected.js <dir containing scripts/apply_theme.js>
 const path = require("path");
@@ -321,7 +320,7 @@ pres.addSection({ title: "EDA" });
   const vars = [
     ["Temperature T", "30 · 100 · 200 °C"],
     ["Strain rate ε̇", "10⁻⁵ · 10⁻⁴ · 10⁻³ /s"],
-    ["Density ρ", "2488 · 2619 · 2700 kg/m³ → porosity via φ = 1 − ρ/2700 (confirmed by the user): 7.85 · 3 · 0 %. Physical interpretation pending the professor's confirmation"],
+    ["Density ρ", "2488 · 2619 · 2700 kg/m³ → porosity via φ = 1 − ρ/2700 (confirmed by the user): 7.85 · 3 · 0 %."],
     ["Shear modulus G", "23 314 · 24 541 · 25 300 MPa"],
     ["Output", "von Mises stress Svm along axial strain E11 = 0–10 %"],
   ];
@@ -332,7 +331,7 @@ pres.addSection({ title: "EDA" });
     text(s, v, { x: 7.6, y: y + 0.31, w: 4.9, h: i === 2 ? 0.68 : 0.34, fontSize: 13.5, color: MUTED });
   });
   text(s, "Units (°C, /s, kg/m³, MPa) confirmed by the user; no documentation of the generator was seen.", { x: 7.6, y: 6.2, w: 4.9, h: 0.48, fontSize: 11.5, color: STEEL, bold: true });
-  s.addNotes("The professor gave us a design matrix of 108 simulations; 73 have results, about 2.2 million rows of history. Every cell of temperature and strain rate has 9 combinations of density and shear modulus, except 200 degrees at the slowest rate, which has only one case, and 300 degrees, which has none. Porosity is represented through density with the user-confirmed mapping, phi equals one minus rho over 2700: that gives 0, 3 and 7.85 percent for the three density levels, and our 4 percent study point corresponds to 2592. Whether density really encodes porosity in this dataset still needs the professor's confirmation.");
+  s.addNotes("The professor gave us a design matrix of 108 simulations; 73 have results, about 2.2 million rows of history. Every cell of temperature and strain rate has 9 combinations of density and shear modulus, except 200 degrees at the slowest rate, which has only one case, and 300 degrees, which has none. Porosity is represented through density with the user-confirmed mapping, phi equals one minus rho over 2700: that gives 0, 3 and 7.85 percent for the three density levels, and our 4 percent study point corresponds to 2592. The user confirmed that density stands for porosity, although we never saw the generator's documentation.");
 }
 
 // ================================================================== 10 EDA: curves and factor effects
@@ -567,12 +566,30 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
     B("Same Workbench bracket, ", { color: NAVY }), R(`${N.MeshElemCoarse} SOLID186 elements, fixed support, imposed 2 mm; solved in MAPDL with three materials.`, { breakLine: true }),
     B("JC-PINN at φ = 4 %: ", { color: ORANGE }), R(`peak ${N.BrUsermatPeakkN} kN at −${N.BrUsermatPeakUX} mm, then softens to ${N.BrUsermatFinalkN} kN. The Workbench EP card is a different material condition (yield 251 MPa, hardening): a reference, not a validation.`, { breakLine: true }),
     B("Density only, G fixed: ", { color: NAVY }), R(`φ 0 → 7.85 % changes the peak by ${sgn(N.PorDensPeakChangePct)} % (single element ${sgn(N.PorSeDensYieldPct)} %).`, { breakLine: true }),
-    B("G matters more: ", { color: ORANGE }), R(`about ${N.PorBrGOverDens}× per percent change. G(φ) is unknown, so this is only the density part of the porosity effect.`),
+    B("G matters more: ", { color: ORANGE }), R(`about ${N.PorBrGOverDens}× per percent change; the next slide couples G to porosity.`),
   ], { x: 0.85, y: 4.35, w: 11.6, h: 2.4, fontSize: 14.5, paraSpaceAfter: 6 });
-  s.addNotes(`This is the project's Workbench bracket, unchanged: ${N.MeshElemCoarse} quadratic elements, a fixed support and an imposed displacement of 2 millimetres, solved in MAPDL with three materials. The JC-PINN at the 4 percent study point peaks at ${N.BrUsermatPeakkN} kilonewtons and then softens to ${N.BrUsermatFinalkN}. The Workbench elastic-plastic card is a different material condition, so it is a reference, not a validation. On the right, with G fixed, going from 0 to 7.85 percent porosity changes the peak by only ${N.PorDensPeakChangePct} percent, which matches the single-element ${N.PorSeDensYieldPct} percent. Per percent change, G acts about ${N.PorBrGOverDens} times more strongly, and G as a function of porosity is unknown, so this is only the density part of the porosity effect.`);
+  s.addNotes(`This is the project's Workbench bracket, unchanged: ${N.MeshElemCoarse} quadratic elements, a fixed support and an imposed displacement of 2 millimetres, solved in MAPDL with three materials. The JC-PINN at the 4 percent study point peaks at ${N.BrUsermatPeakkN} kilonewtons and then softens to ${N.BrUsermatFinalkN}. The Workbench elastic-plastic card is a different material condition, so it is a reference, not a validation. On the right, with G fixed, going from 0 to 7.85 percent porosity changes the peak by only ${N.PorDensPeakChangePct} percent, which matches the single-element ${N.PorSeDensYieldPct} percent. Per percent change, G acts about ${N.PorBrGOverDens} times more strongly, and the next slide couples G to porosity.`);
 }
 {
-  const s = content("Deploy", 5, "18 · Mesh study", "The softening makes the bracket result mesh dependent");
+  const s = content("Deploy", 5, "18 · Porosity with G coupled", "Porosity with G coupled: G = 25300 (1 − φ)");
+  s.addImage({ path: FIG("fig_bracket_porosity_gphi.png"), x: 0.6, y: 1.7, w: 7.6, h: 7.6 / 2.6136, altText: "Bracket reaction with density and G coupled, and change from phi 0 to 7.85 %", objectName: "fig_gphi" });
+  const stats = [[`${sgn(N.GphiPeakChangePct)} %`, "peak force, φ 0 → 7.85 % (G coupled)"], [`${sgn(N.GphiFinalChangePct)} %`, "force at −2 mm (after the peak)"], [`${sgn(N.GphiStiffChangePct)} %`, "elastic stiffness (= G ratio)"], [`${sgn(N.PorDensPeakChangePct)} %`, "peak force, density only (G fixed)"]];
+  stats.forEach(([v, l], i) => {
+    const x = 8.5 + (i % 2) * 2.15, y = 1.75 + Math.floor(i / 2) * 1.55;
+    card(s, x, y, 2.0, 1.38, i === 0 ? NAVY : ICE);
+    text(s, v, { x: x + 0.15, y: y + 0.15, w: 1.8, h: 0.6, fontSize: 22, bold: true, color: i === 0 ? WHITE : (i === 3 ? MUTED : NAVY) });
+    text(s, l, { x: x + 0.15, y: y + 0.75, w: 1.75, h: 0.6, fontSize: 12, color: i === 0 ? LINE : MUTED });
+  });
+  card(s, 0.6, 4.95, 12.1, 1.9, ICE);
+  text(s, [
+    B("Assumed G(φ) = 25300 (1 − φ): ", { color: NAVY }), R("the data's three G levels follow it exactly; it is the upper bound for any pore shape.", { breakLine: true }),
+    B("So this is a lower estimate. ", { color: ORANGE }), R("Real pores lower G faster; a measured G(φ) for LPBF AlSi10Mg would replace it.", { breakLine: true }),
+    R(`φ = 0 / 4 / 7.85 %: ρ 2700 / 2592 / 2488.05, G 25300 / ${N.GphiGFour} / 23313.95 MPa · 5 mm mesh · values after the peak are mesh dependent.`, { color: MUTED }),
+  ], { x: 0.85, y: 5.05, w: 11.6, h: 1.7, fontSize: 14.5, paraSpaceAfter: 5, valign: "middle" });
+  s.addNotes(`The data's three shear-modulus levels are exactly 25300 times one minus porosity at its three densities, so we adopted that linear rule as an assumption. It is the upper bound on G for any pore shape, so what follows is a lower estimate of the porosity effect. Coupling density and G, going from 0 to 7.85 percent porosity lowers the bracket's elastic stiffness by ${N.GphiStiffChangePct} percent, its peak force by ${N.GphiPeakChangePct} percent and its force at 2 millimetres by ${N.GphiFinalChangePct} percent. Density alone gave only ${N.PorDensPeakChangePct} percent. So porosity acts on the bracket almost entirely through G. Real pores lower G faster than this bound, and a measured relation would replace it.`);
+}
+{
+  const s = content("Deploy", 5, "19 · Mesh study", "The softening makes the bracket result mesh dependent");
   s.addImage({ path: FIG("fig_mesh_ep.png"), x: 0.6, y: 1.7, w: 7.6, h: 7.6 / 2.6136, altText: "Bracket reaction and peak plastic strain on two meshes, JC-PINN and Workbench EP", objectName: "fig_mesh_ep" });
   const stats = [[`${sgn(N.BrMeshPeakChangePct)} %`, "JC-PINN peak force, 5 → 2.5 mm"], [`${sgn(N.MeshForceOneChangePct)} %`, "JC-PINN force at 1 mm"], [`≤ ${N.MeshEpMaxChangePct} %`, "hardening EP card, same meshes"], [`${N.MeshEqpsCoarse} → ${N.MeshEqpsFine}`, "JC-PINN peak plastic strain"]];
   stats.forEach(([v, l], i) => {
@@ -592,7 +609,7 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
 
 // ================================================================== 20 Deployment (planned)
 {
-  const s = content("Deploy", 5, "19 · Deployment · partly built, mostly planned", "Planned: a bracket-check concept for aerospace companies");
+  const s = content("Deploy", 5, "20 · Deployment · partly built, mostly planned", "Planned: a bracket-check concept for aerospace companies");
   const flow = [
     ["Company inputs", "CT-scan porosity and largest pore (needs a pore-to-crack convention) · temperature · load rate", NAVY, "PLANNED"],
     ["JC-PINN inference", "Predicts Svm(E11) for given conditions, with range warnings", CYAN, "EXISTS"],
@@ -632,12 +649,12 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
 // ================================================================== 18 Limits and open questions
 pres.addSection({ title: "Limits" });
 {
-  const s = content("Limits", 4, "20 · Limits and open questions", "What we have not shown");
+  const s = content("Limits", 4, "21 · Limits and open questions", "What we have not shown");
   const blocks = [
     ["Evidence", "The test set is not blind. Case 60 (200 °C, 10⁻⁵ /s) is a single irregular case. The team's Ansys comparison set-up is not archived. No experimental validation. Bracket results after yield depend on the mesh (softening): not a converged strength.", ORANGE],
     ["Definitions", "Units (MPa etc.) and density-as-porosity confirmed by the user, but no generator documentation: Svm's spatial averaging and generating solver are unknown; Evm is not established as accumulated plastic strain; why every curve ends below its start is unexplained.", STEEL],
-    ["Porosity", "Represented through density, φ = 1 − ρ/2700 (confirmed by the user; cases at 0, 3 and 7.85 %; 4 % study point = 2592 kg/m³). Backbone exponent r ≈ 0, but the correction also sees density; this does not show real pores are harmless.", NAVY],
-    ["CL not yet computed", [R("Needs crack geometry and orientation, a pore-to-crack convention, a K"), sub("IC"), R(" source, K"), sub("I"), R("(a) from the crack-opening stress, an LEFM check (or J), and fatigue assessment for cyclic loads. To confirm with the professor.")], CYAN],
+    ["Porosity", "Represented through density, φ = 1 − ρ/2700 (confirmed by the user; cases at 0, 3 and 7.85 %; 4 % study point = 2592 kg/m³). G(φ) = 25300 (1 − φ) is an assumed upper bound. Backbone exponent r ≈ 0, but the correction also sees density; this does not show real pores are harmless.", NAVY],
+    ["CL not yet computed", [R("Needs crack geometry and orientation, a pore-to-crack convention, a K"), sub("IC"), R(" source, K"), sub("I"), R(`(a) from the crack-opening stress, an LEFM check (or J), and fatigue for cyclic loads. No service load exists, and LEFM is not valid at the yielding peak (plastic zone ${N.ClPlasticZoneMin}–${N.ClPlasticZoneMax} mm).`)], CYAN],
   ];
   blocks.forEach(([h, b, col], i) => {
     const x = 0.6 + (i % 2) * 6.15, y = 1.75 + Math.floor(i / 2) * 2.6;
@@ -656,10 +673,10 @@ pres.addSection({ title: "Close" });
   s.addText("CONCLUSION", { placeholder: "kicker" });
   s.addText("What we showed, and what comes next", { placeholder: "title" });
   const pts = [
-    ["Bracket set-up and Ansys peaks", "With an upper-half bore load, the team's plastic runs peak at the bore. The elastic peak is 1.86× the built-in JC peak (set-up details not archived)."],
-    ["A single-peak agreement only", "JC-U's peak is within 0.94 % of built-in JC. This does not validate the material law, the full response or JC-PINN-to-Ansys coupling."],
+    ["The team's Ansys runs", "With an upper-half bore load the plastic runs peak at the bore; the elastic peak is 1.86× the built-in JC peak, and JC-U is within 0.94 % of it: a single-peak agreement, not a validation (set-up not archived)."],
+    ["The JC-PINN as an Ansys material", `USERMAT matches the model to ${N.SeMaxDiff} MPa; bracket peak ${N.BrUsermatPeakkN} kN. φ 0 → 7.85 % with G coupled: ${sgn(N.GphiPeakChangePct)} % peak. After yield the result is mesh dependent (${sgn(N.BrMeshPeakChangePct)} % peak at half the element size).`],
     ["An accurate JC-backbone hybrid", "0.4386 mean curve RMSE on 37 held-out cases (R² 0.9995; 37/37 better than the JC law alone). λ = 0, and the physics-disabled control did better: no accuracy benefit from physics is shown."],
-    ["Next: critical flaw size · PLANNED", [R("Define crack geometry, orientation and K"), sub("IC"), R("; compute K"), sub("I"), R("(a) from the crack-opening stress; regularise the softening (mesh dependence), measure G(φ) and add fatigue before any decision tool.")]],
+    ["Next: critical flaw size · PLANNED", [R("Define crack geometry, orientation and K"), sub("IC"), R("; compute K"), sub("I"), R("(a) at a service load (none exists yet); regularise the softening (mesh dependence); measure G(φ) (ours is an assumed upper bound); add fatigue before any decision tool.")]],
   ];
   pts.forEach(([h, b], i) => {
     const x = 0.6 + (i % 2) * 6.15, y = 1.75 + Math.floor(i / 2) * 2.42;
@@ -669,7 +686,7 @@ pres.addSection({ title: "Close" });
     text(s, b, { x: x + 0.3, y: y + 1.08, w: 5.4, h: 1.1, fontSize: 13.5, color: PALE });
   });
   text(s, "Ansys results: team screenshots, not independently re-run. Material-data units confirmed by the user (no generator documentation). No experimental validation.", { x: 0.6, y: 6.68, w: 11, h: 0.3, fontSize: 11, color: LINE });
-  s.addNotes("To conclude. With the upper-half bore load, the team's plastic Ansys runs peak at the bore, and the elastic peak is 1.86 times the built-in Johnson-Cook peak; the set-up details were not archived. The user-defined run's peak is within 0.94 percent of the built-in one, but that single number does not validate the material law, the full response or any coupling from our model. Our JC-backbone hybrid reproduces the 37 held-out simulations to a mean curve RMSE of 0.4386, R squared 0.9995, and beats the JC law alone on every case. Its selected physics-loss weight is zero and the physics-disabled control did better, so we do not claim an accuracy benefit from physics. Next, still planned: a crack model with toughness, the stress intensity from the crack-opening stress, a validated Ansys coupling and a fatigue assessment, before any decision tool.");
+  s.addNotes(`To conclude. With the upper-half bore load, the team's plastic Ansys runs peak at the bore; the elastic peak is 1.86 times the built-in Johnson-Cook peak, and the user-defined run is within 0.94 percent of it, which is a single-peak agreement, not a validation. Our JC-backbone hybrid reproduces the 37 held-out simulations to a mean curve RMSE of 0.4386, R squared 0.9995, and beats the JC law alone on every case; its physics-loss weight is zero and the physics-disabled control did better, so we do not claim an accuracy benefit from physics. Generated into an Ansys user material, it matches the model to ${N.SeMaxDiff} megapascals and solves the bracket: the reaction peaks at ${N.BrUsermatPeakkN} kilonewtons; with G coupled to porosity, 0 to 7.85 percent lowers the peak by ${N.GphiPeakChangePct} percent; and because the model softens, the result after yield depends on the mesh. Next: a service load, toughness and crack model for the critical flaw size, a regularised softening law, a measured G of phi, and a fatigue assessment.`);
 }
 
 // ================================================================== 20 Thank you

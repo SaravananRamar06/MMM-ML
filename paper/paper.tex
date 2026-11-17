@@ -190,7 +190,7 @@ After the lock, and without refitting, \texttt{write\_umat.py} writes the weight
 
 Offline, it reproduces the model to \num{\nVerStressErr} and the tangent to \num{\nVerTangentErr}. In MAPDL~2024~R1 a single element matches to \num{\nSeMaxDiff}~MPa.
 
-On the project's bracket (\nMeshElemCoarse{} SOLID186, imposed $U_X=-2$~mm, study point $\phi=4\,\%$), the reaction peaks at \nBrUsermatPeakkN~kN, then softens (Fig.~\ref{fig:mesh}). With $G$ fixed, density alone ($\phi$ 0 to 7.85\,\%) changes the peak by $\nPorDensPeakChangePct\,\%$, matching the single-element $\nPorSeDensYieldPct\,\%$. Per percent, $G$ acts about \nPorBrGOverDens{} times more strongly, and $G(\phi)$ is unknown, so this is only the density part of the porosity effect.
+On the project's bracket (\nMeshElemCoarse{} SOLID186, imposed $U_X=-2$~mm, study point $\phi=4\,\%$), the reaction peaks at \nBrUsermatPeakkN~kN, then softens (Fig.~\ref{fig:mesh}). With $G$ fixed, density alone ($\phi$ 0 to 7.85\,\%) changes the peak by $\nPorDensPeakChangePct\,\%$, matching the single-element $\nPorSeDensYieldPct\,\%$. Per percent, $G$ acts about \nPorBrGOverDens{} times more strongly. With $G$ coupled by the assumed upper bound $G=25300(1-\phi)$, which the data's $G$ levels follow exactly, the peak changes by $\nGphiPeakChangePct\,\%$, a lower estimate of the porosity effect.
 
 A uniform 2$\times$2$\times$2 split of the mesh changes the peak by $\nBrMeshPeakChangePct\,\%$ and later forces by up to $\nMeshForceOneChangePct\,\%$. The same split with the project's hardening card changes the force by at most \nMeshEpMaxChangePct\,\%. The softening therefore makes the response after yield mesh dependent: bracket forces are specific to the mesh, not a converged strength. A regularised softening law is future work.
 
@@ -214,7 +214,7 @@ A uniform 2$\times$2$\times$2 split of the mesh changes the peak by $\nBrMeshPea
 \item The units were confirmed by the user, without documentation of the generator.
 \item Nothing constrains predictions above 200\,\textdegree C: no data, and no physics penalty in the selected model.
 \item The strain is total, read as plastic. $\nu=0.33$ is assumed.
-\item $G(\phi)$ for a real part is unknown, so bracket porosity results are density-only.
+\item $G(\phi)$ is an assumed upper bound, not measured.
 \item Bracket forces after yield depend on the mesh. The finer mesh is a uniform split, not a remesh.
 \item Fracture (critical flaw length) is not predicted.
 \end{itemize}

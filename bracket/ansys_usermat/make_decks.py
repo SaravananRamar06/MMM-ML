@@ -25,7 +25,10 @@ of the same model (for example the refined mesh from refine_mesh.py), with the s
 conversion, USERMAT snippet (study point) and post-processing. --kinds picks the decks
 (comma-separated; default elastic,usermat; ep_miso keeps the source's TB,PLAS MISO material).
 
-Usage: python bracket/ansys_usermat/make_decks.py [--porosity | --source PATH --label NAME [--kinds K1,K2]] OUTPUT_DIR
+With --porosity-gphi it writes the GPHI_CASES decks: density and G coupled by decision D5,
+G(phi) = 25300 (1 - phi), at phi = 0, 4 and 7.85 %.
+
+Usage: python bracket/ansys_usermat/make_decks.py [--porosity | --porosity-gphi | --source PATH --label NAME [--kinds K1,K2]] OUTPUT_DIR
 """
 import hashlib
 import sys
@@ -57,6 +60,15 @@ POROSITY_CASES = {
     'G_lo': (2592.0, 23313.95, 'G sensitivity at phi 4 % (G also changes the elastic stiffness).'),
     'G_hi': (2592.0, 25300.0, 'G sensitivity at phi 4 % (G also changes the elastic stiffness).'),
 }
+
+# --porosity-gphi cases: density and G coupled by decision D5, G(phi) = 25300 (1 - phi) (linear/Voigt upper bound).
+GPHI_CASES = {
+    'gphi0': (2700.0, 25300.0, 'Coupled by D5: G = 25300 (1 - phi).'),
+    'gphi4': (2592.0, 24288.0, 'Coupled by D5: G = 25300 (1 - phi) (the study point).'),
+    'gphi785': (2488.05, 23313.95, 'Coupled by D5: G = 25300 (1 - phi) (lowest density in the data).'),
+}
+for _rho, _g, _ in GPHI_CASES.values():
+    assert abs(_g - 25300.0 * _rho / 2700.0) < 1e-6, (_rho, _g)  # G = 25300 (1 - phi), phi = 1 - rho/2700
 
 
 def expand_compact_eblocks(lines):
@@ -100,9 +112,9 @@ def expand_compact_eblocks(lines):
     return out
 
 
-def porosity_snippet(case):
+def porosity_snippet(case, cases=None):
     """USERMAT snippet for one porosity case: the study-point snippet with that case's TBDATA line."""
-    rho, g, note = POROSITY_CASES[case]
+    rho, g, note = (POROSITY_CASES if cases is None else cases)[case]
     phi = 100 * (1 - rho / 2700)
     num = lambda v: f'{v:.12g}'  # exact for these inputs (':g' would round 23313.95 to 23314)
     tbdata = f'TBDATA,1,100,1.0E-4,{num(rho)},{num(g)},0.33,0'
@@ -147,6 +159,8 @@ def main():
     ap = argparse.ArgumentParser(description='Write MAPDL bracket decks from the Workbench ds.dat files.')
     ap.add_argument('output_dir')
     ap.add_argument('--porosity', action='store_true', help='write the POROSITY_CASES usermat decks instead')
+    ap.add_argument('--porosity-gphi', action='store_true',
+                    help='write the GPHI_CASES usermat decks instead (density and G coupled by decision D5)')
     ap.add_argument('--source', help='another ds.dat with the same model (for example a refined mesh); '
                                      'writes elastic_<label> and usermat_<label> from it')
     ap.add_argument('--label', help='suffix for the --source decks, for example fine')
@@ -158,8 +172,8 @@ def main():
     a.kinds = a.kinds.split(',')
     if any(k not in ('elastic', 'usermat', 'ep_miso') for k in a.kinds):
         ap.error(f'--kinds: unknown kind in {a.kinds}')
-    if bool(a.source) != bool(a.label) or (a.source and a.porosity):
-        ap.error('--source and --label go together, and not with --porosity')
+    if bool(a.source) != bool(a.label) or (a.source and (a.porosity or a.porosity_gphi)) or (a.porosity and a.porosity_gphi):
+        ap.error('--source and --label go together; --source, --porosity and --porosity-gphi exclude each other')
     dest = Path(a.output_dir).resolve()
     if HERE.parent.parent.resolve() in dest.parents or dest == HERE.parent.parent.resolve():
         sys.exit('write the decks outside the repository')
@@ -177,12 +191,13 @@ def main():
             e, n = deck_counts(deck)
             print(f'{name}: {src} sha256 {sha} -> {dest / name / "bracket.dat"} ({e} elements, {n} nodes)')
         return
-    if a.porosity:
+    if a.porosity or a.porosity_gphi:
+        cases = GPHI_CASES if a.porosity_gphi else POROSITY_CASES
         src = SOURCES['usermat']
         text = src.read_text()
-        for case in POROSITY_CASES:
+        for case in cases:
             (dest / case).mkdir(parents=True, exist_ok=True)
-            (dest / case / 'bracket.dat').write_text(build('usermat', text, porosity_snippet(case)), newline='\n')
+            (dest / case / 'bracket.dat').write_text(build('usermat', text, porosity_snippet(case, cases)), newline='\n')
             print(case, src.relative_to(HERE.parent.parent), '->', dest / case / 'bracket.dat')
         return
     for kind, src in SOURCES.items():

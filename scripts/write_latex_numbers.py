@@ -207,6 +207,25 @@ def collect_fe():
     share = [100 * (1 - abs(ep_p[k]) / abs(um_p[k])) for k in ('peak_RFX_N', 'RFX_at_ux_0.455mm_N', 'RFX_at_ux_1mm_N')]
     n['MeshSofteningShareMin'], n['MeshSofteningShareMax'] = f'{min(share):.0f}', f'{max(share):.0f}'
     n['MeshFineWallMin'] = f"{f['wall_time_s'] / 60:.0f}"
+
+    # Porosity with density and G coupled by decision D5, G = 25300 (1 - phi) (porosity_gphi_2026-11-17).
+    gp = read_json('bracket/ansys_usermat/porosity_gphi_2026-11-17/porosity_gphi_summary.json')
+    n['GphiGFour'] = f"{gp['gphi4']['G_MPa']:.0f}"
+    n['GphiPeakZerokN'], n['GphiPeakMaxPorkN'] = kN(gp['gphi0']['peak_RFX_N']), kN(gp['gphi785']['peak_RFX_N'])
+    n['GphiStiffChangePct'] = f"{gp['gphi785']['pct_vs_gphi0']['initial_stiffness_N_per_mm']:+.2f}"
+    n['GphiPeakChangePct'] = f"{gp['gphi785']['pct_vs_gphi0']['peak_RFX_N']:+.2f}"
+    n['GphiFourPeakChangePct'] = f"{gp['gphi4']['pct_vs_gphi0']['peak_RFX_N']:+.2f}"
+    n['GphiFinalChangePct'] = f"{gp['gphi785']['pct_vs_gphi0']['RFX_at_final_N']:+.2f}"
+    gexp = read_csv_mixed('bracket/ansys_usermat/porosity_gphi_2026-11-17/expected_flow_stress.csv')
+    gpick = lambda e: next(r for r in gexp if r['case'] == 'gphi785' and abs(float(r['eqps']) - e) < 1e-12)
+    n['GphiSeYieldPct'] = f"{float(gpick(0.0002)['change_vs_phi0_pct']):+.2f}"
+    n['GphiSeLimitPct'] = f"{float(gpick(0.0999)['change_vs_phi0_pct']):+.2f}"
+
+    # Q5: Irwin plastic zone r_p = (1/2pi)(K/sigma_y)^2 at the bracket's peak element stress (the flow stress),
+    # for the range of K_IC reported for LPBF AlSi10Mg (20 to 60 MPa m^0.5; docs/proposals/open-items-2026-11-17.md).
+    sy = max(h['seqv_max_elem_MPa'] for h in hist)
+    rp = lambda k: 1e3 * (k / sy) ** 2 / (2 * np.pi)  # mm
+    n['ClPlasticZoneMin'], n['ClPlasticZoneMax'] = f'{rp(20.0):.0f}', f'{rp(60.0):.0f}'
     return n
 
 

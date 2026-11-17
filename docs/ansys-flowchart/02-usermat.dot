@@ -1,0 +1,65 @@
+digraph USERMAT {
+  graph [rankdir=TB, bgcolor="white", pad=0.35, nodesep=0.5, ranksep=0.48,
+    fontname="Arial", fontsize=22, labelloc=t,
+    label="B · USERMAT local stress update\nusermat3d wrapper + JCPRM core"];
+  node [shape=box, style="rounded,filled", fillcolor="#e9f5f0", color="#28735d",
+    fontname="Arial", fontsize=13, margin="0.20,0.14", penwidth=1.3];
+  edge [fontname="Arial", fontsize=11, color="#42566b", arrowsize=0.8];
+
+  receive [label="Receive start-of-substep stress and history, strain increment,\nmaterial properties and end-of-increment field temperature\np = ustatev(1): accumulated equivalent plastic strain"];
+  interface [shape=diamond, style=filled,
+    label="nStatev ≥ 4, nProp ≥ 6\nand nDirect = 3? (wrapper)"];
+  conditions [label="Select T: prop(1), or Temp + dTemp if NINT(prop(6)) = 1\nRate = prop(2) is fixed; density = prop(3); model G = prop(4)\nElastic Ge = prop(7) when positive, otherwise model G; ν = prop(5)"];
+  valid [shape=diamond, style=filled,
+    label="rate > 0 and −1 < ν < 0.5\nand NDI = 3? (core checks)"];
+  trial [label="Form isotropic elastic stiffness Ce from Ge and ν\nTrial stress = start stress + Ce : strain increment\nCompute trial von Mises stress q_trial; initialise dp = 0"];
+  flow0 [label="Call JCPFLW at p → view C\nGet initial flow stress σy(p), slope H and range flags"];
+  eval0 [shape=diamond, style=filled, label="Model evaluation\nsuccessful?"];
+  yield [shape=diamond, style=filled,
+    label="q_trial ≤\n(1 + 10⁻¹⁰) σy(p)?"];
+  elastic [label="Elastic result\nKeep trial stress and Ce\ndp = 0; local iteration count = 0"];
+
+  merge0 [label="Merge the initial evaluation's flags into the history flag"];
+  plastic [label="Plastic radial return → view D\nSafeguarded Newton: at most 50 local evaluations\nOn success: corrected stress, dp, final flow stress and tangent"];
+  plasticresult [shape=diamond, style=filled, label="Plastic solve\nresult?"];
+  e_interface [label="Interface error → E", fillcolor="#fceeed", color="#a43d36"];
+  e_constants [label="ISTAT = 4 → E", fillcolor="#fceeed", color="#a43d36"];
+  e_model [label="ISTAT = 2 → E", fillcolor="#fceeed", color="#a43d36"];
+  e_plastic [label="ISTAT = 2 or 3 → E", fillcolor="#fceeed", color="#a43d36"];
+
+  finish [label="On success, update returned plastic-strain tensor and energies\np_new = p + dp; return stress, tangent, epseq and shear stiffness\nSVAR1 = p_new; SVAR2 = current flow stress\nSVAR3 = persistent accepted range flags; SVAR4 = local iteration count"];
+  back [label="Return successful trial material response to ANSYS → A\nANSYS accepts / commits history only when the substep converges",
+    fillcolor="#edf4fb", color="#315d84"];
+  cut [label="ISTAT = 1: local Newton did not converge\nSet keycut = 1 and return: ask ANSYS to bisect the substep\nDo not return a successful updated state → A recovery path",
+    fillcolor="#fff5df", color="#936818"];
+  err [shape=note, label="E · Error-return legend\nReport through ANSYS erhandler\nInterface: insufficient properties / state or wrong direct components\nISTAT 2: nonpositive model backbone / strain term\nISTAT 3: converged 3Ge + H ≤ 0\nISTAT 4: rejected rate / ν / NDI\nThese are error returns, not automatic keycut = 1 paths",
+    fillcolor="#fceeed", color="#a43d36"];
+  note [shape=note, fillcolor="#f7f7f7", color="#8a939c", fontsize=12,
+    label="Supported wrapper: 3D, plane strain and axisymmetric; three direct components.\nPlane-stress, beam and shell wrappers are not provided. Small-strain J2 model.\nThe checks shown are the implemented checks, not a claim of exhaustive input validation.\nThermal coupling tangent terms are not supplied; this is not a coupled thermomechanical law."];
+
+  receive -> interface;
+  interface -> conditions [label="yes"];
+  interface -> e_interface [label="no", color="#a43d36"];
+  conditions -> valid;
+  valid -> trial [label="yes"];
+  valid -> e_constants [label="no", color="#a43d36"];
+  trial -> flow0 -> eval0;
+  eval0 -> merge0 [label="yes"];
+  merge0 -> yield;
+  eval0 -> e_model [label="no", color="#a43d36"];
+  yield -> elastic [label="yes"];
+  yield -> plastic [label="no: plastic"];
+  plastic -> plasticresult;
+  plasticresult -> cut [label="ISTAT = 1", color="#936818"];
+  plasticresult -> e_plastic [label="error", color="#a43d36"];
+  elastic -> finish;
+  plasticresult -> finish [label="success: ISTAT = 0"];
+  finish -> back;
+  back -> note [style=invis];
+  note -> err [style=invis];
+  { rank=same; interface; e_interface; }
+  { rank=same; valid; e_constants; }
+  { rank=same; eval0; e_model; }
+  { rank=same; yield; elastic; }
+  { rank=same; plasticresult; cut; e_plastic; }
+}

@@ -1,10 +1,23 @@
 # Changelog
 
+## 18 November 2026: Team 8 end-semester submission
+- **Report:** a title page with the course, Team 8's names and roll numbers, the instructor and IIITDM Kancheepuram (21 pages).
+- **Submission deck:** `scripts/make_submission_deck.py` keeps the cover, 15 content slides and the thank-you slide of the 24-slide corrected deck, renumbers them and fixes the cached slide numbers. It was imported into Canva, where the cover's team names were set to one size, and exported as `Team8_Presentation.pptx` / `.pdf` (17 slides, speaker notes on all of them). Every decimal number on the slides and notes was checked against `report/numbers.json`: no mismatch. The values not in `numbers.json` come from the team's Ansys screenshots (595.27, 320.79, 323.81 MPa and their ratio 1.86), the training trace (0.171 to 0.0028), the test summary (0.4386 = 0.439 unrounded; pooled point RMSE 0.504), 6.23 (`SelGroups` 6.235 rounded) and the 2.5 mm mesh size.
+- **`scripts/build_submission.py`:** builds, from a `git archive` of one commit, `Upload_1_UMAT_UPF_and_FE_model/` (+ zip), `Upload_2_PPT_and_Report/` and `submission files/` (report, presentation, FEA simulations including the team's JC comparison study, USERMAT/UMAT code, the locked model weights and the Colab notebooks), each with a `MANIFEST.txt` (size, SHA-256, commit). Raw data, solver scratch files, the USERMAT DLL, environments and credentials are left out. The LaTeX source zip is test-compiled on its own (21 pages, no undefined references). The output folders are not committed.
+
 ## 17 November 2026: repository clean-up (decisions C1–C3)
 - **Abaqus removed:** `umat/jc_pinn_umat.f`, `umat/templates/abaqus_umat.f.in`, `umat/test/ABA_PARAM.INC` and the Abaqus paths in the generator, verifier, driver and tests. The ANSYS USERMAT is regenerated with comment-only changes; its compiled code is identical to the one tested in MAPDL.
 - **Earlier models trimmed:** `docs/history.md` and `scripts/freeze_baselines.py` removed. The five-network ensemble is gone from the README, docs, report, paper and the comparison figure (`fig_comparison`), and its macros (`EnsTest`, `EnsGroups`, `WinsEnsemble`) are dropped. The 2 Nov plain MLP stays as the one baseline. Files under `reports/` are unchanged, because the locked run is evidence.
 - **One slide deck:** `JC-PINN.pptx/.pdf`, `scripts/build_deck.py`, the uncorrected final deck, the October deck, `build_final.js` and `build_deck.js` removed. The corrected deck is rebuilt without Abaqus or Model Studio mentions.
-- Report, paper and deck PDFs rebuilt.
+- After merging the submission work: `scripts/build_submission.py` no longer packages an Abaqus folder (the offline test driver moves into `01_USERMAT_ANSYS_UPF/verification/`); the study pack's Markdown and HTML no longer mention Abaqus or `JC-PINN.pptx`. Its PDFs in `output/pdf/` need Windows fonts, so rebuild them on Windows with `python scripts/build_study_pack.py` and `python scripts/build_study_textbook.py`.
+- Report (21 pages), paper (5 pages), the corrected deck (24 slides) and the submission source deck (17 slides) rebuilt.
+
+## 17 November 2026: open items (D4, D5, the coupled porosity study, Q5 reasoning)
+- **D4:** Abaqus is not used. Q9 no longer asks for Abaqus runs. The hosted-notebook checklist (`docs/hosted-notebook-check.md`) is ready for the user to run for Q8.
+- **Proposal:** `docs/proposals/open-items-2026-11-17.md` compares five G(φ) relations and an LEFM method for critical flaw length, with cited K_IC and Y values.
+- **D5 (user):** G(φ) = 25300 · (1 − φ), the linear upper bound that the data's G levels follow exactly. It is written into `bracket/workflow/config.json` (status `assumed`).
+- **Coupled study:** `make_decks.py --porosity-gphi`, `expected_flow_stress.py --gphi` and `plot_porosity_gphi.py`. Over φ 0 → 7.85 % with G coupled, the bracket changes by −7.85 % in stiffness, −2.86 % in peak force and −6.04 % in force at −2 mm, against −0.16 % / −0.34 % for density alone (`bracket/ansys_usermat/porosity_gphi_2026-11-17/`). Q4 is restated: the remaining question is a measured G(φ) to replace the upper bound.
+- **Q5 stays open:** there is no service load, and LEFM is not valid at the yielding peak. The reasoning and the K_IC table are in Q5 and in the report's limitations.
 
 ## 17 November 2026: report, paper and slides brought up to date
 - **`write_latex_numbers.py`:** now also reads `umat/verification.json`, the MAPDL single-element CSVs and the bracket summaries (results, porosity, mesh, mesh_ep). It writes 60 new macros (164 in total). All 104 existing macros keep exactly the same values. `numbers.tex` and `numbers.json` are written with LF.

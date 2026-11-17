@@ -3,3 +3,6 @@
 # reports/jc_pinn_20261107/equation.json and the split hash.
 reports/** -text
 data/*.json -text
+
+# Printable learning artifacts must keep their PDF byte offsets intact.
+output/pdf/*.pdf binary

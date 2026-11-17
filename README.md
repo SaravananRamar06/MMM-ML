@@ -46,6 +46,7 @@ The model was chosen on the 36 training simulations only, then locked before the
   - In MAPDL 2024 R1, a single element matches the offline result to 1.2e-5 MPa.
   - On the wing-rib bracket at φ = 4 %, the reaction peaks at 190.4 kN and then softens.
   - Density alone (φ 0 → 7.85 %, G fixed) changes that peak by −0.16 %. G acts about 17 times more strongly per percent.
+  - With G coupled by the assumed upper bound G = 25300 (1 − φ) (decision D5; the data's G levels follow it exactly), the peak changes by −2.86 % and the force at −2 mm by −6.04 %. This is a lower estimate of the porosity effect.
   - Halving the element size changes the peak by −7.7 %, against at most 0.3 % for a hardening material. The response after yield is therefore mesh dependent, and the bracket forces are not a converged strength.
   - See [`bracket/ansys_usermat/`](bracket/README.md).
 - **Limits:**
@@ -54,7 +55,7 @@ The model was chosen on the 36 training simulations only, then locked before the
   - the units were confirmed by the user, but no documentation of the generator was seen;
   - nothing is validated above 200 °C, and no such data will be added;
   - the strain is total, not plastic;
-  - G(φ) is unknown, so the bracket porosity results are density-only;
+  - G(φ) is an assumed upper bound (D5), not measured;
   - bracket results after yield depend on the mesh;
   - critical flaw length is not predicted.
 
@@ -65,11 +66,13 @@ The model was chosen on the 36 training simulations only, then locked before the
 | 📓 **Run it** | [`notebooks/jc_pinn_colab.ipynb`](notebooks/jc_pinn_colab.ipynb) runs on Colab, Kaggle or locally. It has three modes: `PREDICT` (no data needed), `FAST` (retrains the final model in minutes) and `FULL` (the whole selection). [Open in Colab](https://colab.research.google.com/github/SaravananRamar06/MMM-ML/blob/main/notebooks/jc_pinn_colab.ipynb) |
 | 📖 **Understand it** | [`notebooks/jc_pinn_explained.ipynb`](notebooks/jc_pinn_explained.ipynb) covers the data, the equation, the model, training, selection, the test and the control. It computes every number live and is saved with its outputs. |
 | 🎬 **Watch it** | [Explainer video](reports/jc_pinn_20261107/video/jc_pinn_explainer.mp4) (3:02) and [test-results video](reports/jc_pinn_20261107/test_report/video/jc_pinn_test_results.mp4) (3:00), both narrated and captioned. |
-| 📄 **Read it** | [Course report](report/report.pdf) (19 pages), [IEEE-format paper](paper/paper.pdf) (5 pages), [slides](<presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pdf>) (23 slides; [PowerPoint](<presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx>), with speaker notes). |
+| 📄 **Read it** | [Course report](report/report.pdf) (21 pages), [IEEE-format paper](paper/paper.pdf) (5 pages), [slides](<presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pdf>) (24 slides; [PowerPoint](<presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx>), with speaker notes). |
 | 🔍 **Explore it** | Interactive [model viewer](reports/jc_pinn_20261107/model_viewer.html), [structure](reports/jc_pinn_20261107/model_structure.html) and [training animation](reports/jc_pinn_20261107/model_motion.html). Download them and open in a browser. |
 | 🧾 **Check it** | [Model guide](docs/model-guide.md), [full specification](docs/spec.md), [run report](reports/jc_pinn_20261107/README.md), [test report for all 37 cases](reports/jc_pinn_20261107/test_report/README.md), [errata](reports/jc_pinn_20261107/ERRATA.md). |
 
 ## Quick start
+
+**Exam, viva and presentation preparation:** the [team preparation pack](docs/exam-preparation/README.md) covers material science, continuum mechanics, FEA/ANSYS, the JC-PINN, advanced questions, worked examples, a mock exam and a timed team rehearsal. It includes printable PDFs and offline viva practice.
 
 **Colab:**
 1. Open the notebook with the link above. Colab asks for GitHub access if the repository is private.
@@ -137,6 +140,8 @@ cd report && latexmk -pdf report.tex && cd ../paper && latexmk -pdf paper.tex
 ```
 
 The slide deck is rebuilt with `presentation/build/build_corrected.js`; see [presentation/README.md](presentation/README.md).
+
+Team 8's submission folders (both uploads and `submission files/`) are built outside the repository by `python scripts/build_submission.py --commit <rev> --presentation <dir with the Canva exports> --latex-bin <MiKTeX bin>`.
 
 The videos are rebuilt from `reports/jc_pinn_20261107/video/` and `test_report/video/`. That needs `requirements-media.txt`, Playwright and ffmpeg.
 

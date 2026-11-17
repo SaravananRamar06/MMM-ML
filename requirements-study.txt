@@ -1,0 +1,4 @@
+# Optional printable exam preparation builder; not model-training dependencies.
+reportlab>=4
+# Display mathematics for the textbook (also in requirements.txt).
+matplotlib>=3.8
