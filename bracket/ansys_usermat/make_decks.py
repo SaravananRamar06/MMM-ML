@@ -22,9 +22,10 @@ comment naming the case differ from the usermat deck.
 
 With --source PATH --label NAME it writes elastic_NAME/ and usermat_NAME/ from another ds.dat
 of the same model (for example the refined mesh from refine_mesh.py), with the same eblock
-conversion, USERMAT snippet (study point) and post-processing.
+conversion, USERMAT snippet (study point) and post-processing. --kinds picks the decks
+(comma-separated; default elastic,usermat; ep_miso keeps the source's TB,PLAS MISO material).
 
-Usage: python bracket/ansys_usermat/make_decks.py [--porosity | --source PATH --label NAME] OUTPUT_DIR
+Usage: python bracket/ansys_usermat/make_decks.py [--porosity | --source PATH --label NAME [--kinds K1,K2]] OUTPUT_DIR
 """
 import hashlib
 import sys
@@ -149,7 +150,14 @@ def main():
     ap.add_argument('--source', help='another ds.dat with the same model (for example a refined mesh); '
                                      'writes elastic_<label> and usermat_<label> from it')
     ap.add_argument('--label', help='suffix for the --source decks, for example fine')
+    ap.add_argument('--kinds', default='elastic,usermat',
+                    help='comma-separated deck kinds to build from --source: elastic, usermat, ep_miso '
+                         "(default: elastic,usermat). ep_miso keeps the source's own material (use it with a "
+                         'refined SYS deck, which has TB,PLAS MISO).')
     a = ap.parse_args()
+    a.kinds = a.kinds.split(',')
+    if any(k not in ('elastic', 'usermat', 'ep_miso') for k in a.kinds):
+        ap.error(f'--kinds: unknown kind in {a.kinds}')
     if bool(a.source) != bool(a.label) or (a.source and a.porosity):
         ap.error('--source and --label go together, and not with --porosity')
     dest = Path(a.output_dir).resolve()
@@ -159,7 +167,9 @@ def main():
         src = Path(a.source).resolve()
         text = src.read_text()
         sha = hashlib.sha256(src.read_bytes()).hexdigest()
-        for kind in ('elastic', 'usermat'):
+        for kind in a.kinds:
+            if kind == 'ep_miso' and not any(l.startswith('TB,PLAS') for l in text.split('\n')):
+                sys.exit('--kinds ep_miso needs a source with the TB,PLAS card (the SYS deck)')
             name = f'{kind}_{a.label}'
             deck = build(kind, text)
             (dest / name).mkdir(parents=True, exist_ok=True)
