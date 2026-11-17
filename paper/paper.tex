@@ -13,7 +13,7 @@
 \maketitle
 
 \begin{abstract}
-We embed a customised Johnson--Cook law as the backbone of a neural material model for the simulated von Mises stress of additively manufactured AlSi10Mg. The law covers strain, strain rate, temperature, shear modulus and porosity. The model multiplies the law by $\exp(\delta)$, where $\delta$ is a 5--16--16--1 tanh correction (\nParams{} weights) whose output layer starts at zero, so training begins from the law itself. Physics residuals at \nColloc{} collocation points, frozen against jointly fitted constants and five seeds were compared using training data only, with a score balancing case-wise cross-validation and held-out temperature/rate groups. The model was locked before testing. On \nTestCasesSplit{} test simulations the mean per-curve RMSE is \nTestMean{}~MPa ($R^2=\nTestRsq$, \nTestWithinOne\,\% of points within $\pm1$~MPa). This is \nImprovement{} times better than the law alone and roughly half the single-MLP error on unseen conditions. Data-driven MLPs remain more precise on the random split, and a control without the law was slightly better, so the law contributes structure and interpretability rather than accuracy. We report these results and their limits.
+We embed a customised Johnson--Cook law as the backbone of a neural material model for the simulated von Mises stress of additively manufactured AlSi10Mg. The law covers strain, strain rate, temperature, shear modulus and porosity. The model multiplies the law by $\exp(\delta)$, where $\delta$ is a 5--16--16--1 tanh correction (\nParams{} weights) whose output layer starts at zero, so training begins from the law itself. Physics residuals at \nColloc{} collocation points, frozen against jointly fitted constants and five seeds were compared using training data only, with a score balancing case-wise cross-validation and held-out temperature/rate groups. The model was locked before testing. On \nTestCasesSplit{} test simulations the mean per-curve RMSE is \nTestMean{}~MPa ($R^2=\nTestRsq$, \nTestWithinOne\,\% of points within $\pm1$~MPa). This is \nImprovement{} times better than the law alone and roughly half the single-MLP error on unseen conditions. Data-driven MLPs remain more precise on the random split, and a control without the law was slightly better, so the law contributes structure and interpretability rather than accuracy. After the lock, we generated an ANSYS user material from the weights. It matches the model in MAPDL to \num{\nSeMaxDiff}~MPa and solves a wing-rib bracket. There, density alone changes the peak force by $\nPorDensPeakChangePct\,\%$. The softening makes the response after yield mesh dependent: the peak changes by $\nBrMeshPeakChangePct\,\%$, against at most \nMeshEpMaxChangePct\,\% for a hardening material. Nothing is experimentally validated.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -23,33 +23,21 @@ physics-informed machine learning, Johnson--Cook model, AlSi10Mg, additive manuf
 \section{Introduction}
 Porosity in laser-powder-bed-fused AlSi10Mg changes density, stiffness and flow stress~\cite{kempen2012}. A multiscale analysis of an AM wing-rib bracket therefore needs a material response that is cheap to evaluate across temperature, rate and porosity.
 
-Purely data-driven surrogates fit such simulations closely but encode no physics. Physics-informed learning instead adds known equations to training~\cite{raissi2019,karniadakis2021,willard2022}. For constitutive behaviour, physics has been built into networks through thermodynamics~\cite{masi2021} and recurrent state~\cite{mozaffar2019}. Physics losses can also make optimisation harder~\cite{krishnapriyan2021}.
-
-We take a simpler route. Our governing equation is a customised Johnson--Cook (JC) law~\cite{johnson1983}, which serves as a multiplicative backbone. Our contributions:
+Purely data-driven surrogates fit such simulations closely but encode no physics; physics-informed learning adds known equations to training~\cite{raissi2019,karniadakis2021,willard2022}. We take a simpler route. Our governing equation is a customised Johnson--Cook (JC) law~\cite{johnson1983}, which serves as a multiplicative backbone. Our contributions:
 \begin{enumerate}
 \item a JC-PINN model that starts as the law and learns only a correction;
 \item a leakage-controlled protocol, with selection on training data only and a lock before testing;
-\item a candid evaluation that includes a control without the law and a screen for improvements.
+\item a candid evaluation that includes a control without the law and a screen for improvements;
+\item a finite-element material generated from the locked weights, used on a bracket for porosity and mesh studies.
 \end{enumerate}
 
 \section{Related work}
-Physics-informed neural networks add the residual of a governing equation to the loss, evaluated at collocation points where no data exist~\cite{raissi2019}. The idea has spread from fluid and wave problems to materials and engineering systems~\cite{karniadakis2021,willard2022}.
+Physics-informed neural networks add the residual of a governing equation, evaluated at collocation points where no data exist, to the loss~\cite{raissi2019,karniadakis2021,willard2022}. For constitutive modelling, two lines are prominent. Thermodynamics-based networks build free energy and dissipation into the architecture~\cite{masi2021}. Recurrent networks learn path-dependent plasticity from many loading paths~\cite{mozaffar2019}. Both need quantities, such as internal variables and thousands of paths, that our data lack, and physics losses can be hard to balance~\cite{krishnapriyan2021}.
 
-For constitutive modelling, two lines are prominent:
-\begin{itemize}
-\item thermodynamics-based networks, which build free energy and dissipation into the architecture~\cite{masi2021};
-\item recurrent networks, which learn path-dependent plasticity from many loading paths~\cite{mozaffar2019}.
-\end{itemize}
-Both need quantities, such as internal variables and thousands of paths, that our data do not provide. Physics losses can also be hard to balance against data losses~\cite{krishnapriyan2021}.
-
-A third, lighter option keeps a closed-form law and learns a correction to it. Our work follows that option with the JC family~\cite{johnson1983}. Two choices distinguish it:
-\begin{itemize}
-\item the law is a multiplicative backbone and the network starts from it exactly;
-\item the physics residual is treated as a hyper-parameter, chosen by held-out evidence, rather than assumed to help.
-\end{itemize}
+A lighter option keeps a closed-form law and learns a correction. We follow it with the JC family~\cite{johnson1983}: the law is a multiplicative backbone that the network starts from exactly, and the physics residual is a hyper-parameter, chosen by held-out evidence.
 
 \section{Data}
-The supplied set contains 73 of 108 planned simulations: 27 at 30\,\textdegree C, 27 at 100\,\textdegree C, 19 at 200\,\textdegree C and none at 300\,\textdegree C. The strain rate is $10^{-5}$--$10^{-3}$\,s$^{-1}$, the density 2488--2700\,kg\,m$^{-3}$ and the shear modulus $G$ 23314--25300\,MPa. Units are inferred.
+The supplied set contains 73 of 108 planned simulations: 27 at 30\,\textdegree C, 27 at 100\,\textdegree C, 19 at 200\,\textdegree C and none at 300\,\textdegree C. The strain rate is $10^{-5}$--$10^{-3}$\,s$^{-1}$, the density 2488--2700\,kg\,m$^{-3}$ and the shear modulus $G$ 23314--25300\,MPa. The user confirmed these units and confirmed that density stands for porosity, but no documentation of the generator was seen. No data above 200\,\textdegree C will be added.
 
 The target is $S_{vm}$ along the axial strain $E_{11}$, resampled to 120 strains in $[0.0002,0.0999]$. Every curve softens, and the softening grows with temperature (Fig.~\ref{fig:data}). We use the project's fixed split by simulation (seed 42): \nTrainCases{} training and \nTestCasesSplit{} test cases. Earlier project stages explored the test cases, so the test is not blind.
 
@@ -64,14 +52,7 @@ The customised law (Equation~1) is
 \begin{equation}
 \sjc=[A-B\varepsilon^{n}][1+C\ln\dot\varepsilon^*][1-T^{*m}][G/G_0]^{q}[1-\phi]^{r},
 \end{equation}
-with
-\begin{itemize}
-\item $\varepsilon=E_{11}$ and $\dot\varepsilon^*=\dot\varepsilon/10^{-5}$;
-\item $T^*=(T-30)/(600-30)$;
-\item $G_0=25300$\,MPa;
-\item $\phi=1-\rho/2700$.
-\end{itemize}
-The minus sign in the strain term reflects softening. The constants are bounded: $B=A\beta/0.1^n$ with $0\le\beta\le0.99$, which keeps the strain term positive, and $C,q,r\ge0$, which enforce the observed trend signs.
+with $\varepsilon=E_{11}$, $\dot\varepsilon^*=\dot\varepsilon/10^{-5}$, $T^*=(T-30)/(600-30)$, $G_0=25300$\,MPa and $\phi=1-\rho/2700$. The minus sign in the strain term reflects softening. The constants are bounded: $B=A\beta/0.1^n$ with $0\le\beta\le0.99$, which keeps the strain term positive, and $C,q,r\ge0$, which enforce the observed trend signs.
 
 The law is separable, so the conditions can only rescale a curve, not reshape it. Fitted alone, it reaches a case-wise CV of \nEqCV{}~MPa and a test error of \nTestEq{}~MPa (Fig.~\ref{fig:eqfail}), with $A=\nEqA$, $B=\nEqB$, $n=\nEqn$, $C=\nEqC$, $m=\nEqm$, $q=\nEqq$ and $r=0$.
 
@@ -92,11 +73,7 @@ The loss is
 \begin{equation}
 \mathcal L=\overline{((\hat\sigma-\sigma)/s_y)^2}+\lambda\,\overline{R^2}+\tfrac{\alpha}{N}\textstyle\sum W^2 ,
 \end{equation}
-with $\alpha=\nAlpha$. The residual $R$ is evaluated at \nColloc{} scrambled Sobol points~\cite{sobol1967} spanning the planned design box, 30--300\,\textdegree C. It takes one of two forms:
-\begin{itemize}
-\item \emph{level}: $R=\delta$;
-\item \emph{trend}: $R=\partial\delta/\partial(T,\log\dot\varepsilon,\rho,G)$, computed by automatic differentiation.
-\end{itemize}
+with $\alpha=\nAlpha$. The residual $R$ is evaluated at \nColloc{} scrambled Sobol points~\cite{sobol1967} spanning the planned design box, 30--300\,\textdegree C. It is either \emph{level}, $R=\delta$, or \emph{trend}, $R=\partial\delta/\partial(T,\log\dot\varepsilon,\rho,G)$ by automatic differentiation.
 
 Training runs in PyTorch~\cite{paszke2019}: \nAdamSteps{} Adam~\cite{kingma2014} steps at learning rate \nAdamLR, then up to \nLbfgsIter{} L-BFGS~\cite{liu1989} iterations. The constants are either frozen after a bounded least-squares calibration (SciPy~\cite{virtanen2020}) or trained jointly. Fig.~\ref{fig:train} shows one copy training: the prediction moves from the law's shape to the simulation's.
 
@@ -113,13 +90,7 @@ Training runs in PyTorch~\cite{paszke2019}: \nAdamSteps{} Adam~\cite{kingma2014}
 \end{figure}
 
 \section{Selection and lock}
-We compared \nSettings{} settings on the training cases only, each with three seeds:
-\begin{itemize}
-\item no physics loss;
-\item the level residual with $\lambda\in\{10^{-3},10^{-2},10^{-1}\}$;
-\item the trend residual with $\lambda\in\{10^{-4},10^{-3},10^{-2}\}$;
-\end{itemize}
-and each of these with frozen or joint constants.
+We compared \nSettings{} settings on the training cases only, each with three seeds: no physics loss, the level residual with $\lambda\in\{10^{-3},10^{-2},10^{-1}\}$ and the trend residual with $\lambda\in\{10^{-4},10^{-3},10^{-2}\}$, each with frozen or joint constants.
 
 The score is $\tfrac12$(three-fold case CV $+$ the mean RMSE over nine held-out temperature/rate groups). The best was \emph{no physics loss, joint constants}: CV \nSelCV, groups \nSelGroups, score \nSelScore. Every stronger physics weight scored worse (Table~\ref{tab:sel}, Fig.~\ref{fig:sel}).
 
@@ -148,14 +119,7 @@ Equation 1 alone & \nEqCV & \nEqGroups & --\\\bottomrule
 
 \section{Results}
 \subsection{Test accuracy and precision}
-Scored once on \nTestCasesSplit{} cases (\nTestPoints{} points), the mean curve RMSE is \nTestMean{}~MPa (median \nTestMedian, worst \nTestWorst{} at case~\nTestWorstCase). Further:
-\begin{itemize}
-\item $R^2=\nTestRsq$;
-\item \nTestWithinHalf\,\% of points are within $\pm0.5$~MPa and \nTestWithinOne\,\% within $\pm1$~MPa (Fig.~\ref{fig:pts});
-\item the bias is \nTestBias~MPa, with \nCasesHigh{} cases above and \nCasesLow{} below;
-\item the five copies differ by \nSpreadMean~MPa on average;
-\item the training fit (\nTrainFit) is close to the test error, so there is no sign of over-fitting.
-\end{itemize}
+Scored once on \nTestCasesSplit{} cases (\nTestPoints{} points), the mean curve RMSE is \nTestMean{}~MPa (median \nTestMedian, worst \nTestWorst{} at case~\nTestWorstCase), with $R^2=\nTestRsq$. \nTestWithinHalf\,\% of points are within $\pm0.5$~MPa and \nTestWithinOne\,\% within $\pm1$~MPa (Fig.~\ref{fig:pts}). The bias is \nTestBias~MPa (\nCasesHigh{} cases above, \nCasesLow{} below), the five copies differ by \nSpreadMean~MPa on average, and the training fit (\nTrainFit) is close to the test error, so there is no sign of over-fitting.
 The worst eight cases share one condition (30\,\textdegree C, $10^{-4}$\,s$^{-1}$), which has a single training case. Fig.~\ref{fig:ex} shows the best, median and worst cases.
 
 \begin{figure}[t]\centering
@@ -171,12 +135,7 @@ The worst eight cases share one condition (30\,\textdegree C, $10^{-4}$\,s$^{-1}
 \end{figure*}
 
 \subsection{Comparison and control}
-Table~\ref{tab:cmp} compares models on the same split. The JC-PINN:
-\begin{itemize}
-\item beats the law alone on all \nWinsEq{} test cases and a nearest-curve lookup on \nWinsLookup;
-\item beats neither earlier MLP on any case;
-\item on unseen groups, has about half the single-MLP error (Fig.~\ref{fig:groups}). This figure is somewhat optimistic, because the groups entered selection.
-\end{itemize}
+Table~\ref{tab:cmp} compares models on the same split. The JC-PINN beats the law alone on all \nWinsEq{} test cases and a nearest-curve lookup on \nWinsLookup, but neither earlier MLP on any case. On unseen groups it has about half the single-MLP error (Fig.~\ref{fig:groups}); this is somewhat optimistic, because the groups entered selection.
 A post-hoc control, the same network with the law replaced by a constant and not used for selection, was better on every measure. On these data, therefore, the separable law adds interpretability (named constants, correct trends, a sensible starting point) but not accuracy.
 
 \begin{table}[t]\centering\small
@@ -226,42 +185,44 @@ The data imply $r\approx\nPorImpliedR$, but the separable fit sets $r=0$: the ef
 \end{figure}
 
 \subsection{Improvement screen}
-After the lock, alternatives were screened on the training cases only:
-\begin{itemize}
-\item \textbf{Longer training} (CV \nScrIterLong), weaker weight decay (\nScrAlphaLow) and a wider network (\nScrWide) were all worse than \nSelCV.
-\item \textbf{Per-curve strain law.} Fitting $A-B\varepsilon^n$ to each curve separately leaves \nFloorJCMean~MPa (a cubic reaches \nFloorCubicMean), so the power law is itself a floor, and a correction is required.
-\item \textbf{Bounded or additive corrections} scored worse (for example \nScrBoundedScore{} against \nSelScore).
-\end{itemize}
-The locked model is kept.
+After the lock, alternatives were screened on the training cases only. Longer training (CV \nScrIterLong), weaker weight decay (\nScrAlphaLow) and a wider network (\nScrWide) were all worse than \nSelCV. Fitting $A-B\varepsilon^n$ to each curve separately still leaves \nFloorJCMean~MPa (a cubic reaches \nFloorCubicMean), so the power law is itself a floor and a correction is required. Bounded or additive corrections also scored worse (for example \nScrBoundedScore{} against \nSelScore). The locked model is kept.
+
+\section{Finite-element material and bracket}
+After the lock, and without refitting, \texttt{write\_umat.py} writes the weights into an Abaqus UMAT and an ANSYS USERMAT. Both are J2 plasticity with a radial return and a consistent tangent, and their flow stress is the model. Strain $E_{11}$ is read as plastic strain. Elasticity comes from $G$ and an assumed $\nu=0.33$.
+
+Offline, both reproduce the model to \num{\nVerStressErr} and the tangent to \num{\nVerTangentErr}. In MAPDL~2024~R1 a single element matches to \num{\nSeMaxDiff}~MPa.
+
+On the project's bracket (\nMeshElemCoarse{} SOLID186, imposed $U_X=-2$~mm, study point $\phi=4\,\%$), the reaction peaks at \nBrUsermatPeakkN~kN, then softens (Fig.~\ref{fig:mesh}). With $G$ fixed, density alone ($\phi$ 0 to 7.85\,\%) changes the peak by $\nPorDensPeakChangePct\,\%$, matching the single-element $\nPorSeDensYieldPct\,\%$. Per percent, $G$ acts about \nPorBrGOverDens{} times more strongly, and $G(\phi)$ is unknown, so this is only the density part of the porosity effect.
+
+A uniform 2$\times$2$\times$2 split of the mesh changes the peak by $\nBrMeshPeakChangePct\,\%$ and later forces by up to $\nMeshForceOneChangePct\,\%$. The same split with the project's hardening card changes the force by at most \nMeshEpMaxChangePct\,\%. The softening therefore makes the response after yield mesh dependent: bracket forces are specific to the mesh, not a converged strength. A regularised softening law is future work.
+
+\begin{figure}[t]\centering
+\includegraphics[width=\columnwidth]{fig_mesh_ep}
+\caption{Bracket reaction and peak plastic strain on the 5~mm mesh (solid) and its 2$\times$2$\times$2 refinement (dashed). Red: JC-PINN USERMAT. Blue: the project's hardening card, a different material condition used only to test the mesh.}
+\label{fig:mesh}
+\end{figure}
 
 \section{Discussion}
-\textbf{Why did the physics residual not help?} The level residual pulls the model towards a law that is \nImprovement{} times less accurate than the data allow, so it trades accuracy for nothing in the observed range. The trend residual is gentler: at the smallest weight it was nearly tied with the selected setting. But the group holdouts show no gain at unseen conditions.
+\textbf{Why did the physics residual not help?} The level residual pulls the model towards a law that is \nImprovement{} times less accurate than the data allow. The trend residual is gentler, and at the smallest weight it nearly tied, but the group holdouts show no gain at unseen conditions.
 
-\textbf{What does the law buy?} The law's main contributions on these data are:
-\begin{itemize}
-\item a sensible starting point;
-\item named constants for strain, rate, temperature, modulus and porosity;
-\item a backbone that extrapolates in a physically shaped way.
-\end{itemize}
-These have value for explanation and for review, but the control shows they did not improve accuracy.
-
-\textbf{What would change the picture?} Data at 300\,\textdegree C would test extrapolation directly, and a residual tied to measured trends could then be judged on evidence. A strain law that can change shape with condition would also help, because the per-curve floor shows the power law is the binding limit.
+\textbf{What does the law buy?} A sensible starting point, named constants for strain, rate, temperature, modulus and porosity, and a backbone that extrapolates in a physically shaped way. These help explanation and review, but the control shows they did not improve accuracy. A strain law that can change shape with condition would help most, because the per-curve floor shows the power law is the binding limit.
 
 \section{Reproducibility and limits}
-\textbf{Reproducibility.} An independent NumPy~\cite{harris2020} verifier reproduces every prediction to \nNumpyTorchErr~MPa. A Colab/Kaggle notebook retrains the model and reproduces the locked weights exactly. All quoted numbers are generated from the saved run.
+\textbf{Reproducibility.} An independent NumPy~\cite{harris2020} verifier reproduces every prediction to \nNumpyTorchErr~MPa. A Colab/Kaggle notebook retrains the model and reproduces the locked weights exactly. All quoted numbers are generated from the saved run and the saved finite-element results.
 
 \textbf{Limits.}
 \begin{itemize}
-\item The test is not blind.
-\item The data are simulations, not experiments, and the units are inferred.
-\item No data, and in the selected model no physics penalty, constrain predictions above 200\,\textdegree C.
-\item The strain is total, not plastic.
-\item The porosity--modulus relation of a real part is not defined by the data.
+\item The test is not blind, and the data are simulations. Nothing is experimentally validated.
+\item The units were confirmed by the user, without documentation of the generator.
+\item Nothing constrains predictions above 200\,\textdegree C: no data, and no physics penalty in the selected model.
+\item The strain is total, read as plastic. $\nu=0.33$ is assumed.
+\item $G(\phi)$ for a real part is unknown, so bracket porosity results are density-only.
+\item Bracket forces after yield depend on the mesh. The finer mesh is a uniform split, not a remesh.
 \item Fracture (critical flaw length) is not predicted.
 \end{itemize}
 
 \section{Conclusion}
-A customised JC law works as the governing backbone of a neural material model. The model is \nImprovement{} times more accurate than the law alone and clearly better than a plain MLP on unseen conditions. It keeps physically named constants. Physics residuals did not help here, and a law-free control matched or beat it. The next steps are data at 300\,\textdegree C, experimental validation and a measured porosity--modulus relation.
+A customised JC law works as the governing backbone of a neural material model. The model is \nImprovement{} times more accurate than the law alone and clearly better than a plain MLP on unseen conditions. It keeps physically named constants. Physics residuals did not help here, and a law-free control matched or beat it. The locked model runs as an ANSYS material on a real bracket, where its softening makes the response after yield mesh dependent. The next steps are a measured $G(\phi)$, a regularised softening law, a fracture criterion and experimental validation.
 
 \bibliographystyle{IEEEtran}
 \bibliography{../report/refs}
