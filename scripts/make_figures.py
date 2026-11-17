@@ -5,6 +5,7 @@ Usage: python scripts/make_figures.py
 """
 import csv
 import json
+import shutil
 import os
 from pathlib import Path
 import sys
@@ -302,3 +303,14 @@ for k, b in enumerate(bars):
 ax.set_xticks(range(3), [b[0] for b in bars], fontsize=7.5)
 ax.set(ylabel='mean stress drop (%)', title='One variable changed at a time', ylim=(0, 12))
 save(fig, 'fig_porosity')
+
+# Post-hoc finite-element figures. They are the committed plots written by the bracket scripts in
+# bracket/ansys_usermat/ from the saved MAPDL histories; they are copied here, not redrawn.
+FE_FIGURES = {
+    'fig_bracket': 'bracket/ansys_usermat/results_2026-11-17/force_displacement.png',
+    'fig_bracket_porosity': 'bracket/ansys_usermat/porosity_2026-11-17/porosity_force_displacement.png',
+    'fig_mesh': 'bracket/ansys_usermat/mesh_2026-11-17/mesh_force_displacement.png',
+    'fig_mesh_ep': 'bracket/ansys_usermat/mesh_ep_2026-11-17/mesh_ep_force_displacement.png',
+}
+for name, src in FE_FIGURES.items():
+    shutil.copyfile(root / src, OUT / f'{name}.png')
