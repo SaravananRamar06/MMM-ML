@@ -1,5 +1,12 @@
 # Changelog
 
+## 17 November 2026: open items (D4, D5, the coupled porosity study, Q5 reasoning)
+- **D4:** Abaqus is not used. Q9 no longer asks for Abaqus runs. The hosted-notebook checklist (`docs/hosted-notebook-check.md`) is ready for the user to run for Q8.
+- **Proposal:** `docs/proposals/open-items-2026-11-17.md` compares five G(φ) relations and an LEFM method for critical flaw length, with cited K_IC and Y values.
+- **D5 (user):** G(φ) = 25300 · (1 − φ), the linear upper bound that the data's G levels follow exactly. It is written into `bracket/workflow/config.json` (status `assumed`).
+- **Coupled study:** `make_decks.py --porosity-gphi`, `expected_flow_stress.py --gphi` and `plot_porosity_gphi.py`. Over φ 0 → 7.85 % with G coupled, the bracket changes by −7.85 % in stiffness, −2.86 % in peak force and −6.04 % in force at −2 mm, against −0.16 % / −0.34 % for density alone (`bracket/ansys_usermat/porosity_gphi_2026-11-17/`). Q4 is restated: the remaining question is a measured G(φ) to replace the upper bound.
+- **Q5 stays open:** there is no service load, and LEFM is not valid at the yielding peak. The reasoning and the K_IC table are in Q5 and in the report's limitations.
+
 ## 17 November 2026: report, paper and slides brought up to date
 - **`write_latex_numbers.py`:** now also reads `umat/verification.json`, the MAPDL single-element CSVs and the bracket summaries (results, porosity, mesh, mesh_ep). It writes 60 new macros (164 in total). All 104 existing macros keep exactly the same values. `numbers.tex` and `numbers.json` are written with LF.
 - **`make_figures.py`:** copies the four committed bracket plots into `figures/` (`fig_bracket*`, `fig_mesh*`) without redrawing them. The existing figures were left as committed, because the data are unchanged and re-rendering with this machine's Matplotlib only changed their bytes.

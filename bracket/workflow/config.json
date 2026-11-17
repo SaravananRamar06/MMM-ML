@@ -4,8 +4,25 @@
     "status": "assumed",
     "reference_density_kg_m3": 2700.0,
     "density_is_bulk_density": true,
-    "modulus_by_phi": [],
-    "evidence": "User definition for the JC-PINN, 7 Nov 2026: phi = 1 - density/2700 (bulk density). The shear-modulus relation G(phi) is not defined by the data, which cross density and G independently; supply phi/G pairs from a source or an explicit assumption."
+    "modulus_by_phi": [
+      {
+        "phi": 0.0,
+        "G_MPa": 25300.0
+      },
+      {
+        "phi": 0.03,
+        "G_MPa": 24541.0
+      },
+      {
+        "phi": 0.04,
+        "G_MPa": 24288.0
+      },
+      {
+        "phi": 0.0785,
+        "G_MPa": 23313.95
+      }
+    ],
+    "evidence": "Decision D5 (user, 17 Nov 2026): G(phi) = 25300 * (1 - phi), the linear (Voigt) rule. It is an upper bound for any pore shape (Pabst & Gregorova, Ceramics-Silikaty 48 (2004) 14-23) and the rule the data's three G levels follow exactly (25300, 24541, 23313.95 MPa at phi = 0, 3, 7.85 %). Real pores, and the dilute spherical-pore estimate (Mackenzie 1950, slope -1.88), lower G faster. phi = 1 - density/2700 (D2). See docs/proposals/open-items-2026-11-17.md."
   },
   "mechanical_case": {
     "geometry_file": "bracket/cad/Rib Bracket.STEP",

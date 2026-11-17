@@ -1,0 +1,107 @@
+# bracket.out (gphi785), MAPDL 2024 R1 batch - TBDATA used, key lines, then the last 60 lines
+# full file: 1262 lines
+deck: ! Porosity case gphi785: 100 degC, 1e-4 /s, density 2488.05 kg/m3 (phi = 7.85 %), G 23313.95 MPa, nu 0.33 (assumed). Coupled by D5: G = 25300 (1 - phi) (lowest density in the data).
+deck: TBDATA,1,100,1.0E-4,2488.05,23313.95,0.33,0
+
+   120: User Link path (ANS_USER_PATH): C:\Users\amitn\jcpinn_usermat_build
+   124: Note - This MAPDL version was linked by Licensee
+   272: 49636  /com,--- Total number of nodes = %_numnode%
+   273: 49637  /com,--- Total number of elements = %_numelem%
+   418: Note - This MAPDL version was linked by Licensee
+   580: Note - This MAPDL version was linked by Licensee
+   729: *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
+   738: *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      3
+   754: *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      6
+   775: *** LOAD STEP     1   SUBSTEP     4  NOT COMPLETED.  CUM ITER =      9
+   776: *** BEGIN BISECTION NUMBER   1    NEW TIME INCREMENT=  0.26250E-01
+   792: *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =     12
+   812: *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =     15
+   828: *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     18
+   841: *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =     20
+   866: *** LOAD STEP     1   SUBSTEP     8  NOT COMPLETED.  CUM ITER =     25
+   867: *** BEGIN BISECTION NUMBER   1    NEW TIME INCREMENT=  0.39867E-01
+   881: *** LOAD STEP     1   SUBSTEP     8  NOT COMPLETED.  CUM ITER =     29
+   882: *** BEGIN BISECTION NUMBER   2    NEW TIME INCREMENT=  0.13954E-01
+   895: *** LOAD STEP     1   SUBSTEP     8  COMPLETED.    CUM ITER =     31
+   909: *** LOAD STEP     1   SUBSTEP     9  COMPLETED.    CUM ITER =     32
+   919: *** LOAD STEP     1   SUBSTEP    10  COMPLETED.    CUM ITER =     33
+   932: *** LOAD STEP     1   SUBSTEP    11  COMPLETED.    CUM ITER =     35
+   945: *** LOAD STEP     1   SUBSTEP    12  COMPLETED.    CUM ITER =     37
+   958: *** LOAD STEP     1   SUBSTEP    13  COMPLETED.    CUM ITER =     39
+   974: *** LOAD STEP     1   SUBSTEP    14  COMPLETED.    CUM ITER =     42
+   987: *** LOAD STEP     1   SUBSTEP    15  COMPLETED.    CUM ITER =     44
+  1000: *** LOAD STEP     1   SUBSTEP    16  COMPLETED.    CUM ITER =     46
+  1013: *** LOAD STEP     1   SUBSTEP    17  COMPLETED.    CUM ITER =     48
+  1026: *** LOAD STEP     1   SUBSTEP    18  COMPLETED.    CUM ITER =     50
+  1060: Note - This MAPDL version was linked by Licensee
+  1114: --- Total number of nodes = 34763
+  1115: --- Total number of elements = 7304
+  1130: Note - This MAPDL version was linked by Licensee
+  1148: Note - This MAPDL version was linked by Licensee
+  1191: NUMBER OF WARNING MESSAGES ENCOUNTERED=          3
+  1192: NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+  1196: Release: 2024 R1            Build: 24.1       Update: UP20231106   Platform: WINDOWS x64
+  1202: Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+  1260: |        Elapsed Time (sec) =         89.000       Date  =  11/17/2026        |
+
+----- tail -----
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191125
+          BLAS Library supplied by Intel(R) MKL
+
+Number of machines requested            :    1
+Total number of cores available         :   32
+Number of physical cores available      :   24
+Number of processes requested           :    1
+Number of threads per process requested :    4
+Total number of cores requested         :    4 (Shared Memory Parallel)
+
+GPU Acceleration: Not Requested
+
+Job Name: bracket
+Input File: bracket.dat
+Working Directory: C:\Users\amitn\jcpinn_gphi_run\gphi785
+
+Total CPU time for main thread                    :       81.1 seconds
+Total CPU time summed for all threads             :      247.5 seconds
+
+Elapsed time spent obtaining a license            :        1.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.1 seconds
+Elapsed time spent solution - preprocessing       :        0.1 seconds
+Elapsed time spent computing solution             :       83.9 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        1.9 seconds
+
+Equation solver used                              :            PCG (symmetric)
+Equation solver computational rate                :       18.9 Gflops
+
+Sum of disk space used on all processes           :      285.5 MB
+
+Sum of memory used on all processes               :     1132.0 MB
+Sum of memory allocated on all processes          :     2930.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        5.1 GB
+Total amount of I/O read from disk                :        5.9 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2024 R1         Build 24.1         UP20231106    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used      43 MB     Maximum Scratch Memory Used   1089 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =        247.453       Time  =  21:56:35          |
+ |        Elapsed Time (sec) =         89.000       Date  =  11/17/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
