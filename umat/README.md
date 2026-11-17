@@ -111,6 +111,8 @@ TB,STATE,matid,,4
 - **Results:** state variables appear as SVAR1 to SVAR4 in user-defined results. Equivalent plastic strain also appears as the usual plastic strain results, because the routine returns `epsPl` and `epseq`.
 - **Elements:** the Workbench default SOLID187 or SOLID186 elements are supported.
 
+**First test in ANSYS:** `ansys_test/single_element.mac` pulls one SOLID185 cube to ε₁₁ = 0.12 at the 4 % study point and writes `jcpinn_single_element.csv`. Then run `python ansys_test/compare.py jcpinn_single_element.csv`. It checks the result against `expected_single_element.csv`, which comes from the offline driver, to within 0.1 MPa. The expected final value is S11 = 75.41 MPa at EQPS = 0.1188, with flag 1 because the strain passes 0.0999.
+
 ## Limits
 
 - **Softening:** the curves soften. Past the peak, strain localises, so results depend on the mesh. Report the mesh size and check convergence. No regularisation is included.
