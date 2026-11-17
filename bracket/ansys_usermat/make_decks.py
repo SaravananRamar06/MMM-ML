@@ -20,7 +20,11 @@ With --porosity it writes instead one usermat-style deck per porosity case into
 OUTPUT_DIR/<case>/bracket.dat (POROSITY_CASES below). Only the TBDATA line and the
 comment naming the case differ from the usermat deck.
 
-Usage: python bracket/ansys_usermat/make_decks.py [--porosity] OUTPUT_DIR
+With --source PATH --label NAME it writes elastic_NAME/ and usermat_NAME/ from another ds.dat
+of the same model (for example the refined mesh from refine_mesh.py), with the same eblock
+conversion, USERMAT snippet (study point) and post-processing.
+
+Usage: python bracket/ansys_usermat/make_decks.py [--porosity | --source PATH --label NAME] OUTPUT_DIR
 """
 import hashlib
 import sys
@@ -129,15 +133,41 @@ def build(kind, text, snippet=USERMAT_SNIPPET):
     return '\n'.join(out)
 
 
+def deck_counts(deck):
+    """Element and node counts declared by a deck's nblock / eblock headers."""
+    lines = deck.split('\n')
+    n = int(next(l for l in lines if l.lower().startswith('nblock')).split(',')[3])
+    e = int(next(l for l in lines if l.lower().startswith('eblock')).split(',')[4].split()[0])
+    return e, n
+
+
 def main():
-    args = [a for a in sys.argv[1:] if not a.startswith('--')]
-    porosity = '--porosity' in sys.argv[1:]
-    if len(args) != 1 or any(a not in ('--porosity',) for a in sys.argv[1:] if a.startswith('--')):
-        sys.exit('usage: make_decks.py [--porosity] OUTPUT_DIR')
-    dest = Path(args[0]).resolve()
+    import argparse
+    ap = argparse.ArgumentParser(description='Write MAPDL bracket decks from the Workbench ds.dat files.')
+    ap.add_argument('output_dir')
+    ap.add_argument('--porosity', action='store_true', help='write the POROSITY_CASES usermat decks instead')
+    ap.add_argument('--source', help='another ds.dat with the same model (for example a refined mesh); '
+                                     'writes elastic_<label> and usermat_<label> from it')
+    ap.add_argument('--label', help='suffix for the --source decks, for example fine')
+    a = ap.parse_args()
+    if bool(a.source) != bool(a.label) or (a.source and a.porosity):
+        ap.error('--source and --label go together, and not with --porosity')
+    dest = Path(a.output_dir).resolve()
     if HERE.parent.parent.resolve() in dest.parents or dest == HERE.parent.parent.resolve():
         sys.exit('write the decks outside the repository')
-    if porosity:
+    if a.source:
+        src = Path(a.source).resolve()
+        text = src.read_text()
+        sha = hashlib.sha256(src.read_bytes()).hexdigest()
+        for kind in ('elastic', 'usermat'):
+            name = f'{kind}_{a.label}'
+            deck = build(kind, text)
+            (dest / name).mkdir(parents=True, exist_ok=True)
+            (dest / name / 'bracket.dat').write_text(deck, newline='\n')
+            e, n = deck_counts(deck)
+            print(f'{name}: {src} sha256 {sha} -> {dest / name / "bracket.dat"} ({e} elements, {n} nodes)')
+        return
+    if a.porosity:
         src = SOURCES['usermat']
         text = src.read_text()
         for case in POROSITY_CASES:
