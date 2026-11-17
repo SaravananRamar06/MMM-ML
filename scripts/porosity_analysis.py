@@ -114,7 +114,7 @@ def main():
                                     'relation, which the data do not define (open question Q4).'}
     out['caveats'] = ['Whether the generator intended density to represent porosity is unconfirmed (open question Q3).',
                       'Simulations only; units inferred; descriptive, not a validation of porosity physics.']
-    (RUN / 'porosity_analysis.json').write_text(json.dumps(out, indent=1) + '\n')
+    (RUN / 'porosity_analysis.json').write_text(json.dumps(out, indent=1) + '\n', newline='\n')  # LF on every OS: reports/** is byte-checked (.gitattributes)
     fr = out['density_vs_model']['full_range']
     print(f"density pairs {len(dens)}, lower density -> lower stress in {out['density_vs_model']['pairs_with_lower_density_lower_stress']}; "
           f"full range data {fr['data_rel_pct']:.3f}% model {fr['model_rel_pct']:.3f}% corr {fr['correlation_data_model']:.2f}; "

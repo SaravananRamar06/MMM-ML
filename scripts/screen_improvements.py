@@ -197,5 +197,5 @@ if __name__ == '__main__':
                recipe_3fold_cv=recipe(), curve_family_floor=floor(), correction_forms_balanced=forms())
     out['seconds'] = round(time.time() - t0, 1)
     out['versions'] = J.versions()
-    (root / 'reports/jc_pinn_20261107/improvement_screen.json').write_text(J.json_text(out))
+    (root / 'reports/jc_pinn_20261107/improvement_screen.json').write_text(J.json_text(out), newline='\n')  # LF on every OS: reports/** is byte-checked (.gitattributes)
     print(J.json_text({k: v for k, v in out.items() if k not in ('purpose',)}))

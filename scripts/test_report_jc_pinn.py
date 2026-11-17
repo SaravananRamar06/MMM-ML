@@ -97,7 +97,7 @@ summary = dict(
                     beats_ensemble_mlp=int((rm < rm_ens).sum())),
     caveat='The 37 test cases were explored in earlier project stages, so this is not a blind test. Agreement is with simulations, '
            'not experiments; stress units are inferred as MPa. No setting was chosen using these results.')
-(out / 'test_summary.json').write_text(J.json_text(dict(summary=summary, cases=cases)))
+(out / 'test_summary.json').write_text(J.json_text(dict(summary=summary, cases=cases)), newline='\n')  # LF on every OS: reports/** is byte-checked (.gitattributes)
 with (out / 'per_case.csv').open('w', newline='') as f:
     w = csv.DictWriter(f, fieldnames=list(cases[0]))
     w.writeheader()
@@ -167,6 +167,6 @@ video = dict(grid=[round(float(g), 6) for g in grid], cases=[dict(c, S=[round(fl
              M=[[round(float(v), 3) for v in members[j, k]] for j in range(len(members))]) for k, c in enumerate(cases)],
              summary=summary, train_ids=split['train'], test_ids=test, lock_sha=lock['equation_sha256'][:12],
              all_cases={int(i): dict(T=m['temperature'], lr=m['log10_strain_rate']) for i, m in man.items()})
-(out / 'video_bundle.json').write_text(json.dumps(video, separators=(',', ':')))
+(out / 'video_bundle.json').write_text(json.dumps(video, separators=(',', ':')), newline='\n')  # LF on every OS: reports/** is byte-checked (.gitattributes)
 s = summary
 print(json.dumps({k: s[k] for k in ('curve_rmse', 'points_summary', 'bias', 'members', 'comparison')}, indent=1))

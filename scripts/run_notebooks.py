@@ -75,7 +75,7 @@ def main():
             'reference_test_mean_rmse': json.loads((RUN / 'results.json').read_text())['test']['jc_pinn']['mean_rmse'],
             'members_identical_to_locked_equation': new['members'] == ref['members'],
             'theta_identical': new['theta'] == ref['theta']}
-    (RUN / 'notebook_execution.json').write_text(json.dumps(record, indent=2) + '\n')
+    (RUN / 'notebook_execution.json').write_text(json.dumps(record, indent=2) + '\n', newline='\n')  # LF on every OS: reports/** is byte-checked (.gitattributes)
     print(json.dumps(record, indent=2))
 
 
