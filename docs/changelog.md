@@ -1,5 +1,9 @@
 # Changelog
 
+## 17 November 2026: user answers recorded
+- The user confirmed the units, confirmed density as porosity, and declined data above 200 °C (decisions D1–D3). Q1, Q3 and Q6 are closed.
+- The report, paper and slides still say "units inferred". Updating them needs a rebuild of the numbers and PDFs.
+
 ## 17 November 2026: ANSYS USERMAT
 - New `umat/jc_pinn_usermat3d.F`, an ANSYS `usermat3d` wrapper around the same core as the UMAT. It returns plastic strain, `epseq`, energies and the consistent tangent, and sets `keycut` for bisection.
 - The generator now builds both files from a shared core template plus one wrapper per solver. The Abaqus file was regenerated; its numbers are unchanged.
