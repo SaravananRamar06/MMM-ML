@@ -1,5 +1,19 @@
 # Changelog
 
+## 17 November 2026: report, paper and slides brought up to date
+- **`write_latex_numbers.py`:** now also reads `umat/verification.json`, the MAPDL single-element CSVs and the bracket summaries (results, porosity, mesh, mesh_ep). It writes 60 new macros (164 in total). All 104 existing macros keep exactly the same values. `numbers.tex` and `numbers.json` are written with LF.
+- **`make_figures.py`:** copies the four committed bracket plots into `figures/` (`fig_bracket*`, `fig_mesh*`) without redrawing them. The existing figures were left as committed, because the data are unchanged and re-rendering with this machine's Matplotlib only changed their bytes.
+- **Report (19 pages):**
+  - new sections "From model to finite-element material" (UMAT/USERMAT, offline verification, MAPDL single element) and "Bracket results" (three materials, density-only porosity, mesh study);
+  - updated abstract, limitations and conclusion;
+  - wording for the units confirmed by the user, density as porosity, and no data above 200 °C (D1–D3).
+- **Paper (5 pages):** a new section and figure for the finite-element material and bracket, plus an updated abstract, limits and conclusion. Other text was condensed to stay within 5 pages, and no limit was dropped.
+- **Slides:**
+  - `JC-PINN.pptx`: 17 → 20 slides, built with `build_deck.py` from `numbers.json`;
+  - the corrected final deck: 20 → 23 slides, built with `build_corrected.js`. Its new slides read `numbers.json`, and its deployment slide now shows the USERMAT coupling as existing but unvalidated;
+  - both decks have the three new topics with speaker notes, and "units inferred" is gone. Both PDFs were exported with LibreOffice.
+- Q9's "what would close it" no longer lists the hardening-material run, which has been done.
+
 ## 17 November 2026: mesh check with the hardening EP material (Q9)
 - `make_decks.py --source … --kinds ep_miso` builds an EP deck from a refined SYS deck. The defaults are unchanged.
 - The refined EP mesh is identical to the refined elastic mesh. New `plot_mesh_ep.py`.
