@@ -1,0 +1,5 @@
+# Hash-checked evidence must be checked out byte for byte. A CRLF conversion
+# (Windows core.autocrlf=true) breaks the selection-lock fingerprint of
+# reports/jc_pinn_20261107/equation.json and the split hash.
+reports/** -text
+data/*.json -text
