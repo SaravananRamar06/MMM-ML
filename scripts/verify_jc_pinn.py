@@ -153,6 +153,8 @@ checks['protected_artifacts_archived'] = len(archived)
 
 passed = all(v for k, v in checks.items() if isinstance(v, bool))
 checks['all_passed'] = passed
-(run / 'verification.json').write_text(json.dumps(checks, indent=2) + '\n')
+# newline='\n': write LF on every OS. reports/** is checked out byte for byte (.gitattributes -text),
+# so text-mode CRLF on Windows would show every line of the file as changed.
+(run / 'verification.json').write_text(json.dumps(checks, indent=2) + '\n', newline='\n')
 print(json.dumps(checks, indent=2))
 sys.exit(0 if passed else 1)
