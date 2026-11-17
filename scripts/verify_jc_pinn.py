@@ -93,7 +93,10 @@ for i, d in test.items():
     worst_eq1 = max(worst_eq1, np.max(np.abs(eq1(list(EO['theta'].values()), T, lr, rho, G, d['E11'], c) - d['equation_only'])))
 checks['jc_pinn_predictions_reproduced_max_abs'] = float(worst_pinn)
 checks['equation_only_predictions_reproduced_max_abs'] = float(worst_eq1)
-checks['predictions_reproduced'] = worst_pinn < 1e-9 and worst_eq1 < 1e-9
+# Compare the Python floats: comparing NumPy scalars gives np.bool_, which json cannot write and
+# which the isinstance(v, bool) filter for all_passed below would silently skip.
+checks['predictions_reproduced'] = checks['jc_pinn_predictions_reproduced_max_abs'] < 1e-9 and \
+    checks['equation_only_predictions_reproduced_max_abs'] < 1e-9
 
 # 4. metrics recomputed from the saved CSVs
 ids = split['test']

@@ -1,5 +1,8 @@
 # Changelog
 
+## 17 November 2026: verifier fix for NumPy 2
+- `scripts/verify_jc_pinn.py` crashed under NumPy 2.5 because `predictions_reproduced` was a NumPy `bool_`, which `json` cannot write. `all_passed` also skipped it, because its filter only accepts Python `bool`. The check now compares the Python floats it already stores. On the locked run every check passes, with predictions reproduced to 2.6e-13. The locked run's files are unchanged.
+
 ## 17 November 2026: ANSYS single-element test passes
 - The USERMAT was built and run in MAPDL 2024 R1 on the user's machine. ifx 2026.2 replaced the ifort 2023 that the UPF guide asks for, because that version is no longer downloadable. The single-element S11 matches `expected_single_element.csv` to 1.2×10⁻⁵ MPa at all 240 substeps. Final values: S11 = 75.41 MPa, EQPS = 0.1188, flag 1. The evidence is in `umat/ansys_test/results_2026-11-17/`. Q10 is closed.
 - `single_element.mac` fixes: `OUTRES,SVAR,ALL`, so the state variables are saved, and `STORE,MERGE` before `*GET ... NSETS`, so the CSV gets all rows.
