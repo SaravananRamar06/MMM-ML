@@ -1,5 +1,13 @@
 # Changelog
 
+## 17 November 2026: bracket solved with the JC-PINN USERMAT (one mesh)
+- New `bracket/ansys_usermat/`:
+  - `make_decks.py` writes MAPDL decks from the committed Workbench `ds.dat` files without changing them. The decks are elastic, EP (MISO) and USERMAT at the study point. It rewrites the 2026 R1 `eblock,COMPACT` block so that MAPDL 2024 R1 can read it.
+  - `post_bracket.mac` writes the per-substep histories, and `plot_results.py` plots them.
+- On the Workbench mesh (7,304 SOLID186 elements) and its −2 mm imposed UX, the USERMAT run converges to the end with one bisection. The reaction peaks at 190.4 kN at −0.455 mm and is 136.7 kN at −2 mm. Peak element stress is 136 MPa, and peak EQPS is 0.36. 190 elements end beyond EQPS 0.0999.
+- The elastic and EP decks repeat the original Workbench solves substep for substep.
+- Evidence: `bracket/ansys_usermat/results_2026-11-17/`. Q9 is narrowed; mesh dependence is still open.
+
 ## 17 November 2026: verifier fix for NumPy 2
 - `scripts/verify_jc_pinn.py` crashed under NumPy 2.5 because `predictions_reproduced` was a NumPy `bool_`, which `json` cannot write. `all_passed` also skipped it, because its filter only accepts Python `bool`. The check now compares the Python floats it already stores. On the locked run every check passes, with predictions reproduced to 2.6e-13. The locked run's files are unchanged.
 
