@@ -1,5 +1,15 @@
 # Changelog
 
+## 17 November 2026: bracket porosity comparison (density only, one mesh)
+- `make_decks.py --porosity` writes five USERMAT decks that differ only in TBDATA:
+  - φ = 0, 4 and 7.85 % at G = 24541 MPa;
+  - G = 23313.95 and 25300 MPa at φ = 4 %.
+
+  Without the flag it writes byte-identical decks to before. New `expected_flow_stress.py` gives the single-element expectation and `plot_porosity.py` the plot and summary.
+- **Bracket:** φ 0 → 7.85 % at fixed G lowers the peak reaction by 0.16 % (190.53 → 190.23 kN), the same as the single-element change near yield (−0.15 %). At −2 mm the drop is 0.34 %, which is post-peak and mesh dependent. G −5.0 % and +3.1 % move the peak by −1.76 % and +0.98 %.
+- **Runs:** all converge with 0 errors, and phi4 repeats the earlier study-point run exactly.
+- This is the density-only part of the porosity effect; G(φ) is still unknown (Q4). Evidence: `bracket/ansys_usermat/porosity_2026-11-17/`.
+
 ## 17 November 2026: bracket solved with the JC-PINN USERMAT (one mesh)
 - New `bracket/ansys_usermat/`:
   - `make_decks.py` writes MAPDL decks from the committed Workbench `ds.dat` files without changing them. The decks are elastic, EP (MISO) and USERMAT at the study point. It rewrites the 2026 R1 `eblock,COMPACT` block so that MAPDL 2024 R1 can read it.
