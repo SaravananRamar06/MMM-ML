@@ -1,4 +1,3 @@
-# Only for rebuilding the videos and the presentation
+# Only for rebuilding the videos in reports/jc_pinn_20261107/ (the slide deck is built with Node and pptxgenjs; see presentation/README.md)
 edge-tts>=7
-python-pptx>=1.0
 playwright>=1.40

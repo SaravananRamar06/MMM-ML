@@ -1,6 +1,7 @@
 // Builds "Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx" (23 slides), applying the
-// 9 Nov 2026 presentation audit (branch codex/presentation-audit, 118fdf5). The original deck is build_final.js.
-// Run: NODE_PATH=<dir containing pptxgenjs> node build_final.js <dir containing scripts/apply_theme.js>
+// Builds "Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx", the project's only slide deck.
+// Started from the 9 Nov 2026 presentation audit; numbers for the FE slides come from report/numbers.json.
+// Run: NODE_PATH=<dir containing pptxgenjs> node build_corrected.js <dir containing scripts/apply_theme.js>
 const path = require("path");
 const pptxgen = require("pptxgenjs");
 const { applyTheme } = require(path.join(process.argv[2], "scripts/apply_theme.js"));
@@ -535,7 +536,7 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
 {
   const s = content("Deploy", 5, "16 · From model to Ansys material", "The locked JC-PINN, generated into an Ansys user material");
   const steps = [
-    ["Generate", "Abaqus UMAT and ANSYS USERMAT written from the locked weights; not refitted. J2 plasticity, radial return, consistent tangent.", NAVY],
+    ["Generate", "ANSYS USERMAT written from the locked weights; not refitted. J2 plasticity, radial return, consistent tangent.", NAVY],
     ["Verify offline", `Flow stress to ${N.VerStressErr} (relative), slope ${N.VerSlopeErr}, tangent ${N.VerTangentErr}; ${N.VerFlagChecks}/${N.VerFlagChecks} range flags correct.`, STEEL],
     ["Run in MAPDL 2024 R1", `One element to ε₁₁ = 0.12: matches the offline result to ${N.SeMaxDiff} MPa at all ${N.SePoints} substeps (tolerance ${N.SeTol}).`, ORANGE],
   ];
@@ -546,16 +547,16 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
     text(s, h, { x: x + 0.85, y: 2.0, w: 2.9, h: 0.4, fontSize: 18, bold: true });
     text(s, b, { x: x + 0.25, y: 2.6, w: 3.4, h: 1.7, fontSize: 13.5, color: MUTED });
   });
-  const stats = [[`${N.SeMaxDiff} MPa`, "MAPDL vs offline, single element"], [`${N.SeSFinal} MPa`, `final σ₁₁ (EQPS ${N.SeEqpsFinal}, flag ${N.SeFlagFinal})`], ["ν = 0.33", "assumed; elasticity from G"], ["offline only", "Abaqus UMAT not yet run in Abaqus"]];
+  const stats = [[`${N.SeMaxDiff} MPa`, "MAPDL vs offline, single element"], [`${N.SeSFinal} MPa`, `final σ₁₁ (EQPS ${N.SeEqpsFinal}, flag ${N.SeFlagFinal})`], ["ν = 0.33", "assumed; elasticity from G"], [`${N.VerStressErr}`, "offline relative error vs the Python model"]];
   stats.forEach(([v, l], i) => {
     const x = 0.6 + i * 3.08;
     card(s, x, 4.6, 2.9, 1.35, i === 0 ? NAVY : ICE);
     text(s, v, { x: x + 0.2, y: 4.72, w: 2.6, h: 0.55, fontSize: 22, bold: true, color: i === 0 ? WHITE : (i === 3 ? ORANGE : NAVY) });
     text(s, l, { x: x + 0.2, y: 5.3, w: 2.6, h: 0.55, fontSize: 12, color: i === 0 ? LINE : MUTED });
   });
-  text(s, "Strain E11 is read as plastic strain; outside the data the routines flag, they do not clamp. Evidence: umat/verification.json, umat/ansys_test/results_2026-11-17/.",
+  text(s, "Strain E11 is read as plastic strain; outside the data the routine flags, it does not clamp. Evidence: umat/verification.json, umat/ansys_test/results_2026-11-17/.",
     { x: 0.6, y: 6.2, w: 12.1, h: 0.6, fontSize: 12.5, color: MUTED });
-  s.addNotes(`After the model was locked, and without refitting it, we generated two user materials from its weights: an Abaqus UMAT and an ANSYS USERMAT. Both are J2 plasticity with a radial return and a consistent tangent; the flow stress is the JC-PINN prediction at the current plastic strain, and the elastic part comes from G and an assumed Poisson's ratio of 0.33. Offline they reproduce the Python model to a relative error of ${N.VerStressErr}, and the tangent to ${N.VerTangentErr}. We then built the USERMAT into MAPDL 2024 R1 and pulled one element to 12 percent strain: at all ${N.SePoints} substeps it matches the offline result to ${N.SeMaxDiff} megapascals, against a tolerance of ${N.SeTol}. The Abaqus version has only been checked offline.`);
+  s.addNotes(`After the model was locked, and without refitting it, we generated an ANSYS user material, a USERMAT, from its weights. It is J2 plasticity with a radial return and a consistent tangent; the flow stress is the JC-PINN prediction at the current plastic strain, and the elastic part comes from G and an assumed Poisson's ratio of 0.33. Offline it reproduces the Python model to a relative error of ${N.VerStressErr}, and the tangent to ${N.VerTangentErr}. We then built the USERMAT into MAPDL 2024 R1 and pulled one element to 12 percent strain: at all ${N.SePoints} substeps it matches the offline result to ${N.SeMaxDiff} megapascals, against a tolerance of ${N.SeTol}.`);
 }
 {
   const s = content("Deploy", 5, "17 · Bracket", "The bracket with the JC-PINN, and what density alone does");
@@ -622,10 +623,10 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
   card(s, 8.05, 4.5, 4.65, 2.4, ICE);
   text(s, "STATUS ON MAIN", { x: 8.3, y: 4.63, w: 4.2, h: 0.26, fontSize: 11, bold: true, color: STEEL, charSpacing: 3 });
   text(s, [
-    B("Exists: ", { color: GREEN }), R("locked JC-PINN inference with range warnings; porosity material-study workflow; material-card writer; ANSYS USERMAT and Abaqus UMAT (verified, not validated).", { breakLine: true }),
-    B("Planned: ", { color: ORANGE }), R("regularised softening, crack model and K"), sub("IC"), R(", fatigue assessment and the decision tool. The older Model Studio app is archived."),
+    B("Exists: ", { color: GREEN }), R("locked JC-PINN inference with range warnings; porosity material-study workflow; material-card writer; ANSYS USERMAT (verified, not validated).", { breakLine: true }),
+    B("Planned: ", { color: ORANGE }), R("regularised softening, crack model and K"), sub("IC"), R(", fatigue assessment and the decision tool."),
   ], { x: 8.3, y: 4.95, w: 4.25, h: 1.9, fontSize: 12.5, paraSpaceAfter: 6 });
-  s.addNotes("This slide separates what exists from what is planned. On the main branch today: the locked JC-PINN can be run for given conditions with range warnings; a porosity material-study workflow uses it; and a material-card writer can export CSV, APDL or XML tables, though it is an unvalidated template, and converting total axial strain to plastic strain needs a confirmed Young's modulus. The JC-PINN now runs in the Ansys bracket model as a user material: it is verified, not validated, and its results after yield depend on the mesh. Still planned: a regularised softening law; a fracture check with a specified crack geometry and orientation, a stress intensity from the crack-opening stress, and a toughness source; and the decision tool. Accept, inspect or reject is a concept only: a static critical crack size is not a fatigue or airworthiness criterion. The older Model Studio app has been archived.");
+  s.addNotes("This slide separates what exists from what is planned. On the main branch today: the locked JC-PINN can be run for given conditions with range warnings; a porosity material-study workflow uses it; and a material-card writer can export CSV, APDL or XML tables, though it is an unvalidated template, and converting total axial strain to plastic strain needs a confirmed Young's modulus. The JC-PINN now runs in the Ansys bracket model as a user material: it is verified, not validated, and its results after yield depend on the mesh. Still planned: a regularised softening law; a fracture check with a specified crack geometry and orientation, a stress intensity from the crack-opening stress, and a toughness source; and the decision tool. Accept, inspect or reject is a concept only: a static critical crack size is not a fatigue or airworthiness criterion.");
 }
 
 // ================================================================== 18 Limits and open questions
