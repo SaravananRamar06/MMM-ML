@@ -1,5 +1,10 @@
 # Changelog
 
+## 18 November 2026: Team 8 end-semester submission
+- **Report:** a title page with the course, Team 8's names and roll numbers, the instructor and IIITDM Kancheepuram (21 pages).
+- **Submission deck:** `scripts/make_submission_deck.py` keeps the cover, 15 content slides and the thank-you slide of the 24-slide corrected deck, renumbers them and fixes the cached slide numbers. It was imported into Canva, where the cover's team names were set to one size, and exported as `Team8_Presentation.pptx` / `.pdf` (17 slides, speaker notes on all of them). Every decimal number on the slides and notes was checked against `report/numbers.json`: no mismatch. The values not in `numbers.json` come from the team's Ansys screenshots (595.27, 320.79, 323.81 MPa and their ratio 1.86), the training trace (0.171 to 0.0028), the test summary (0.4386 = 0.439 unrounded; pooled point RMSE 0.504), 6.23 (`SelGroups` 6.235 rounded) and the 2.5 mm mesh size.
+- **`scripts/build_submission.py`:** builds, from a `git archive` of one commit, `Upload_1_UMAT_UPF_and_FE_model/` (+ zip), `Upload_2_PPT_and_Report/` and `submission files/` (report, presentation, FEA simulations including the team's JC comparison study, USERMAT/UMAT code, the locked model weights and the Colab notebooks), each with a `MANIFEST.txt` (size, SHA-256, commit). Raw data, solver scratch files, the USERMAT DLL, environments and credentials are left out. The LaTeX source zip is test-compiled on its own (21 pages, no undefined references). The output folders are not committed.
+
 ## 17 November 2026: open items (D4, D5, the coupled porosity study, Q5 reasoning)
 - **D4:** Abaqus is not used. Q9 no longer asks for Abaqus runs. The hosted-notebook checklist (`docs/hosted-notebook-check.md`) is ready for the user to run for Q8.
 - **Proposal:** `docs/proposals/open-items-2026-11-17.md` compares five G(φ) relations and an LEFM method for critical flaw length, with cited K_IC and Y values.

@@ -140,6 +140,8 @@ python scripts/make_figures.py && python scripts/write_latex_numbers.py && pytho
 cd report && latexmk -pdf report.tex && cd ../paper && latexmk -pdf paper.tex
 ```
 
+Team 8's submission folders (both uploads and `submission files/`) are built outside the repository by `python scripts/build_submission.py --commit <rev> --presentation <dir with the Canva exports> --latex-bin <MiKTeX bin>`.
+
 The videos are rebuilt from `reports/jc_pinn_20261107/video/` and `test_report/video/`. That needs `requirements-media.txt`, Playwright and ffmpeg.
 
 ## Earlier work
