@@ -320,7 +320,7 @@ pres.addSection({ title: "EDA" });
   const vars = [
     ["Temperature T", "30 · 100 · 200 °C"],
     ["Strain rate ε̇", "10⁻⁵ · 10⁻⁴ · 10⁻³ /s"],
-    ["Density ρ", "2488 · 2619 · 2700 kg/m³ → porosity via φ = 1 − ρ/2700 (confirmed by the user): 7.85 · 3 · 0 %. Physical interpretation pending the professor's confirmation"],
+    ["Density ρ", "2488 · 2619 · 2700 kg/m³ → porosity via φ = 1 − ρ/2700 (confirmed by the user): 7.85 · 3 · 0 %."],
     ["Shear modulus G", "23 314 · 24 541 · 25 300 MPa"],
     ["Output", "von Mises stress Svm along axial strain E11 = 0–10 %"],
   ];
@@ -331,7 +331,7 @@ pres.addSection({ title: "EDA" });
     text(s, v, { x: 7.6, y: y + 0.31, w: 4.9, h: i === 2 ? 0.68 : 0.34, fontSize: 13.5, color: MUTED });
   });
   text(s, "Units (°C, /s, kg/m³, MPa) confirmed by the user; no documentation of the generator was seen.", { x: 7.6, y: 6.2, w: 4.9, h: 0.48, fontSize: 11.5, color: STEEL, bold: true });
-  s.addNotes("The professor gave us a design matrix of 108 simulations; 73 have results, about 2.2 million rows of history. Every cell of temperature and strain rate has 9 combinations of density and shear modulus, except 200 degrees at the slowest rate, which has only one case, and 300 degrees, which has none. Porosity is represented through density with the user-confirmed mapping, phi equals one minus rho over 2700: that gives 0, 3 and 7.85 percent for the three density levels, and our 4 percent study point corresponds to 2592. Whether density really encodes porosity in this dataset still needs the professor's confirmation.");
+  s.addNotes("The professor gave us a design matrix of 108 simulations; 73 have results, about 2.2 million rows of history. Every cell of temperature and strain rate has 9 combinations of density and shear modulus, except 200 degrees at the slowest rate, which has only one case, and 300 degrees, which has none. Porosity is represented through density with the user-confirmed mapping, phi equals one minus rho over 2700: that gives 0, 3 and 7.85 percent for the three density levels, and our 4 percent study point corresponds to 2592. The user confirmed that density stands for porosity, although we never saw the generator's documentation.");
 }
 
 // ================================================================== 10 EDA: curves and factor effects
@@ -546,7 +546,7 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
     text(s, h, { x: x + 0.85, y: 2.0, w: 2.9, h: 0.4, fontSize: 18, bold: true });
     text(s, b, { x: x + 0.25, y: 2.6, w: 3.4, h: 1.7, fontSize: 13.5, color: MUTED });
   });
-  const stats = [[`${N.SeMaxDiff} MPa`, "MAPDL vs offline, single element"], [`${N.SeSFinal} MPa`, `final σ₁₁ (EQPS ${N.SeEqpsFinal}, flag ${N.SeFlagFinal})`], ["ν = 0.33", "assumed; elasticity from G"], ["offline only", "Abaqus UMAT not yet run in Abaqus"]];
+  const stats = [[`${N.SeMaxDiff} MPa`, "MAPDL vs offline, single element"], [`${N.SeSFinal} MPa`, `final σ₁₁ (EQPS ${N.SeEqpsFinal}, flag ${N.SeFlagFinal})`], ["ν = 0.33", "assumed; elasticity from G"], ["offline only", "Abaqus UMAT: Abaqus not used (D4)"]];
   stats.forEach(([v, l], i) => {
     const x = 0.6 + i * 3.08;
     card(s, x, 4.6, 2.9, 1.35, i === 0 ? NAVY : ICE);
@@ -654,7 +654,7 @@ pres.addSection({ title: "Limits" });
     ["Evidence", "The test set is not blind. Case 60 (200 °C, 10⁻⁵ /s) is a single irregular case. The team's Ansys comparison set-up is not archived. No experimental validation. Bracket results after yield depend on the mesh (softening): not a converged strength.", ORANGE],
     ["Definitions", "Units (MPa etc.) and density-as-porosity confirmed by the user, but no generator documentation: Svm's spatial averaging and generating solver are unknown; Evm is not established as accumulated plastic strain; why every curve ends below its start is unexplained.", STEEL],
     ["Porosity", "Represented through density, φ = 1 − ρ/2700 (confirmed by the user; cases at 0, 3 and 7.85 %; 4 % study point = 2592 kg/m³). G(φ) = 25300 (1 − φ) is an assumed upper bound. Backbone exponent r ≈ 0, but the correction also sees density; this does not show real pores are harmless.", NAVY],
-    ["CL not yet computed", [R("Needs crack geometry and orientation, a pore-to-crack convention, a K"), sub("IC"), R(" source, K"), sub("I"), R("(a) from the crack-opening stress, an LEFM check (or J), and fatigue assessment for cyclic loads. To confirm with the professor.")], CYAN],
+    ["CL not yet computed", [R("Needs crack geometry and orientation, a pore-to-crack convention, a K"), sub("IC"), R(" source, K"), sub("I"), R(`(a) from the crack-opening stress, an LEFM check (or J), and fatigue for cyclic loads. No service load exists, and LEFM is not valid at the yielding peak (plastic zone ${N.ClPlasticZoneMin}–${N.ClPlasticZoneMax} mm).`)], CYAN],
   ];
   blocks.forEach(([h, b, col], i) => {
     const x = 0.6 + (i % 2) * 6.15, y = 1.75 + Math.floor(i / 2) * 2.6;
@@ -673,10 +673,10 @@ pres.addSection({ title: "Close" });
   s.addText("CONCLUSION", { placeholder: "kicker" });
   s.addText("What we showed, and what comes next", { placeholder: "title" });
   const pts = [
-    ["Bracket set-up and Ansys peaks", "With an upper-half bore load, the team's plastic runs peak at the bore. The elastic peak is 1.86× the built-in JC peak (set-up details not archived)."],
-    ["A single-peak agreement only", "JC-U's peak is within 0.94 % of built-in JC. This does not validate the material law, the full response or JC-PINN-to-Ansys coupling."],
+    ["The team's Ansys runs", "With an upper-half bore load the plastic runs peak at the bore; the elastic peak is 1.86× the built-in JC peak, and JC-U is within 0.94 % of it: a single-peak agreement, not a validation (set-up not archived)."],
+    ["The JC-PINN as an Ansys material", `USERMAT matches the model to ${N.SeMaxDiff} MPa; bracket peak ${N.BrUsermatPeakkN} kN. φ 0 → 7.85 % with G coupled: ${sgn(N.GphiPeakChangePct)} % peak. After yield the result is mesh dependent (${sgn(N.BrMeshPeakChangePct)} % peak at half the element size).`],
     ["An accurate JC-backbone hybrid", "0.4386 mean curve RMSE on 37 held-out cases (R² 0.9995; 37/37 better than the JC law alone). λ = 0, and the physics-disabled control did better: no accuracy benefit from physics is shown."],
-    ["Next: critical flaw size · PLANNED", [R("Define crack geometry, orientation and K"), sub("IC"), R("; compute K"), sub("I"), R("(a) from the crack-opening stress; regularise the softening (mesh dependence), measure G(φ) (ours is an assumed upper bound) and add fatigue before any decision tool.")]],
+    ["Next: critical flaw size · PLANNED", [R("Define crack geometry, orientation and K"), sub("IC"), R("; compute K"), sub("I"), R("(a) at a service load (none exists yet); regularise the softening (mesh dependence); measure G(φ) (ours is an assumed upper bound); add fatigue before any decision tool.")]],
   ];
   pts.forEach(([h, b], i) => {
     const x = 0.6 + (i % 2) * 6.15, y = 1.75 + Math.floor(i / 2) * 2.42;
@@ -686,7 +686,7 @@ pres.addSection({ title: "Close" });
     text(s, b, { x: x + 0.3, y: y + 1.08, w: 5.4, h: 1.1, fontSize: 13.5, color: PALE });
   });
   text(s, "Ansys results: team screenshots, not independently re-run. Material-data units confirmed by the user (no generator documentation). No experimental validation.", { x: 0.6, y: 6.68, w: 11, h: 0.3, fontSize: 11, color: LINE });
-  s.addNotes("To conclude. With the upper-half bore load, the team's plastic Ansys runs peak at the bore, and the elastic peak is 1.86 times the built-in Johnson-Cook peak; the set-up details were not archived. The user-defined run's peak is within 0.94 percent of the built-in one, but that single number does not validate the material law, the full response or any coupling from our model. Our JC-backbone hybrid reproduces the 37 held-out simulations to a mean curve RMSE of 0.4386, R squared 0.9995, and beats the JC law alone on every case. Its selected physics-loss weight is zero and the physics-disabled control did better, so we do not claim an accuracy benefit from physics. Next, still planned: a crack model with toughness, the stress intensity from the crack-opening stress, a validated Ansys coupling and a fatigue assessment, before any decision tool.");
+  s.addNotes(`To conclude. With the upper-half bore load, the team's plastic Ansys runs peak at the bore; the elastic peak is 1.86 times the built-in Johnson-Cook peak, and the user-defined run is within 0.94 percent of it, which is a single-peak agreement, not a validation. Our JC-backbone hybrid reproduces the 37 held-out simulations to a mean curve RMSE of 0.4386, R squared 0.9995, and beats the JC law alone on every case; its physics-loss weight is zero and the physics-disabled control did better, so we do not claim an accuracy benefit from physics. Generated into an Ansys user material, it matches the model to ${N.SeMaxDiff} megapascals and solves the bracket: the reaction peaks at ${N.BrUsermatPeakkN} kilonewtons; with G coupled to porosity, 0 to 7.85 percent lowers the peak by ${N.GphiPeakChangePct} percent; and because the model softens, the result after yield depends on the mesh. Next: a service load, toughness and crack model for the critical flaw size, a regularised softening law, a measured G of phi, and a fatigue assessment.`);
 }
 
 // ================================================================== 20 Thank you

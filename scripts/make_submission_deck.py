@@ -47,6 +47,17 @@ def main():
                     runs[0].text = KICKER.sub(lambda m: f'{content}{m.group(2)}', runs[0].text, count=1)
                     break
     assert content == 15
+    # Slide-number fields keep a cached value from the 24-slide deck, and importers (Canva) show that value:
+    # set it to the new position. Drop the slide-number placeholder from the notes pages, which some
+    # importers append to the speaker notes.
+    ns = {'a': 'http://schemas.openxmlformats.org/drawingml/2006/main'}
+    for k, slide in enumerate(prs.slides, 1):
+        for t in slide._element.xpath('.//a:fld[@type="slidenum"]/a:t'):
+            t.text = str(k)
+        if slide.has_notes_slide:
+            for sh in list(slide.notes_slide.shapes):
+                if sh.is_placeholder and sh.placeholder_format.type is not None and sh.placeholder_format.type == 13:  # SLIDE_NUMBER
+                    sh._element.getparent().remove(sh._element)
     out.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(out))
     print(f'wrote {out} ({len(prs.slides)} slides: 1 intro, {content} content, 1 outro)')
