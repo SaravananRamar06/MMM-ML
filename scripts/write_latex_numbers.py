@@ -56,14 +56,13 @@ def collect():
     n['TestEq'], n['TestLookup'] = f2(res['test']['equation_only']['mean_rmse']), f3(res['test']['lookup']['mean_rmse'])
     n['TestEqWorst'] = f2(res['test']['equation_only']['worst_rmse'])
     c = test['comparison']
-    n['WinsEq'], n['WinsLookup'], n['WinsSingle'], n['WinsEnsemble'] = (str(c[k]) for k in ('beats_equation_only', 'beats_lookup', 'beats_single_mlp', 'beats_ensemble_mlp'))
+    n['WinsEq'], n['WinsLookup'], n['WinsSingle'] = (str(c[k]) for k in ('beats_equation_only', 'beats_lookup', 'beats_single_mlp'))
     n['Improvement'] = f'{res["test"]["equation_only"]["mean_rmse"] / t["mean_rmse"]:.0f}'
     n['DeltaMean'], n['DeltaMax'] = f3(res['correction']['test_mean_abs_delta']), f3(res['correction']['test_max_abs_delta'])
 
     # Baselines and the post-hoc control.
     n['SingleTest'], n['SingleCV'] = f3(base['single_mlp']['test']['mean_rmse']), f2(base['single_mlp']['cv'])
     n['SingleGroups'] = f2(sum(g['mean_rmse'] for g in base['single_mlp']['groups']) / len(base['single_mlp']['groups']))
-    n['EnsTest'], n['EnsGroups'] = f3(base['ensemble_mlp']['test']['mean_rmse']), f2(base['ensemble_mlp']['loco_mean_rmse'])
     n['CtrlCV'], n['CtrlGroups'], n['CtrlScore'] = f3(ctrl['control']['cv_mean_rmse']), f3(ctrl['control']['group_mean_rmse']), f3(ctrl['control']['score'])
     n['CtrlTest'], n['CtrlTestWorst'] = f3(ctrl['control']['test']['mean_rmse']), f3(ctrl['control']['test']['worst_rmse'])
 

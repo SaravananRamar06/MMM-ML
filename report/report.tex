@@ -25,7 +25,7 @@
 
 \begin{abstract}
 \noindent
-We build a material model for the simulated von Mises stress $S_{vm}$ of additively manufactured AlSi10Mg as a function of axial strain $E_{11}$, temperature, strain rate, density and shear modulus. Its governing law is our customised Johnson--Cook equation (Equation~1). The model multiplies Equation~1 by $\exp(\delta)$, where $\delta$ is a small neural correction (5--16--16--1, \nParams{} weights) whose output starts at zero, so the untrained model \emph{is} Equation~1. We call it a JC-PINN. Physics residuals were tested at \nColloc{} collocation points. The setting was chosen on the \nTrainCases{} training simulations alone, using a score that balances case-wise cross-validation with whole temperature/rate groups held out. The model was locked before the \nTestCasesSplit{} test simulations were read, and then scored once. Its mean per-curve RMSE is \nTestMean{}~MPa (median \nTestMedian{}, worst \nTestWorst{}); $R^2=\nTestRsq$ over \nTestPoints{} points, and \nTestWithinOne\,\% of points lie within $\pm1$~MPa. That is \nImprovement{} times more accurate than Equation~1 alone (\nTestEq{}~MPa). With whole conditions hidden, it is also better than our earlier single MLP (\nSelGroups{} against \nSingleGroups{}~MPa). On the random test split, purely data-driven MLPs remain more precise (\nSingleTest{} and \nEnsTest{}~MPa). A post-hoc control, the same network with Equation~1 switched off, scored better on every measure. Equation~1's separable form therefore buys interpretability and a physical backbone, not accuracy. After the lock, and without changing the model, we generated an Abaqus UMAT and an ANSYS USERMAT from its weights. They reproduce the model offline to a relative error of \num{\nVerStressErr}. In MAPDL~2024~R1 a single element matches the offline result to \num{\nSeMaxDiff}~MPa. On the project's wing-rib bracket at $\phi=4\,\%$, the reaction peaks at \nBrUsermatPeakkN~kN and then softens. Density alone ($\phi=0$ to 7.85\,\% at fixed $G$) changes that peak by only $\nPorDensPeakChangePct\,\%$. Halving the element size changes the peak by $\nBrMeshPeakChangePct\,\%$, while a hardening material changes by at most \nMeshEpMaxChangePct\,\%. The response after yield is therefore mesh dependent, and the bracket forces are not a converged strength. We state the limits throughout: the test set is not blind, the data are simulations rather than experiments, the units were confirmed by the user without documentation of the generator, nothing is validated above 200\,\textdegree C, and nothing is validated experimentally.
+We build a material model for the simulated von Mises stress $S_{vm}$ of additively manufactured AlSi10Mg as a function of axial strain $E_{11}$, temperature, strain rate, density and shear modulus. Its governing law is our customised Johnson--Cook equation (Equation~1). The model multiplies Equation~1 by $\exp(\delta)$, where $\delta$ is a small neural correction (5--16--16--1, \nParams{} weights) whose output starts at zero, so the untrained model \emph{is} Equation~1. We call it a JC-PINN. Physics residuals were tested at \nColloc{} collocation points. The setting was chosen on the \nTrainCases{} training simulations alone, using a score that balances case-wise cross-validation with whole temperature/rate groups held out. The model was locked before the \nTestCasesSplit{} test simulations were read, and then scored once. Its mean per-curve RMSE is \nTestMean{}~MPa (median \nTestMedian{}, worst \nTestWorst{}); $R^2=\nTestRsq$ over \nTestPoints{} points, and \nTestWithinOne\,\% of points lie within $\pm1$~MPa. That is \nImprovement{} times more accurate than Equation~1 alone (\nTestEq{}~MPa). With whole conditions hidden, it is also better than our earlier single MLP (\nSelGroups{} against \nSingleGroups{}~MPa). On the random test split, the purely data-driven single MLP remains more precise (\nSingleTest{}~MPa). A post-hoc control, the same network with Equation~1 switched off, scored better on every measure. Equation~1's separable form therefore buys interpretability and a physical backbone, not accuracy. After the lock, and without changing the model, we generated an ANSYS USERMAT (user material) from its weights. It reproduces the model offline to a relative error of \num{\nVerStressErr}. In MAPDL~2024~R1 a single element matches the offline result to \num{\nSeMaxDiff}~MPa. On the project's wing-rib bracket at $\phi=4\,\%$, the reaction peaks at \nBrUsermatPeakkN~kN and then softens. Density alone ($\phi=0$ to 7.85\,\% at fixed $G$) changes that peak by only $\nPorDensPeakChangePct\,\%$. Halving the element size changes the peak by $\nBrMeshPeakChangePct\,\%$, while a hardening material changes by at most \nMeshEpMaxChangePct\,\%. The response after yield is therefore mesh dependent, and the bracket forces are not a converged strength. We state the limits throughout: the test set is not blind, the data are simulations rather than experiments, the units were confirmed by the user without documentation of the generator, nothing is validated above 200\,\textdegree C, and nothing is validated experimentally.
 \end{abstract}
 
 \tableofcontents
@@ -273,11 +273,11 @@ Fig.~\ref{fig:comparison} places the JC-PINN among the alternatives on the same 
 \begin{itemize}
 \item it beats Equation~1 alone on all \nWinsEq{} cases;
 \item it beats the curve-copy lookup on \nWinsLookup{} of 37;
-\item it beats the earlier data-driven MLPs on none (single MLP \nSingleTest, five-network ensemble \nEnsTest~MPa).
+\item it beats the earlier data-driven single MLP on none (\nSingleTest~MPa).
 \end{itemize}
-The random split rewards close interpolation between neighbouring curves, which pure MLPs do best.
+The random split rewards close interpolation between neighbouring curves, which a pure MLP does best.
 
-Fig.~\ref{fig:groups} shows the harder question: prediction at conditions the model never saw. There the JC-PINN (\nSelGroups) is clearly better than the single MLP (\nSingleGroups), and much better than Equation~1 alone (\nEqGroups). Two caveats apply. Our group errors are slightly optimistic, because they were part of the selection score. The earlier five-network ensemble reported \nEnsGroups{}~MPa on similar holdouts with different folds.
+Fig.~\ref{fig:groups} shows the harder question: prediction at conditions the model never saw. There the JC-PINN (\nSelGroups) is clearly better than the single MLP (\nSingleGroups), and much better than Equation~1 alone (\nEqGroups). Two caveats apply. Our group errors are slightly optimistic, because they were part of the selection score.
 
 \paragraph{Control.} After the lock, we trained the same network with the same recipe but with Equation~1 replaced by a constant. This control was not used for selection. It scored better everywhere:
 \begin{itemize}
@@ -359,13 +359,8 @@ None beat the locked model, so we submit it unchanged. The evidence is in \file{
 \label{sec:fe}
 The work in this section and the next was done after the lock. It uses the locked weights as they are: nothing is refitted, and no test case is touched.
 
-\subsection{UMAT and USERMAT}
-\file{scripts/write_umat.py} writes the locked JC-PINN into two Fortran user materials:
-\begin{itemize}
-\item an Abaqus UMAT, \file{umat/jc_pinn_umat.f};
-\item an ANSYS USERMAT, \file{umat/jc_pinn_usermat3d.F}, for 3D, plane-strain and axisymmetric elements.
-\end{itemize}
-Both share one generated core. It holds the five networks' weights, Equation~1 and its constants, and evaluates the flow stress, with its analytic slope, as the model's prediction at the current equivalent plastic strain. Around that core is J2 plasticity with a radial return and a consistent tangent. Three choices follow the model's own definitions:
+\subsection{USERMAT}
+\file{scripts/write_umat.py} writes the locked JC-PINN into a Fortran user material for ANSYS (USERMAT, \file{umat/jc_pinn_usermat3d.F}), for 3D, plane-strain and axisymmetric elements. Its generated core holds the five networks' weights, Equation~1 and its constants, and evaluates the flow stress, with its analytic slope, as the model's prediction at the current equivalent plastic strain. Around that core is J2 plasticity with a radial return and a consistent tangent. Three choices follow the model's own definitions:
 \begin{itemize}
 \item \textbf{Strain.} The data's total strain $E_{11}$ is read as equivalent plastic strain (the decision of 7~Nov). Elastic stiffness comes from $G$ and an \emph{assumed} Poisson's ratio of 0.33.
 \item \textbf{Range.} Below the strain grid the flow stress is held at $\sigma(0.0002)$, and above it at $\sigma(0.0999)$. Conditions outside the data are \emph{flagged} in a state variable, not clamped.
@@ -373,14 +368,14 @@ Both share one generated core. It holds the five networks' weights, Equation~1 a
 \end{itemize}
 
 \subsection{Verification}
-The two routines were compiled with an offline driver and checked against the Python model (\file{umat/verification.json}; all checks \nVerPassed):
+The routine was compiled with an offline driver and checked against the Python model (\file{umat/verification.json}; all checks \nVerPassed):
 \begin{itemize}
 \item the flow stress agrees at \nVerFlowPoints{} points to a relative error of \num{\nVerStressErr}, and its slope agrees with finite differences to \num{\nVerSlopeErr};
 \item in single-element uniaxial tests, the stress stays on the flow curve to \num{\nVerCurveErr}, and the result does not depend on the increment size (spread \num{\nVerIncSpread}~MPa);
 \item the consistent tangent agrees with finite differences to \num{\nVerTangentErr};
 \item all \nVerFlagChecks{} range-flag cases set the expected flag.
 \end{itemize}
-The USERMAT was then built for MAPDL~2024~R1 and run on one SOLID185 element pulled to $\varepsilon_{11}=0.12$ at the study point (100\,\textdegree C, $10^{-4}$\,s$^{-1}$, $\rho=2592$, $G=24541$). At all \nSePoints{} substeps, MAPDL's $\sigma_{11}$ matches the offline result to \num{\nSeMaxDiff}~MPa, against a tolerance of \nSeTol~MPa. The final values are $\sigma_{11}=\nSeSFinal$~MPa, plastic strain \nSeEqpsFinal{} and flag \nSeFlagFinal{} (strain beyond the data). The evidence is in \file{umat/ansys_test/results_2026-11-17/}. The Abaqus UMAT has been checked offline only.
+The USERMAT was then built for MAPDL~2024~R1 and run on one SOLID185 element pulled to $\varepsilon_{11}=0.12$ at the study point (100\,\textdegree C, $10^{-4}$\,s$^{-1}$, $\rho=2592$, $G=24541$). At all \nSePoints{} substeps, MAPDL's $\sigma_{11}$ matches the offline result to \num{\nSeMaxDiff}~MPa, against a tolerance of \nSeTol~MPa. The final values are $\sigma_{11}=\nSeSFinal$~MPa, plastic strain \nSeEqpsFinal{} and flag \nSeFlagFinal{} (strain beyond the data). The evidence is in \file{umat/ansys_test/results_2026-11-17/}.
 
 %=====================================================================
 \section{Bracket results}
@@ -465,11 +460,11 @@ The conclusion is plain: the bracket forces after yield, including the peak, are
 \item \textbf{Not a blind test.} The 37 test cases were explored in earlier project stages, although nothing in this model's fitting or selection used them.
 \item \textbf{Simulations, not experiments.} Agreement is with the supplied simulations. Nothing here is experimentally validated, neither the model nor the bracket results.
 \item \textbf{Units confirmed by the user} (\textdegree C, s$^{-1}$, MPa, kg\,m$^{-3}$), but no documentation of the generator was seen. Which solver and constitutive model produced the histories, and why every one softens, is still open.
-\item \textbf{No data above 200\,\textdegree C,} and none will be added. No physics penalty acts there in the selected model, so 200--300\,\textdegree C is unvalidated extrapolation (flagged by the UMAT/USERMAT).
+\item \textbf{No data above 200\,\textdegree C,} and none will be added. No physics penalty acts there in the selected model, so 200--300\,\textdegree C is unvalidated extrapolation (flagged by the USERMAT).
 \item \textbf{Strain is total axial strain} $E_{11}$, read as plastic strain because the histories have no elastic segment. The finite-element material adds elasticity from $G$ and an assumed Poisson's ratio of 0.33.
 \item \textbf{Porosity mapping.} Density stands for porosity (confirmed by the user). Porosity and $G$ vary independently in the design, so the relation $G(\phi)$ needed for a real part is not defined by these data. Since $G$ acts about \nPorRatio{} times more strongly than density (about \nPorBrGOverDens{} times on the bracket), this relation dominates any bracket-level porosity effect. The bracket porosity results are density-only.
 \item \textbf{Mesh dependence.} The JC-PINN softens, so on the bracket the response after yield, including the peak force, depends on the mesh. Bracket forces are mesh-specific, not a converged strength. The finer mesh is a uniform split, not a Workbench remesh. A regularised softening law is future work.
-\item \textbf{Finite-element scope.} Only ANSYS was run, at one material condition, with an imposed displacement and small strain. The Abaqus UMAT is checked offline only.
+\item \textbf{Finite-element scope.} ANSYS was run at one material condition, with an imposed displacement and small strain.
 \item \textbf{No fracture prediction.} The bracket's critical flaw length is not predicted. That needs a method (flaw geometry, LEFM or J-integral) and a toughness value, and the data contain neither flaw sizes nor toughness.
 \item \textbf{Open choices.} Whether Equation~1 should depend on temperature and rate (its $B$ and $n$) is still a user decision; a screen showed no gain from the forms tried. The notebooks pass locally, but have not yet been run on hosted Colab or Kaggle.
 \item \textbf{Weak spot.} The model is weakest where training cases are scarce, notably at 30\,\textdegree C, $10^{-4}$\,s$^{-1}$.

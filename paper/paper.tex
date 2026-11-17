@@ -135,7 +135,7 @@ The worst eight cases share one condition (30\,\textdegree C, $10^{-4}$\,s$^{-1}
 \end{figure*}
 
 \subsection{Comparison and control}
-Table~\ref{tab:cmp} compares models on the same split. The JC-PINN beats the law alone on all \nWinsEq{} test cases and a nearest-curve lookup on \nWinsLookup, but neither earlier MLP on any case. On unseen groups it has about half the single-MLP error (Fig.~\ref{fig:groups}); this is somewhat optimistic, because the groups entered selection.
+Table~\ref{tab:cmp} compares models on the same split. The JC-PINN beats the law alone on all \nWinsEq{} test cases and a nearest-curve lookup on \nWinsLookup, but not the earlier single MLP on any case. On unseen groups it has about half the single-MLP error (Fig.~\ref{fig:groups}); this is somewhat optimistic, because the groups entered selection.
 A post-hoc control, the same network with the law replaced by a constant and not used for selection, was better on every measure. On these data, therefore, the separable law adds interpretability (named constants, correct trends, a sensible starting point) but not accuracy.
 
 \begin{table}[t]\centering\small
@@ -147,9 +147,7 @@ Equation 1 alone & \nEqCV & \nEqGroups & \nTestEq\\
 Nearest-curve lookup & \nLookupCV & \nLookupGroups & \nTestLookup\\
 \textbf{JC-PINN} & \textbf{\nSelCV} & \textbf{\nSelGroups} & \textbf{\nTestMean}\\
 Control (law off) & \nCtrlCV & \nCtrlGroups & \nCtrlTest\\
-Single MLP & \nSingleCV & \nSingleGroups & \nSingleTest\\
-Five-MLP ensemble & -- & \nEnsGroups$^{\ast}$ & \nEnsTest\\\bottomrule
-\multicolumn{4}{l}{\footnotesize $^{\ast}$Different holdout folds.}
+Single MLP & \nSingleCV & \nSingleGroups & \nSingleTest\\\bottomrule
 \end{tabular}
 \end{table}
 
@@ -188,9 +186,9 @@ The data imply $r\approx\nPorImpliedR$, but the separable fit sets $r=0$: the ef
 After the lock, alternatives were screened on the training cases only. Longer training (CV \nScrIterLong), weaker weight decay (\nScrAlphaLow) and a wider network (\nScrWide) were all worse than \nSelCV. Fitting $A-B\varepsilon^n$ to each curve separately still leaves \nFloorJCMean~MPa (a cubic reaches \nFloorCubicMean), so the power law is itself a floor and a correction is required. Bounded or additive corrections also scored worse (for example \nScrBoundedScore{} against \nSelScore). The locked model is kept.
 
 \section{Finite-element material and bracket}
-After the lock, and without refitting, \texttt{write\_umat.py} writes the weights into an Abaqus UMAT and an ANSYS USERMAT. Both are J2 plasticity with a radial return and a consistent tangent, and their flow stress is the model. Strain $E_{11}$ is read as plastic strain. Elasticity comes from $G$ and an assumed $\nu=0.33$.
+After the lock, and without refitting, \texttt{write\_umat.py} writes the weights into an ANSYS USERMAT (user material). It is J2 plasticity with a radial return and a consistent tangent, and its flow stress is the model. Strain $E_{11}$ is read as plastic strain. Elasticity comes from $G$ and an assumed $\nu=0.33$.
 
-Offline, both reproduce the model to \num{\nVerStressErr} and the tangent to \num{\nVerTangentErr}. In MAPDL~2024~R1 a single element matches to \num{\nSeMaxDiff}~MPa.
+Offline, it reproduces the model to \num{\nVerStressErr} and the tangent to \num{\nVerTangentErr}. In MAPDL~2024~R1 a single element matches to \num{\nSeMaxDiff}~MPa.
 
 On the project's bracket (\nMeshElemCoarse{} SOLID186, imposed $U_X=-2$~mm, study point $\phi=4\,\%$), the reaction peaks at \nBrUsermatPeakkN~kN, then softens (Fig.~\ref{fig:mesh}). With $G$ fixed, density alone ($\phi$ 0 to 7.85\,\%) changes the peak by $\nPorDensPeakChangePct\,\%$, matching the single-element $\nPorSeDensYieldPct\,\%$. Per percent, $G$ acts about \nPorBrGOverDens{} times more strongly, and $G(\phi)$ is unknown, so this is only the density part of the porosity effect.
 
