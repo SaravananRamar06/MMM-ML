@@ -1,13 +1,15 @@
-"""Verify the generated Abaqus UMAT (umat/jc_pinn_umat.f) against the locked JC-PINN, without Abaqus.
+"""Verify the generated user materials against the locked JC-PINN, without Abaqus or ANSYS.
 
-Compiles the UMAT with gfortran together with the offline driver (umat/test/umat_driver.f) and checks:
-  1. generated file is up to date with equation.json and the template;
+Compiles each of umat/jc_pinn_umat.f (Abaqus UMAT) and umat/jc_pinn_usermat3d.F (ANSYS usermat3d)
+with gfortran and the offline driver (umat/test/umat_driver.F, -DANSYS for ANSYS) and checks:
+  1. generated files are up to date with equation.json and the templates;
   2. flow stress and its slope at 2000 random points vs the NumPy model (jc_pinn.equation_predict) and
      a central finite difference;
   3. single-element uniaxial stress (3D and 4-component) at several conditions and increment sizes:
      elastic slope, stress on the flow curve, strain split eps = p + sigma/E, increment-size independence;
   4. the consistent tangent DDSDDE vs a central finite difference of the stress update;
-  5. the range flags (STATEV 3).
+  5. the range flags (STATEV 3);
+  6. ANSYS only: the plastic strain tensor epsPl returned by usermat3d (uniaxial: p, -p/2).
 Writes umat/verification.json.  Run:  python scripts/verify_umat.py
 """
 import json
@@ -26,8 +28,8 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 import jc_pinn as J  # noqa: E402
 import write_umat  # noqa: E402
 
-UMAT = ROOT / 'umat/jc_pinn_umat.f'
-DRIVER = ROOT / 'umat/test/umat_driver.f'
+SOURCES = {kind: out for kind, (_, out) in write_umat.TARGETS.items()}
+DRIVER = ROOT / 'umat/test/umat_driver.F'
 REPORT = ROOT / 'umat/verification.json'
 NU = 0.33                                   # assumed Poisson's ratio used in the checks only
 CONDITIONS = [                              # T degC, rate 1/s, density, G MPa
@@ -38,12 +40,14 @@ CONDITIONS = [                              # T degC, rate 1/s, density, G MPa
 ]
 
 
-def compile_driver(workdir):
+def compile_driver(workdir, kind='abaqus'):
     fc = shutil.which('gfortran')
     if fc is None:
         raise RuntimeError('gfortran not found')
-    exe = Path(workdir) / 'umat_driver'
-    cmd = [fc, '-O2', '-ffixed-form', f'-I{ROOT / "umat/test"}', str(DRIVER), str(UMAT), '-o', str(exe)]
+    exe = Path(workdir) / f'umat_driver_{kind}'
+    flags = ['-DANSYS'] if kind == 'ansys' else []
+    cmd = [fc, '-O2', '-ffixed-form', *flags, f'-I{ROOT / "umat/test"}', str(DRIVER), str(SOURCES[kind]),
+           '-o', str(exe)]
     subprocess.run(cmd, check=True, capture_output=True, text=True)
     return exe
 
@@ -89,7 +93,7 @@ def check_flow(exe, eq, n=2000, seed=0):
                 errors_flagged=int(F[:, 2].max()))
 
 
-def check_uniaxial(exe, eq, emax=0.12):
+def check_uniaxial(exe, eq, emax=0.12, plastic_tensor=False):
     out = []
     for T, rate, rho, G in CONDITIONS:
         props = [T, rate, rho, G, NU, 0.0, 0.0]
@@ -110,6 +114,9 @@ def check_uniaxial(exe, eq, emax=0.12):
                     on_flow_curve_rel_error=float(np.max(np.abs(s[pl] / ref - 1))),
                     strain_split_error=float(np.max(np.abs(eps[pl] - (p[pl] + s[pl] / E)))),
                     max_newton_iterations=int(its.max()))
+                if plastic_tensor:
+                    finals[f'ntens{ntens}_steps{nstep}']['plastic_tensor_error'] = float(max(
+                        np.max(np.abs(U[:, 9] - p)), np.max(np.abs(U[:, 10] + p / 2))))
         s_final = [v['sigma11'] for v in finals.values()]
         out.append(dict(T=T, rate=rate, density=rho, G=G, nu=NU, runs=finals,
                         increment_size_spread_MPa=float(max(s_final) - min(s_final))))
@@ -147,37 +154,53 @@ def check_flags(exe):
     return out
 
 
+def check_solver(kind, eq, workdir):
+    exe = compile_driver(workdir, kind)
+    return dict(source=str(SOURCES[kind].relative_to(ROOT)), flow=check_flow(exe, eq),
+                uniaxial=check_uniaxial(exe, eq, plastic_tensor=kind == 'ansys'),
+                tangent=check_tangent(exe), flags=check_flags(exe))
+
+
+TOL = dict(stress=1e-12, slope=1e-6, curve=1e-9, split=1e-10, spread=1e-8, tangent=1e-6, plastic_tensor=1e-12)
+
+
+def solver_passed(r):
+    runs = [run for c in r['uniaxial'] for run in c['runs'].values()]
+    return bool(r['flow']['max_rel_stress_error'] < TOL['stress']
+                and r['flow']['max_rel_slope_error_vs_fd'] < TOL['slope'] and r['flow']['errors_flagged'] == 0
+                and all(x['on_flow_curve_rel_error'] < TOL['curve'] and x['strain_split_error'] < TOL['split']
+                        and (x['elastic_slope_rel_error'] or 0) < TOL['curve']
+                        and x.get('plastic_tensor_error', 0) < TOL['plastic_tensor'] for x in runs)
+                and all(c['increment_size_spread_MPa'] < TOL['spread'] for c in r['uniaxial'])
+                and all(x['rel_error'] < TOL['tangent'] for x in r['tangent'])
+                and all(f['expected'] == f['got'] for f in r['flags'].values()))
+
+
 def run():
     eq = J.load_final_equation(ROOT)
-    up_to_date = UMAT.read_text() == write_umat.render()
+    up_to_date = {kind: SOURCES[kind].read_text() == write_umat.render(kind) for kind in SOURCES}
+    fc = subprocess.run(['gfortran', '--version'], capture_output=True, text=True).stdout.splitlines()[0]
     with tempfile.TemporaryDirectory() as tmp:
-        exe = compile_driver(tmp)
-        fc = subprocess.run(['gfortran', '--version'], capture_output=True, text=True).stdout.splitlines()[0]
-        result = dict(
-            umat='umat/jc_pinn_umat.f', generated_file_up_to_date=up_to_date, compiler=fc,
-            python=platform.python_version(), flow=check_flow(exe, eq), uniaxial=check_uniaxial(exe, eq),
-            tangent=check_tangent(exe), flags=check_flags(exe),
-            note=('Offline checks with a test driver and gfortran; not run inside Abaqus. Poisson ratio 0.33 is an '
-                  'assumption of the checks. The model strain is E11 taken as equivalent plastic strain (decision M4).'))
-    tol = dict(stress=1e-12, slope=1e-6, curve=1e-9, split=1e-10, spread=1e-8, tangent=1e-6)
-    ok = (up_to_date and result['flow']['max_rel_stress_error'] < tol['stress']
-          and result['flow']['max_rel_slope_error_vs_fd'] < tol['slope'] and result['flow']['errors_flagged'] == 0
-          and all(r['on_flow_curve_rel_error'] < tol['curve'] and r['strain_split_error'] < tol['split']
-                  and (r['elastic_slope_rel_error'] or 0) < tol['curve']
-                  for c in result['uniaxial'] for r in c['runs'].values())
-          and all(c['increment_size_spread_MPa'] < tol['spread'] for c in result['uniaxial'])
-          and all(t['rel_error'] < tol['tangent'] for t in result['tangent'])
-          and all(f['expected'] == f['got'] for f in result['flags'].values()))
-    result.update(tolerances=tol, passed=bool(ok))
+        solvers = {kind: check_solver(kind, eq, tmp) for kind in SOURCES}
+    for r in solvers.values():
+        r['passed'] = solver_passed(r)
+    result = dict(generated_files_up_to_date=up_to_date, compiler=fc, python=platform.python_version(),
+                  solvers=solvers, tolerances=TOL,
+                  note=('Offline checks with a test driver and gfortran; not run inside Abaqus or ANSYS. Poisson ratio '
+                        '0.33 is an assumption of the checks. The model strain is E11 taken as equivalent plastic '
+                        'strain (decision M4).'))
+    result['passed'] = bool(all(up_to_date.values()) and all(r['passed'] for r in solvers.values()))
     return result
 
 
 def main():
     result = run()
     REPORT.write_text(json.dumps(result, indent=2) + '\n')
-    print(json.dumps(dict(passed=result['passed'], flow=result['flow'],
-                          tangent_max=max(t['rel_error'] for t in result['tangent']),
-                          spread=[c['increment_size_spread_MPa'] for c in result['uniaxial']]), indent=2))
+    for kind, r in result['solvers'].items():
+        print(kind, json.dumps(dict(passed=r['passed'], flow=r['flow'],
+                                    tangent_max=max(x['rel_error'] for x in r['tangent']),
+                                    spread_max=max(c['increment_size_spread_MPa'] for c in r['uniaxial']))))
+    print('passed' if result['passed'] else 'FAILED')
     print(f'wrote {REPORT.relative_to(ROOT)}')
     return 0 if result['passed'] else 1
 

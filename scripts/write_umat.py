@@ -1,11 +1,15 @@
-"""Generate the Abaqus UMAT of the locked JC-PINN from its saved weights.
+"""Generate the Abaqus UMAT and the ANSYS USERMAT of the locked JC-PINN from its saved weights.
 
 Reads reports/jc_pinn_20261107/equation.json (checked against selection_lock.json; the locked
-files are only read, never changed) and fills umat/templates/jc_pinn_umat.f.in with the five
-members' weights, Equation 1 constants and data ranges. Writes umat/jc_pinn_umat.f.
+files are only read, never changed). Each output is a solver wrapper template followed by the
+shared core (umat/templates/jc_pinn_core.f.in) filled with the five members' weights, Equation 1
+constants and data ranges:
 
-The output is deterministic, so tests can check that the committed file matches its source.
-Run:  python scripts/write_umat.py [--output PATH] [--check]
+    umat/jc_pinn_umat.f        Abaqus/Standard UMAT      (templates/abaqus_umat.f.in)
+    umat/jc_pinn_usermat3d.F   ANSYS USERMAT, usermat3d  (templates/ansys_usermat3d.F.in)
+
+The output is deterministic, so tests can check that the committed files match their source.
+Run:  python scripts/write_umat.py [--check]
 """
 import argparse
 import hashlib
@@ -16,8 +20,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 import jc_pinn as J  # noqa: E402
 
-TEMPLATE = ROOT / 'umat/templates/jc_pinn_umat.f.in'
-OUTPUT = ROOT / 'umat/jc_pinn_umat.f'
+TEMPLATES = ROOT / 'umat/templates'
+CORE = TEMPLATES / 'jc_pinn_core.f.in'
+TARGETS = {'abaqus': ('abaqus_umat.f.in', ROOT / 'umat/jc_pinn_umat.f'),
+           'ansys': ('ansys_usermat3d.F.in', ROOT / 'umat/jc_pinn_usermat3d.F')}
+OUTPUT = TARGETS['abaqus'][1]
 EPMIN, EPMAX = 0.0002, 0.0999          # the model's strain range (the 120-point E11 grid)
 TEMP_PHYSICS_MAX = 300.0               # collocation box upper temperature
 
@@ -60,7 +67,7 @@ def data_block(eq):
     return out
 
 
-def render():
+def render(kind='abaqus'):
     eq = J.load_final_equation(ROOT)                      # raises if the lock fingerprint fails
     sha = hashlib.sha256((ROOT / J.FINAL_RUN / 'equation.json').read_bytes()).hexdigest()
     c, box = eq['constants'], J.DATA_BOX
@@ -76,7 +83,7 @@ def render():
         '@@RATE0@@': fnum(c['rate0']), '@@TREF@@': fnum(c['T_ref']), '@@TMELT@@': fnum(c['T_melt']),
         '@@G0@@': fnum(c['G0']), '@@RHO0@@': fnum(c['rho0']),
     }
-    text = TEMPLATE.read_text()
+    text = (TEMPLATES / TARGETS[kind][0]).read_text() + CORE.read_text()
     text = text.replace('@@DATA@@', '\n'.join(data_block(eq)))
     for key, val in subs.items():
         text = text.replace(key, val)
@@ -90,18 +97,19 @@ def render():
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--output', type=Path, default=OUTPUT)
-    ap.add_argument('--check', action='store_true', help='fail if the committed file differs from a fresh render')
+    ap.add_argument('--check', action='store_true', help='fail if a committed file differs from a fresh render')
     a = ap.parse_args()
-    text = render()
-    if a.check:
-        same = a.output.exists() and a.output.read_text() == text
-        print('up to date' if same else f'{a.output} is out of date; run python scripts/write_umat.py')
-        return 0 if same else 1
-    a.output.parent.mkdir(parents=True, exist_ok=True)
-    a.output.write_text(text)
-    print(f'wrote {a.output} ({len(text.splitlines())} lines)')
-    return 0
+    status = 0
+    for kind, (_, out) in TARGETS.items():
+        text = render(kind)
+        if a.check:
+            same = out.exists() and out.read_text() == text
+            print(f'{out.relative_to(ROOT)}: ' + ('up to date' if same else 'out of date; run python scripts/write_umat.py'))
+            status |= 0 if same else 1
+        else:
+            out.write_text(text)
+            print(f'wrote {out.relative_to(ROOT)} ({len(text.splitlines())} lines)')
+    return status
 
 
 if __name__ == '__main__':

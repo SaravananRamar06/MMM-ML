@@ -7,23 +7,9 @@ C      python scripts/write_umat.py
 C  Source model : reports/jc_pinn_20261107/equation.json (locked run)
 C  equation.json SHA-256 : 73cac41864e4599e1f4a2a0eb2ba163b...
 C
-C  Constitutive model: small-strain J2 (von Mises) plasticity with
-C  isotropic hardening/softening. Flow stress = the locked JC-PINN,
-C
-C    SIGY = exp( mean_k [ ln sigJC_k + delta_k ] ),   k = 1..5
-C    sigJC = [A-B*e^n][1+C*ln(rate/rate0)][1-T*^m][G/G0]^q[rho/rho0]^r
-C    delta = w3.tanh(W2.tanh(W1.z+b1)+b2)+b3,  z = (x-xmean)/xscale
-C    x = (T degC, log10 rate, density, G, e)
-C
-C  with e = equivalent plastic strain EQPS (project decision M4:
-C  eps_p = E11). For EQPS < 0.0002 the flow stress is held at
-C  its value there (initial yield); above 0.0999 it is held constant
-C  (perfectly plastic, flagged): the model has no data beyond.
-C
-C  Return mapping: backward-Euler radial return, safeguarded Newton
-C  on the plastic multiplier; consistent (algorithmic) tangent.
-C  Supports NDI = 3 (3D, plane strain, axisymmetric). Plane stress
-C  (NDI = 2) is rejected with an error.
+C  J2 plasticity whose flow stress is the locked JC-PINN; the model
+C  is described in the core section below (JCPRM). Supports NDI = 3
+C  (3D, plane strain, axisymmetric). Plane stress is rejected.
 C
 C  PROPS (NPROPS >= 6, 7 optional)
 C    1  T      temperature, degC (used when PROPS(6) = 0)
@@ -63,17 +49,18 @@ C
      3 PROPS(NPROPS),COORDS(3),DROT(3,3),DFGRD0(3,3),DFGRD1(3,3),
      4 JSTEP(4)
 C
-      DOUBLE PRECISION FLOW(6), TC, RATE, RLOG, RHO, GM, ENU, EG,
-     1 EG2, EG3, EBULK3, ELAM, SHYDRO, SMISES, EQPLAS, SY0, H0,
-     2 SYIELD, HARD, DEQPL, DLO, DHI, R, DNEW, EFFG, EFFG2, EFFG3,
-     3 EFFLAM, EFFHRD, TOLY, TOLN, SDEV2
-      INTEGER K1, K2, IT, MAXIT, IFL, IERR, IFLAG, NITER
+      DOUBLE PRECISION PRM(7), FLOW(6), EQPS, DEQPL, SY0, SYIELD,
+     1 EG, EBULK3, JCPSED
+      INTEGER K1, IFLAG, NITER, ISTAT
       INTEGER INTV(1)
       DOUBLE PRECISION REALV(1)
       CHARACTER*8 CHARV(1)
-      PARAMETER (TOLY=1.D-10, TOLN=1.D-12, MAXIT=50)
 C
-C     ---- checks -----------------------------------------------------
+      IF (NSTATV .LT. 4 .OR. NPROPS .LT. 6) THEN
+         CALL STDB_ABQERR(-3, 'JC-PINN UMAT needs NSTATV >= 4 '//
+     1    'and NPROPS >= 6 (see header).', INTV, REALV, CHARV)
+         CALL XIT
+      END IF
       IF (NDI .NE. 3) THEN
          INTV(1) = NDI
          CALL STDB_ABQERR(-3, 'JC-PINN UMAT: NDI = %I is not '//
@@ -81,29 +68,129 @@ C     ---- checks -----------------------------------------------------
      2    'axisymmetric elements.', INTV, REALV, CHARV)
          CALL XIT
       END IF
-      IF (NSTATV .LT. 4 .OR. NPROPS .LT. 6) THEN
-         CALL STDB_ABQERR(-3, 'JC-PINN UMAT needs NSTATV >= 4 '//
-     1    'and NPROPS >= 6 (see header).', INTV, REALV, CHARV)
-         CALL XIT
-      END IF
+      DO K1 = 1, 6
+         PRM(K1) = PROPS(K1)
+      END DO
+      PRM(7) = 0.D0
+      IF (NPROPS .GE. 7) PRM(7) = PROPS(7)
+      DO K1 = 1, NTENS
+         DDSDDT(K1) = 0.D0
+         DRPLDE(K1) = 0.D0
+      END DO
 C
-C     ---- material conditions ---------------------------------------
-      TC = PROPS(1)
-      IF (NINT(PROPS(6)) .EQ. 1) TC = TEMP + DTEMP
-      RATE = PROPS(2)
-      RHO = PROPS(3)
-      GM = PROPS(4)
-      ENU = PROPS(5)
-      IF (RATE .LE. 0.D0 .OR. ENU .LE. -1.D0 .OR. ENU .GE. 0.5D0) THEN
+      EQPS = STATEV(1)
+      IFLAG = NINT(STATEV(3))
+      CALL JCPRM(NDI, NTENS, PRM, TEMP+DTEMP, STRESS, DSTRAN, EQPS,
+     1 IFLAG, DDSDDE, DEQPL, FLOW, SY0, SYIELD, EG, EBULK3, NITER,
+     2 ISTAT)
+C
+      IF (ISTAT .EQ. 1) THEN
+C        no convergence: ask Abaqus for a smaller increment
+         PNEWDT = 0.25D0
+         RETURN
+      ELSE IF (ISTAT .EQ. 2) THEN
+         REALV(1) = PROPS(1)
+         IF (NINT(PROPS(6)) .EQ. 1) REALV(1) = TEMP + DTEMP
+         CALL STDB_ABQERR(-3, 'JC-PINN UMAT: Equation 1 is not '//
+     1    'positive at T = %R degC (T >= T_melt or rate far too '//
+     2    'low).', INTV, REALV, CHARV)
+         CALL XIT
+      ELSE IF (ISTAT .EQ. 3) THEN
+         CALL STDB_ABQERR(-3, 'JC-PINN UMAT: 3G + H <= 0, '//
+     1    'softening too steep for the return map.',
+     2    INTV, REALV, CHARV)
+         CALL XIT
+      ELSE IF (ISTAT .EQ. 4) THEN
          CALL STDB_ABQERR(-3, 'JC-PINN UMAT: need RATE > 0 and '//
      1    '-1 < NU < 0.5.', INTV, REALV, CHARV)
          CALL XIT
       END IF
+C
+      SPD = SPD + DEQPL*(SY0+SYIELD)/2.D0
+      SSE = JCPSED(NDI, NTENS, STRESS, EG, EBULK3)
+      STATEV(1) = EQPS + DEQPL
+      STATEV(2) = SYIELD
+      STATEV(3) = DBLE(IFLAG)
+      STATEV(4) = DBLE(NITER)
+      RETURN
+      END
+C
+C ======================================================================
+C  Solver-neutral core of the JC-PINN user material. Shared by the
+C  Abaqus UMAT and the ANSYS usermat3d wrappers.
+C
+C  Constitutive model: small-strain J2 (von Mises) plasticity with
+C  isotropic hardening/softening. Flow stress = the locked JC-PINN,
+C
+C    SIGY = exp( mean_k [ ln sigJC_k + delta_k ] ),   k = 1..5
+C    sigJC = [A-B*e^n][1+C*ln(rate/rate0)][1-T*^m][G/G0]^q[rho/rho0]^r
+C    delta = w3.tanh(W2.tanh(W1.z+b1)+b2)+b3,  z = (x-xmean)/xscale
+C    x = (T degC, log10 rate, density, G, e)
+C
+C  with e = equivalent plastic strain EQPS (project decision M4:
+C  eps_p = E11). For EQPS < 0.0002 the flow stress is held at
+C  its value there (initial yield); above 0.0999 it is held
+C  constant (perfectly plastic, flagged): the model has no data beyond.
+C
+C  Return mapping: backward-Euler radial return, safeguarded Newton
+C  on the plastic multiplier; consistent (algorithmic) tangent.
+C  Stress components: NDI = 3 direct then NTENS-3 shear (tensor
+C  stress, engineering shear strain). Isotropic J2 treats all shear
+C  components alike, so their order (Abaqus 12,13,23 or ANSYS
+C  12,23,13) does not matter.
+C ======================================================================
+C
+C  JCPRM: one stress update.
+C   in : NDI, NTENS, PRM(7) material constants (see wrapper header),
+C        TFLD field temperature at the end of the increment,
+C        DSTRAN strain increment, EQPS and IFLAG at the start
+C   i/o: STRESS (start -> end of increment)
+C   out: DDSDDE tangent, DEQPL plastic increment, FLOW = s/q of the
+C        trial state (0 if elastic), SY0/SYIELD flow stress at start
+C        and end, EG elastic shear modulus, EBULK3 = 3K, IFLAG,
+C        NITER Newton iterations, ISTAT:
+C          0 ok
+C          1 Newton did not converge: cut the increment back
+C          2 Equation 1 not positive (T >= T_melt or rate far too low)
+C          3 3G + H <= 0 (softening too steep)
+C          4 bad constants (rate <= 0, nu outside (-1, 0.5), NDI /= 3)
+C ======================================================================
+      SUBROUTINE JCPRM(NDI, NTENS, PRM, TFLD, STRESS, DSTRAN, EQPS,
+     1 IFLAG, DDSDDE, DEQPL, FLOW, SY0, SYIELD, EG, EBULK3, NITER,
+     2 ISTAT)
+      IMPLICIT NONE
+      INTEGER NDI, NTENS, IFLAG, NITER, ISTAT
+      DOUBLE PRECISION PRM(7), TFLD, STRESS(NTENS), DSTRAN(NTENS),
+     1 EQPS, DDSDDE(NTENS,NTENS), DEQPL, FLOW(NTENS), SY0, SYIELD,
+     2 EG, EBULK3
+      DOUBLE PRECISION TC, RATE, RLOG, RHO, GM, ENU, EG2, EG3, ELAM,
+     1 SHYDRO, SMISES, HARD, H0, DLO, DHI, R, DNEW, EFFG, EFFG2,
+     2 EFFG3, EFFLAM, EFFHRD, TOLY, TOLN
+      INTEGER K1, K2, IT, MAXIT, IFL, IERR
+      PARAMETER (TOLY=1.D-10, TOLN=1.D-12, MAXIT=50)
+C
+      ISTAT = 0
+      NITER = 0
+      DEQPL = 0.D0
+      DO K1 = 1, NTENS
+         FLOW(K1) = 0.D0
+      END DO
+C
+C     ---- material conditions ---------------------------------------
+      TC = PRM(1)
+      IF (NINT(PRM(6)) .EQ. 1) TC = TFLD
+      RATE = PRM(2)
+      RHO = PRM(3)
+      GM = PRM(4)
+      ENU = PRM(5)
+      IF (RATE .LE. 0.D0 .OR. ENU .LE. -1.D0 .OR. ENU .GE. 0.5D0
+     1    .OR. NDI .NE. 3) THEN
+         ISTAT = 4
+         RETURN
+      END IF
       RLOG = LOG10(RATE)
       EG = GM
-      IF (NPROPS .GE. 7) THEN
-         IF (PROPS(7) .GT. 0.D0) EG = PROPS(7)
-      END IF
+      IF (PRM(7) .GT. 0.D0) EG = PRM(7)
       EG2 = 2.D0*EG
       EG3 = 3.D0*EG
       EBULK3 = EG2*(1.D0+ENU)/(1.D0-2.D0*ENU)
@@ -114,8 +201,6 @@ C     ---- elastic stiffness and trial stress -------------------------
          DO K2 = 1, NTENS
             DDSDDE(K2,K1) = 0.D0
          END DO
-         DDSDDT(K1) = 0.D0
-         DRPLDE(K1) = 0.D0
       END DO
       DO K1 = 1, NDI
          DO K2 = 1, NDI
@@ -142,107 +227,102 @@ C     ---- von Mises stress of the trial state ------------------------
       SMISES = SQRT(1.5D0*SMISES)
 C
 C     ---- current flow stress ----------------------------------------
-      EQPLAS = STATEV(1)
-      IFLAG = NINT(STATEV(3))
-      CALL JCPFLW(TC, RLOG, RHO, GM, EQPLAS, SY0, H0, IFL, IERR)
-      IF (IERR .NE. 0) GO TO 900
+      CALL JCPFLW(TC, RLOG, RHO, GM, EQPS, SY0, H0, IFL, IERR)
+      IF (IERR .NE. 0) THEN
+         ISTAT = 2
+         RETURN
+      END IF
       IFLAG = IOR(IFLAG, IFL)
       SYIELD = SY0
       HARD = H0
-      DEQPL = 0.D0
-      NITER = 0
+      IF (SMISES .LE. (1.D0+TOLY)*SY0) RETURN
 C
-      IF (SMISES .GT. (1.D0+TOLY)*SY0) THEN
-C        ---- plastic: solve SMISES - 3G*dp - SIGY(p+dp) = 0 ----------
-         DLO = 0.D0
-         DHI = SMISES/EG3
-         DO IT = 1, MAXIT
-            NITER = IT
-            CALL JCPFLW(TC, RLOG, RHO, GM, EQPLAS+DEQPL, SYIELD,
-     1                  HARD, IFL, IERR)
-            IF (IERR .NE. 0) GO TO 900
-            R = SMISES - EG3*DEQPL - SYIELD
-            IF (ABS(R) .LE. TOLN*SYIELD) GO TO 100
-            IF (R .GT. 0.D0) THEN
-               DLO = DEQPL
-            ELSE
-               DHI = DEQPL
-            END IF
-            DNEW = DEQPL + R/(EG3+HARD)
-            IF (EG3+HARD .LE. 0.D0 .OR. DNEW .LE. DLO .OR.
-     1          DNEW .GE. DHI) DNEW = 0.5D0*(DLO+DHI)
-            DEQPL = DNEW
-         END DO
-C        no convergence: ask Abaqus for a smaller increment
-         PNEWDT = 0.25D0
-         RETURN
-  100    CONTINUE
-         IFLAG = IOR(IFLAG, IFL)
-         IF (EG3+HARD .LE. 0.D0) THEN
-            CALL STDB_ABQERR(-3, 'JC-PINN UMAT: 3G + H <= 0, '//
-     1       'softening too steep for the return map.',
-     2       INTV, REALV, CHARV)
-            CALL XIT
+C     ---- plastic: solve SMISES - 3G*dp - SIGY(p+dp) = 0 -------------
+      DLO = 0.D0
+      DHI = SMISES/EG3
+      DO IT = 1, MAXIT
+         NITER = IT
+         CALL JCPFLW(TC, RLOG, RHO, GM, EQPS+DEQPL, SYIELD, HARD,
+     1               IFL, IERR)
+         IF (IERR .NE. 0) THEN
+            ISTAT = 2
+            RETURN
          END IF
-C        ---- stress update along the radial flow direction -----------
-         DO K1 = 1, NDI
-            FLOW(K1) = (STRESS(K1)-SHYDRO)/SMISES
-            STRESS(K1) = FLOW(K1)*SYIELD + SHYDRO
-         END DO
-         DO K1 = NDI+1, NTENS
-            FLOW(K1) = STRESS(K1)/SMISES
-            STRESS(K1) = FLOW(K1)*SYIELD
-         END DO
-C        ---- consistent tangent --------------------------------------
-         EFFG = EG*SYIELD/SMISES
-         EFFG2 = 2.D0*EFFG
-         EFFG3 = 1.5D0*EFFG2
-         EFFLAM = (EBULK3-EFFG2)/3.D0
-         EFFHRD = EG3*HARD/(EG3+HARD) - EFFG3
-         DO K1 = 1, NDI
-            DO K2 = 1, NDI
-               DDSDDE(K2,K1) = EFFLAM
-            END DO
-            DDSDDE(K1,K1) = EFFG2 + EFFLAM
-         END DO
-         DO K1 = NDI+1, NTENS
-            DDSDDE(K1,K1) = EFFG
-         END DO
-         DO K1 = 1, NTENS
-            DO K2 = 1, NTENS
-               DDSDDE(K2,K1) = DDSDDE(K2,K1) + EFFHRD*FLOW(K2)*FLOW(K1)
-            END DO
-         END DO
-         SPD = SPD + DEQPL*(SY0+SYIELD)/2.D0
+         R = SMISES - EG3*DEQPL - SYIELD
+         IF (ABS(R) .LE. TOLN*SYIELD) GO TO 100
+         IF (R .GT. 0.D0) THEN
+            DLO = DEQPL
+         ELSE
+            DHI = DEQPL
+         END IF
+         DNEW = DEQPL + R/(EG3+HARD)
+         IF (EG3+HARD .LE. 0.D0 .OR. DNEW .LE. DLO .OR.
+     1       DNEW .GE. DHI) DNEW = 0.5D0*(DLO+DHI)
+         DEQPL = DNEW
+      END DO
+      ISTAT = 1
+      RETURN
+  100 CONTINUE
+      IFLAG = IOR(IFLAG, IFL)
+      IF (EG3+HARD .LE. 0.D0) THEN
+         ISTAT = 3
+         RETURN
       END IF
 C
-C     ---- energies and state variables -------------------------------
-      SHYDRO = (STRESS(1)+STRESS(2)+STRESS(3))/3.D0
-      SDEV2 = 0.D0
+C     ---- stress update along the radial flow direction --------------
       DO K1 = 1, NDI
-         SDEV2 = SDEV2 + (STRESS(K1)-SHYDRO)**2
+         FLOW(K1) = (STRESS(K1)-SHYDRO)/SMISES
+         STRESS(K1) = FLOW(K1)*SYIELD + SHYDRO
       END DO
       DO K1 = NDI+1, NTENS
-         SDEV2 = SDEV2 + 2.D0*STRESS(K1)**2
+         FLOW(K1) = STRESS(K1)/SMISES
+         STRESS(K1) = FLOW(K1)*SYIELD
       END DO
-      SSE = SDEV2/(2.D0*EG2) + 1.5D0*SHYDRO**2/EBULK3
-      STATEV(1) = EQPLAS + DEQPL
-      STATEV(2) = SYIELD
-      STATEV(3) = DBLE(IFLAG)
-      STATEV(4) = DBLE(NITER)
-      RETURN
 C
-  900 CONTINUE
-      REALV(1) = TC
-      CALL STDB_ABQERR(-3, 'JC-PINN UMAT: Equation 1 is not '//
-     1 'positive at T = %R degC (T >= T_melt or rate far too low).',
-     2 INTV, REALV, CHARV)
-      CALL XIT
+C     ---- consistent tangent -----------------------------------------
+      EFFG = EG*SYIELD/SMISES
+      EFFG2 = 2.D0*EFFG
+      EFFG3 = 1.5D0*EFFG2
+      EFFLAM = (EBULK3-EFFG2)/3.D0
+      EFFHRD = EG3*HARD/(EG3+HARD) - EFFG3
+      DO K1 = 1, NDI
+         DO K2 = 1, NDI
+            DDSDDE(K2,K1) = EFFLAM
+         END DO
+         DDSDDE(K1,K1) = EFFG2 + EFFLAM
+      END DO
+      DO K1 = NDI+1, NTENS
+         DDSDDE(K1,K1) = EFFG
+      END DO
+      DO K1 = 1, NTENS
+         DO K2 = 1, NTENS
+            DDSDDE(K2,K1) = DDSDDE(K2,K1) + EFFHRD*FLOW(K2)*FLOW(K1)
+         END DO
+      END DO
+      RETURN
       END
 C
 C ======================================================================
+C  JCPSED: elastic strain energy density of a stress state.
+C ======================================================================
+      DOUBLE PRECISION FUNCTION JCPSED(NDI, NTENS, STRESS, EG, EBULK3)
+      IMPLICIT NONE
+      INTEGER NDI, NTENS, K1
+      DOUBLE PRECISION STRESS(NTENS), EG, EBULK3, SH, SD2
+      SH = (STRESS(1)+STRESS(2)+STRESS(3))/3.D0
+      SD2 = 0.D0
+      DO K1 = 1, NDI
+         SD2 = SD2 + (STRESS(K1)-SH)**2
+      END DO
+      DO K1 = NDI+1, NTENS
+         SD2 = SD2 + 2.D0*STRESS(K1)**2
+      END DO
+      JCPSED = SD2/(4.D0*EG) + 1.5D0*SH**2/EBULK3
+      RETURN
+      END
+C ======================================================================
 C  JCPFLW: flow stress SIGY and slope H = dSIGY/dEQPS, with the strain
-C  held inside the model range, and range flags (see UMAT header).
+C  held inside the model range, and range flags (see wrapper header).
 C ======================================================================
       SUBROUTINE JCPFLW(TC, RLOG, RHO, GM, EP, SIGY, H, IFL, IERR)
       IMPLICIT NONE
