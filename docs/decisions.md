@@ -60,5 +60,6 @@ This file records the decisions behind the final JC-PINN model and this reposito
 | D1 | The data units are °C, s⁻¹, MPa and kg/m³. | User | Closes Q1. Stresses are MPa as confirmed by the user, though the generator's documentation was never seen. |
 | D2 | Density stands for porosity, φ = 1 − ρ/2700. | User | Closes Q3 and confirms decision M5. |
 | D3 | No simulations above 200 °C will be requested. | User | Closes Q6. 200–300 °C stays unvalidated extrapolation, flagged by the code (UMAT/USERMAT flag 4). |
+| D4 | Abaqus is not used in this project. ANSYS is the finite-element solver (17 Nov 2026). | User | Removes the Abaqus runs from Q9. `umat/jc_pinn_umat.f` stays in the repository as generated and verified offline (`umat/verification.json`), but it is not run in Abaqus. Abaqus is also not installed on the project machine. |
 
 Append new decisions with the date, who made them, and the evidence.
