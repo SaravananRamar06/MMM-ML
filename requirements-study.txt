@@ -1,0 +1,2 @@
+# Optional printable exam preparation builder; not model-training dependencies.
+reportlab>=4

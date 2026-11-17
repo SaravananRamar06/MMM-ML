@@ -73,6 +73,8 @@ The model was chosen on the 36 training simulations only, then locked before the
 
 ## Quick start
 
+**Exam, viva and presentation preparation:** the [team preparation pack](docs/exam-preparation/README.md) covers material science, continuum mechanics, FEA/ANSYS, the JC-PINN, advanced questions, worked examples, a mock exam and a timed team rehearsal. It includes printable PDFs and offline viva practice.
+
 **Colab:**
 1. Open the notebook with the link above. Colab asks for GitHub access if the repository is private.
 2. Keep `MODE = 'PREDICT'` and run all cells. This plots curves, for example at the 4 % porosity study point, from the saved model, without any data.
