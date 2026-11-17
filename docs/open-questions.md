@@ -12,6 +12,8 @@ These are the questions still open for the final JC-PINN and its use on the brac
 | Q6 | What happens above 200 °C? | Curves at 300 °C are unvalidated extrapolation. No data exist there, and the selected model applies no physics penalty. | Simulations at 300 °C. |
 | Q7 | Is a condition-dependent Equation 1 wanted, with B and n depending on T* and rate? | The separable form cannot change curve shape, so the correction does that work. | A user decision; a screen showed no gain from the forms tried (`improvement_screen.json`). |
 | Q8 | Do the notebooks run end to end on hosted Colab and Kaggle? | Local nbclient runs pass, but hosted runs are unverified. | One run of each on the user's account. |
+| Q9 | Does the UMAT run and converge inside Abaqus on the bracket mesh, and how mesh-dependent is the softening? | The UMAT is verified only offline (`umat/verification.json`). | One Abaqus single-element job and a bracket run with two mesh sizes. |
+| Q10 | Is an ANSYS USERMAT needed, since the bracket project is in ANSYS Workbench? | The ANSYS path currently uses the tabular card from `bracket/tools/ansys_material_bridge.py`. | A user decision; the core routines `JCPFLW`/`JCPSIG` can be reused. |
 
 **Resolved, not to be asked again:**
 - CL means critical flaw length.
