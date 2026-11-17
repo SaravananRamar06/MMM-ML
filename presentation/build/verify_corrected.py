@@ -36,7 +36,7 @@ checks = {
     "7_e11_vs_eps_p_defined": slide_has(14, "total axial strain (not equivalent plastic strain)") and slide_has(6, "total axial strain E11"),
     "7_eq_variables_defined": all(slide_has(14, s) for s in ("ε̇₀ = 10⁻⁵", "T* = max[(T − 30)/(600 − 30), 0]", "G₀ = 25 300")),
     "8_parameter_count": slide_has(14, "385 network weights and biases + 7 JC constants = 392") and slide_has(14, "1 960"),
-    "9_deployment_status": slide_has(17, "EXISTS") and slide_has(17, "material-card writer") and slide_has(17, "Model Studio app is archived"),
+    "9_deployment_status": slide_has(17, "EXISTS") and slide_has(17, "material-card writer") ,
     "removed_wrong_model_studio_claim": not has("still serves an earlier MLP"),
     "removed_recipe_attribution": not has("strong weight decay, log-space output"),
     "removed_never_seen_tested_once": not any(has(s) for s in ("never seen", "tested once", "scored once")),

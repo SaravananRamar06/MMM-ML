@@ -22,4 +22,4 @@ The numerical placeholders in the three teaching sources are resolved from `repo
 
 Use the repository's Windows Python environment with `requirements-study.txt` to rebuild the learning artifacts. The PDF builder uses Windows Arial fonts. PDF rendering/QA tools are optional verification dependencies, not needed to read the outputs. The source and generated material are committed so readers do not need Python to study.
 
-No notebooks were re-executed: the task changes teaching documentation and its artifact builder, not the model/notebook implementation. No new hosted-Colab, Kaggle, ANSYS or Abaqus run is claimed. Full Fortran retesting remains limited by the machine's application-control policy.
+No notebooks were re-executed: the task changes teaching documentation and its artifact builder, not the model/notebook implementation. No new hosted-Colab, Kaggle or ANSYS run is claimed. Full Fortran retesting remains limited by the machine's application-control policy.

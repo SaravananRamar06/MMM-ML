@@ -90,8 +90,7 @@ Bounded constants are mapped through a sigmoid so that training keeps them insid
 | JC-PINN | 0.356 | 2.098 | 6.235 | **0.4386** (median 0.395, worst 0.841, MAE 0.327, 0.42 % of stress) |
 | Equation 1 alone | – | 10.24 | 13.95 | 7.366 |
 | Equation 1 switched off (control) | – | 1.315 | 5.629 | 0.3375 |
-| Single MLP (2 Nov) | – | 2.174 | 11.90 | 0.1427 |
-| 5-net MLP ensemble (24 Oct) | – | – | 6.79 | 0.0591 |
+| Plain MLP of 2 Nov (baseline) | – | 2.174 | 11.90 | 0.1427 |
 
 * The hardest unseen group is 200 °C / 1e-5 s⁻¹ (case 60): 17.1.
 * Mean |δ| on the test set is 0.47 (max 0.92).

@@ -210,7 +210,7 @@ Not generally. Total axial strain includes elastic strain, while equivalent plas
 
 The core reproduces locked flow stresses to about 2e-15 relative error offline; the single-element ANSYS stress agrees with the offline integration to 1.2e-5 MPa. These check implementation consistency for tested cases. They do not establish experimental truth or comprehensive multiaxial validation.
 
-Follow-up: Was Abaqus tested? Its generated routine was tested offline, but Abaqus is not used. ANSYS is the project solver.
+Follow-up: Which FE solver? ANSYS only; the user material is the ANSYS USERMAT.
 
 ## Mesh, structural interpretation and fracture
 

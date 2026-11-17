@@ -29,8 +29,6 @@
  "CtrlTestWorst": "0.612",
  "DeltaMax": "0.917",
  "DeltaMean": "0.466",
- "EnsGroups": "6.79",
- "EnsTest": "0.059",
  "EqA": "148.77",
  "EqB": "526.23",
  "EqC": "0.0292",
@@ -170,7 +168,6 @@
  "VerSlopeErr": "3e-9",
  "VerStressErr": "2e-15",
  "VerTangentErr": "1e-10",
- "WinsEnsemble": "0",
  "WinsEq": "37",
  "WinsLookup": "24",
  "WinsSingle": "0"

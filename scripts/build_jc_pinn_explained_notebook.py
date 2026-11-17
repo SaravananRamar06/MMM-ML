@@ -440,8 +440,7 @@ table = [('Equation 1 alone', m_eq1['mean_rmse'], m_eq1['mean_nrmse']),
          ('Curve-copy baseline', SUM['test']['lookup']['mean_rmse'], SUM['test']['lookup']['mean_nrmse']),
          ('JC-PINN (this model)', m_pinn['mean_rmse'], m_pinn['mean_nrmse']),
          ('Same network, Equation 1 switched off (control)', ctl['test']['mean_rmse'], ctl['test']['mean_nrmse']),
-         ('Single MLP (2 Nov, no physics)', SUM['single_mlp']['test'], None),
-         ('5-net MLP ensemble (24 Oct, no physics)', SUM['ensemble_mlp']['test'], None)]
+         ('Single MLP (2 Nov, no physics)', SUM['single_mlp']['test'], None)]
 print(f"{'Model':<50}{'mean RMSE (MPa)':>16}{'% of stress':>13}")
 for name, e, nr in table:
     print(f"{name:<50}{e:16.4f}{('%.2f %%' % (100 * nr)) if nr is not None else '-':>13}")
@@ -494,9 +493,9 @@ C.append(md(r'''
 * **Accuracy comes from the network and the training recipe, not from the equation.** The control is better on every
   measure. Equation 1's separable form forces one curve shape on every condition, and the network spends part of its
   capacity undoing that.
-* **Against the earlier models:** on unseen conditions the new recipe (strong weight decay, log-space output) beats the
-  single MLP (6.2 against 11.9). On the professor's random 50/50 test, the earlier MLPs remain more precise
-  (0.143 and 0.059 against 0.439). The balanced criterion we chose traded some interpolation precision for better
+* **Against the baseline:** on unseen conditions the new recipe (strong weight decay, log-space output) beats the
+  plain single MLP of 2 Nov (6.2 against 11.9). On the professor's random 50/50 test, the single MLP remains more precise
+  (0.143 against 0.439). The balanced criterion we chose traded some interpolation precision for better
   behaviour on new conditions.
 * **What Equation 1 gives us:**
   * seven named, physically bounded constants;

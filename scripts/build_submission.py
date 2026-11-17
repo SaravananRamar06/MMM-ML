@@ -102,17 +102,13 @@ def build_upload1(snap, out, commit, N):
     copy(snap / 'umat/templates', a / 'generator/templates')
     copy(snap / 'scripts/write_umat.py', a / 'generator/write_umat.py')
     copy(snap / 'umat/verification.json', a / 'verification/verification.json')
+    copy(snap / 'umat/test', a / 'verification/offline_test_driver')
     for f in ('single_element.mac', 'expected_single_element.csv', 'compare.py'):
         copy(snap / 'umat/ansys_test' / f, a / 'single_element_test' / f)
     copy(snap / 'umat/ansys_test/results_2026-11-17', a / 'single_element_test/results_2026-11-17_MAPDL2024R1_PASS')
     copy(snap / 'umat/ansys_test/results_2026-11-17/build_ifx.bat', a / 'build/build_ifx.bat')
     copy(snap / 'umat/ansys_test/results_2026-11-17/build_log_tail.txt', a / 'build/build_log_tail.txt')
     write(a / 'README.md', README_USERMAT.format(**N))
-
-    b = u1 / '02_UMAT_Abaqus'
-    copy(snap / 'umat/jc_pinn_umat.f', b / 'jc_pinn_umat.f')
-    copy(snap / 'umat/test', b / 'test')
-    write(b / 'README.md', README_ABAQUS.format(**N))
 
     c = u1 / '03_FE_model_ANSYS'
     copy(snap / 'bracket/ansys', c / 'workbench_project', skip_scratch=True)
@@ -192,7 +188,6 @@ def build_submission_files(snap, out, u1, u2):
     copy(u1 / '03_FE_model_ANSYS', fea / 'B_Bracket_FE_model_ANSYS')
     copy(u1 / '04_Results', fea / 'C_Bracket_results_USERMAT_EP_porosity_mesh')
     copy(u1 / '01_USERMAT_ANSYS_UPF', sf / '4_USERMAT_UMAT_code' / 'USERMAT_ANSYS_UPF')
-    copy(u1 / '02_UMAT_Abaqus', sf / '4_USERMAT_UMAT_code' / 'UMAT_Abaqus')
     copy(snap / 'reports/jc_pinn_20261107', sf / '5_ML_model_weights' / 'locked_run_jc_pinn_20261107')
     for f in ('jc_pinn.py', 'jc_pinn.json'):
         copy(u1 / '05_ML_model' / f, sf / '5_ML_model_weights' / f)
@@ -274,10 +269,9 @@ README_TOP = """# Team 8: UMAT/UPF code and FE model files
 - **ML model (JC-PINN):** the team's customised Johnson-Cook law (Equation 1) multiplied by exp(delta) from a 5-16-16-1 tanh network ({Params} weights each, five copies).
   - The model was selected on the 36 training simulations, locked, then scored once on 37 test simulations: mean curve RMSE {TestMean} MPa, R^2 = {TestRsq}.
   - The test set is not blind.
-- **From model to FE material:** `scripts/write_umat.py` writes the locked weights (`05_ML_model/locked_run/equation.json`) into one Fortran core with two wrappers.
-  - The wrappers are an ANSYS USERMAT (`01_...`) and an Abaqus UMAT (`02_...`).
-  - Both are J2 plasticity with a radial return and a consistent tangent, and the flow stress is the JC-PINN prediction.
-  - Offline they reproduce the model to {VerStressErr} (relative).
+- **From model to FE material:** `scripts/write_umat.py` writes the locked weights (`05_ML_model/locked_run/equation.json`) into an ANSYS USERMAT (`01_...`), the only FE solver used.
+  - It is J2 plasticity with a radial return and a consistent tangent, and the flow stress is the JC-PINN prediction.
+  - Offline it reproduces the model to {VerStressErr} (relative).
   - In MAPDL 2024 R1, a single element matches to {SeMaxDiff} MPa (tolerance {SeTol} MPa): final S11 {SeSFinal} MPa, EQPS {SeEqpsFinal}.
 - **Results on the bracket** (`04_Results`):
   - **Peak and softening:** the reaction peaks at {BrUsermatPeakkN} kN at UX = -{BrUsermatPeakUX} mm, then softens to {BrUsermatFinalkN} kN at -2 mm.
@@ -300,8 +294,7 @@ README_TOP = """# Team 8: UMAT/UPF code and FE model files
 
 | Folder | Contents |
 |---|---|
-| `01_USERMAT_ANSYS_UPF/` | The ANSYS USERMAT that was used, its generator, the build script and log, the single-element test (PASS) and the offline verification |
-| `02_UMAT_Abaqus/` | The Abaqus UMAT (generated, verified offline only, not run in Abaqus: decision D4) and its test driver |
+| `01_USERMAT_ANSYS_UPF/` | The ANSYS USERMAT that was used, its generator, the build script and log, the single-element test (PASS) and the offline verification with its test driver |
 | `03_FE_model_ANSYS/` | The Workbench project (solver scratch files removed), CAD (STEP), MAPDL batch decks (5 mm, porosity cases, 2.5 mm refinement), the deck and post-processing scripts, and run commands |
 | `04_Results/` | The committed evidence: histories (CSV), summaries (JSON), plots (PNG) and READMEs for every bracket study |
 | `05_ML_model/` | The locked equation and its selection lock, the model code, its config and the Colab notebook |
@@ -353,15 +346,6 @@ TB,STATE,1,,4
 - **Elements.** Only `usermat3d` is provided: 3D, plane strain and axisymmetric.
 - **Softening.** The material softens, so FE results after yield are mesh dependent.
 - **No validation.** Nothing is experimentally validated.
-"""
-
-README_ABAQUS = """# Abaqus UMAT for the JC-PINN
-
-`jc_pinn_umat.f` is generated from the locked weights by the same generator, with the same core as the ANSYS USERMAT. `test/` holds the offline test driver and `ABA_PARAM.INC`.
-
-**It was verified offline only** (gfortran and the test driver; see `../01_USERMAT_ANSYS_UPF/verification/verification.json`, solver "abaqus"). **It was not run in Abaqus:** Abaqus is not used in this project (decision D4, 17 Nov 2026), and ANSYS is the FE solver.
-
-Constants are PROPS(1..7): T, strain rate, density, G, nu (assumed 0.33), ITEMP, GEL. State variables are STATEV(1..4): EQPS, flow stress, flag, Newton iterations.
 """
 
 README_FE = """# ANSYS FE model of the wing-rib bracket
@@ -435,7 +419,7 @@ Everything important in one place. The files are copies of the two upload folder
 | `3_FEA_simulations/A_Team_JC_comparison_study/` | The team's Workbench comparison project (`Comparison Study - Final.wbpj`, project file only) and its equivalent-stress screenshots: elastic, built-in JC, user-defined JC |
 | `3_FEA_simulations/B_Bracket_FE_model_ANSYS/` | The bracket Workbench project (solver scratch removed), CAD, MAPDL decks (elastic, EP, USERMAT, porosity, 2.5 mm mesh) and scripts |
 | `3_FEA_simulations/C_Bracket_results_USERMAT_EP_porosity_mesh/` | Results of every bracket run: histories (CSV), summaries (JSON), plots and READMEs |
-| `4_USERMAT_UMAT_code/` | The ANSYS USERMAT (UPF) used in every run, with generator, build log, single-element test and verification; the Abaqus UMAT (offline only, decision D4) |
+| `4_USERMAT_UMAT_code/` | The ANSYS USERMAT (UPF) used in every run, with generator, build log, single-element test and verification |
 | `5_ML_model_weights/` | The locked run `jc_pinn_20261107` (`equation.json` holds Equation 1's constants and all network weights; `selection_lock.json` is its fingerprint), with `jc_pinn.py` and `jc_pinn.json` |
 | `6_Colab_notebook/` | `jc_pinn_colab.ipynb` (runs on Colab; `MODE = 'PREDICT'` needs no data) and `jc_pinn_explained.ipynb` |
 | `MANIFEST.txt` | Every file, its size and SHA-256, and the commit |

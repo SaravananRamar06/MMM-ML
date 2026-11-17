@@ -1,6 +1,6 @@
 C ======================================================================
-C  Solver-neutral core of the JC-PINN user material. Shared by the
-C  Abaqus UMAT and the ANSYS usermat3d wrappers.
+C  Core of the JC-PINN user material, called by the ANSYS usermat3d
+C  wrapper above.
 C
 C  Constitutive model: small-strain J2 (von Mises) plasticity with
 C  isotropic hardening/softening. Flow stress = the locked JC-PINN,
@@ -18,9 +18,8 @@ C
 C  Return mapping: backward-Euler radial return, safeguarded Newton
 C  on the plastic multiplier; consistent (algorithmic) tangent.
 C  Stress components: NDI = 3 direct then NTENS-3 shear (tensor
-C  stress, engineering shear strain). Isotropic J2 treats all shear
-C  components alike, so their order (Abaqus 12,13,23 or ANSYS
-C  12,23,13) does not matter.
+C  stress, engineering shear strain), in ANSYS order 11,22,33,12,23,13.
+C  Isotropic J2 treats all shear components alike.
 C ======================================================================
 C
 C  JCPRM: one stress update.

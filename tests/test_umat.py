@@ -1,7 +1,7 @@
-"""Tests for the user materials generated from the locked JC-PINN.
+"""Tests for the ANSYS user material generated from the locked JC-PINN (umat/jc_pinn_usermat3d.F).
 
-umat/jc_pinn_umat.f (Abaqus UMAT) and umat/jc_pinn_usermat3d.F (ANSYS usermat3d). The generation tests need
-only Python. The numerical tests compile each file with an offline driver and are skipped without gfortran.
+The generation tests need only Python. The numerical tests compile the file with an offline driver and are
+skipped without gfortran.
 """
 from pathlib import Path
 import shutil
@@ -49,7 +49,7 @@ class _Numerics:
         self.assertLess(r['max_rel_slope_error_vs_fd'], 1e-6)
 
     def test_uniaxial_on_curve_and_increment_independent(self):
-        for c in V.check_uniaxial(self.exe, self.eq, plastic_tensor=self.KIND == 'ansys'):
+        for c in V.check_uniaxial(self.exe, self.eq, plastic_tensor=True):
             self.assertLess(c['increment_size_spread_MPa'], 1e-8)
             for run in c['runs'].values():
                 self.assertLess(run['on_flow_curve_rel_error'], 1e-9)
@@ -63,11 +63,6 @@ class _Numerics:
     def test_range_flags(self):
         for name, f in V.check_flags(self.exe).items():
             self.assertEqual(f['expected'], f['got'], name)
-
-
-@unittest.skipUnless(shutil.which('gfortran'), 'gfortran not installed')
-class AbaqusUmatTests(_Numerics, unittest.TestCase):
-    KIND = 'abaqus'
 
 
 @unittest.skipUnless(shutil.which('gfortran'), 'gfortran not installed')

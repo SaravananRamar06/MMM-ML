@@ -44,14 +44,13 @@ This file records the decisions behind the final JC-PINN model and this reposito
 | R4 | Rewrite both the course report and the IEEE paper for the final model. Generate every number from the saved run. | User |
 | R5 | Merge into `main` after all checks. | User |
 
-## UMAT (17 November 2026)
+## User material (17 November 2026)
 
 | ID | Decision | Made by | Effect |
 |---|---|---|---|
-| U1 | Write the user material as an Abaqus UMAT generated from the locked weights, not a refit. | User request; Claude | `umat/jc_pinn_umat.f` reproduces `equation_predict` to 2e-15. |
+| U1 | Write the user material as an ANSYS USERMAT (`usermat3d`) generated from the locked weights, not a refit. Only `usermat3d` is provided: 3D, plane strain and axisymmetric. | User request; Claude | `umat/jc_pinn_usermat3d.F` reproduces `equation_predict` to 2e-15. |
 | U2 | Flow stress versus equivalent plastic strain uses decision M4 (ε_p = E11). Held at σ(0.0002) below the grid and at σ(0.0999) above it, with a flag. | Claude, following M4 | The elastic part comes from G (PROPS 4 or 7) and an assumed ν (PROPS 5). |
 | U3 | Conditions outside the data range are flagged in STATEV 3, not clamped, matching the Python model. | Claude | Extrapolation is visible in the results. |
-| U4 | Add an ANSYS USERMAT (`usermat3d`) sharing one generated core with the UMAT. Only `usermat3d` is provided: 3D, plane strain and axisymmetric. | User request; Claude | `umat/jc_pinn_usermat3d.F`; same offline checks pass. |
 
 ## User answers (17 November 2026)
 
@@ -59,8 +58,16 @@ This file records the decisions behind the final JC-PINN model and this reposito
 |---|---|---|---|
 | D1 | The data units are °C, s⁻¹, MPa and kg/m³. | User | Closes Q1. Stresses are MPa as confirmed by the user, though the generator's documentation was never seen. |
 | D2 | Density stands for porosity, φ = 1 − ρ/2700. | User | Closes Q3 and confirms decision M5. |
-| D3 | No simulations above 200 °C will be requested. | User | Closes Q6. 200–300 °C stays unvalidated extrapolation, flagged by the code (UMAT/USERMAT flag 4). |
-| D4 | Abaqus is not used in this project. ANSYS is the finite-element solver (17 Nov 2026). | User | Removes the Abaqus runs from Q9. `umat/jc_pinn_umat.f` stays in the repository as generated and verified offline (`umat/verification.json`), but it is not run in Abaqus. Abaqus is also not installed on the project machine. |
+| D3 | No simulations above 200 °C will be requested. | User | Closes Q6. 200–300 °C stays unvalidated extrapolation, flagged by the code (USERMAT flag 4). |
+| D4 | Abaqus is not used in this project. ANSYS is the finite-element solver (17 Nov 2026). | User | Removes the Abaqus runs from Q9. The Abaqus UMAT was later removed from the repository (decision C1). |
 | D5 | G(φ) = 25300 · (1 − φ) MPa, the linear (Voigt) rule (17 Nov 2026). | User, choosing option 1 of `docs/proposals/open-items-2026-11-17.md` | Closes Q4 as an explicit assumption, not a measurement. It is the **upper bound** for any pore shape (Pabst & Gregorová, *Ceramics–Silikáty* 48 (2004) 14–23). The data's three G levels follow it exactly: 25300, 24541 and 23313.95 MPa at φ = 0, 3 and 7.85 %. Real pores, and the dilute spherical-pore estimate (Mackenzie 1950, slope −1.88), lower G faster, so porosity effects computed with D5 are a lower estimate. It keeps G inside the data, so there is no G extrapolation. It is written into `bracket/workflow/config.json` (status `assumed`). |
+
+## Repository clean-up (17 November 2026)
+
+| ID | Decision | Made by | Effect |
+|---|---|---|---|
+| C1 | ANSYS is the only finite-element solver. The Abaqus UMAT, its template and its test code are removed from `main`. | User | `umat/` holds only the ANSYS USERMAT. Its compiled code is unchanged (only comments changed). |
+| C2 | The only earlier model quoted on `main` is the 2 Nov plain MLP, as a baseline. The five-network ensemble, Model Studio and the history page are removed. | User | `docs/history.md` and `scripts/freeze_baselines.py` are deleted. The frozen numbers stay in the locked `reports/` folder, which is not edited. |
+| C3 | One slide deck: the corrected final deck. `JC-PINN.pptx`, the uncorrected final deck, the October deck and their build scripts are removed. | User | `presentation/build/build_corrected.js` is the only deck build. |
 
 Append new decisions with the date, who made them, and the evidence.

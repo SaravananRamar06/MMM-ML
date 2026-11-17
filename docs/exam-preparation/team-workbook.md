@@ -1,6 +1,6 @@
 # Exam, blackboard and presentation workbook
 
-Suggested preparation times and marks are practice choices, not the university's announced exam format. Use the existing 21-slide `presentation/JC-PINN.pptx`; this guide adds teaching and rehearsal without changing the submitted deck.
+Suggested preparation times and marks are practice choices, not the university's announced exam format. Use the existing 24-slide corrected deck (`presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx`); this guide adds teaching and rehearsal without changing the submitted deck.
 
 ## 1. Worked calculations: show every unit
 
@@ -78,7 +78,7 @@ Q5: 4 for rejecting endpoint-only convergence, 4 for the h*work-density argument
 
 Q6: 4 for chain rule under D5, 4 for LEFM derivation and definitions, 3 for small-scale yielding and proper crack-driving stress, 4 for specific missing evidence. Accept units/provenance, test exposure, strain mapping, rate treatment, mesh dependence, assumed nu/G(phi), missing toughness and lack of validation.
 
-## 4. Presenting the existing 21-slide deck in 15 minutes
+## 4. Presenting the corrected 24-slide deck in 15 minutes
 
 The four speaking roles below are suggested responsibilities for rehearsal, not claims about individual contributions. Every member must understand the full chain. Assign names as a team; do not invent who did which implementation.
 

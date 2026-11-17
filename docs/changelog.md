@@ -5,6 +5,13 @@
 - **Submission deck:** `scripts/make_submission_deck.py` keeps the cover, 15 content slides and the thank-you slide of the 24-slide corrected deck, renumbers them and fixes the cached slide numbers. It was imported into Canva, where the cover's team names were set to one size, and exported as `Team8_Presentation.pptx` / `.pdf` (17 slides, speaker notes on all of them). Every decimal number on the slides and notes was checked against `report/numbers.json`: no mismatch. The values not in `numbers.json` come from the team's Ansys screenshots (595.27, 320.79, 323.81 MPa and their ratio 1.86), the training trace (0.171 to 0.0028), the test summary (0.4386 = 0.439 unrounded; pooled point RMSE 0.504), 6.23 (`SelGroups` 6.235 rounded) and the 2.5 mm mesh size.
 - **`scripts/build_submission.py`:** builds, from a `git archive` of one commit, `Upload_1_UMAT_UPF_and_FE_model/` (+ zip), `Upload_2_PPT_and_Report/` and `submission files/` (report, presentation, FEA simulations including the team's JC comparison study, USERMAT/UMAT code, the locked model weights and the Colab notebooks), each with a `MANIFEST.txt` (size, SHA-256, commit). Raw data, solver scratch files, the USERMAT DLL, environments and credentials are left out. The LaTeX source zip is test-compiled on its own (21 pages, no undefined references). The output folders are not committed.
 
+## 17 November 2026: repository clean-up (decisions C1–C3)
+- **Abaqus removed:** `umat/jc_pinn_umat.f`, `umat/templates/abaqus_umat.f.in`, `umat/test/ABA_PARAM.INC` and the Abaqus paths in the generator, verifier, driver and tests. The ANSYS USERMAT is regenerated with comment-only changes; its compiled code is identical to the one tested in MAPDL.
+- **Earlier models trimmed:** `docs/history.md` and `scripts/freeze_baselines.py` removed. The five-network ensemble is gone from the README, docs, report, paper and the comparison figure (`fig_comparison`), and its macros (`EnsTest`, `EnsGroups`, `WinsEnsemble`) are dropped. The 2 Nov plain MLP stays as the one baseline. Files under `reports/` are unchanged, because the locked run is evidence.
+- **One slide deck:** `JC-PINN.pptx/.pdf`, `scripts/build_deck.py`, the uncorrected final deck, the October deck, `build_final.js` and `build_deck.js` removed. The corrected deck is rebuilt without Abaqus or Model Studio mentions.
+- After merging the submission work: `scripts/build_submission.py` no longer packages an Abaqus folder (the offline test driver moves into `01_USERMAT_ANSYS_UPF/verification/`); the study pack's Markdown and HTML no longer mention Abaqus or `JC-PINN.pptx`. Its PDFs in `output/pdf/` need Windows fonts, so rebuild them on Windows with `python scripts/build_study_pack.py` and `python scripts/build_study_textbook.py`.
+- Report (21 pages), paper (5 pages), the corrected deck (24 slides) and the submission source deck (17 slides) rebuilt.
+
 ## 17 November 2026: open items (D4, D5, the coupled porosity study, Q5 reasoning)
 - **D4:** Abaqus is not used. Q9 no longer asks for Abaqus runs. The hosted-notebook checklist (`docs/hosted-notebook-check.md`) is ready for the user to run for Q8.
 - **Proposal:** `docs/proposals/open-items-2026-11-17.md` compares five G(φ) relations and an LEFM method for critical flaw length, with cited K_IC and Y values.
@@ -16,12 +23,12 @@
 - **`write_latex_numbers.py`:** now also reads `umat/verification.json`, the MAPDL single-element CSVs and the bracket summaries (results, porosity, mesh, mesh_ep). It writes 60 new macros (164 in total). All 104 existing macros keep exactly the same values. `numbers.tex` and `numbers.json` are written with LF.
 - **`make_figures.py`:** copies the four committed bracket plots into `figures/` (`fig_bracket*`, `fig_mesh*`) without redrawing them. The existing figures were left as committed, because the data are unchanged and re-rendering with this machine's Matplotlib only changed their bytes.
 - **Report (19 pages):**
-  - new sections "From model to finite-element material" (UMAT/USERMAT, offline verification, MAPDL single element) and "Bracket results" (three materials, density-only porosity, mesh study);
+  - new sections "From model to finite-element material" (USERMAT, offline verification, MAPDL single element) and "Bracket results" (three materials, density-only porosity, mesh study);
   - updated abstract, limitations and conclusion;
   - wording for the units confirmed by the user, density as porosity, and no data above 200 °C (D1–D3).
 - **Paper (5 pages):** a new section and figure for the finite-element material and bracket, plus an updated abstract, limits and conclusion. Other text was condensed to stay within 5 pages, and no limit was dropped.
 - **Slides:**
-  - `JC-PINN.pptx`: 17 → 20 slides, built with `build_deck.py` from `numbers.json`;
+  - `JC-PINN.pptx`: 17 → 20 slides (this deck was later removed, decision C3);
   - the corrected final deck: 20 → 23 slides, built with `build_corrected.js`. Its new slides read `numbers.json`, and its deployment slide now shows the USERMAT coupling as existing but unvalidated;
   - both decks have the three new topics with speaker notes, and "units inferred" is gone. Both PDFs were exported with LibreOffice.
 - Q9's "what would close it" no longer lists the hardening-material run, which has been done.
@@ -78,15 +85,9 @@
 - The user confirmed the units, confirmed density as porosity, and declined data above 200 °C (decisions D1–D3). Q1, Q3 and Q6 are closed.
 - The report, paper and slides still say "units inferred". Updating them needs a rebuild of the numbers and PDFs.
 
-## 17 November 2026: ANSYS USERMAT
-- New `umat/jc_pinn_usermat3d.F`, an ANSYS `usermat3d` wrapper around the same core as the UMAT. It returns plastic strain, `epseq`, energies and the consistent tangent, and sets `keycut` for bisection.
-- The generator now builds both files from a shared core template plus one wrapper per solver. The Abaqus file was regenerated; its numbers are unchanged.
-- `verify_umat.py` and `tests/test_umat.py` run every check through both wrappers. Not yet run inside ANSYS.
-
-## 17 November 2026: Abaqus UMAT (post-hoc, model unchanged)
-- New `umat/jc_pinn_umat.f`, generated by `scripts/write_umat.py` from the locked `equation.json`. It is a J2 radial return whose flow stress is the JC-PINN ensemble, with an analytic slope and a consistent tangent.
-- New `scripts/verify_umat.py` and `tests/test_umat.py`. They compile the UMAT with gfortran and an offline driver. Agreement with the Python model is 2e-15 for stress and 1e-10 for the tangent, and results do not depend on increment size. The evidence is in `umat/verification.json`.
-- Not yet run inside Abaqus.
+## 17 November 2026: ANSYS USERMAT (post-hoc, model unchanged)
+- New `umat/jc_pinn_usermat3d.F`, an ANSYS `usermat3d` generated by `scripts/write_umat.py` from the locked `equation.json`. It is a J2 radial return whose flow stress is the JC-PINN ensemble, with an analytic slope and a consistent tangent. It returns plastic strain, `epseq`, energies and the tangent, and sets `keycut` for bisection.
+- New `scripts/verify_umat.py` and `tests/test_umat.py`. They compile it with gfortran and an offline driver. Agreement with the Python model is 2e-15 for stress and 1e-10 for the tangent, and results do not depend on increment size. The evidence is in `umat/verification.json`.
 
 ## 9 November 2026: porosity analysis (post-hoc, descriptive)
 - New script `scripts/porosity_analysis.py`, writing `reports/jc_pinn_20261107/porosity_analysis.json`.
@@ -108,7 +109,7 @@
 - Test report, with every one of the 37 cases.
 - Post-hoc control with Equation 1 off.
 - Improvement screen.
-- Frozen baselines of the earlier MLPs.
+- Frozen baseline numbers of the 2 Nov plain MLP.
 - Errata for the λ = 0 extrapolation note.
 
 **Media:**
@@ -126,8 +127,5 @@
 - The porosity workflow and ANSYS bridge ported to the JC-PINN.
 - New README and docs.
 
-## 2 November 2026
-Single MLP on the same split, with a Colab notebook. Now archived; its numbers are frozen in `baselines.json`.
-
-## 24–31 October 2026
-Five-network query MLP ensemble, Model Studio, porosity workflow, ANSYS project and the effective-equation study. Now archived.
+## Before 7 November 2026
+Earlier models and materials, archived on branch `archive/pre-final-2026-11-07`. The 2 Nov plain MLP is kept as the baseline; its numbers are frozen in `baselines.json`.

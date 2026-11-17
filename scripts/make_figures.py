@@ -250,8 +250,7 @@ save(fig, 'fig_groups')
 # 9. model comparison on the 37 test cases -----------------------------------------------------------------
 C = TS['summary']['comparison']
 rows = [('Equation 1 alone', C['equation_only'], EQC), ('curve-copy baseline', C['lookup'], '#8a96a3'), ('JC-PINN (this work)', C['jc_pinn'], MODEL),
-        ('same network, Eq. 1 off', C['control_no_equation'], '#8a96a3'), ('single MLP (2 Nov)', C['single_mlp'], '#c8d0da'),
-        ('5-network MLP (24 Oct)', C['ensemble_mlp'], '#c8d0da')]
+        ('same network, Eq. 1 off', C['control_no_equation'], '#8a96a3'), ('single MLP (2 Nov)', C['single_mlp'], '#c8d0da')]
 fig, ax = plt.subplots(figsize=(7.2, 2.4))
 ax.barh(range(len(rows))[::-1], [r[1] for r in rows], color=[r[2] for r in rows])
 for k, r in enumerate(rows):

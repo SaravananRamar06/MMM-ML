@@ -1,8 +1,7 @@
 C ======================================================================
-C  Offline test driver for the generated user materials, without
-C  Abaqus or ANSYS. Compile with gfortran and one of
-C      umat/jc_pinn_umat.f        (default: calls the Abaqus UMAT)
-C      umat/jc_pinn_usermat3d.F   with -DANSYS (calls usermat3d)
+C  Offline test driver for the generated ANSYS user material, without
+C  ANSYS. Compile with gfortran together with
+C      umat/jc_pinn_usermat3d.F   (calls usermat3d)
 C  Reads a mode number from standard input:
 C   1  flow stress: N, then N rows "T log10rate rho G e"
 C      -> prints SIG, DSIG for each row (calls JCPSIG)
@@ -12,8 +11,8 @@ C   3  tangent: PROPS(1..7), NTENS, EQPS0, STRESS0(NTENS),
 C      DSTRAN(NTENS) -> DDSDDE from the UMAT, then the
 C      central-difference derivative of the stress update
 C  Mode 2 also prints the plastic strain PL(1), PL(2) kept by the
-C  ANSYS wrapper (zero for Abaqus, which does not return it).
-C  Stubs replace the solver utilities STDB_ABQERR, XIT, erhandler.
+C  ANSYS wrapper.
+C  A stub replaces the ANSYS utility erhandler.
 C ======================================================================
       PROGRAM UDRV
       IMPLICIT NONE
@@ -73,7 +72,6 @@ C
       TEMP = PROPS(1)
       DTEMP = 0.D0
       CMNAME = 'JCPINN'
-#ifdef ANSYS
       KEYCUT = 0
       CALL usermat3d(1, 1, 1, 1, 1, 1, 1, KEYCUT,
      & NDI, NSHR, NTENS, NSTATV, NPROPS,
@@ -85,13 +83,6 @@ C
      & VAR0, VAR0, VAR0, VAR0, VAR0, VAR0, VAR0)
       IF (KEYCUT .EQ. 1) PNEWDT = 0.25D0
       IF (KEYCUT.EQ.0 .AND. EPSEQ.NE.STATEV(1)) STOP 3
-#else
-      CALL UMAT(STRESS,STATEV,DDS,SSE,SPD,SCD,
-     1 RPL,DDSDDT,DRPLDE,DRPLDT,
-     2 STRAN,DSTRAN,TIME,DTIME,TEMP,DTEMP,PREDEF,DPRED,CMNAME,
-     3 NDI,NSHR,NTENS,NSTATV,PROPS,NPROPS,COORDS,DROT,PNEWDT,
-     4 CELENT,DFGRD0,DFGRD1,1,1,0,0,JSTEP,1)
-#endif
       DO J = 1, NTENS
          DO I = 1, NTENS
             DDSDDE(I,J) = DDS(I,J)
@@ -207,19 +198,6 @@ C
          CALL CALLU(NTENS, PROPS, SM, SV, DP, DUM, PNEWDT, PL)
          WRITE(*,'(6ES26.17E3)') ((SP(I)-SM(I))/(2.D0*H), I=1,NTENS)
       END DO
-      END
-C
-      SUBROUTINE STDB_ABQERR(LOP, STRING, INTV, REALV, CHARV)
-      IMPLICIT NONE
-      INTEGER LOP, INTV(*)
-      DOUBLE PRECISION REALV(*)
-      CHARACTER*(*) STRING
-      CHARACTER*8 CHARV(*)
-      WRITE(*,*) 'ABQERR ', LOP, ' ', TRIM(STRING)
-      END
-C
-      SUBROUTINE XIT
-      STOP 2
       END
 C
       SUBROUTINE ERHANDLER(FILEIN, MSGID, MSGLVL, LNGSTR, DPERR, CHERR)
