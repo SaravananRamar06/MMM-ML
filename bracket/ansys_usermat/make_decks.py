@@ -16,7 +16,11 @@ Each deck ends with post_bracket.mac, which writes bracket_history.csv.
 USERMAT constants are the study point of umat/README.md: 100 degC, 1e-4 /s, density 2592,
 G 24541 MPa, nu 0.33 (assumed), ITEMP 0 (use constant 1, not the analysis temperature).
 
-Usage: python bracket/ansys_usermat/make_decks.py OUTPUT_DIR
+With --porosity it writes instead one usermat-style deck per porosity case into
+OUTPUT_DIR/<case>/bracket.dat (POROSITY_CASES below). Only the TBDATA line and the
+comment naming the case differ from the usermat deck.
+
+Usage: python bracket/ansys_usermat/make_decks.py [--porosity] OUTPUT_DIR
 """
 import hashlib
 import sys
@@ -38,6 +42,16 @@ TBDATA,1,100,1.0E-4,2592,24541,0.33,0
 TBDATA,7,0
 TB,STATE,1,,4
 """
+
+# --porosity cases: (density kg/m3, G MPa, note). phi = 1 - density/2700 (user decision).
+# The main set changes density only, at G fixed, because G(phi) is unknown (Q4).
+POROSITY_CASES = {
+    'phi0': (2700.0, 24541.0, 'Main set: density only, G fixed.'),
+    'phi4': (2592.0, 24541.0, 'Main set: density only, G fixed (the study point).'),
+    'phi785': (2488.05, 24541.0, 'Main set: density only, G fixed (lowest density in the data).'),
+    'G_lo': (2592.0, 23313.95, 'G sensitivity at phi 4 % (G also changes the elastic stiffness).'),
+    'G_hi': (2592.0, 25300.0, 'G sensitivity at phi 4 % (G also changes the elastic stiffness).'),
+}
 
 
 def expand_compact_eblocks(lines):
@@ -81,13 +95,29 @@ def expand_compact_eblocks(lines):
     return out
 
 
-def build(kind, text):
+def porosity_snippet(case):
+    """USERMAT snippet for one porosity case: the study-point snippet with that case's TBDATA line."""
+    rho, g, note = POROSITY_CASES[case]
+    phi = 100 * (1 - rho / 2700)
+    num = lambda v: f'{v:.12g}'  # exact for these inputs (':g' would round 23313.95 to 23314)
+    tbdata = f'TBDATA,1,100,1.0E-4,{num(rho)},{num(g)},0.33,0'
+    assert float(tbdata.split(',')[4]) == rho and float(tbdata.split(',')[5]) == g, tbdata
+    lines = USERMAT_SNIPPET.rstrip('\n').split('\n')
+    i = lines.index('TBDATA,1,100,1.0E-4,2592,24541,0.33,0')
+    lines[i] = tbdata
+    lines[1] = (f'! Porosity case {case}: 100 degC, 1e-4 /s, density {num(rho)} kg/m3 (phi = {phi:.2f} %), '
+                f'G {num(g)} MPa, nu 0.33 (assumed). {note}')
+    lines[2] = f'! The solver uses the USERMAT stiffness (E = 2G(1+nu) = {2 * g * 1.33:.0f} MPa), not MP,EX above.'
+    return '\n'.join(lines) + '\n'
+
+
+def build(kind, text, snippet=USERMAT_SNIPPET):
     lines = expand_compact_eblocks(text.split('\n'))
     out = []
     for line in lines:
         out.append(line)
         if kind == 'usermat' and line.startswith('/wb,mat,end'):
-            out[-1:-1] = USERMAT_SNIPPET.rstrip('\n').split('\n')
+            out[-1:-1] = snippet.rstrip('\n').split('\n')
         if kind == 'usermat' and line.strip().lower().startswith('outres,eppl,all'):
             out.append('outres,svar,all     ! state variables of the USERMAT (inserted)')
     if kind == 'usermat':
@@ -100,9 +130,21 @@ def build(kind, text):
 
 
 def main():
-    dest = Path(sys.argv[1]).resolve()
+    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    porosity = '--porosity' in sys.argv[1:]
+    if len(args) != 1 or any(a not in ('--porosity',) for a in sys.argv[1:] if a.startswith('--')):
+        sys.exit('usage: make_decks.py [--porosity] OUTPUT_DIR')
+    dest = Path(args[0]).resolve()
     if HERE.parent.parent.resolve() in dest.parents or dest == HERE.parent.parent.resolve():
         sys.exit('write the decks outside the repository')
+    if porosity:
+        src = SOURCES['usermat']
+        text = src.read_text()
+        for case in POROSITY_CASES:
+            (dest / case).mkdir(parents=True, exist_ok=True)
+            (dest / case / 'bracket.dat').write_text(build('usermat', text, porosity_snippet(case)), newline='\n')
+            print(case, src.relative_to(HERE.parent.parent), '->', dest / case / 'bracket.dat')
+        return
     for kind, src in SOURCES.items():
         text = src.read_text()
         (dest / kind).mkdir(parents=True, exist_ok=True)
