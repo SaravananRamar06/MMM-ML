@@ -177,6 +177,31 @@ def build_upload2(snap, out, presentation):
     return u2, names
 
 
+# ---------------------------------------------------------------------------------------------- submission files
+def build_submission_files(snap, out, u1, u2):
+    """One folder with everything important, grouped by kind (copies of Upload 1/2 plus the team JC study)."""
+    sf = out / 'submission files'
+    copy(u2 / 'Team8_Report.pdf', sf / '1_Report' / 'Team8_Report.pdf')
+    copy(u2 / 'Team8_Report_LaTeX_source.zip', sf / '1_Report' / 'Team8_Report_LaTeX_source.zip')
+    for f in ('Team8_Presentation.pptx', 'Team8_Presentation.pdf'):
+        if (u2 / f).exists():
+            copy(u2 / f, sf / '2_Presentation' / f)
+    fea = sf / '3_FEA_simulations'
+    copy(snap / 'presentation/source/Comparison Study - Final.wbpj', fea / 'A_Team_JC_comparison_study' / 'Comparison Study - Final.wbpj')
+    copy(snap / 'presentation/source/results', fea / 'A_Team_JC_comparison_study' / 'results')
+    copy(u1 / '03_FE_model_ANSYS', fea / 'B_Bracket_FE_model_ANSYS')
+    copy(u1 / '04_Results', fea / 'C_Bracket_results_USERMAT_EP_porosity_mesh')
+    copy(u1 / '01_USERMAT_ANSYS_UPF', sf / '4_USERMAT_UMAT_code' / 'USERMAT_ANSYS_UPF')
+    copy(u1 / '02_UMAT_Abaqus', sf / '4_USERMAT_UMAT_code' / 'UMAT_Abaqus')
+    copy(snap / 'reports/jc_pinn_20261107', sf / '5_ML_model_weights' / 'locked_run_jc_pinn_20261107')
+    for f in ('jc_pinn.py', 'jc_pinn.json'):
+        copy(u1 / '05_ML_model' / f, sf / '5_ML_model_weights' / f)
+    for f in sorted((snap / 'notebooks').glob('*.ipynb')):
+        copy(f, sf / '6_Colab_notebook' / f.name)
+    write(sf / 'README.md', README_SF)
+    return sf
+
+
 def test_latex_zip(zpath, latex_bin):
     """Unzip into a temp folder and compile there, on its own."""
     env = dict(os.environ, PATH=str(latex_bin) + os.pathsep + os.environ.get('PATH', ''))
@@ -209,7 +234,7 @@ def main():
     out = Path(a.out).resolve()
     if ROOT.resolve() in out.parents or out == ROOT.resolve():
         sys.exit('build the submission outside the repository')
-    for sub in ('Upload_1_UMAT_UPF_and_FE_model', 'Upload_2_PPT_and_Report'):
+    for sub in ('Upload_1_UMAT_UPF_and_FE_model', 'Upload_2_PPT_and_Report', 'submission files'):
         if (out / sub).exists():
             shutil.rmtree(out / sub)
     with tempfile.TemporaryDirectory() as tmp:
@@ -218,6 +243,8 @@ def main():
         N = numbers(snap)
         u1 = build_upload1(snap, out, commit, N)
         u2, figs = build_upload2(snap, out, a.presentation)
+        sf = build_submission_files(snap, out, u1, u2)
+    n3, s3 = manifest(sf, commit, 'Team 8 - submission files (all important files)')
     n1, s1 = manifest(u1, commit, 'Team 8 - Upload 1: UMAT/UPF code and FE model files')
     zip1 = out / 'Team8_UMAT_UPF_FE_model.zip'
     zip_dir(u1, zip1, arc_root='Team8_UMAT_UPF_FE_model')
@@ -226,6 +253,7 @@ def main():
     print(json.dumps({'commit': commit, 'out': str(out),
                       'upload1': {'files': n1, 'bytes': s1, 'zip': str(zip1), 'zip_bytes': zip1.stat().st_size},
                       'upload2': {'files': n2, 'bytes': s2, 'figures_in_latex_zip': figs},
+                      'submission_files': {'files': n3, 'bytes': s3},
                       'latex_zip_test': test}, indent=2))
 
 
@@ -394,6 +422,27 @@ README_ML = """# The locked ML model (JC-PINN)
 - Strain E11 is read as equivalent plastic strain, and the elastic part comes from G and an assumed nu = 0.33.
 
 The instructor's raw data (`TEAM_8_extracted_results_set_1/`) are not included.
+"""
+
+README_SF = """# Team 8: submission files
+
+Everything important in one place. The files are copies of the two upload folders plus the team's JC comparison study; nothing was changed.
+
+| Folder | Contents |
+|---|---|
+| `1_Report/` | `Team8_Report.pdf` and its LaTeX source (zip, compiles on its own) |
+| `2_Presentation/` | `Team8_Presentation.pptx` and `.pdf` (exported from Canva; 1 intro, 15 content, 1 outro slide) |
+| `3_FEA_simulations/A_Team_JC_comparison_study/` | The team's Workbench comparison project (`Comparison Study - Final.wbpj`, project file only) and its equivalent-stress screenshots: elastic, built-in JC, user-defined JC |
+| `3_FEA_simulations/B_Bracket_FE_model_ANSYS/` | The bracket Workbench project (solver scratch removed), CAD, MAPDL decks (elastic, EP, USERMAT, porosity, 2.5 mm mesh) and scripts |
+| `3_FEA_simulations/C_Bracket_results_USERMAT_EP_porosity_mesh/` | Results of every bracket run: histories (CSV), summaries (JSON), plots and READMEs |
+| `4_USERMAT_UMAT_code/` | The ANSYS USERMAT (UPF) used in every run, with generator, build log, single-element test and verification; the Abaqus UMAT (offline only, decision D4) |
+| `5_ML_model_weights/` | The locked run `jc_pinn_20261107` (`equation.json` holds Equation 1's constants and all network weights; `selection_lock.json` is its fingerprint), with `jc_pinn.py` and `jc_pinn.json` |
+| `6_Colab_notebook/` | `jc_pinn_colab.ipynb` (runs on Colab; `MODE = 'PREDICT'` needs no data) and `jc_pinn_explained.ipynb` |
+| `MANIFEST.txt` | Every file, its size and SHA-256, and the commit |
+
+Not included: the instructor's raw data (`TEAM_8_extracted_results_set_1/`), solver scratch files, the compiled USERMAT DLL, environments and credentials.
+
+Limits: the test is not blind; the units are user-confirmed; nothing is validated above 200 degC; nothing is experimentally validated; bracket forces after yield are mesh dependent; G(phi) is an assumed upper bound (D5); no critical flaw length is given.
 """
 
 

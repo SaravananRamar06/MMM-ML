@@ -16,6 +16,8 @@ uncorrected original, kept unchanged for reference.
 - Build: `NODE_PATH=<dir with node_modules/pptxgenjs> node presentation/build/build_corrected.js <pptx skill dir with scripts/apply_theme.js>`.
 - PDF: `soffice --headless --convert-to pdf`.
 
+**Submission deck (18 November 2026).** `scripts/make_submission_deck.py` writes `submission/Team8_Presentation_source.pptx`: cover, 15 content slides (2, 3, 5, 7, 9, 10, 12, 14, 15, 17–20, 22, 23 of the corrected deck, renumbered 1–15) and the thank-you slide. That file was imported into Canva and exported as `Team8_Presentation.pptx` / `.pdf`; the exports are part of the submission folders built by `scripts/build_submission.py` and are not committed.
+
 `JC-PINN.pptx` (built by `scripts/build_deck.py` from `report/numbers.json`) got the same four topics and the units fix (21 slides).
 
 ---
