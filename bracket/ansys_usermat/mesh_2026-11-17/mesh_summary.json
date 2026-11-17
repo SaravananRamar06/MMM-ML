@@ -1,0 +1,46 @@
+{
+  "5mm": {
+    "element_size_mm": 5.0,
+    "elements": 7304,
+    "nodes": 34763,
+    "initial_stiffness_N_per_mm": 554304.0,
+    "peak_RFX_N": 190373.5,
+    "peak_at_ux_mm": -0.455,
+    "RFX_at_final_N": 136679.2,
+    "final_ux_mm": -2.0,
+    "max_elem_eqps_svar1": 0.3590533,
+    "n_elem_flagged": 190,
+    "flagged_volume_note": "element count, not volume: a finer mesh has smaller elements",
+    "substeps": 14,
+    "bisections": 1,
+    "wall_time_s": 75.0,
+    "pct_vs_5mm": {
+      "initial_stiffness_N_per_mm": 0.0,
+      "peak_RFX_N": 0.0,
+      "RFX_at_final_N": 0.0,
+      "max_elem_eqps_svar1": 0.0
+    }
+  },
+  "2p5mm": {
+    "element_size_mm": 2.5,
+    "elements": 58432,
+    "nodes": 255111,
+    "initial_stiffness_N_per_mm": 553899.2,
+    "peak_RFX_N": 175647.8,
+    "peak_at_ux_mm": -0.38375,
+    "RFX_at_final_N": 137592.7,
+    "final_ux_mm": -2.0,
+    "max_elem_eqps_svar1": 0.9945765,
+    "n_elem_flagged": 1072,
+    "flagged_volume_note": "element count, not volume: a finer mesh has smaller elements",
+    "substeps": 23,
+    "bisections": 3,
+    "wall_time_s": 1630.0,
+    "pct_vs_5mm": {
+      "initial_stiffness_N_per_mm": -0.073,
+      "peak_RFX_N": -7.735,
+      "RFX_at_final_N": 0.668,
+      "max_elem_eqps_svar1": 177.0
+    }
+  }
+}

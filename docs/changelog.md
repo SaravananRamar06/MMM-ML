@@ -1,5 +1,18 @@
 # Changelog
 
+## 17 November 2026: bracket mesh study, the post-peak response is mesh dependent (Q9)
+- New tools:
+  - `refine_mesh.py` refines the Workbench mesh uniformly (2 × 2 × 2: hexes in parametric space, prisms as 15-node wedges). This replaced a Workbench remesh, because Workbench 2026 R1 is not on this machine.
+  - `make_decks.py --source PATH --label NAME` builds elastic and USERMAT decks from any `ds.dat`. Its default and `--porosity` outputs are unchanged.
+  - `plot_mesh.py` compares the meshes.
+- **5 mm → 2.5 mm** (7,304 → 58,432 elements):
+  - elastic stiffness −0.07 %;
+  - peak reaction −7.7 %;
+  - reaction after the peak up to −14.9 %;
+  - max EQPS 0.36 → 0.99.
+
+  The response after yield is mesh dependent. A regularised softening law would be needed. Q9 restated. Evidence: `bracket/ansys_usermat/mesh_2026-11-17/`.
+
 ## 17 November 2026: bracket porosity comparison (density only, one mesh)
 - `make_decks.py --porosity` writes five USERMAT decks that differ only in TBDATA:
   - φ = 0, 4 and 7.85 % at G = 24541 MPa;
