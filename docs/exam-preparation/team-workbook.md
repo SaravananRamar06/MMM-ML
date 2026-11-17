@@ -46,7 +46,7 @@ Take an illustrative finite inelastic work density of 10 MPa=10 MJ/m^3. A 5 mm b
 
 ### K. Critical flaw length: symbolic exercise only
 
-From K_IC=Y*sigma*sqrt(pi*a_c), square and rearrange to get a_c=K_IC^2/(pi*Y^2*sigma^2). If stress doubles with all assumptions unchanged, a_c falls by a factor of four. Toughness in MPa*sqrt(m) and stress in MPa yield a in metres. No project-specific numerical flaw length can be filled in without justified geometry, service stress, toughness and validity checks.
+For constant Y, from K_IC=Y*sigma*sqrt(pi*a_c), square and rearrange to get a_c=K_IC^2/(pi*Y^2*sigma^2). If stress doubles with all assumptions and Y unchanged, a_c falls by a factor of four. When Y depends on a, solve the geometry-dependent equation instead. Toughness in MPa*sqrt(m) and stress in MPa yield a in metres. No project-specific numerical flaw length can be filled in without justified geometry, service stress, toughness and validity checks.
 
 ## 2. A demanding 90-minute mock exam (100 marks)
 

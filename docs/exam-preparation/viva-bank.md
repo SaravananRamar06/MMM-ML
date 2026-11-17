@@ -216,7 +216,7 @@ Follow-up: Was Abaqus tested? Its generated routine was tested offline, but Abaq
 
 ### 36. Why does refinement lower the peak if the elastic stiffness converges?
 
-Elastic response is comparatively well resolved. After yield, negative flow slope permits localisation without a material length scale. Refining the localisation zone changes the represented energy and response. Peak reaction drops {{BrMeshPeakChangePct}}%, despite a {{MeshStiffChangePct}}% stiffness change.
+Elastic response is comparatively well resolved. After yield, negative flow slope permits localisation without a material length scale. Refining the localisation zone changes the represented energy and response. Peak reaction has a signed change of {{BrMeshPeakChangePct}}%, despite a {{MeshStiffChangePct}}% stiffness change.
 
 Follow-up: Could the load patch matter too? Yes. The hardening comparison indicates much smaller force sensitivity, but growing local strains show a separate boundary concentration contribution.
 
@@ -236,7 +236,7 @@ Only as the numerical reaction peak in the stated coarse-mesh run. It is not a c
 
 ### 40. Derive critical flaw length and state why you did not compute it.
 
-For a specified mode-I LEFM geometry, K_I=Y*sigma*sqrt(pi*a), so a_c=(K_IC/(Y*sigma))^2/pi. We lack a justified service load, flaw definition and project-specific toughness, and extensive yielding can invalidate LEFM. Substituting peak von Mises stress would not supply the proper crack-opening remote stress.
+For a specified mode-I LEFM geometry and a constant geometry factor Y, K_I=Y*sigma*sqrt(pi*a), so a_c=(K_IC/(Y*sigma))^2/pi. If Y varies with crack size, solve with Y(a_c) instead. We lack a justified service load, flaw definition and project-specific toughness, and extensive yielding can invalidate LEFM. Substituting peak von Mises stress would not supply the proper crack-opening remote stress.
 
 Follow-up: What replaces LEFM under large-scale yielding? An appropriate elastic-plastic fracture assessment such as J/CTOD with calibrated resistance and constraint considerations.
 

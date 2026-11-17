@@ -4,12 +4,16 @@ Prepared 17 November 2026 for the entire JC-PINN / ANSYS bracket project. This i
 
 ## Read in this order
 
+For a book layout, start with the [textbook edition](../../output/pdf/project-textbook.pdf): numbered chapters and equations, linked contents, PDF bookmarks, notation, figures, viva and exercises. It uses the same audited lesson sources as the shorter guides below.
+
 1. [Study handbook](../../output/study/study-handbook.md): material science, continuum mechanics, FEA, the neural material law, ANSYS integration, interpretation and derivations.
 2. [Viva bank](../../output/study/viva-bank.md): demanding questions with defensible answers and follow-up challenges. Cover the answer and speak before reading it.
 3. [Exam and presentation workbook](../../output/study/team-workbook.md): worked calculations, a timed mock exam with marking guide, a slide-by-slide rehearsal and a team preparation schedule.
 4. [Interactive practice](../../output/study-practice.html): offline flashcards with topic filters and self-assessment. Open in a browser; no installation or data upload.
 
 Printable versions are in [output/pdf](../../output/pdf/). All numerical placeholders in the teaching sources are resolved by `scripts/build_study_pack.py` from `report/numbers.json`. Install `requirements-study.txt`, then rebuild with `.venv/Scripts/python.exe scripts/build_study_pack.py`. The sources use `{{NumberKey}}` for saved project results; the generated guides and PDFs contain the actual values. No saved model result is changed.
+
+Then run `.venv/Scripts/python.exe scripts/build_study_textbook.py` for the textbook. ReportLab handles pagination, contents and bookmarks; Matplotlib MathText typesets the display equations. Windows Georgia, Arial and Consolas fonts are used. The scientific audit and its corrections are recorded in [audit.md](audit.md).
 
 ## Authority and reading conflicts
 
