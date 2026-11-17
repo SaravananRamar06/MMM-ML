@@ -6,7 +6,7 @@
 ! (eps11, S11, EQPS, SIGY, FLAG) for comparison with
 ! expected_single_element.csv. Requires the USERMAT library built
 ! from umat/jc_pinn_usermat3d.F and ANS_USER_PATH set (umat/README.md).
-! Not yet run in ANSYS by the authors.
+! Run in MAPDL 2024 R1 on 17 Nov 2026: PASS (results_2026-11-17/).
 ! ======================================================================
 FINISH
 /CLEAR,NOSTART
@@ -38,6 +38,7 @@ ANTYPE,STATIC
 NLGEOM,OFF
 NSUBST,240,2000,240
 OUTRES,ALL,ALL
+OUTRES,SVAR,ALL           ! OUTRES,ALL does not write state variables
 SOLVE
 FINISH
 /POST26
@@ -47,6 +48,7 @@ ESOL,3,1,NTIP,S,X,S11
 ESOL,4,1,NTIP,SVAR,1,EQPS
 ESOL,5,1,NTIP,SVAR,2,SIGY
 ESOL,6,1,NTIP,SVAR,3,FLAG
+STORE,MERGE               ! store now, so *GET NSETS sees the data
 *GET,NROW,VARI,2,NSETS
 *DIM,RES,ARRAY,NROW,5
 VGET,RES(1,1),2

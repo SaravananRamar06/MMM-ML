@@ -80,12 +80,16 @@ On Windows, copy the file to `jc_pinn_umat.for`. It is fixed-form Fortran with n
 
 `jc_pinn_usermat3d.F` replaces the example `usermat3d.F` that ships with ANSYS's User Programmable Features (UPF). The build uses ANSYS's own scripts and the Intel Fortran compiler version that your ANSYS release requires. The exact steps depend on the release, so check them against the *Guide to User-Programmable Features* for your version.
 
-1. **Copy the example files.** Make a build folder. Copy into it ANSYS's `usermat.F` and the other `usermat*.F` examples that `usermat.F` calls. They are in:
-   - Windows: `<ANSYS install>\ansys\customize\user\winx64`
-   - Linux: `<ANSYS install>/ansys/customize/user/linx64`
-2. **Swap in our routine.** Replace their `usermat3d.F` with `jc_pinn_usermat3d.F`, renamed to `usermat3d.F`.
-3. **Build the library.** In that folder, run `ANSUSERSHARED.bat` (Windows) or `ANSUSERSHARED` (Linux). This builds `UserMatLib.dll` or `libusermatLib.so`.
+1. **Copy the example files.** Make a build folder. Copy into it ANSYS's `usermat.F` and the other `usermat*.F` examples. In 2024 R1 (v241) they are in `<ANSYS install>\ansys\customize\user\` on Windows. Older releases and Linux may use a `winx64` or `linx64` subfolder.
+2. **Swap in our routine.** Add `jc_pinn_usermat3d.F`, renamed to `usermat3d.F`, and make sure the stock `usermat3d` is gone.
+   - In some releases the stock routine is a separate `usermat3d.F`. Replace that file.
+   - In v241 it sits inside `usermat.F`, together with `usermat1d`, `usermatbm`, `usermatps` and `usermat_harm`. Delete the block from `*deck,usermat3d` to its matching `end` in your copy of `usermat.F` (lines 535–934 in v241). Otherwise the link sees `usermat3d` twice.
+3. **Build the library.** In that folder, run `ANSUSERSHARED.bat` (Windows; in v241 it is in `ansys\custom\user\winx64\`) or `ANSUSERSHARED` (Linux). This builds `usermatLib.dll` or `libusermatLib.so`.
+   - The v241 script expects ifort from oneAPI 2023 (`IFORT_COMPILER23`) and Visual Studio 2019.
+   - If only `ifx` is available, `ansys_test/results_2026-11-17/build_ifx.bat` runs the same compile and link steps with `ifx`. That is how the tested library was built.
 4. **Point ANSYS at it.** Set the environment variable `ANS_USER_PATH` to the build folder before starting ANSYS or Workbench.
+
+**Tested:** MAPDL 2024 R1 with ifx 2026.2 and VS 2019 Build Tools, on 17 November 2026. The single-element test below passes, with S11 within 1.2×10⁻⁵ MPa of the offline result at all 240 substeps. See `ansys_test/results_2026-11-17/README.md`.
 
 **Mechanical APDL input:**
 
@@ -111,7 +115,7 @@ TB,STATE,matid,,4
 - **Results:** state variables appear as SVAR1 to SVAR4 in user-defined results. Equivalent plastic strain also appears as the usual plastic strain results, because the routine returns `epsPl` and `epseq`.
 - **Elements:** the Workbench default SOLID187 or SOLID186 elements are supported.
 
-**First test in ANSYS:** `ansys_test/single_element.mac` pulls one SOLID185 cube to ε₁₁ = 0.12 at the 4 % study point and writes `jcpinn_single_element.csv`. Then run `python ansys_test/compare.py jcpinn_single_element.csv`. It checks the result against `expected_single_element.csv`, which comes from the offline driver, to within 0.1 MPa. The expected final value is S11 = 75.41 MPa at EQPS = 0.1188, with flag 1 because the strain passes 0.0999.
+**First test in ANSYS:** `ansys_test/single_element.mac` pulls one SOLID185 cube to ε₁₁ = 0.12 at the 4 % study point and writes `jcpinn_single_element.csv`. Then run `python ansys_test/compare.py jcpinn_single_element.csv`. It checks the result against `expected_single_element.csv`, which comes from the offline driver, to within 0.1 MPa. The expected final value is S11 = 75.41 MPa at EQPS = 0.1188, with flag 1 because the strain passes 0.0999. Start MAPDL from inside the run folder, because `-o` is relative to the current folder, not to `-dir`. To read state variables in your own decks, add `OUTRES,SVAR,ALL`, because `OUTRES,ALL` does not write them.
 
 ## Limits
 

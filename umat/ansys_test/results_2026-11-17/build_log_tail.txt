@@ -1,0 +1,52 @@
+# Build log: build_console.log + compile.log + link.log from %USERPROFILE%\jcpinn_usermat_build
+
+===== build_console.log
+:: initializing oneAPI environment...
+   Initializing Visual Studio command-line environment...
+   Visual Studio version 16.11.63 environment configured.
+   "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\"
+   Visual Studio command-line environment initialized for: 'x64'
+:  compiler -- latest
+:  debugger -- latest
+:  libfabric -- latest
+:  mpi -- latest
+:  tcm -- latest
+:  umf -- latest
+:: oneAPI environment initialized ::
+usermatLib.dll has been successfully built.
+
+===== compile.log
+==== ifx version 
+Intel(R) Fortran Compiler for applications running on Intel(R) 64, Version 2026.2.0 Build 20261001
+Copyright (C) 1985-2026 Intel Corporation. All rights reserved.
+
+==== link version 
+Microsoft (R) Incremental Linker Version 14.29.30159.0
+==== compile 
+ifx /DNOSTDCALL /DARGTRAIL /DCADOE_ANSYS /DPCWINNT_SYS /D_EFL /DFORTRAN /O2 /MD /c /fpp /4Yportlib /auto /Fo.\ /watch:source /DPCWIN64_SYS /DPCWINX64_SYS *.F 
+Intel(R) Fortran Compiler for applications running on Intel(R) 64, Version 2026.2.0 Build 20261001
+Copyright (C) 1985-2026 Intel Corporation. All rights reserved.
+
+usermat.F
+usermat3d.F
+usermatth.F
+compile exit code: 0 
+
+===== link.log
+======================================== 
+ Linking usermat ... 
+Microsoft (R) Incremental Linker Version 14.29.30159.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+-out:usermatLib.dll 
+-def:usermatLibex.def 
+-dll 
+-machine:X64 
+-map 
+-manifest:embed 
+-defaultlib:ANSYS.lib 
+-defaultlib:ansMemManager.lib 
+-defaultlib:ansOpenMP.lib 
+*.obj 
+   Creating library usermatLib.lib and object usermatLib.exp
+link exit code: 0 
