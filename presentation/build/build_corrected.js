@@ -1,4 +1,4 @@
-// Builds "Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx" (20 slides), applying the
+// Builds "Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx" (23 slides), applying the
 // 9 Nov 2026 presentation audit (branch codex/presentation-audit, 118fdf5). The original deck is build_final.js.
 // Run: NODE_PATH=<dir containing pptxgenjs> node build_final.js <dir containing scripts/apply_theme.js>
 const path = require("path");
@@ -320,8 +320,8 @@ pres.addSection({ title: "EDA" });
   const vars = [
     ["Temperature T", "30 · 100 · 200 °C"],
     ["Strain rate ε̇", "10⁻⁵ · 10⁻⁴ · 10⁻³ /s"],
-    ["Density ρ", "2488 · 2619 · 2700 kg/m³ → porosity via the assumed mapping φ = 1 − ρ/2700: 7.85 · 3 · 0 %. Physical interpretation pending the professor's confirmation"],
-    ["Shear modulus G", "23 314 · 24 541 · 25 300 MPa (inferred)"],
+    ["Density ρ", "2488 · 2619 · 2700 kg/m³ → porosity via φ = 1 − ρ/2700 (confirmed by the user): 7.85 · 3 · 0 %. Physical interpretation pending the professor's confirmation"],
+    ["Shear modulus G", "23 314 · 24 541 · 25 300 MPa"],
     ["Output", "von Mises stress Svm along axial strain E11 = 0–10 %"],
   ];
   const ys = [2.3, 2.92, 3.54, 4.72, 5.36];
@@ -330,8 +330,8 @@ pres.addSection({ title: "EDA" });
     text(s, k, { x: 7.6, y, w: 4.9, h: 0.3, fontSize: 15, bold: true, color: i === 4 ? ORANGE : NAVY });
     text(s, v, { x: 7.6, y: y + 0.31, w: 4.9, h: i === 2 ? 0.68 : 0.34, fontSize: 13.5, color: MUTED });
   });
-  text(s, "Units (°C, /s, kg/m³, MPa) inferred from the data, unconfirmed; stress units inferred as MPa (unconfirmed).", { x: 7.6, y: 6.2, w: 4.9, h: 0.48, fontSize: 11.5, color: STEEL, bold: true });
-  s.addNotes("The professor gave us a design matrix of 108 simulations; 73 have results, about 2.2 million rows of history. Every cell of temperature and strain rate has 9 combinations of density and shear modulus, except 200 degrees at the slowest rate, which has only one case, and 300 degrees, which has none. Porosity is represented through density with our assumed mapping, phi equals one minus rho over 2700: that gives 0, 3 and 7.85 percent for the three density levels, and our 4 percent study point corresponds to 2592. Whether density really encodes porosity in this dataset still needs the professor's confirmation.");
+  text(s, "Units (°C, /s, kg/m³, MPa) confirmed by the user; no documentation of the generator was seen.", { x: 7.6, y: 6.2, w: 4.9, h: 0.48, fontSize: 11.5, color: STEEL, bold: true });
+  s.addNotes("The professor gave us a design matrix of 108 simulations; 73 have results, about 2.2 million rows of history. Every cell of temperature and strain rate has 9 combinations of density and shear modulus, except 200 degrees at the slowest rate, which has only one case, and 300 degrees, which has none. Porosity is represented through density with the user-confirmed mapping, phi equals one minus rho over 2700: that gives 0, 3 and 7.85 percent for the three density levels, and our 4 percent study point corresponds to 2592. Whether density really encodes porosity in this dataset still needs the professor's confirmation.");
 }
 
 // ================================================================== 10 EDA: curves and factor effects
@@ -339,7 +339,7 @@ pres.addSection({ title: "EDA" });
   const s = content("EDA", 2, "09 · Exploratory data analysis", "Temperature and strain rate drive the curves");
   img(s, "eda_curves.png", 0.45, 1.65, 7.9, 2.5581, "All 73 stress-strain curves coloured by temperature, and the strain-rate effect at 30 °C");
   const obs = [
-    [B("Every curve ends below its starting stress: "), R("on average 138 → 68 (inferred MPa) over 10 % strain.")],
+    [B("Every curve ends below its starting stress: "), R("on average 138 → 68 (MPa) over 10 % strain.")],
     [B("Hotter means weaker; "), R("a faster rate starts higher but softens faster, so curves cross near 6 % strain.")],
     [B("Case 60 is irregular "), R("and the only case at 200 °C, 10⁻⁵ /s. We kept it.")],
   ];
@@ -347,13 +347,13 @@ pres.addSection({ title: "EDA" });
     dot(s, 0.6, 4.95 + i * 0.66, String(i + 1), i === 2 ? ORANGE : STEEL, 0.38);
     text(s, p, { x: 1.15, y: 4.97 + i * 0.66, w: 7.1, h: 0.6, fontSize: 14 });
   });
-  s.addChart(pres.charts.BAR, [{ name: "Largest stress change (inferred MPa)", labels: ["Temperature", "Strain rate", "Shear modulus G", "Density ρ"], values: [22.12, 17.45, 3.40, 0.19] }], Object.assign({}, AX, {
+  s.addChart(pres.charts.BAR, [{ name: "Largest stress change (MPa)", labels: ["Temperature", "Strain rate", "Shear modulus G", "Density ρ"], values: [22.12, 17.45, 3.40, 0.19] }], Object.assign({}, AX, {
     x: 8.6, y: 1.7, w: 4.15, h: 4.55, barDir: "bar", barGapWidthPct: 55, chartColors: [HEX.accent1, HEX.dk2, HEX.accent2, HEX.accent4], showLegend: false,
-    showTitle: true, title: "Stress change for one level step (inferred MPa)", showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: "0.0", dataLabelFontBold: true,
+    showTitle: true, title: "Stress change for one level step (MPa)", showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: "0.0", dataLabelFontBold: true,
     valAxisHidden: true, valGridLine: { style: "none" }, catAxisOrientation: "maxMin", valAxisMaxVal: 28, objectName: "factor_chart",
   }));
-  text(s, "Mean of the largest gap between paired curves that differ in one input by one level. Stress units inferred as MPa (unconfirmed).", { x: 8.6, y: 6.3, w: 4.15, h: 0.65, fontSize: 11, color: MUTED });
-  s.addNotes("Left: all 73 curves. Every curve ends below where it starts, and hotter cases sit lower; that does not mean every step of every curve falls, the irregular case 60 included. Right: at 30 degrees, a faster rate starts higher but softens faster, so the curves cross. The chart compares pairs of cases that differ in one input only: one temperature step moves the curve by 22 units, which we infer to be megapascals, one rate step by 17, shear modulus by 3, and density by only 0.2. So this data says very little about porosity directly; that becomes important for the model.");
+  text(s, "Mean of the largest gap between paired curves that differ in one input by one level. Stress in MPa (units confirmed by the user; no generator documentation).", { x: 8.6, y: 6.3, w: 4.15, h: 0.65, fontSize: 11, color: MUTED });
+  s.addNotes("Left: all 73 curves. Every curve ends below where it starts, and hotter cases sit lower; that does not mean every step of every curve falls, the irregular case 60 included. Right: at 30 degrees, a faster rate starts higher but softens faster, so the curves cross. The chart compares pairs of cases that differ in one input only: one temperature step moves the curve by 22 megapascals, one rate step by 17, shear modulus by 3, and density by only 0.2. So this data says very little about porosity directly; that becomes important for the model.");
 }
 
 // ================================================================== 11 Data preparation
@@ -391,7 +391,7 @@ pres.addSection({ title: "Model" });
     { name: "Unseen temperature–rate groups (used in selection)", labels: ["JC equation alone", "Plain MLP", "JC-PINN (λ = 0)"], values: [13.947, 11.900, 6.2349] },
   ], Object.assign({}, AX, {
     x: 0.6, y: 1.7, w: 7.0, h: 3.85, barDir: "col", barGapWidthPct: 60, chartColors: [HEX.accent4, HEX.accent1], showLegend: true, legendPos: "b", legendFontSize: 12, legendFontFace: "+mn-lt", legendColor: HEX.dk1,
-    showTitle: true, title: "Mean curve RMSE, training side only (inferred MPa, lower is better)", showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: "0.00", dataLabelFontSize: 12,
+    showTitle: true, title: "Mean curve RMSE, training side only (MPa, lower is better)", showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: "0.00", dataLabelFontSize: 12,
     valAxisMinVal: 0, valAxisMaxVal: 16, valAxisMajorUnit: 4, catAxisLabelFontSize: 13, objectName: "model_choice_chart",
   }));
   const opts = [
@@ -408,7 +408,7 @@ pres.addSection({ title: "Model" });
   card(s, 0.6, 5.68, 12.1, 0.78, PALE);
   text(s, [B("No accuracy benefit from physics is shown. ", { color: ORANGE }), R("The same network with the JC equation switched off scored better (groups 5.63 vs 6.23; test 0.338 vs 0.439). We keep the JC backbone as the project's adopted governing form; its constants are fitted jointly with the correction, not independent material properties.")],
     { x: 0.8, y: 5.72, w: 11.75, h: 0.7, fontSize: 13.5, valign: "middle" });
-  text(s, "Group scores were used to select among 14 JC-PINN settings, and the MLP's setting was nested in its group test, so they are not independent estimates of superiority; optimism is not quantified. Curve RMSE, units inferred as MPa.",
+  text(s, "Group scores were used to select among 14 JC-PINN settings, and the MLP's setting was nested in its group test, so they are not independent estimates of superiority; optimism is not quantified. Curve RMSE in MPa.",
     { x: 0.6, y: 6.52, w: 12.1, h: 0.45, fontSize: 11, color: MUTED });
   s.addNotes("We compared approaches using only the training partition. The first bar of each pair is case cross-validation on training cases; the second is the mean over nine hidden temperature-rate groups. The JC equation alone is readable but too rigid. A plain MLP scores 2.17 in cross-validation but 11.90 on hidden groups. The selected JC-PINN, the JC equation times a learned correction, scores 2.10 and 6.23. Two things must be said plainly. First, the selected setting has physics-loss weight zero: no physics residual penalty is active; the seven JC constants and the correction are fitted jointly to data. Second, the same network with the equation switched off scored better, 5.63 against 6.23 on groups and 0.338 against 0.439 on test, so these comparisons show no accuracy benefit from the physics. We keep the backbone because the project adopted that governing form. The group scores were also used in selection, so they are not independent evidence that one model is better.");
 }
@@ -445,9 +445,9 @@ pres.addSection({ title: "Model" });
     text(s, b, { x: x + 0.62, y: 5.4, w: 5.2, h: 0.6, fontSize: 13.5, color: MUTED });
   });
   card(s, 0.6, 6.17, 12.1, 0.8, NAVY);
-  text(s, [R("These comparisons do not show an accuracy benefit from the JC backbone or a physics penalty.  ", { color: ORANGE, bold: true }), R("Random-split scores measure interpolation between near-duplicate cases; the unseen-group test is closer to real prediction. Curve RMSE, inferred MPa.", { color: WHITE })],
+  text(s, [R("These comparisons do not show an accuracy benefit from the JC backbone or a physics penalty.  ", { color: ORANGE, bold: true }), R("Random-split scores measure interpolation between near-duplicate cases; the unseen-group test is closer to real prediction. Curve RMSE in MPa.", { color: WHITE })],
     { x: 0.85, y: 6.22, w: 11.6, h: 0.7, fontSize: 13.5, valign: "middle" });
-  s.addNotes("All numbers are curve RMSE in stress units we infer to be megapascals. The plain MLP, 5-16-16-1 with 385 weights, scores 0.143 on the random 37-case test and 11.90 on the nine hidden temperature-rate groups. The selected JC-PINN, physics-loss weight zero, five seeds, scores 0.439 and 6.23. The post-hoc control, the same network with the equation switched off, scores 0.338 and 5.63: better on both, and it was not used for selection. The JC equation alone scores 7.37 and 13.95. So the table does not show that the JC backbone or physics improves accuracy. The JC-PINN beats the plain MLP on hidden groups, but those group scores were part of model selection, so this is not an independent test of which model is better. Differences in architecture, output form and regularisation also prevent pinning the gap on a single ingredient.");
+  s.addNotes("All numbers are curve RMSE in megapascals; the user confirmed the units. The plain MLP, 5-16-16-1 with 385 weights, scores 0.143 on the random 37-case test and 11.90 on the nine hidden temperature-rate groups. The selected JC-PINN, physics-loss weight zero, five seeds, scores 0.439 and 6.23. The post-hoc control, the same network with the equation switched off, scores 0.338 and 5.63: better on both, and it was not used for selection. The JC equation alone scores 7.37 and 13.95. So the table does not show that the JC backbone or physics improves accuracy. The JC-PINN beats the plain MLP on hidden groups, but those group scores were part of model selection, so this is not an independent test of which model is better. Differences in architecture, output form and regularisation also prevent pinning the gap on a single ingredient.");
 }
 
 // ================================================================== 14 JC-PINN model + training GIF
@@ -459,7 +459,7 @@ pres.addSection({ title: "Model" });
   text(s, [
     R("ε = E11, total axial strain (not equivalent plastic strain)", { breakLine: true }),
     R("ε̇₀ = 10⁻⁵ /s  ·  T* = max[(T − 30)/(600 − 30), 0], T in °C", { breakLine: true }),
-    R("G₀ = 25 300 MPa  ·  φ = 1 − ρ/2700 (assumed mapping)", { breakLine: true }),
+    R("G₀ = 25 300 MPa  ·  φ = 1 − ρ/2700 (confirmed by the user)", { breakLine: true }),
     R("A − Bεⁿ is a softening form, unlike standard JC A + Bεpⁿ"),
   ], { x: 0.85, y: 2.78, w: 5.6, h: 1.45, fontSize: 12.5, color: LINE, paraSpaceAfter: 2 });
   const facts = [
@@ -477,8 +477,8 @@ pres.addSection({ title: "Model" });
   card(s, 6.85, 4.5, 5.9, 1.4, ICE);
   text(s, [B("Watch it learn: "), R("at step 0 the model is the plain JC law (lines off the dots). Adam and then L-BFGS pull the four training curves towards the simulation data as the loss falls about 60-fold (0.171 → 0.0028).")],
     { x: 7.05, y: 4.6, w: 5.5, h: 1.2, fontSize: 13.5 });
-  text(s, "Animated in Slide Show: recorded training trace, seed 0 (not a new run). Stress units inferred as MPa.", { x: 6.85, y: 6.0, w: 5.9, h: 0.3, fontSize: 11, color: MUTED });
-  s.addNotes("The model multiplies the custom Johnson-Cook form by exp of delta, a small neural correction. In the equation, epsilon is E11, the total axial strain of the data, not the equivalent plastic strain of standard Johnson-Cook; the reference rate is ten to the minus five per second; T-star is temperature scaled between 30 and 600 degrees and clipped at zero; G-nought is 25,300 megapascals; and porosity enters only through density, using our assumed mapping phi equals one minus rho over 2700. Note the A minus B epsilon to the n term: it is a softening form, unlike standard hardening Johnson-Cook. The selected physics-loss weight lambda is zero, so no physics residual penalty is active; the seven constants and the network are fitted jointly, and their separate contributions are not identifiable. Each member has 385 network weights and biases plus seven constants, 392 values; five members give 1,960. The animation is the recorded training trace for seed 0, not a new run.");
+  text(s, "Animated in Slide Show: recorded training trace, seed 0 (not a new run). Stress in MPa.", { x: 6.85, y: 6.0, w: 5.9, h: 0.3, fontSize: 11, color: MUTED });
+  s.addNotes("The model multiplies the custom Johnson-Cook form by exp of delta, a small neural correction. In the equation, epsilon is E11, the total axial strain of the data, not the equivalent plastic strain of standard Johnson-Cook; the reference rate is ten to the minus five per second; T-star is temperature scaled between 30 and 600 degrees and clipped at zero; G-nought is 25,300 megapascals; and porosity enters only through density, using the user-confirmed mapping phi equals one minus rho over 2700. Note the A minus B epsilon to the n term: it is a softening form, unlike standard hardening Johnson-Cook. The selected physics-loss weight lambda is zero, so no physics residual penalty is active; the seven constants and the network are fitted jointly, and their separate contributions are not identifiable. Each member has 385 network weights and biases plus seven constants, 392 values; five members give 1,960. The animation is the recorded training trace for seed 0, not a new run.");
 }
 
 // ================================================================== 15 Evaluation: test GIF
@@ -487,7 +487,7 @@ pres.addSection({ title: "Evaluate" });
   const s = content("Evaluate", 4, "14 · Evaluation", "Scored on 37 simulations held out from fitting");
   s.addImage({ path: A("gif_test.gif"), x: 0.5, y: 1.7, w: 7.6, h: 7.6 / 2.4, altText: "Animated: JC-PINN prediction against each of the 37 held-out test curves, with the parity plot filling in to R² = 0.9995", objectName: "gif_test" });
   text(s, "Animated in Slide Show: each frame is one held-out case; the right panel collects every point.", { x: 0.6, y: 4.95, w: 7.4, h: 0.3, fontSize: 11, color: MUTED });
-  const stats = [["0.4386", "mean of the 37 curve RMSEs (inferred MPa)"], ["0.9995", "R² over 4 440 test points"], ["94.9 %", "of points within ±1 source stress unit"], ["37 / 37", "cases better than the JC law alone"]];
+  const stats = [["0.4386", "mean of the 37 curve RMSEs (MPa)"], ["0.9995", "R² over 4 440 test points"], ["94.9 %", "of points within ±1 source stress unit"], ["37 / 37", "cases better than the JC law alone"]];
   stats.forEach(([v, l], i) => {
     const x = 8.5 + (i % 2) * 2.15, y = 1.8 + Math.floor(i / 2) * 1.55;
     card(s, x, y, 2.0, 1.38, i === 0 ? NAVY : ICE);
@@ -497,15 +497,15 @@ pres.addSection({ title: "Evaluate" });
   card(s, 0.6, 5.35, 12.1, 1.5, ICE);
   text(s, [B("How to read it: "), R("37 simulations held out from fitting; scored after the model was locked. "), B("Not a blind test: ", { color: ORANGE }), R("the test cases were explored in earlier project stages. Worst curve 0.84 (case 10); pooled point RMSE 0.504. The JC law alone scores 7.37, so the correction cuts the error about 17-fold. The physics-disabled control scored 0.338 on the same cases.")],
     { x: 0.85, y: 5.45, w: 11.6, h: 1.3, fontSize: 14, valign: "middle" });
-  s.addNotes("These 37 simulations were held out from fitting and scored after the model was locked. It is not a blind test: the same cases were explored in earlier project stages. The animation steps through every held-out case: the orange line is the prediction, the dots are the simulation. The mean of the 37 per-curve RMSEs is 0.4386 in units we infer to be megapascals; the pooled point RMSE is 0.504; the worst curve is 0.84, case 10. R squared is 0.9995 over 4,440 points, and 94.9 percent of points are within one source stress unit. Every one of the 37 cases beats the JC law alone, which averages 7.37. For balance: the physics-disabled control scored 0.338 on the same cases.");
+  s.addNotes("These 37 simulations were held out from fitting and scored after the model was locked. It is not a blind test: the same cases were explored in earlier project stages. The animation steps through every held-out case: the orange line is the prediction, the dots are the simulation. The mean of the 37 per-curve RMSEs is 0.4386 in megapascals; the pooled point RMSE is 0.504; the worst curve is 0.84, case 10. R squared is 0.9995 over 4,440 points, and 94.9 percent of points are within one source stress unit. Every one of the 37 cases beats the JC law alone, which averages 7.37. For balance: the physics-disabled control scored 0.338 on the same cases.");
 }
 
 // ================================================================== 16 Evaluation: by condition and limits
 {
   const s = content("Evaluate", 4, "15 · Evaluation", "Where the model is strongest, and where to be careful");
-  s.addChart(pres.charts.BAR, [{ name: "Test RMSE (inferred MPa)", labels: ["30 °C · 10⁻⁵", "30 °C · 10⁻⁴", "30 °C · 10⁻³", "100 °C · 10⁻⁵", "100 °C · 10⁻⁴", "100 °C · 10⁻³", "200 °C · 10⁻⁴", "200 °C · 10⁻³"], values: [0.354, 0.803, 0.182, 0.434, 0.283, 0.454, 0.569, 0.143] }], Object.assign({}, AX, {
+  s.addChart(pres.charts.BAR, [{ name: "Test RMSE (MPa)", labels: ["30 °C · 10⁻⁵", "30 °C · 10⁻⁴", "30 °C · 10⁻³", "100 °C · 10⁻⁵", "100 °C · 10⁻⁴", "100 °C · 10⁻³", "200 °C · 10⁻⁴", "200 °C · 10⁻³"], values: [0.354, 0.803, 0.182, 0.434, 0.283, 0.454, 0.569, 0.143] }], Object.assign({}, AX, {
     x: 0.6, y: 1.7, w: 6.9, h: 4.4, barDir: "bar", barGapWidthPct: 45, chartColors: [HEX.dk2], showLegend: false,
-    showTitle: true, title: "Held-out test error by temperature and strain rate (mean curve RMSE, inferred MPa)", showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: "0.00", dataLabelFontSize: 12,
+    showTitle: true, title: "Held-out test error by temperature and strain rate (mean curve RMSE, MPa)", showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: "0.00", dataLabelFontSize: 12,
     catAxisOrientation: "maxMin", catAxisLabelFontSize: 12, valAxisMinVal: 0, valAxisMaxVal: 1.0, valAxisMajorUnit: 0.25, objectName: "condition_chart",
   }));
   const pts = [
@@ -520,20 +520,83 @@ pres.addSection({ title: "Evaluate" });
     text(s, h, { x: 8.4, y, w: 4.3, h: 0.36, fontSize: 17, bold: true });
     text(s, b, { x: 8.4, y: y + 0.38, w: 4.3, h: 0.72, fontSize: 13, color: MUTED });
   });
-  text(s, "A plain MLP scored lower on familiar conditions (0.143 vs 0.439 test) but higher on unseen temperature–rate groups (11.90 vs 6.23); those group scores were used in selection, so they are not independent estimates. Stress units inferred as MPa (unconfirmed).",
+  text(s, "A plain MLP scored lower on familiar conditions (0.143 vs 0.439 test) but higher on unseen temperature–rate groups (11.90 vs 6.23); those group scores were used in selection, so they are not independent estimates. Stress in MPa (units confirmed by the user; no generator documentation).",
     { x: 0.6, y: 6.25, w: 12.1, h: 0.7, fontSize: 12.5, color: MUTED });
-  s.addNotes("Broken down by condition, every held-out group has a mean curve RMSE under one unit, which we infer to be megapascals; individual points can be larger, up to 2.9. The two lowest-error groups are 200 degrees and 30 degrees at the fast rate, 0.14 and 0.18; note that 100 degrees at the fast rate is 0.45, so this is not a fast-rate rule. The weakest group, 30 degrees at the middle rate, has eight test cases but only one in training. There is one case at 200 degrees and the slowest rate and none at 300 degrees, so predictions there are extrapolation. Density barely changes the curves; the backbone's porosity exponent is about zero, although the correction network also receives density. A plain MLP was better on familiar conditions but worse on hidden groups, and those group scores were used in selection.");
+  s.addNotes("Broken down by condition, every held-out group has a mean curve RMSE under one megapascal; individual points can be larger, up to 2.9. The two lowest-error groups are 200 degrees and 30 degrees at the fast rate, 0.14 and 0.18; note that 100 degrees at the fast rate is 0.45, so this is not a fast-rate rule. The weakest group, 30 degrees at the middle rate, has eight test cases but only one in training. There is one case at 200 degrees and the slowest rate and none at 300 degrees, so predictions there are extrapolation. Density barely changes the curves; the backbone's porosity exponent is about zero, although the correction network also receives density. A plain MLP was better on familiar conditions but worse on hidden groups, and those group scores were used in selection.");
 }
 
-// ================================================================== 17 Deployment (planned)
+// ================================================================== 17-19 The locked model as an Ansys material (post-hoc)
+// Added 17 Nov 2026. Numbers come from report/numbers.json (scripts/write_latex_numbers.py); figures from figures/.
 pres.addSection({ title: "Deploy" });
+const N = Object.fromEntries(Object.entries(require(path.join(__dirname, "..", "..", "report", "numbers.json")))
+  .map(([k, v]) => [k, String(v).replace(/\{,\}/g, ",")]));
+const sgn = (v) => String(v).replace("-", "−");
+const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
 {
-  const s = content("Deploy", 5, "16 · Deployment · partly built, mostly planned", "Planned: a bracket-check concept for aerospace companies");
+  const s = content("Deploy", 5, "16 · From model to Ansys material", "The locked JC-PINN, generated into an Ansys user material");
+  const steps = [
+    ["Generate", "Abaqus UMAT and ANSYS USERMAT written from the locked weights; not refitted. J2 plasticity, radial return, consistent tangent.", NAVY],
+    ["Verify offline", `Flow stress to ${N.VerStressErr} (relative), slope ${N.VerSlopeErr}, tangent ${N.VerTangentErr}; ${N.VerFlagChecks}/${N.VerFlagChecks} range flags correct.`, STEEL],
+    ["Run in MAPDL 2024 R1", `One element to ε₁₁ = 0.12: matches the offline result to ${N.SeMaxDiff} MPa at all ${N.SePoints} substeps (tolerance ${N.SeTol}).`, ORANGE],
+  ];
+  steps.forEach(([h, b, col], i) => {
+    const x = 0.6 + i * 4.1;
+    card(s, x, 1.75, 3.85, 2.6, ICE);
+    dot(s, x + 0.25, 1.95, String(i + 1), col, 0.44);
+    text(s, h, { x: x + 0.85, y: 2.0, w: 2.9, h: 0.4, fontSize: 18, bold: true });
+    text(s, b, { x: x + 0.25, y: 2.6, w: 3.4, h: 1.7, fontSize: 13.5, color: MUTED });
+  });
+  const stats = [[`${N.SeMaxDiff} MPa`, "MAPDL vs offline, single element"], [`${N.SeSFinal} MPa`, `final σ₁₁ (EQPS ${N.SeEqpsFinal}, flag ${N.SeFlagFinal})`], ["ν = 0.33", "assumed; elasticity from G"], ["offline only", "Abaqus UMAT not yet run in Abaqus"]];
+  stats.forEach(([v, l], i) => {
+    const x = 0.6 + i * 3.08;
+    card(s, x, 4.6, 2.9, 1.35, i === 0 ? NAVY : ICE);
+    text(s, v, { x: x + 0.2, y: 4.72, w: 2.6, h: 0.55, fontSize: 22, bold: true, color: i === 0 ? WHITE : (i === 3 ? ORANGE : NAVY) });
+    text(s, l, { x: x + 0.2, y: 5.3, w: 2.6, h: 0.55, fontSize: 12, color: i === 0 ? LINE : MUTED });
+  });
+  text(s, "Strain E11 is read as plastic strain; outside the data the routines flag, they do not clamp. Evidence: umat/verification.json, umat/ansys_test/results_2026-11-17/.",
+    { x: 0.6, y: 6.2, w: 12.1, h: 0.6, fontSize: 12.5, color: MUTED });
+  s.addNotes(`After the model was locked, and without refitting it, we generated two user materials from its weights: an Abaqus UMAT and an ANSYS USERMAT. Both are J2 plasticity with a radial return and a consistent tangent; the flow stress is the JC-PINN prediction at the current plastic strain, and the elastic part comes from G and an assumed Poisson's ratio of 0.33. Offline they reproduce the Python model to a relative error of ${N.VerStressErr}, and the tangent to ${N.VerTangentErr}. We then built the USERMAT into MAPDL 2024 R1 and pulled one element to 12 percent strain: at all ${N.SePoints} substeps it matches the offline result to ${N.SeMaxDiff} megapascals, against a tolerance of ${N.SeTol}. The Abaqus version has only been checked offline.`);
+}
+{
+  const s = content("Deploy", 5, "17 · Bracket", "The bracket with the JC-PINN, and what density alone does");
+  s.addImage({ path: FIG("fig_bracket.png"), x: 0.6, y: 1.7, w: 6.0, h: 6.0 / 2.619, altText: "Bracket reaction for elastic, Workbench EP and JC-PINN USERMAT", objectName: "fig_bracket" });
+  s.addImage({ path: FIG("fig_bracket_porosity.png"), x: 6.75, y: 1.7, w: 6.0, h: 6.0 / 2.6136, altText: "Bracket reaction for porosity cases", objectName: "fig_bracket_porosity" });
+  card(s, 0.6, 4.2, 12.1, 2.65, ICE);
+  text(s, [
+    B("Same Workbench bracket, ", { color: NAVY }), R(`${N.MeshElemCoarse} SOLID186 elements, fixed support, imposed 2 mm; solved in MAPDL with three materials.`, { breakLine: true }),
+    B("JC-PINN at φ = 4 %: ", { color: ORANGE }), R(`peak ${N.BrUsermatPeakkN} kN at −${N.BrUsermatPeakUX} mm, then softens to ${N.BrUsermatFinalkN} kN. The Workbench EP card is a different material condition (yield 251 MPa, hardening): a reference, not a validation.`, { breakLine: true }),
+    B("Density only, G fixed: ", { color: NAVY }), R(`φ 0 → 7.85 % changes the peak by ${sgn(N.PorDensPeakChangePct)} % (single element ${sgn(N.PorSeDensYieldPct)} %).`, { breakLine: true }),
+    B("G matters more: ", { color: ORANGE }), R(`about ${N.PorBrGOverDens}× per percent change. G(φ) is unknown, so this is only the density part of the porosity effect.`),
+  ], { x: 0.85, y: 4.35, w: 11.6, h: 2.4, fontSize: 14.5, paraSpaceAfter: 6 });
+  s.addNotes(`This is the project's Workbench bracket, unchanged: ${N.MeshElemCoarse} quadratic elements, a fixed support and an imposed displacement of 2 millimetres, solved in MAPDL with three materials. The JC-PINN at the 4 percent study point peaks at ${N.BrUsermatPeakkN} kilonewtons and then softens to ${N.BrUsermatFinalkN}. The Workbench elastic-plastic card is a different material condition, so it is a reference, not a validation. On the right, with G fixed, going from 0 to 7.85 percent porosity changes the peak by only ${N.PorDensPeakChangePct} percent, which matches the single-element ${N.PorSeDensYieldPct} percent. Per percent change, G acts about ${N.PorBrGOverDens} times more strongly, and G as a function of porosity is unknown, so this is only the density part of the porosity effect.`);
+}
+{
+  const s = content("Deploy", 5, "18 · Mesh study", "The softening makes the bracket result mesh dependent");
+  s.addImage({ path: FIG("fig_mesh_ep.png"), x: 0.6, y: 1.7, w: 7.6, h: 7.6 / 2.6136, altText: "Bracket reaction and peak plastic strain on two meshes, JC-PINN and Workbench EP", objectName: "fig_mesh_ep" });
+  const stats = [[`${sgn(N.BrMeshPeakChangePct)} %`, "JC-PINN peak force, 5 → 2.5 mm"], [`${sgn(N.MeshForceOneChangePct)} %`, "JC-PINN force at 1 mm"], [`≤ ${N.MeshEpMaxChangePct} %`, "hardening EP card, same meshes"], [`${N.MeshEqpsCoarse} → ${N.MeshEqpsFine}`, "JC-PINN peak plastic strain"]];
+  stats.forEach(([v, l], i) => {
+    const x = 8.5 + (i % 2) * 2.15, y = 1.75 + Math.floor(i / 2) * 1.55;
+    card(s, x, y, 2.0, 1.38, i === 0 ? NAVY : ICE);
+    text(s, v, { x: x + 0.15, y: y + 0.15, w: 1.8, h: 0.6, fontSize: 22, bold: true, color: i === 0 ? WHITE : (i === 2 ? GREEN : NAVY) });
+    text(s, l, { x: x + 0.15, y: y + 0.75, w: 1.75, h: 0.6, fontSize: 12, color: i === 0 ? LINE : MUTED });
+  });
+  card(s, 0.6, 4.95, 12.1, 1.9, ICE);
+  text(s, [
+    B(`Uniform 2×2×2 split (${N.MeshElemCoarse} → ${N.MeshElemFine} elements), not a Workbench remesh. `), R("Same geometry, supports and load.", { breakLine: true }),
+    B("Bracket forces after yield are mesh-specific, not a converged strength. ", { color: ORANGE }), R("The softening causes it; a regularised softening law is future work.", { breakLine: true }),
+    R("One material condition · small strain · ν = 0.33 assumed · nothing validated experimentally.", { color: MUTED }),
+  ], { x: 0.85, y: 5.05, w: 11.6, h: 1.7, fontSize: 14.5, paraSpaceAfter: 5, valign: "middle" });
+  s.addNotes(`To test the mesh, we split every element two by two by two: ${N.MeshElemFine} elements with the same geometry, supports and load. This is a uniform split, not a Workbench remesh. With the JC-PINN the peak force changes by ${N.BrMeshPeakChangePct} percent, and the force at one millimetre by ${N.MeshForceOneChangePct} percent. The peak plastic strain rises from ${N.MeshEqpsCoarse} to ${N.MeshEqpsFine} and keeps rising. The same split with the hardening Workbench card changes the force by at most ${N.MeshEpMaxChangePct} percent, so the softening causes the dependence. The bracket forces after yield are therefore specific to the mesh, not a converged strength. A regularised softening law is future work.`);
+}
+
+// ================================================================== 20 Deployment (planned)
+{
+  const s = content("Deploy", 5, "19 · Deployment · partly built, mostly planned", "Planned: a bracket-check concept for aerospace companies");
   const flow = [
     ["Company inputs", "CT-scan porosity and largest pore (needs a pore-to-crack convention) · temperature · load rate", NAVY, "PLANNED"],
     ["JC-PINN inference", "Predicts Svm(E11) for given conditions, with range warnings", CYAN, "EXISTS"],
     ["Material card", "Writer exists (CSV / APDL / XML), untested template; E11 → εp needs a confirmed E", STEEL, "EXISTS"],
-    ["Bracket analysis", "Validated coupling; check energy balance and load rate before treating stress as static", STEEL, "PLANNED"],
+    ["Bracket analysis", "USERMAT runs the bracket in MAPDL (verified, not validated; mesh dependent after yield)", STEEL, "EXISTS"],
     ["Fracture check", [R("Specify crack geometry and orientation; K"), sub("I"), R("(a) from the crack-opening stress; solve K"), sub("I"), R("(a"), sub("c"), R(") = K"), sub("IC"), R("; check LEFM or use J")], ORANGE, "PLANNED"],
   ];
   flow.forEach(([h, b, col, tag], i) => {
@@ -559,20 +622,20 @@ pres.addSection({ title: "Deploy" });
   card(s, 8.05, 4.5, 4.65, 2.4, ICE);
   text(s, "STATUS ON MAIN", { x: 8.3, y: 4.63, w: 4.2, h: 0.26, fontSize: 11, bold: true, color: STEEL, charSpacing: 3 });
   text(s, [
-    B("Exists: ", { color: GREEN }), R("locked JC-PINN inference with range warnings; porosity material-study workflow; material-card writer (unvalidated template).", { breakLine: true }),
-    B("Planned: ", { color: ORANGE }), R("validated Ansys coupling, crack model and K"), sub("IC"), R(", fatigue assessment and the decision tool. The older Model Studio app is archived."),
+    B("Exists: ", { color: GREEN }), R("locked JC-PINN inference with range warnings; porosity material-study workflow; material-card writer; ANSYS USERMAT and Abaqus UMAT (verified, not validated).", { breakLine: true }),
+    B("Planned: ", { color: ORANGE }), R("regularised softening, crack model and K"), sub("IC"), R(", fatigue assessment and the decision tool. The older Model Studio app is archived."),
   ], { x: 8.3, y: 4.95, w: 4.25, h: 1.9, fontSize: 12.5, paraSpaceAfter: 6 });
-  s.addNotes("This slide separates what exists from what is planned. On the main branch today: the locked JC-PINN can be run for given conditions with range warnings; a porosity material-study workflow uses it; and a material-card writer can export CSV, APDL or XML tables, though it is an unvalidated template, and converting total axial strain to plastic strain needs a confirmed Young's modulus. Still planned: validated coupling into the Ansys bracket model, with energy-balance and loading-rate checks before treating explicit stresses as static; a fracture check with a specified crack geometry and orientation, a stress intensity from the crack-opening stress, and a toughness source; and the decision tool. Accept, inspect or reject is a concept only: a static critical crack size is not a fatigue or airworthiness criterion. The older Model Studio app has been archived.");
+  s.addNotes("This slide separates what exists from what is planned. On the main branch today: the locked JC-PINN can be run for given conditions with range warnings; a porosity material-study workflow uses it; and a material-card writer can export CSV, APDL or XML tables, though it is an unvalidated template, and converting total axial strain to plastic strain needs a confirmed Young's modulus. The JC-PINN now runs in the Ansys bracket model as a user material: it is verified, not validated, and its results after yield depend on the mesh. Still planned: a regularised softening law; a fracture check with a specified crack geometry and orientation, a stress intensity from the crack-opening stress, and a toughness source; and the decision tool. Accept, inspect or reject is a concept only: a static critical crack size is not a fatigue or airworthiness criterion. The older Model Studio app has been archived.");
 }
 
 // ================================================================== 18 Limits and open questions
 pres.addSection({ title: "Limits" });
 {
-  const s = content("Limits", 4, "17 · Limits and open questions", "What we have not shown");
+  const s = content("Limits", 4, "20 · Limits and open questions", "What we have not shown");
   const blocks = [
-    ["Evidence", "The test set is not blind. Case 60 (200 °C, 10⁻⁵ /s) is a single irregular case the model cannot fully reproduce. The Ansys set-up is not archived. There is no experimental validation.", ORANGE],
-    ["Definitions unconfirmed", "Svm's physical units, spatial averaging and generating solver; Evm is not established as accumulated plastic strain; why every curve ends below its start; whether density and G represent porosity.", STEEL],
-    ["Porosity", "Represented through density with the assumed mapping φ = 1 − ρ/2700 (cases at 0, 3 and 7.85 %; 4 % study point = 2592 kg/m³). Backbone exponent r ≈ 0, but the correction also sees density; this does not show real pores are harmless.", NAVY],
+    ["Evidence", "The test set is not blind. Case 60 (200 °C, 10⁻⁵ /s) is a single irregular case. The team's Ansys comparison set-up is not archived. No experimental validation. Bracket results after yield depend on the mesh (softening): not a converged strength.", ORANGE],
+    ["Definitions", "Units (MPa etc.) and density-as-porosity confirmed by the user, but no generator documentation: Svm's spatial averaging and generating solver are unknown; Evm is not established as accumulated plastic strain; why every curve ends below its start is unexplained.", STEEL],
+    ["Porosity", "Represented through density, φ = 1 − ρ/2700 (confirmed by the user; cases at 0, 3 and 7.85 %; 4 % study point = 2592 kg/m³). Backbone exponent r ≈ 0, but the correction also sees density; this does not show real pores are harmless.", NAVY],
     ["CL not yet computed", [R("Needs crack geometry and orientation, a pore-to-crack convention, a K"), sub("IC"), R(" source, K"), sub("I"), R("(a) from the crack-opening stress, an LEFM check (or J), and fatigue assessment for cyclic loads. To confirm with the professor.")], CYAN],
   ];
   blocks.forEach(([h, b, col], i) => {
@@ -582,7 +645,7 @@ pres.addSection({ title: "Limits" });
     text(s, h, { x: x + 0.9, y: y + 0.28, w: 4.85, h: 0.4, fontSize: 19, bold: true });
     text(s, b, { x: x + 0.9, y: y + 0.78, w: 4.85, h: 1.6, fontSize: 14, color: MUTED });
   });
-  s.addNotes("Before concluding, what we have not shown. Evidence: the test set is not blind, case 60 is a single irregular case the model cannot fully reproduce, the Ansys set-up was not archived, and nothing is validated against experiments. Definitions: we have not confirmed Svm's physical units, its spatial averaging or the solver that generated it; Evm is not established as accumulated plastic strain; we do not know why every curve ends below its start, or whether density and shear modulus really stand for porosity. Porosity: it enters through density, using our assumed mapping phi equals one minus rho over 2700, which gives 0, 3 and 7.85 percent for the cases and 2592 for our 4 percent study point. The backbone's porosity exponent is about zero, but the correction also sees density, and this says nothing about whether real pores are harmless. Finally, the critical flaw size is not computed: it needs a crack model, a toughness source, a stress intensity from the crack-opening stress, a validity check, and a fatigue assessment.");
+  s.addNotes("Before concluding, what we have not shown. Evidence: the test set is not blind, case 60 is a single irregular case the model cannot fully reproduce, the team's Ansys comparison set-up was not archived, and nothing is validated against experiments. On the bracket, the softening makes results after yield depend on the mesh, so the bracket forces are not a converged strength. Definitions: the user confirmed the units and that density stands for porosity, but we have not seen the generator's documentation, so Svm's spatial averaging and the solver that generated it are unknown; Evm is not established as accumulated plastic strain; and we do not know why every curve ends below its start. Porosity: it enters through density, using the user-confirmed mapping phi equals one minus rho over 2700, which gives 0, 3 and 7.85 percent for the cases and 2592 for our 4 percent study point. The backbone's porosity exponent is about zero, but the correction also sees density, and this says nothing about whether real pores are harmless. Finally, the critical flaw size is not computed: it needs a crack model, a toughness source, a stress intensity from the crack-opening stress, a validity check, and a fatigue assessment.");
 }
 
 // ================================================================== 19 Conclusion
@@ -595,7 +658,7 @@ pres.addSection({ title: "Close" });
     ["Bracket set-up and Ansys peaks", "With an upper-half bore load, the team's plastic runs peak at the bore. The elastic peak is 1.86× the built-in JC peak (set-up details not archived)."],
     ["A single-peak agreement only", "JC-U's peak is within 0.94 % of built-in JC. This does not validate the material law, the full response or JC-PINN-to-Ansys coupling."],
     ["An accurate JC-backbone hybrid", "0.4386 mean curve RMSE on 37 held-out cases (R² 0.9995; 37/37 better than the JC law alone). λ = 0, and the physics-disabled control did better: no accuracy benefit from physics is shown."],
-    ["Next: critical flaw size · PLANNED", [R("Define crack geometry, orientation and K"), sub("IC"), R("; compute K"), sub("I"), R("(a) from the crack-opening stress; validate the coupling and add fatigue before any decision tool.")]],
+    ["Next: critical flaw size · PLANNED", [R("Define crack geometry, orientation and K"), sub("IC"), R("; compute K"), sub("I"), R("(a) from the crack-opening stress; regularise the softening (mesh dependence), measure G(φ) and add fatigue before any decision tool.")]],
   ];
   pts.forEach(([h, b], i) => {
     const x = 0.6 + (i % 2) * 6.15, y = 1.75 + Math.floor(i / 2) * 2.42;
@@ -604,7 +667,7 @@ pres.addSection({ title: "Close" });
     text(s, h, { x: x + 0.3, y: y + 0.65, w: 5.4, h: 0.4, fontSize: 18, bold: true, color: i === 3 ? ORANGE : WHITE });
     text(s, b, { x: x + 0.3, y: y + 1.08, w: 5.4, h: 1.1, fontSize: 13.5, color: PALE });
   });
-  text(s, "Ansys results: team screenshots, not independently re-run. Material-data stress units inferred as MPa (unconfirmed). No experimental validation.", { x: 0.6, y: 6.68, w: 11, h: 0.3, fontSize: 11, color: LINE });
+  text(s, "Ansys results: team screenshots, not independently re-run. Material-data units confirmed by the user (no generator documentation). No experimental validation.", { x: 0.6, y: 6.68, w: 11, h: 0.3, fontSize: 11, color: LINE });
   s.addNotes("To conclude. With the upper-half bore load, the team's plastic Ansys runs peak at the bore, and the elastic peak is 1.86 times the built-in Johnson-Cook peak; the set-up details were not archived. The user-defined run's peak is within 0.94 percent of the built-in one, but that single number does not validate the material law, the full response or any coupling from our model. Our JC-backbone hybrid reproduces the 37 held-out simulations to a mean curve RMSE of 0.4386, R squared 0.9995, and beats the JC law alone on every case. Its selected physics-loss weight is zero and the physics-disabled control did better, so we do not claim an accuracy benefit from physics. Next, still planned: a crack model with toughness, the stress intensity from the crack-opening stress, a validated Ansys coupling and a fatigue assessment, before any decision tool.");
 }
 
