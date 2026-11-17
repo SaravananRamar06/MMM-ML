@@ -10,11 +10,12 @@ Commit and push code, tests, documentation, research decisions and relevant veri
 
 - **The locked run is evidence. Do not edit it.** `reports/jc_pinn_20261107/equation.json` is fingerprinted in `selection_lock.json`. Record corrections in `ERRATA.md`, and put new results in new files or folders.
 - **The model is final.** The user decided to submit it as locked (decision A3). Do not retrain, re-select or tune on the 37 test cases. Any new experiment goes on training cases only and is labelled as post-hoc.
-- **Numbers come from files.** The report, paper and slides read `report/numbers.tex` / `numbers.json`, which `scripts/write_latex_numbers.py` writes. After any change to a saved result, rerun it, then `scripts/make_figures.py` and `scripts/build_deck.py`, and rebuild the PDFs.
+- **Numbers come from files.** The report, paper and slides read `report/numbers.tex` / `numbers.json`, which `scripts/write_latex_numbers.py` writes. After any change to a saved result, rerun it, then `scripts/make_figures.py` and `presentation/build/build_corrected.js` (the only slide deck), and rebuild the PDFs.
 - **Do not ask again about resolved facts.** CL is critical flaw length. The data folder is complete. The split is 36/37 by case. The study point is φ = 4 %. Equation 1 and its constants are as in the user's notes. The units are °C, s⁻¹, MPa and kg/m³ (user-confirmed). Density stands for porosity. No data above 200 °C will be added.
 - **State the limits.** The test is not blind, the units are user-confirmed (no generator documentation), nothing is validated above 200 °C, and nothing here is experimentally validated. Do not invent loads, porosity relations or fracture data.
 - **Raw data stay out of Git.** `TEAM_8_extracted_results_set_1/` is the instructor's data and is excluded by `.gitignore`.
-- **Earlier work lives on branch `archive/pre-final-2026-11-07`.** Do not restore it to `main`.
+- **Earlier work lives on branch `archive/pre-final-2026-11-07`.** Do not restore it to `main`. The only earlier model quoted on `main` is the 2 Nov plain MLP, as a baseline.
+- **ANSYS is the only finite-element solver.** The user material is the ANSYS USERMAT in `umat/`. There is no Abaqus UMAT; do not add one.
 
 ## Checks before pushing
 

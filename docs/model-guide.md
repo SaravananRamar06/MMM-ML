@@ -71,12 +71,12 @@ $$
   "Joint" also lets training adjust the constants. Both were tested.
 
 **Why rebuild rather than reuse the old network's weights?** scikit-learn's MLP cannot take a physics loss, and the network's job
-changed from "predict stress" to "predict the correction to Equation 1", so the old weights do not transfer. The earlier models are
-kept as baselines.
+changed from "predict stress" to "predict the correction to Equation 1", so the old weights do not transfer. The 2 Nov plain MLP is
+kept as the baseline.
 
 ## 4. Training and testing without peeking
 
-1. **Same split as every earlier model:** 36 training and 37 test simulation cases (seed 42). All 120 points of a curve stay together,
+1. **Same split as the baseline:** 36 training and 37 test simulation cases (seed 42). All 120 points of a curve stay together,
    and each curve counts equally.
 2. **Selection on the 36 training cases only.** 14 settings: physics none / level (λ = 0.001, 0.01, 0.1) / trend (λ = 0.0001, 0.001, 0.01),
    each with frozen or joint constants. Each setting is scored on:
@@ -107,8 +107,7 @@ and **no extra physics penalty** (λ = 0). Every level and trend penalty raised 
 | Equation 1 alone (7 constants) | 10.24 | 13.95 | 7.37 |
 | **JC-PINN (Equation 1 backbone + correction)** | 2.10 | 6.23 | **0.439** |
 | Same network, Equation 1 switched off (control) | 1.32 | 5.63 | 0.338 |
-| Single MLP, 2 Nov | 2.17 | 11.90 | 0.143 |
-| 5-net MLP ensemble, 24 Oct | (other folds) | 6.79 | 0.059 |
+| Plain MLP of 2 Nov (baseline) | 2.17 | 11.90 | 0.143 |
 
 The calibrated law on its own, fitted to the 36 training cases:
 
@@ -120,10 +119,10 @@ What this means:
    the stress. The network has learned the condition-dependent curve shape that the separable equation cannot represent.
 2. **The equation itself does not add accuracy.** The control has the same network and training with Equation 1 switched off, and it is
    better on every measure. The JC-PINN's numbers are even slightly optimistic, because it was the best of 14 settings. The gain over the
-   earlier MLPs on unseen conditions (6.2 against 11.9 for the single MLP) comes from the training recipe: strong weight decay and log-space
+   plain MLP on unseen conditions (6.2 against 11.9) comes from the training recipe: strong weight decay and log-space
    output. So Equation 1 works as the model's backbone, but in this separable form it contributes interpretability (named
    constants, correct trends, a physical starting point), not accuracy.
-3. **Trade-off.** On the professor's random 50/50 test the earlier MLPs remain more precise (0.143 and 0.059 against 0.439). The balanced
+3. **Trade-off.** On the professor's random 50/50 test the plain MLP remains more precise (0.143 against 0.439). The balanced
    criterion we chose traded some interpolation precision for better behaviour on unseen temperature/rate combinations.
 4. **Porosity.** Porosity enters only through density (φ = 1 − ρ/2700).
    * **The data contain a real effect.** In all 72 pairs of cases that differ only in density, lower density gives lower stress.
@@ -153,7 +152,7 @@ What this means:
 * Hosted Colab and Kaggle runs still need to be done on your account.
 
 **Want it on paper?** The same story is in the [course report](../report/report.pdf), the [IEEE-format paper](../paper/paper.pdf)
-and the [slides](../presentation/JC-PINN.pdf). The narrated [explainer video](../reports/jc_pinn_20261107/video/jc_pinn_explainer.mp4)
+and the [slides](<../presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pdf>). The narrated [explainer video](../reports/jc_pinn_20261107/video/jc_pinn_explainer.mp4)
 and [test-results video](../reports/jc_pinn_20261107/test_report/video/jc_pinn_test_results.mp4) walk through it in about three minutes each.
 
 ## 6. How to run it

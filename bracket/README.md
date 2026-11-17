@@ -45,5 +45,4 @@ Tests: `tests/test_porosity_workflow.py`, `tests/test_ansys_material_bridge.py`.
 
 This folder was assembled on 7 November 2026, when the repository was rewritten around the final model.
 - **Removed:** the workflow's earlier lift-coefficient path, which belonged to the withdrawn reading "CL = coefficient of lift". CL means critical flaw length.
-- **Re-pointed:** the workflow's model calls, from the old query MLP to the JC-PINN.
-- **Archived:** the earlier versions are on branch `archive/pre-final-2026-11-07`.
+- **Re-pointed:** the workflow's model calls now use the JC-PINN.
