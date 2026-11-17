@@ -1,0 +1,136 @@
+C ======================================================================
+C  JC-PINN user material (ANSYS USERMAT, usermat3d) for LPBF AlSi10Mg
+C  Team 8, Multiscale Modelling of Materials using Machine Learning
+C
+C  GENERATED FILE - do not edit by hand. Rebuild with
+C      python scripts/write_umat.py
+C  Source model : reports/jc_pinn_20261107/equation.json (locked run)
+C  equation.json SHA-256 : @@SHA@@
+C
+C  Replaces the example usermat3d.F of the ANSYS UPF distribution.
+C  ANSYS's usermat.F calls usermat3d for ncomp >= 4: 3D solids
+C  (SOLID185/186/187), plane strain and axisymmetric (PLANE182/183).
+C  Plane stress, beams and shells (usermatps/bm/1d) are not provided.
+C
+C  J2 plasticity whose flow stress is the locked JC-PINN; the model
+C  is described in the core section below (JCPRM).
+C
+C  TB,USER constants (TBDATA, nProp >= 6, 7 optional)
+C    1  T      temperature, degC (used when prop(6) = 0)
+C    2  RATE   strain rate, 1/s (fixed condition, as in the data)
+C    3  RHO    density, kg/m3 (porosity phi = 1 - RHO/2700)
+C    4  G      shear modulus, MPa (model input; also elastic G)
+C    5  NU     Poisson's ratio (ASSUMED, not in the data; e.g. 0.33)
+C    6  ITEMP  0 = use prop(1); 1 = use Temp+dTemp from the analysis
+C    7  GEL    optional elastic shear modulus, MPa (0 = use prop(4))
+C
+C  TB,STATE variables (nStatev >= 4)
+C    1  EQPS   equivalent plastic strain
+C    2  SIGY   current flow stress, MPa
+C    3  FLAG   sum of bits, kept for the whole history:
+C              1 = EQPS beyond @@EPMAX_TXT@@ (flow stress held flat)
+C              2 = T, rate, density or G outside the data range
+C              4 = 200 < T <= 300 degC (no data, unvalidated)
+C    4  NITER  Newton iterations in the last substep
+C
+C  Also returned: epsPl (plastic strain, engineering shear), epseq,
+C  sedEl, sedPl, dsdePl (consistent tangent), tsstif. On a failed
+C  Newton solve keycut = 1 asks ANSYS to bisect the substep.
+C
+C  Units: MPa, degC, 1/s, kg/m3 (inferred from the data, open
+C  question Q1). The data are simulations, not experiments; nothing
+C  above 200 degC is validated. Softening (H < 0) localises: results
+C  are mesh dependent beyond the stress peak.
+C ======================================================================
+      subroutine usermat3d(
+     &                   matId, elemId,kDomIntPt, kLayer, kSectPt,
+     &                   ldstep,isubst,keycut,
+     &                   nDirect,nShear,ncomp,nStatev,nProp,
+     &                   Time,dTime,Temp,dTemp,
+     &                   stress,ustatev,dsdePl,sedEl,sedPl,epseq,
+     &                   Strain,dStrain, epsPl, prop, coords,
+     &                   var0, defGrad_t, defGrad,
+     &                   tsstif, epsZZ, cutFactor,
+     &                   var1, var2, var3, var4, var5,
+     &                   var6, var7)
+      IMPLICIT NONE
+      INTEGER
+     &                 matId, elemId,
+     &                 kDomIntPt, kLayer, kSectPt,
+     &                 ldstep,isubst,keycut,
+     &                 nDirect,nShear,ncomp,nStatev,nProp
+      DOUBLE PRECISION
+     &                 Time,    dTime,   Temp,    dTemp,
+     &                 sedEl,   sedPl,   epseq,   epsZZ,  cutFactor
+      DOUBLE PRECISION
+     &                 stress  (ncomp  ), ustatev (nStatev),
+     &                 dsdePl  (ncomp,ncomp),
+     &                 Strain  (ncomp  ), dStrain (ncomp  ),
+     &                 epsPl   (ncomp  ), prop    (nProp  ),
+     &                 coords  (3),
+     &                 defGrad (3,3),     defGrad_t(3,3),
+     &                 tsstif  (2)
+      DOUBLE PRECISION var0, var1, var2, var3, var4, var5,
+     &                 var6, var7
+C
+      DOUBLE PRECISION PRM(7), FLOW(6), EQPS, DEQPL, SY0, SYIELD,
+     &                 EG, EBULK3, JCPSED, DPERR(10)
+      INTEGER K1, IFLAG, NITER, ISTAT
+C
+      DO K1 = 1, 10
+         DPERR(K1) = 0.D0
+      END DO
+      IF (nStatev .LT. 4 .OR. nProp .LT. 6 .OR. nDirect .NE. 3) THEN
+         DPERR(1) = DBLE(matId)
+         CALL erhandler('usermat3d', 5000, 4,
+     &    'JC-PINN USERMAT (material %i): needs TB,USER with >= 6 '//
+     &    'constants, TB,STATE with >= 4 variables, and 3D, plane '//
+     &    'strain or axisymmetric elements.', DPERR, ' ')
+         RETURN
+      END IF
+      DO K1 = 1, 6
+         PRM(K1) = prop(K1)
+      END DO
+      PRM(7) = 0.D0
+      IF (nProp .GE. 7) PRM(7) = prop(7)
+      keycut = 0
+C
+      EQPS = ustatev(1)
+      IFLAG = NINT(ustatev(3))
+      CALL JCPRM(nDirect, ncomp, PRM, Temp+dTemp, stress, dStrain,
+     & EQPS, IFLAG, dsdePl, DEQPL, FLOW, SY0, SYIELD, EG, EBULK3,
+     & NITER, ISTAT)
+C
+      IF (ISTAT .EQ. 1) THEN
+C        no convergence: ask ANSYS to bisect the substep
+         keycut = 1
+         RETURN
+      ELSE IF (ISTAT .GE. 2) THEN
+         DPERR(1) = DBLE(ISTAT)
+         DPERR(2) = DBLE(elemId)
+         CALL erhandler('usermat3d', 5001, 4,
+     &    'JC-PINN USERMAT: error %i at element %i (2 = Equation 1 '//
+     &    'not positive, T >= T_melt; 3 = 3G + H <= 0; 4 = rate '//
+     &    '<= 0 or nu outside (-1, 0.5)).', DPERR, ' ')
+         RETURN
+      END IF
+C
+C     ---- plastic strain (engineering shear), energies, state --------
+      DO K1 = 1, nDirect
+         epsPl(K1) = epsPl(K1) + 1.5D0*FLOW(K1)*DEQPL
+      END DO
+      DO K1 = nDirect+1, ncomp
+         epsPl(K1) = epsPl(K1) + 3.D0*FLOW(K1)*DEQPL
+      END DO
+      epseq = EQPS + DEQPL
+      sedPl = sedPl + DEQPL*(SY0+SYIELD)/2.D0
+      sedEl = JCPSED(nDirect, ncomp, stress, EG, EBULK3)
+      tsstif(1) = EG
+      tsstif(2) = EG
+      ustatev(1) = EQPS + DEQPL
+      ustatev(2) = SYIELD
+      ustatev(3) = DBLE(IFLAG)
+      ustatev(4) = DBLE(NITER)
+      RETURN
+      END
+C

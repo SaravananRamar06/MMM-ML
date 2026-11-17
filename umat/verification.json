@@ -1,0 +1,617 @@
+{
+  "generated_files_up_to_date": {
+    "abaqus": true,
+    "ansys": true
+  },
+  "compiler": "GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "python": "3.13.18",
+  "solvers": {
+    "abaqus": {
+      "source": "umat/jc_pinn_umat.f",
+      "flow": {
+        "points": 2000,
+        "max_rel_stress_error": 1.9984014443252818e-15,
+        "max_rel_slope_error_vs_fd": 3.0809599606262658e-09,
+        "errors_flagged": 0
+      },
+      "uniaxial": [
+        {
+          "T": 30.0,
+          "rate": 1e-05,
+          "density": 2700.0,
+          "G": 25300.0,
+          "nu": 0.33,
+          "runs": {
+            "ntens6_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 94.54049838913346,
+              "eqps": 0.11859519601787472,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 2.5921487178948155e-12,
+              "strain_split_error": 3.139849491518021e-15,
+              "max_newton_iterations": 4
+            },
+            "ntens6_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 94.54049838913238,
+              "eqps": 0.11859519601787333,
+              "flag": 1,
+              "elastic_slope_rel_error": 6.661338147750939e-16,
+              "on_flow_curve_rel_error": 6.627285387139636e-10,
+              "strain_split_error": 6.385864059765822e-13,
+              "max_newton_iterations": 4
+            },
+            "ntens4_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 94.54049838913346,
+              "eqps": 0.11859519601787472,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 2.5921487178948155e-12,
+              "strain_split_error": 3.139849491518021e-15,
+              "max_newton_iterations": 4
+            },
+            "ntens4_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 94.54049838913238,
+              "eqps": 0.11859519601787333,
+              "flag": 1,
+              "elastic_slope_rel_error": 6.661338147750939e-16,
+              "on_flow_curve_rel_error": 6.627285387139636e-10,
+              "strain_split_error": 6.385864059765822e-13,
+              "max_newton_iterations": 4
+            }
+          },
+          "increment_size_spread_MPa": 1.0800249583553523e-12
+        },
+        {
+          "T": 100.0,
+          "rate": 0.0001,
+          "density": 2592.0,
+          "G": 24541.0,
+          "nu": 0.33,
+          "runs": {
+            "ntens6_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 75.40652927074805,
+              "eqps": 0.11884485883726335,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 3.948397164776907e-12,
+              "strain_split_error": 4.881511861398735e-15,
+              "max_newton_iterations": 4
+            },
+            "ntens6_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 75.40652927074656,
+              "eqps": 0.1188448588372633,
+              "flag": 1,
+              "elastic_slope_rel_error": 1.1102230246251565e-15,
+              "on_flow_curve_rel_error": 1.177724584522366e-11,
+              "strain_split_error": 1.6182367945649645e-14,
+              "max_newton_iterations": 4
+            },
+            "ntens4_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 75.40652927074805,
+              "eqps": 0.11884485883726335,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 3.948397164776907e-12,
+              "strain_split_error": 4.881511861398735e-15,
+              "max_newton_iterations": 4
+            },
+            "ntens4_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 75.40652927074656,
+              "eqps": 0.1188448588372633,
+              "flag": 1,
+              "elastic_slope_rel_error": 1.1102230246251565e-15,
+              "on_flow_curve_rel_error": 1.177724584522366e-11,
+              "strain_split_error": 1.6182367945649645e-14,
+              "max_newton_iterations": 4
+            }
+          },
+          "increment_size_spread_MPa": 1.4921397450962104e-12
+        },
+        {
+          "T": 200.0,
+          "rate": 0.001,
+          "density": 2488.05,
+          "G": 23313.95,
+          "nu": 0.33,
+          "runs": {
+            "ntens6_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 40.862117663631224,
+              "eqps": 0.11934109413592298,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 9.222622665561175e-11,
+              "strain_split_error": 4.515832152662824e-14,
+              "max_newton_iterations": 4
+            },
+            "ntens6_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 40.86211766363068,
+              "eqps": 0.11934109413592367,
+              "flag": 1,
+              "elastic_slope_rel_error": 1.1102230246251565e-15,
+              "on_flow_curve_rel_error": 7.169618232438779e-10,
+              "strain_split_error": 5.788564072517488e-13,
+              "max_newton_iterations": 4
+            },
+            "ntens4_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 40.862117663631224,
+              "eqps": 0.11934109413592298,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 9.222622665561175e-11,
+              "strain_split_error": 4.515832152662824e-14,
+              "max_newton_iterations": 4
+            },
+            "ntens4_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 40.86211766363068,
+              "eqps": 0.11934109413592367,
+              "flag": 1,
+              "elastic_slope_rel_error": 1.1102230246251565e-15,
+              "on_flow_curve_rel_error": 7.169618232438779e-10,
+              "strain_split_error": 5.788564072517488e-13,
+              "max_newton_iterations": 4
+            }
+          },
+          "increment_size_spread_MPa": 5.471179065352771e-13
+        },
+        {
+          "T": 250.0,
+          "rate": 0.0001,
+          "density": 2592.0,
+          "G": 24541.0,
+          "nu": 0.33,
+          "runs": {
+            "ntens6_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 6.6953746915228916,
+              "eqps": 0.119897434572564,
+              "flag": 5,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 6.905848115579261e-10,
+              "strain_split_error": 2.4015511801422917e-13,
+              "max_newton_iterations": 4
+            },
+            "ntens6_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 6.695374691522808,
+              "eqps": 0.11989743457256465,
+              "flag": 5,
+              "elastic_slope_rel_error": 8.881784197001252e-16,
+              "on_flow_curve_rel_error": 6.427636201067344e-12,
+              "strain_split_error": 6.865601837047208e-15,
+              "max_newton_iterations": 4
+            },
+            "ntens4_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 6.6953746915228916,
+              "eqps": 0.119897434572564,
+              "flag": 5,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 6.905848115579261e-10,
+              "strain_split_error": 2.4015511801422917e-13,
+              "max_newton_iterations": 4
+            },
+            "ntens4_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 6.695374691522808,
+              "eqps": 0.11989743457256465,
+              "flag": 5,
+              "elastic_slope_rel_error": 8.881784197001252e-16,
+              "on_flow_curve_rel_error": 6.427636201067344e-12,
+              "strain_split_error": 6.865601837047208e-15,
+              "max_newton_iterations": 4
+            }
+          },
+          "increment_size_spread_MPa": 8.348877145181177e-14
+        }
+      ],
+      "tangent": [
+        {
+          "ntens": 6,
+          "eqps0": 0.0,
+          "plastic_increment": 0.0022826204663139588,
+          "rel_error": 2.2384189436651048e-11
+        },
+        {
+          "ntens": 6,
+          "eqps0": 0.01,
+          "plastic_increment": 0.0004494424000138185,
+          "rel_error": 1.3462692148296155e-10
+        },
+        {
+          "ntens": 6,
+          "eqps0": 0.05,
+          "plastic_increment": 0.004234120438795591,
+          "rel_error": 1.7080642202294424e-11
+        },
+        {
+          "ntens": 6,
+          "eqps0": 0.098,
+          "plastic_increment": 0.004679427130619321,
+          "rel_error": 1.2516658853355508e-11
+        },
+        {
+          "ntens": 4,
+          "eqps0": 0.0,
+          "plastic_increment": 0.0009419127792587108,
+          "rel_error": 7.51454643638713e-11
+        },
+        {
+          "ntens": 4,
+          "eqps0": 0.01,
+          "plastic_increment": 0.003927413851961088,
+          "rel_error": 9.095887919101541e-12
+        },
+        {
+          "ntens": 4,
+          "eqps0": 0.05,
+          "plastic_increment": 0.0011609940739290628,
+          "rel_error": 7.645061167082838e-11
+        },
+        {
+          "ntens": 4,
+          "eqps0": 0.098,
+          "plastic_increment": 0.0027892041386836375,
+          "rel_error": 1.6088284865584105e-11
+        },
+        {
+          "ntens": 6,
+          "eqps0": 0.0,
+          "plastic_increment": 0.0,
+          "rel_error": 4.8145089419239115e-15
+        }
+      ],
+      "flags": {
+        "inside data range": {
+          "expected": 0,
+          "got": 0
+        },
+        "250 degC (physics-only band)": {
+          "expected": 4,
+          "got": 4
+        },
+        "G below range": {
+          "expected": 2,
+          "got": 2
+        },
+        "rate above range": {
+          "expected": 2,
+          "got": 2
+        },
+        "EQPS beyond 0.0999": {
+          "expected": 1,
+          "got": 1
+        }
+      },
+      "passed": true
+    },
+    "ansys": {
+      "source": "umat/jc_pinn_usermat3d.F",
+      "flow": {
+        "points": 2000,
+        "max_rel_stress_error": 1.9984014443252818e-15,
+        "max_rel_slope_error_vs_fd": 3.0809599606262658e-09,
+        "errors_flagged": 0
+      },
+      "uniaxial": [
+        {
+          "T": 30.0,
+          "rate": 1e-05,
+          "density": 2700.0,
+          "G": 25300.0,
+          "nu": 0.33,
+          "runs": {
+            "ntens6_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 94.54049838913346,
+              "eqps": 0.11859519601787472,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 2.5921487178948155e-12,
+              "strain_split_error": 3.139849491518021e-15,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 0.0
+            },
+            "ntens6_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 94.54049838913238,
+              "eqps": 0.11859519601787333,
+              "flag": 1,
+              "elastic_slope_rel_error": 6.661338147750939e-16,
+              "on_flow_curve_rel_error": 6.627285387139636e-10,
+              "strain_split_error": 6.385864059765822e-13,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 6.938893903907228e-18
+            },
+            "ntens4_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 94.54049838913346,
+              "eqps": 0.11859519601787472,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 2.5921487178948155e-12,
+              "strain_split_error": 3.139849491518021e-15,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 0.0
+            },
+            "ntens4_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 94.54049838913238,
+              "eqps": 0.11859519601787333,
+              "flag": 1,
+              "elastic_slope_rel_error": 6.661338147750939e-16,
+              "on_flow_curve_rel_error": 6.627285387139636e-10,
+              "strain_split_error": 6.385864059765822e-13,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 6.938893903907228e-18
+            }
+          },
+          "increment_size_spread_MPa": 1.0800249583553523e-12
+        },
+        {
+          "T": 100.0,
+          "rate": 0.0001,
+          "density": 2592.0,
+          "G": 24541.0,
+          "nu": 0.33,
+          "runs": {
+            "ntens6_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 75.40652927074805,
+              "eqps": 0.11884485883726335,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 3.948397164776907e-12,
+              "strain_split_error": 4.881511861398735e-15,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 1.3877787807814457e-17
+            },
+            "ntens6_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 75.40652927074656,
+              "eqps": 0.1188448588372633,
+              "flag": 1,
+              "elastic_slope_rel_error": 1.1102230246251565e-15,
+              "on_flow_curve_rel_error": 1.177724584522366e-11,
+              "strain_split_error": 1.6182367945649645e-14,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 6.938893903907228e-18
+            },
+            "ntens4_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 75.40652927074805,
+              "eqps": 0.11884485883726335,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 3.948397164776907e-12,
+              "strain_split_error": 4.881511861398735e-15,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 1.3877787807814457e-17
+            },
+            "ntens4_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 75.40652927074656,
+              "eqps": 0.1188448588372633,
+              "flag": 1,
+              "elastic_slope_rel_error": 1.1102230246251565e-15,
+              "on_flow_curve_rel_error": 1.177724584522366e-11,
+              "strain_split_error": 1.6182367945649645e-14,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 6.938893903907228e-18
+            }
+          },
+          "increment_size_spread_MPa": 1.4921397450962104e-12
+        },
+        {
+          "T": 200.0,
+          "rate": 0.001,
+          "density": 2488.05,
+          "G": 23313.95,
+          "nu": 0.33,
+          "runs": {
+            "ntens6_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 40.862117663631224,
+              "eqps": 0.11934109413592298,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 9.222622665561175e-11,
+              "strain_split_error": 4.515832152662824e-14,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 3.469446951953614e-18
+            },
+            "ntens6_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 40.86211766363068,
+              "eqps": 0.11934109413592367,
+              "flag": 1,
+              "elastic_slope_rel_error": 1.1102230246251565e-15,
+              "on_flow_curve_rel_error": 7.169618232438779e-10,
+              "strain_split_error": 5.788564072517488e-13,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 8.673617379884035e-19
+            },
+            "ntens4_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 40.862117663631224,
+              "eqps": 0.11934109413592298,
+              "flag": 1,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 9.222622665561175e-11,
+              "strain_split_error": 4.515832152662824e-14,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 3.469446951953614e-18
+            },
+            "ntens4_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 40.86211766363068,
+              "eqps": 0.11934109413592367,
+              "flag": 1,
+              "elastic_slope_rel_error": 1.1102230246251565e-15,
+              "on_flow_curve_rel_error": 7.169618232438779e-10,
+              "strain_split_error": 5.788564072517488e-13,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 8.673617379884035e-19
+            }
+          },
+          "increment_size_spread_MPa": 5.471179065352771e-13
+        },
+        {
+          "T": 250.0,
+          "rate": 0.0001,
+          "density": 2592.0,
+          "G": 24541.0,
+          "nu": 0.33,
+          "runs": {
+            "ntens6_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 6.6953746915228916,
+              "eqps": 0.119897434572564,
+              "flag": 5,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 6.905848115579261e-10,
+              "strain_split_error": 2.4015511801422917e-13,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 0.0
+            },
+            "ntens6_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 6.695374691522808,
+              "eqps": 0.11989743457256465,
+              "flag": 5,
+              "elastic_slope_rel_error": 8.881784197001252e-16,
+              "on_flow_curve_rel_error": 6.427636201067344e-12,
+              "strain_split_error": 6.865601837047208e-15,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 1.734723475976807e-18
+            },
+            "ntens4_steps20": {
+              "eps11": 0.12000000000000004,
+              "sigma11": 6.6953746915228916,
+              "eqps": 0.119897434572564,
+              "flag": 5,
+              "elastic_slope_rel_error": null,
+              "on_flow_curve_rel_error": 6.905848115579261e-10,
+              "strain_split_error": 2.4015511801422917e-13,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 0.0
+            },
+            "ntens4_steps1000": {
+              "eps11": 0.11999999999999802,
+              "sigma11": 6.695374691522808,
+              "eqps": 0.11989743457256465,
+              "flag": 5,
+              "elastic_slope_rel_error": 8.881784197001252e-16,
+              "on_flow_curve_rel_error": 6.427636201067344e-12,
+              "strain_split_error": 6.865601837047208e-15,
+              "max_newton_iterations": 4,
+              "plastic_tensor_error": 1.734723475976807e-18
+            }
+          },
+          "increment_size_spread_MPa": 8.348877145181177e-14
+        }
+      ],
+      "tangent": [
+        {
+          "ntens": 6,
+          "eqps0": 0.0,
+          "plastic_increment": 0.0022826204663139588,
+          "rel_error": 2.2384189436651048e-11
+        },
+        {
+          "ntens": 6,
+          "eqps0": 0.01,
+          "plastic_increment": 0.0004494424000138185,
+          "rel_error": 1.3462692148296155e-10
+        },
+        {
+          "ntens": 6,
+          "eqps0": 0.05,
+          "plastic_increment": 0.004234120438795591,
+          "rel_error": 1.7080642202294424e-11
+        },
+        {
+          "ntens": 6,
+          "eqps0": 0.098,
+          "plastic_increment": 0.004679427130619321,
+          "rel_error": 1.2516658853355508e-11
+        },
+        {
+          "ntens": 4,
+          "eqps0": 0.0,
+          "plastic_increment": 0.0009419127792587108,
+          "rel_error": 7.51454643638713e-11
+        },
+        {
+          "ntens": 4,
+          "eqps0": 0.01,
+          "plastic_increment": 0.003927413851961088,
+          "rel_error": 9.095887919101541e-12
+        },
+        {
+          "ntens": 4,
+          "eqps0": 0.05,
+          "plastic_increment": 0.0011609940739290628,
+          "rel_error": 7.645061167082838e-11
+        },
+        {
+          "ntens": 4,
+          "eqps0": 0.098,
+          "plastic_increment": 0.0027892041386836375,
+          "rel_error": 1.6088284865584105e-11
+        },
+        {
+          "ntens": 6,
+          "eqps0": 0.0,
+          "plastic_increment": 0.0,
+          "rel_error": 4.8145089419239115e-15
+        }
+      ],
+      "flags": {
+        "inside data range": {
+          "expected": 0,
+          "got": 0
+        },
+        "250 degC (physics-only band)": {
+          "expected": 4,
+          "got": 4
+        },
+        "G below range": {
+          "expected": 2,
+          "got": 2
+        },
+        "rate above range": {
+          "expected": 2,
+          "got": 2
+        },
+        "EQPS beyond 0.0999": {
+          "expected": 1,
+          "got": 1
+        }
+      },
+      "passed": true
+    }
+  },
+  "tolerances": {
+    "stress": 1e-12,
+    "slope": 1e-06,
+    "curve": 1e-09,
+    "split": 1e-10,
+    "spread": 1e-08,
+    "tangent": 1e-06,
+    "plastic_tensor": 1e-12
+  },
+  "note": "Offline checks with a test driver and gfortran; not run inside Abaqus or ANSYS. Poisson ratio 0.33 is an assumption of the checks. The model strain is E11 taken as equivalent plastic strain (decision M4).",
+  "passed": true
+}

@@ -1,0 +1,340 @@
+C ======================================================================
+C  Solver-neutral core of the JC-PINN user material. Shared by the
+C  Abaqus UMAT and the ANSYS usermat3d wrappers.
+C
+C  Constitutive model: small-strain J2 (von Mises) plasticity with
+C  isotropic hardening/softening. Flow stress = the locked JC-PINN,
+C
+C    SIGY = exp( mean_k [ ln sigJC_k + delta_k ] ),   k = 1..5
+C    sigJC = [A-B*e^n][1+C*ln(rate/rate0)][1-T*^m][G/G0]^q[rho/rho0]^r
+C    delta = w3.tanh(W2.tanh(W1.z+b1)+b2)+b3,  z = (x-xmean)/xscale
+C    x = (T degC, log10 rate, density, G, e)
+C
+C  with e = equivalent plastic strain EQPS (project decision M4:
+C  eps_p = E11). For EQPS < @@EPMIN_TXT@@ the flow stress is held at
+C  its value there (initial yield); above @@EPMAX_TXT@@ it is held
+C  constant (perfectly plastic, flagged): the model has no data beyond.
+C
+C  Return mapping: backward-Euler radial return, safeguarded Newton
+C  on the plastic multiplier; consistent (algorithmic) tangent.
+C  Stress components: NDI = 3 direct then NTENS-3 shear (tensor
+C  stress, engineering shear strain). Isotropic J2 treats all shear
+C  components alike, so their order (Abaqus 12,13,23 or ANSYS
+C  12,23,13) does not matter.
+C ======================================================================
+C
+C  JCPRM: one stress update.
+C   in : NDI, NTENS, PRM(7) material constants (see wrapper header),
+C        TFLD field temperature at the end of the increment,
+C        DSTRAN strain increment, EQPS and IFLAG at the start
+C   i/o: STRESS (start -> end of increment)
+C   out: DDSDDE tangent, DEQPL plastic increment, FLOW = s/q of the
+C        trial state (0 if elastic), SY0/SYIELD flow stress at start
+C        and end, EG elastic shear modulus, EBULK3 = 3K, IFLAG,
+C        NITER Newton iterations, ISTAT:
+C          0 ok
+C          1 Newton did not converge: cut the increment back
+C          2 Equation 1 not positive (T >= T_melt or rate far too low)
+C          3 3G + H <= 0 (softening too steep)
+C          4 bad constants (rate <= 0, nu outside (-1, 0.5), NDI /= 3)
+C ======================================================================
+      SUBROUTINE JCPRM(NDI, NTENS, PRM, TFLD, STRESS, DSTRAN, EQPS,
+     1 IFLAG, DDSDDE, DEQPL, FLOW, SY0, SYIELD, EG, EBULK3, NITER,
+     2 ISTAT)
+      IMPLICIT NONE
+      INTEGER NDI, NTENS, IFLAG, NITER, ISTAT
+      DOUBLE PRECISION PRM(7), TFLD, STRESS(NTENS), DSTRAN(NTENS),
+     1 EQPS, DDSDDE(NTENS,NTENS), DEQPL, FLOW(NTENS), SY0, SYIELD,
+     2 EG, EBULK3
+      DOUBLE PRECISION TC, RATE, RLOG, RHO, GM, ENU, EG2, EG3, ELAM,
+     1 SHYDRO, SMISES, HARD, H0, DLO, DHI, R, DNEW, EFFG, EFFG2,
+     2 EFFG3, EFFLAM, EFFHRD, TOLY, TOLN
+      INTEGER K1, K2, IT, MAXIT, IFL, IERR
+      PARAMETER (TOLY=1.D-10, TOLN=1.D-12, MAXIT=50)
+C
+      ISTAT = 0
+      NITER = 0
+      DEQPL = 0.D0
+      DO K1 = 1, NTENS
+         FLOW(K1) = 0.D0
+      END DO
+C
+C     ---- material conditions ---------------------------------------
+      TC = PRM(1)
+      IF (NINT(PRM(6)) .EQ. 1) TC = TFLD
+      RATE = PRM(2)
+      RHO = PRM(3)
+      GM = PRM(4)
+      ENU = PRM(5)
+      IF (RATE .LE. 0.D0 .OR. ENU .LE. -1.D0 .OR. ENU .GE. 0.5D0
+     1    .OR. NDI .NE. 3) THEN
+         ISTAT = 4
+         RETURN
+      END IF
+      RLOG = LOG10(RATE)
+      EG = GM
+      IF (PRM(7) .GT. 0.D0) EG = PRM(7)
+      EG2 = 2.D0*EG
+      EG3 = 3.D0*EG
+      EBULK3 = EG2*(1.D0+ENU)/(1.D0-2.D0*ENU)
+      ELAM = (EBULK3-EG2)/3.D0
+C
+C     ---- elastic stiffness and trial stress -------------------------
+      DO K1 = 1, NTENS
+         DO K2 = 1, NTENS
+            DDSDDE(K2,K1) = 0.D0
+         END DO
+      END DO
+      DO K1 = 1, NDI
+         DO K2 = 1, NDI
+            DDSDDE(K2,K1) = ELAM
+         END DO
+         DDSDDE(K1,K1) = EG2 + ELAM
+      END DO
+      DO K1 = NDI+1, NTENS
+         DDSDDE(K1,K1) = EG
+      END DO
+      DO K1 = 1, NTENS
+         DO K2 = 1, NTENS
+            STRESS(K2) = STRESS(K2) + DDSDDE(K2,K1)*DSTRAN(K1)
+         END DO
+      END DO
+C
+C     ---- von Mises stress of the trial state ------------------------
+      SHYDRO = (STRESS(1)+STRESS(2)+STRESS(3))/3.D0
+      SMISES = (STRESS(1)-SHYDRO)**2 + (STRESS(2)-SHYDRO)**2
+     1       + (STRESS(3)-SHYDRO)**2
+      DO K1 = NDI+1, NTENS
+         SMISES = SMISES + 2.D0*STRESS(K1)**2
+      END DO
+      SMISES = SQRT(1.5D0*SMISES)
+C
+C     ---- current flow stress ----------------------------------------
+      CALL JCPFLW(TC, RLOG, RHO, GM, EQPS, SY0, H0, IFL, IERR)
+      IF (IERR .NE. 0) THEN
+         ISTAT = 2
+         RETURN
+      END IF
+      IFLAG = IOR(IFLAG, IFL)
+      SYIELD = SY0
+      HARD = H0
+      IF (SMISES .LE. (1.D0+TOLY)*SY0) RETURN
+C
+C     ---- plastic: solve SMISES - 3G*dp - SIGY(p+dp) = 0 -------------
+      DLO = 0.D0
+      DHI = SMISES/EG3
+      DO IT = 1, MAXIT
+         NITER = IT
+         CALL JCPFLW(TC, RLOG, RHO, GM, EQPS+DEQPL, SYIELD, HARD,
+     1               IFL, IERR)
+         IF (IERR .NE. 0) THEN
+            ISTAT = 2
+            RETURN
+         END IF
+         R = SMISES - EG3*DEQPL - SYIELD
+         IF (ABS(R) .LE. TOLN*SYIELD) GO TO 100
+         IF (R .GT. 0.D0) THEN
+            DLO = DEQPL
+         ELSE
+            DHI = DEQPL
+         END IF
+         DNEW = DEQPL + R/(EG3+HARD)
+         IF (EG3+HARD .LE. 0.D0 .OR. DNEW .LE. DLO .OR.
+     1       DNEW .GE. DHI) DNEW = 0.5D0*(DLO+DHI)
+         DEQPL = DNEW
+      END DO
+      ISTAT = 1
+      RETURN
+  100 CONTINUE
+      IFLAG = IOR(IFLAG, IFL)
+      IF (EG3+HARD .LE. 0.D0) THEN
+         ISTAT = 3
+         RETURN
+      END IF
+C
+C     ---- stress update along the radial flow direction --------------
+      DO K1 = 1, NDI
+         FLOW(K1) = (STRESS(K1)-SHYDRO)/SMISES
+         STRESS(K1) = FLOW(K1)*SYIELD + SHYDRO
+      END DO
+      DO K1 = NDI+1, NTENS
+         FLOW(K1) = STRESS(K1)/SMISES
+         STRESS(K1) = FLOW(K1)*SYIELD
+      END DO
+C
+C     ---- consistent tangent -----------------------------------------
+      EFFG = EG*SYIELD/SMISES
+      EFFG2 = 2.D0*EFFG
+      EFFG3 = 1.5D0*EFFG2
+      EFFLAM = (EBULK3-EFFG2)/3.D0
+      EFFHRD = EG3*HARD/(EG3+HARD) - EFFG3
+      DO K1 = 1, NDI
+         DO K2 = 1, NDI
+            DDSDDE(K2,K1) = EFFLAM
+         END DO
+         DDSDDE(K1,K1) = EFFG2 + EFFLAM
+      END DO
+      DO K1 = NDI+1, NTENS
+         DDSDDE(K1,K1) = EFFG
+      END DO
+      DO K1 = 1, NTENS
+         DO K2 = 1, NTENS
+            DDSDDE(K2,K1) = DDSDDE(K2,K1) + EFFHRD*FLOW(K2)*FLOW(K1)
+         END DO
+      END DO
+      RETURN
+      END
+C
+C ======================================================================
+C  JCPSED: elastic strain energy density of a stress state.
+C ======================================================================
+      DOUBLE PRECISION FUNCTION JCPSED(NDI, NTENS, STRESS, EG, EBULK3)
+      IMPLICIT NONE
+      INTEGER NDI, NTENS, K1
+      DOUBLE PRECISION STRESS(NTENS), EG, EBULK3, SH, SD2
+      SH = (STRESS(1)+STRESS(2)+STRESS(3))/3.D0
+      SD2 = 0.D0
+      DO K1 = 1, NDI
+         SD2 = SD2 + (STRESS(K1)-SH)**2
+      END DO
+      DO K1 = NDI+1, NTENS
+         SD2 = SD2 + 2.D0*STRESS(K1)**2
+      END DO
+      JCPSED = SD2/(4.D0*EG) + 1.5D0*SH**2/EBULK3
+      RETURN
+      END
+C ======================================================================
+C  JCPFLW: flow stress SIGY and slope H = dSIGY/dEQPS, with the strain
+C  held inside the model range, and range flags (see wrapper header).
+C ======================================================================
+      SUBROUTINE JCPFLW(TC, RLOG, RHO, GM, EP, SIGY, H, IFL, IERR)
+      IMPLICIT NONE
+      DOUBLE PRECISION TC, RLOG, RHO, GM, EP, SIGY, H, E
+      INTEGER IFL, IERR
+      DOUBLE PRECISION EPMIN, EPMAX
+      PARAMETER (EPMIN=@@EPMIN@@)
+      PARAMETER (EPMAX=@@EPMAX@@)
+C     data ranges: T (with physics-only band to THI), log10 rate,
+C     density, G
+      DOUBLE PRECISION TLO, TOBS, THI, RLO, RHI, DLO, DHI, GLO, GHI
+      PARAMETER (TLO=@@TLO@@)
+      PARAMETER (TOBS=@@TOBS@@)
+      PARAMETER (THI=@@THI@@)
+      PARAMETER (RLO=@@RLO@@)
+      PARAMETER (RHI=@@RHI@@)
+      PARAMETER (DLO=@@DLO@@)
+      PARAMETER (DHI=@@DHI@@)
+      PARAMETER (GLO=@@GLO@@)
+      PARAMETER (GHI=@@GHI@@)
+C
+      IFL = 0
+      IF (TC .LT. TLO .OR. TC .GT. THI) IFL = IOR(IFL, 2)
+      IF (TC .GT. TOBS .AND. TC .LE. THI) IFL = IOR(IFL, 4)
+      IF (RLOG .LT. RLO-1.D-9 .OR. RLOG .GT. RHI+1.D-9)
+     1   IFL = IOR(IFL, 2)
+      IF (RHO .LT. DLO-1.D-6 .OR. RHO .GT. DHI+1.D-6)
+     1   IFL = IOR(IFL, 2)
+      IF (GM .LT. GLO-1.D-6 .OR. GM .GT. GHI+1.D-6)
+     1   IFL = IOR(IFL, 2)
+C
+      E = EP
+      IF (EP .LT. EPMIN) E = EPMIN
+      IF (EP .GT. EPMAX) THEN
+         E = EPMAX
+         IFL = IOR(IFL, 1)
+      END IF
+      CALL JCPSIG(TC, RLOG, RHO, GM, E, SIGY, H, IERR)
+      IF (EP .LT. EPMIN .OR. EP .GT. EPMAX) H = 0.D0
+      RETURN
+      END
+C
+C ======================================================================
+C  JCPSIG: the locked JC-PINN ensemble, SIG(x) and dSIG/de at strain e.
+C  Weights below are generated from equation.json (5 members).
+C ======================================================================
+      SUBROUTINE JCPSIG(TC, RLOG, RHO, GM, E, SIG, DSIG, IERR)
+      IMPLICIT NONE
+      DOUBLE PRECISION TC, RLOG, RHO, GM, E, SIG, DSIG
+      INTEGER IERR
+      INTEGER NM, NH, NI
+      PARAMETER (NM=5, NH=16, NI=5)
+      DOUBLE PRECISION RATE0, TREF, TMELT, G0, RHO0
+      PARAMETER (RATE0=@@RATE0@@)
+      PARAMETER (TREF=@@TREF@@)
+      PARAMETER (TMELT=@@TMELT@@)
+      PARAMETER (G0=@@G0@@)
+      PARAMETER (RHO0=@@RHO0@@)
+      DOUBLE PRECISION W1(NH,NI,NM), B1(NH,NM), W2(NH,NH,NM),
+     1 B2(NH,NM), W3(NH,NM), B3(NM), TH(7,NM), XM(NI), XS(NI)
+      DOUBLE PRECISION X(NI), Z(NI), H1(NH), H2(NH), D1(NH), D2(NH)
+      DOUBLE PRECISION A, B, EN, C, EM, Q, R, RLN, TS, TM, EPN, HRD,
+     1 BASE, DLB, DEL, DDL, SUML, SUMD, S
+      INTEGER I, J, K
+C
+C     ---- generated constants (do not edit) --------------------------
+@@DATA@@
+C
+      IERR = 0
+      X(1) = TC
+      X(2) = RLOG
+      X(3) = RHO
+      X(4) = GM
+      X(5) = E
+      DO J = 1, NI
+         Z(J) = (X(J)-XM(J))/XS(J)
+      END DO
+      RLN = LOG(10.D0)*(RLOG - LOG10(RATE0))
+      TS = MAX((TC-TREF)/(TMELT-TREF), 0.D0)
+      SUML = 0.D0
+      SUMD = 0.D0
+      DO K = 1, NM
+C        ---- Equation 1 and d ln(sigJC)/de ---------------------------
+         A = TH(1,K)
+         B = TH(2,K)
+         EN = TH(3,K)
+         C = TH(4,K)
+         EM = TH(5,K)
+         Q = TH(6,K)
+         R = TH(7,K)
+         TM = 0.D0
+         IF (TS .GT. 0.D0) TM = EXP(EM*LOG(TS))
+         EPN = E**EN
+         HRD = A - B*EPN
+         BASE = HRD*(1.D0+C*RLN)*(1.D0-TM)*(GM/G0)**Q*(RHO/RHO0)**R
+         IF (BASE .LE. 0.D0 .OR. HRD .LE. 0.D0) THEN
+            IERR = 1
+            SIG = 0.D0
+            DSIG = 0.D0
+            RETURN
+         END IF
+         DLB = -B*EN*EPN/(E*HRD)
+C        ---- correction network and d delta/de -----------------------
+         DO I = 1, NH
+            S = B1(I,K)
+            DO J = 1, NI
+               S = S + W1(I,J,K)*Z(J)
+            END DO
+            H1(I) = TANH(S)
+            D1(I) = (1.D0-H1(I)**2)*W1(I,NI,K)/XS(NI)
+         END DO
+         DEL = B3(K)
+         DDL = 0.D0
+         DO I = 1, NH
+            S = B2(I,K)
+            D2(I) = 0.D0
+            DO J = 1, NH
+               S = S + W2(I,J,K)*H1(J)
+               D2(I) = D2(I) + W2(I,J,K)*D1(J)
+            END DO
+            H2(I) = TANH(S)
+            D2(I) = (1.D0-H2(I)**2)*D2(I)
+            DEL = DEL + W3(I,K)*H2(I)
+            DDL = DDL + W3(I,K)*D2(I)
+         END DO
+         SUML = SUML + LOG(BASE) + DEL
+         SUMD = SUMD + DLB + DDL
+      END DO
+      SIG = EXP(SUML/DBLE(NM))
+      DSIG = SIG*SUMD/DBLE(NM)
+      RETURN
+      END
