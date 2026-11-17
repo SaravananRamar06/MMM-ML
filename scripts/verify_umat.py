@@ -1,15 +1,15 @@
-"""Verify the generated user materials against the locked JC-PINN, without Abaqus or ANSYS.
+"""Verify the generated ANSYS USERMAT against the locked JC-PINN, offline (without ANSYS).
 
-Compiles each of umat/jc_pinn_umat.f (Abaqus UMAT) and umat/jc_pinn_usermat3d.F (ANSYS usermat3d)
-with gfortran and the offline driver (umat/test/umat_driver.F, -DANSYS for ANSYS) and checks:
-  1. generated files are up to date with equation.json and the templates;
+Compiles umat/jc_pinn_usermat3d.F (ANSYS usermat3d) with gfortran and the offline driver
+(umat/test/umat_driver.F) and checks:
+  1. the generated file is up to date with equation.json and the templates;
   2. flow stress and its slope at 2000 random points vs the NumPy model (jc_pinn.equation_predict) and
      a central finite difference;
   3. single-element uniaxial stress (3D and 4-component) at several conditions and increment sizes:
      elastic slope, stress on the flow curve, strain split eps = p + sigma/E, increment-size independence;
   4. the consistent tangent DDSDDE vs a central finite difference of the stress update;
   5. the range flags (STATEV 3);
-  6. ANSYS only: the plastic strain tensor epsPl returned by usermat3d (uniaxial: p, -p/2).
+  6. the plastic strain tensor epsPl returned by usermat3d (uniaxial: p, -p/2).
 Writes umat/verification.json.  Run:  python scripts/verify_umat.py
 """
 import json
@@ -40,13 +40,12 @@ CONDITIONS = [                              # T degC, rate 1/s, density, G MPa
 ]
 
 
-def compile_driver(workdir, kind='abaqus'):
+def compile_driver(workdir, kind='ansys'):
     fc = shutil.which('gfortran')
     if fc is None:
         raise RuntimeError('gfortran not found')
     exe = Path(workdir) / f'umat_driver_{kind}'
-    flags = ['-DANSYS'] if kind == 'ansys' else []
-    cmd = [fc, '-O2', '-ffixed-form', *flags, f'-I{ROOT / "umat/test"}', str(DRIVER), str(SOURCES[kind]),
+    cmd = [fc, '-O2', '-ffixed-form', f'-I{ROOT / "umat/test"}', str(DRIVER), str(SOURCES[kind]),
            '-o', str(exe)]
     subprocess.run(cmd, check=True, capture_output=True, text=True)
     return exe
@@ -157,7 +156,7 @@ def check_flags(exe):
 def check_solver(kind, eq, workdir):
     exe = compile_driver(workdir, kind)
     return dict(source=str(SOURCES[kind].relative_to(ROOT)), flow=check_flow(exe, eq),
-                uniaxial=check_uniaxial(exe, eq, plastic_tensor=kind == 'ansys'),
+                uniaxial=check_uniaxial(exe, eq, plastic_tensor=True),
                 tangent=check_tangent(exe), flags=check_flags(exe))
 
 
@@ -186,7 +185,7 @@ def run():
         r['passed'] = solver_passed(r)
     result = dict(generated_files_up_to_date=up_to_date, compiler=fc, python=platform.python_version(),
                   solvers=solvers, tolerances=TOL,
-                  note=('Offline checks with a test driver and gfortran; not run inside Abaqus or ANSYS. Poisson ratio '
+                  note=('Offline checks with a test driver and gfortran; not run inside ANSYS (see umat/ansys_test/ for the MAPDL run). Poisson ratio '
                         '0.33 is an assumption of the checks. The model strain is E11 taken as equivalent plastic '
                         'strain (decision M4).'))
     result['passed'] = bool(all(up_to_date.values()) and all(r['passed'] for r in solvers.values()))

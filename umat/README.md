@@ -1,15 +1,16 @@
-# JC-PINN user material (Abaqus UMAT and ANSYS USERMAT)
+# JC-PINN user material for ANSYS (USERMAT)
 
-Two user materials for the locked JC-PINN, generated from the saved weights in `reports/jc_pinn_20261107/equation.json`. Their flow stress is the delivered model, not a refit.
+`jc_pinn_usermat3d.F` is an ANSYS user material (`usermat3d`, User Programmable Features) for the locked JC-PINN. It is generated from the saved weights in `reports/jc_pinn_20261107/equation.json`, so its flow stress is the delivered model, not a refit.
 
-| File | Solver | Entry point |
-|---|---|---|
-| `jc_pinn_umat.f` | Abaqus/Standard | `UMAT` |
-| `jc_pinn_usermat3d.F` | ANSYS Mechanical APDL / Workbench | `usermat3d` |
+It has a thin ANSYS wrapper (`usermat3d`) around a generated core:
+- `JCPRM`: the return mapping;
+- `JCPFLW`: the flow stress, with range handling;
+- `JCPSIG`: the five-member network and Equation 1.
 
-Both files contain the same core: `JCPRM` (the return mapping), `JCPFLW` (flow stress with range handling) and `JCPSIG` (the five-member network and Equation 1). Only the thin solver wrapper differs.
-
-**Status:** both are verified offline against the Python model, using gfortran and a test driver (see [verification.json](verification.json)). **Neither has been run inside Abaqus or ANSYS yet.**
+**Status:**
+- verified offline against the Python model (see [verification.json](verification.json));
+- built and run in MAPDL 2024 R1, where the single-element test passes (see `ansys_test/results_2026-11-17/`);
+- used for the bracket studies in `bracket/ansys_usermat/`.
 
 ## What the material does
 
@@ -23,13 +24,10 @@ Both files contain the same core: `JCPRM` (the return mapping), `JCPFLW` (flow s
 - **Integration:** backward-Euler radial return, with a safeguarded Newton solve.
   - The slope dσ_y/dε̄ₚ is analytic: the chain rule through Equation 1 and both tanh layers.
   - The consistent tangent uses that slope.
-  - If Newton fails, the routine asks for a smaller increment: PNEWDT = 0.25 in Abaqus, `keycut = 1` (bisection) in ANSYS.
-- **Elements:** 3D, plane strain and axisymmetric (three direct components).
-  - Abaqus stops with an error message for plane stress.
-  - ANSYS only calls `usermat3d` for these element types anyway.
-- **Shear order:** Abaqus orders the shear components 12, 13, 23 and ANSYS 12, 23, 13. Isotropic J2 treats all shear components the same way, so one core serves both.
+  - If Newton fails, the routine sets `keycut = 1` so ANSYS bisects the substep.
+- **Elements:** 3D, plane strain and axisymmetric (three direct components), which are the element types ANSYS sends to `usermat3d`. Components are in ANSYS order 11, 22, 33, 12, 23, 13.
 
-Initial yield and flow stress from the model (MPa, inferred units):
+Initial yield and flow stress from the model (MPa):
 
 | T, ε̇, ρ, G | ε̄ₚ = 0.0002 | 0.05 | 0.0999 |
 |---|---:|---:|---:|
@@ -37,7 +35,7 @@ Initial yield and flow stress from the model (MPa, inferred units):
 | 100 °C, 1e-4 /s, 2592 (φ = 4 %), 24541 | 136.06 | 99.39 | 75.41 |
 | 200 °C, 1e-3 /s, 2488.05, 23313.95 | 139.75 | 89.51 | 40.86 |
 
-## Material constants and state variables (both solvers)
+## Material constants (TB,USER) and state variables (TB,STATE)
 
 | Constant | Meaning |
 |---|---|
@@ -55,26 +53,6 @@ Initial yield and flow stress from the model (MPa, inferred units):
 | 2 | Current flow stress, MPa |
 | 3 | Range flag, kept for the whole history. It is a sum of: 1 = ε̄ₚ above 0.0999; 2 = T, rate, density or G outside the data range; 4 = 200 < T ≤ 300 °C (no data, unvalidated) |
 | 4 | Newton iterations in the last increment |
-
-## Abaqus
-
-```
-*MATERIAL, NAME=ALSI10MG_JCPINN
-*DEPVAR
- 4,
- 1, EQPS, "Equivalent plastic strain"
- 2, SIGY, "Flow stress"
- 3, FLAG, "Range flag"
- 4, NITER, "Newton iterations"
-*USER MATERIAL, CONSTANTS=7
- 100., 1.E-4, 2592., 24541., 0.33, 0., 0.
-```
-
-```bash
-abaqus job=bracket user=umat/jc_pinn_umat.f
-```
-
-On Windows, copy the file to `jc_pinn_umat.for`. It is fixed-form Fortran with no modules and no saved state, so it is safe for threaded runs.
 
 ## ANSYS (Mechanical APDL and Workbench)
 
@@ -125,7 +103,7 @@ TB,STATE,matid,,4
 - **Fixed strain rate:** the rate is a fixed constant, not computed from the analysis.
 - **Thermal coupling:** the thermal tangent terms are zero, so the routine is not meant for coupled thermal–structural steps.
 - **ANSYS coverage:** only `usermat3d` is provided. Plane stress, beams and shells are not.
-- **Shared project limits:** the units are inferred, the data are simulations, nothing is experimentally validated, and critical flaw length is not predicted.
+- **Shared project limits:** the units are confirmed by the user (no generator documentation), the data are simulations, nothing is experimentally validated, and critical flaw length is not predicted.
 
 ## Rebuild and check
 
@@ -136,7 +114,7 @@ python scripts/write_umat.py
 python scripts/verify_umat.py
 ```
 
-`write_umat.py` regenerates both files from `templates/` (`jc_pinn_core.f.in` plus one wrapper per solver) and the locked weights. `verify_umat.py` needs gfortran. It compiles each file with `test/umat_driver.F` (`-DANSYS` selects `usermat3d`) and writes `verification.json`. The results were the same for both solvers:
+`write_umat.py` regenerates the file from `templates/` (`ansys_usermat3d.F.in` plus `jc_pinn_core.f.in`) and the locked weights. `verify_umat.py` needs gfortran. It compiles the file with the offline driver `test/umat_driver.F` and writes `verification.json`:
 
 - **Flow stress:** compared with `jc_pinn.equation_predict` at 2000 points. The largest relative difference was 2×10⁻¹⁵.
 - **Slope:** compared with finite differences. The largest relative difference was 3×10⁻⁹.
@@ -145,6 +123,6 @@ python scripts/verify_umat.py
   - The results do not depend on increment size, to about 10⁻¹² MPa.
 - **Consistent tangent:** compared with finite differences. The largest relative difference was 10⁻¹⁰.
 - **Range flags:** each flag is set when it should be.
-- **ANSYS plastic strain:** the returned tensor matches the uniaxial values (p, −p/2) to 10⁻¹⁷.
+- **Plastic strain:** the returned tensor matches the uniaxial values (p, −p/2) to 10⁻¹⁷.
 
-`tests/test_umat.py` runs the same checks for both solvers under pytest. It skips the numerical part when gfortran is missing.
+`tests/test_umat.py` runs the same checks under pytest. It skips the numerical part when gfortran is missing.

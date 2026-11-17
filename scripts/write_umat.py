@@ -1,14 +1,13 @@
-"""Generate the Abaqus UMAT and the ANSYS USERMAT of the locked JC-PINN from its saved weights.
+"""Generate the ANSYS USERMAT (usermat3d) of the locked JC-PINN from its saved weights.
 
 Reads reports/jc_pinn_20261107/equation.json (checked against selection_lock.json; the locked
-files are only read, never changed). Each output is a solver wrapper template followed by the
-shared core (umat/templates/jc_pinn_core.f.in) filled with the five members' weights, Equation 1
+files are only read, never changed). The output is the ANSYS wrapper template followed by the
+core (umat/templates/jc_pinn_core.f.in) filled with the five members' weights, Equation 1
 constants and data ranges:
 
-    umat/jc_pinn_umat.f        Abaqus/Standard UMAT      (templates/abaqus_umat.f.in)
     umat/jc_pinn_usermat3d.F   ANSYS USERMAT, usermat3d  (templates/ansys_usermat3d.F.in)
 
-The output is deterministic, so tests can check that the committed files match their source.
+The output is deterministic, so tests can check that the committed file matches its source.
 Run:  python scripts/write_umat.py [--check]
 """
 import argparse
@@ -22,9 +21,8 @@ import jc_pinn as J  # noqa: E402
 
 TEMPLATES = ROOT / 'umat/templates'
 CORE = TEMPLATES / 'jc_pinn_core.f.in'
-TARGETS = {'abaqus': ('abaqus_umat.f.in', ROOT / 'umat/jc_pinn_umat.f'),
-           'ansys': ('ansys_usermat3d.F.in', ROOT / 'umat/jc_pinn_usermat3d.F')}
-OUTPUT = TARGETS['abaqus'][1]
+TARGETS = {'ansys': ('ansys_usermat3d.F.in', ROOT / 'umat/jc_pinn_usermat3d.F')}
+OUTPUT = TARGETS['ansys'][1]
 EPMIN, EPMAX = 0.0002, 0.0999          # the model's strain range (the 120-point E11 grid)
 TEMP_PHYSICS_MAX = 300.0               # collocation box upper temperature
 
@@ -67,7 +65,7 @@ def data_block(eq):
     return out
 
 
-def render(kind='abaqus'):
+def render(kind='ansys'):
     eq = J.load_final_equation(ROOT)                      # raises if the lock fingerprint fails
     sha = hashlib.sha256((ROOT / J.FINAL_RUN / 'equation.json').read_bytes()).hexdigest()
     c, box = eq['constants'], J.DATA_BOX
