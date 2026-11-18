@@ -8,7 +8,9 @@ files (ds.dat) and writes three decks into an output folder outside the reposito
   usermat/  SYS-2 deck with the JC-PINN USERMAT added after the materials, as the
             Workbench command snippet in umat/README.md does, plus OUTRES,SVAR,ALL
 
-Mesh, supports, imposed UX = -2 mm, substeps and solver settings are the same in all three.
+Mesh, supports, imposed displacement, substeps and solver settings are the same in all three.
+--load minus_x (default) keeps the team's Workbench load, UX = -2 mm on the whole bore; --load plus_y
+applies UY = +2 mm on the upper half of the bore (the pin load +P_y, user decision of 18 Nov 2026).
 The element block is rewritten from the 2026 R1 COMPACT format to the standard SOLID format
 so that MAPDL 2024 R1 can read it (same elements, same nodes).
 Each deck ends with post_bracket.mac, which writes bracket_history.csv.
@@ -128,8 +130,29 @@ def porosity_snippet(case, cases=None):
     return '\n'.join(lines) + '\n'
 
 
-def build(kind, text, snippet=USERMAT_SNIPPET):
-    lines = expand_compact_eblocks(text.split('\n'))
+# Load cases. 'minus_x' is the team's Workbench load as written in ds.dat: UX = -2 mm on all bore nodes.
+# 'plus_y' (user, 18 Nov 2026, from the load figure): the pin load is +P_y (upload, wing-normal) and bears
+# only on the half of the bore that faces it, so UY = +2 mm on the bore nodes with y >= 0; UX and UZ free.
+# post_bracket.mac uses _LDIR (1 = x, 2 = y) and _UMAG (applied displacement at time 1, mm).
+LOADS = {'minus_x': (1, -2.0), 'plus_y': (2, 2.0)}
+PLUS_Y_LOAD = """\
+/com,*** Load case plus_y (make_decks.py --load plus_y): pin load +P_y on the upper half of the bore ***
+nsel,r,loc,y,-1.0e-6,1.0e6   ! bore nodes with y >= 0: the half of the bore facing +P_y
+d,all,uy,2.                  ! imposed UY = +2 mm; UX and UZ free (bearing in y only)"""
+
+
+def apply_load(lines, load):
+    if load == 'minus_x':
+        return lines
+    hits = [i for i, l in enumerate(lines) if l.strip().lower() == 'd,all,ux,-2.']
+    assert len(hits) == 1, f'expected one "d,all,ux,-2." line, found {len(hits)}'
+    i = hits[0]
+    assert lines[i - 1].strip().lower().startswith('cmsel,s,_cm') and 'ux_xp' in lines[i - 1].lower(), lines[i - 1]
+    return lines[:i] + PLUS_Y_LOAD.split('\n') + lines[i + 1:]
+
+
+def build(kind, text, snippet=USERMAT_SNIPPET, load='minus_x'):
+    lines = apply_load(expand_compact_eblocks(text.split('\n')), load)
     out = []
     for line in lines:
         out.append(line)
@@ -141,8 +164,9 @@ def build(kind, text, snippet=USERMAT_SNIPPET):
         assert any(l.startswith('TB,USER') for l in out), 'material block not found'
         assert any(l.startswith('outres,svar') for l in out), 'outres block not found'
     post = (HERE / 'post_bracket.mac').read_text()
+    ldir, umag = LOADS[load]
     out += ['', '/com,*********** Post-processing (bracket/ansys_usermat/post_bracket.mac) ***********',
-            f'_USERMAT = {1 if kind == "usermat" else 0}', post]
+            f'_USERMAT = {1 if kind == "usermat" else 0}', f'_LDIR = {ldir}', f'_UMAG = {umag:g}', post]
     return '\n'.join(out)
 
 
@@ -168,6 +192,9 @@ def main():
                     help='comma-separated deck kinds to build from --source: elastic, usermat, ep_miso '
                          "(default: elastic,usermat). ep_miso keeps the source's own material (use it with a "
                          'refined SYS deck, which has TB,PLAS MISO).')
+    ap.add_argument('--load', choices=sorted(LOADS), default='minus_x',
+                    help='minus_x: the team Workbench load, UX = -2 mm on the whole bore (default); '
+                         'plus_y: UY = +2 mm on the upper half of the bore (the pin load +P_y)')
     a = ap.parse_args()
     a.kinds = a.kinds.split(',')
     if any(k not in ('elastic', 'usermat', 'ep_miso') for k in a.kinds):
@@ -185,7 +212,7 @@ def main():
             if kind == 'ep_miso' and not any(l.startswith('TB,PLAS') for l in text.split('\n')):
                 sys.exit('--kinds ep_miso needs a source with the TB,PLAS card (the SYS deck)')
             name = f'{kind}_{a.label}'
-            deck = build(kind, text)
+            deck = build(kind, text, load=a.load)
             (dest / name).mkdir(parents=True, exist_ok=True)
             (dest / name / 'bracket.dat').write_text(deck, newline='\n')
             e, n = deck_counts(deck)
@@ -197,13 +224,13 @@ def main():
         text = src.read_text()
         for case in cases:
             (dest / case).mkdir(parents=True, exist_ok=True)
-            (dest / case / 'bracket.dat').write_text(build('usermat', text, porosity_snippet(case, cases)), newline='\n')
+            (dest / case / 'bracket.dat').write_text(build('usermat', text, porosity_snippet(case, cases), load=a.load), newline='\n')
             print(case, src.relative_to(HERE.parent.parent), '->', dest / case / 'bracket.dat')
         return
     for kind, src in SOURCES.items():
         text = src.read_text()
         (dest / kind).mkdir(parents=True, exist_ok=True)
-        deck = build(kind, text)
+        deck = build(kind, text, load=a.load)
         (dest / kind / 'bracket.dat').write_text(deck, newline='\n')
         print(kind, src.relative_to(HERE.parent.parent), 'sha256', hashlib.sha256(src.read_bytes()).hexdigest()[:16],
               '->', dest / kind / 'bracket.dat')

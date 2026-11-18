@@ -1,8 +1,10 @@
 ! ======================================================================
 ! Post-processing appended to each bracket deck by make_decks.py.
 ! For every saved substep it writes bracket_history.csv with:
-!   the applied UX on the loaded face (-2 mm x time),
-!   the reaction force (RF) summed over the fixed-support nodes,
+!   the load axis (_LDIR: 1 = x, 2 = y) and the applied displacement on the bore along it
+!   (u_load_mm = _UMAG x time; make_decks.py sets _LDIR and _UMAG for the load case),
+!   the reaction along that axis, signed positive against the applied displacement (F_load_N),
+!   the reaction force (RF) components summed over the fixed-support nodes,
 !   the largest nodal and element-centroid von Mises stress,
 !   the largest element-centroid equivalent plastic strain (EPPL,EQV;
 !   the NL items are not on the results file with Workbench's OUTRES).
@@ -16,7 +18,7 @@
 *GET,_NS,ACTIVE,0,SET,NSET
 *CFOPEN,bracket_history,csv
 *VWRITE
-('set,time,ux_applied_mm,RFX_N,RFY_N,RFZ_N,seqv_max_node_MPa,seqv_max_elem_MPa,eppl_eqv_max_elem,svar1_max_elem,n_elem_flag')
+('set,time,load_axis,u_load_mm,F_load_N,RFX_N,RFY_N,RFZ_N,seqv_max_node_MPa,seqv_max_elem_MPa,eppl_eqv_max_elem,svar1_max_elem,n_elem_flag')
 *DO,_I,1,_NS
   SET,,,,,,,_I
   *GET,_T,ACTIVE,0,SET,TIME
@@ -61,9 +63,14 @@
     *GET,_NFL,ELEM,0,COUNT
     ALLSEL,ALL
   *ENDIF
-  _UX=-2*_T
-  *VWRITE,_I,_T,_UX,_RX,_RY,_RZ,_SN,_SEM,_EPM,_SV1,_NFL
-(F5.0,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',F8.0)
+  _UL=_UMAG*_T
+  _RA=_RX
+  *IF,_LDIR,EQ,2,THEN
+    _RA=_RY
+  *ENDIF
+  _RL=-_RA*_UMAG/ABS(_UMAG)
+  *VWRITE,_I,_T,_LDIR,_UL,_RL,_RX,_RY,_RZ,_SN,_SEM,_EPM,_SV1,_NFL
+(F5.0,',',E15.7,',',F3.0,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',E15.7,',',F8.0)
 *ENDDO
 *CFCLOS
 ! Final substep: the 10 elements with the largest accumulated plastic strain
