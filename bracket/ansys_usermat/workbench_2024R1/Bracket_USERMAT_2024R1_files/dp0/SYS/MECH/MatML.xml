@@ -12,17 +12,17 @@
             <Data format="string">-</Data>
             <Qualifier name="Localized Name">Color</Qualifier>
             <ParameterValue parameter="pa0" format="float">
-              <Data>170</Data>
+              <Data>109</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Localized Name">Red</Qualifier>
             </ParameterValue>
             <ParameterValue parameter="pa1" format="float">
-              <Data>170</Data>
+              <Data>157</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Localized Name">Green</Qualifier>
             </ParameterValue>
             <ParameterValue parameter="pa2" format="float">
-              <Data>170</Data>
+              <Data>209</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Localized Name">Blue</Qualifier>
             </ParameterValue>
@@ -192,7 +192,7 @@
     <Materials>
       <Material>
         <Name>AlSi10Mg JC-PINN USERMAT</Name>
-        <DataTransferID>06a84306-4d0b-48b3-974b-eb9604926414</DataTransferID>
+        <DataTransferID>47999927-78db-4727-95d2-75a5eeba7689</DataTransferID>
         <PreviousTransferIDs>
         </PreviousTransferIDs>
       </Material>

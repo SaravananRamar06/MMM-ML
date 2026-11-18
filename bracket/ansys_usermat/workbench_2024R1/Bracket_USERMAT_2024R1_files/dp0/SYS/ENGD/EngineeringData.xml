@@ -91,9 +91,9 @@
               <Qualifier name="Lower Limit">Program Controlled</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr4">
+          <PropertyData property="pr5">
             <Data format="string">-</Data>
-            <ParameterValue parameter="pa9" format="float">
+            <ParameterValue parameter="pa10" format="float">
               <Data>250000000</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0 [Pa]</Qualifier>
@@ -103,7 +103,7 @@
           </PropertyData>
           <PropertyData property="pr6">
             <Data format="string">-</Data>
-            <ParameterValue parameter="pa10" format="float">
+            <ParameterValue parameter="pa11" format="float">
               <Data>460000000</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0 [Pa]</Qualifier>
@@ -123,7 +123,7 @@
               <Qualifier name="Cached">True</Qualifier>
               <Qualifier name="ExtrapolationType">Projection to the Bounding Box</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa12" format="float">
+            <ParameterValue parameter="pa15" format="float">
               <Data>1.2e-05</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0 [C^-1]</Qualifier>
@@ -320,7 +320,7 @@
               <Qualifier name="Units">C</Qualifier>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr5">
+          <PropertyData property="pr4">
             <Data format="string">-</Data>
             <Qualifier name="Behavior">Isotropic</Qualifier>
             <Qualifier name="Derive from">Young's Modulus and Poisson's Ratio</Qualifier>
@@ -332,14 +332,14 @@
               <Qualifier name="Cached">True</Qualifier>
               <Qualifier name="ExtrapolationType">Projection to the Bounding Box</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa11" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>200000000000</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0 [Pa]</Qualifier>
               <Qualifier name="Scale">1</Qualifier>
               <Qualifier name="Units">Pa</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa13" format="float">
+            <ParameterValue parameter="pa12" format="float">
               <Data>0.3</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0</Qualifier>
@@ -347,14 +347,14 @@
               <Qualifier name="Units">
               </Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa14" format="float">
+            <ParameterValue parameter="pa13" format="float">
               <Data>166666666666.667</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0 [Pa]</Qualifier>
               <Qualifier name="Scale">1</Qualifier>
               <Qualifier name="Units">Pa</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa15" format="float">
+            <ParameterValue parameter="pa14" format="float">
               <Data>76923076923.0769</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0 [Pa]</Qualifier>
@@ -400,7 +400,7 @@
           <PropertyData property="pr0">
             <Data format="string">-</Data>
             <ParameterValue parameter="pa0" format="float">
-              <Data>170</Data>
+              <Data>109</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0</Qualifier>
               <Qualifier name="Scale">1</Qualifier>
@@ -408,7 +408,7 @@
               </Qualifier>
             </ParameterValue>
             <ParameterValue parameter="pa1" format="float">
-              <Data>170</Data>
+              <Data>157</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0</Qualifier>
               <Qualifier name="Scale">1</Qualifier>
@@ -416,7 +416,7 @@
               </Qualifier>
             </ParameterValue>
             <ParameterValue parameter="pa2" format="float">
-              <Data>170</Data>
+              <Data>209</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0</Qualifier>
               <Qualifier name="Scale">1</Qualifier>
@@ -427,7 +427,7 @@
               <Data>Appearance</Data>
             </ParameterValue>
           </PropertyData>
-          <PropertyData property="pr5">
+          <PropertyData property="pr4">
             <Data format="string">-</Data>
             <Qualifier name="Behavior">Isotropic</Qualifier>
             <Qualifier name="Derive from">Young's Modulus and Poisson's Ratio</Qualifier>
@@ -439,14 +439,14 @@
               <Qualifier name="Cached">True</Qualifier>
               <Qualifier name="ExtrapolationType">Projection to the Bounding Box</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa11" format="float">
+            <ParameterValue parameter="pa9" format="float">
               <Data>65279</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0 [Pa]</Qualifier>
               <Qualifier name="Scale">1</Qualifier>
               <Qualifier name="Units">MPa</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa13" format="float">
+            <ParameterValue parameter="pa12" format="float">
               <Data>0.33</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0</Qualifier>
@@ -454,14 +454,14 @@
               <Qualifier name="Units">
               </Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa14" format="float">
+            <ParameterValue parameter="pa13" format="float">
               <Data>63999019607.8431</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0 [Pa]</Qualifier>
               <Qualifier name="Scale">1</Qualifier>
               <Qualifier name="Units">Pa</Qualifier>
             </ParameterValue>
-            <ParameterValue parameter="pa15" format="float">
+            <ParameterValue parameter="pa14" format="float">
               <Data>24540977443.609</Data>
               <Qualifier name="Variable Type">Dependent</Qualifier>
               <Qualifier name="Offset">0 [Pa]</Qualifier>
@@ -545,15 +545,15 @@
           <Name>Temperature</Name>
           <Units name="Temperature" />
         </ParameterDetails>
-        <ParameterDetails id="pa9">
+        <ParameterDetails id="pa10">
           <Name>Tensile Yield Strength</Name>
           <Units name="Stress" />
         </ParameterDetails>
-        <ParameterDetails id="pa10">
+        <ParameterDetails id="pa11">
           <Name>Tensile Ultimate Strength</Name>
           <Units name="Stress" />
         </ParameterDetails>
-        <ParameterDetails id="pa12">
+        <ParameterDetails id="pa15">
           <Name>Coefficient of Thermal Expansion</Name>
           <Units name="InvTemp1" />
         </ParameterDetails>
@@ -607,18 +607,18 @@
         <ParameterDetails id="pa29">
           <Name>Relative Permeability</Name>
         </ParameterDetails>
-        <ParameterDetails id="pa11">
+        <ParameterDetails id="pa9">
           <Name>Young's Modulus</Name>
           <Units name="Stress" />
         </ParameterDetails>
-        <ParameterDetails id="pa13">
+        <ParameterDetails id="pa12">
           <Name>Poisson's Ratio</Name>
         </ParameterDetails>
-        <ParameterDetails id="pa14">
+        <ParameterDetails id="pa13">
           <Name>Bulk Modulus</Name>
           <Units name="Stress" />
         </ParameterDetails>
-        <ParameterDetails id="pa15">
+        <ParameterDetails id="pa14">
           <Name>Shear Modulus</Name>
           <Units name="Stress" />
         </ParameterDetails>
@@ -635,10 +635,10 @@
           <Name>Density</Name>
         </PropertyDetails>
         <PropertyDetails id="pr4">
-          <Name>Tensile Yield Strength</Name>
+          <Name>Elasticity</Name>
         </PropertyDetails>
         <PropertyDetails id="pr5">
-          <Name>Elasticity</Name>
+          <Name>Tensile Yield Strength</Name>
         </PropertyDetails>
         <PropertyDetails id="pr6">
           <Name>Tensile Ultimate Strength</Name>
@@ -677,13 +677,13 @@
     <Materials>
       <Material>
         <Name>Structural Steel</Name>
-        <DataTransferID>8e1f52db-7960-4b57-b524-11deb269e8c3</DataTransferID>
+        <DataTransferID>959b3e80-cc17-4ad1-afb1-eb27e77a6367</DataTransferID>
         <PreviousTransferIDs>
         </PreviousTransferIDs>
       </Material>
       <Material>
         <Name>AlSi10Mg JC-PINN USERMAT</Name>
-        <DataTransferID>06a84306-4d0b-48b3-974b-eb9604926414</DataTransferID>
+        <DataTransferID>47999927-78db-4727-95d2-75a5eeba7689</DataTransferID>
         <PreviousTransferIDs>
         </PreviousTransferIDs>
       </Material>

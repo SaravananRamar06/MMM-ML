@@ -2,7 +2,9 @@
 # Sets up the wing-rib bracket with the JC-PINN USERMAT, as in the team's Workbench model
 # (bracket/ansys/Elastic_files/dp0/SYS-2/MECH/ds.dat):
 #   - both mounting faces at x = max fixed (CMBLOCK _FIXEDSU: all nodes at x = 210 mm);
-#   - the whole bore (r = 5 mm at the origin) moved UX = -2 mm (CMBLOCK _CM..UX_XP), Y and Z free;
+#   - load (user decision, 18 Nov 2026, from the load figure): the pin load +P_y bears on the half of the
+#     bore that faces it, so the upper half-face of the bore (y > 0; the STEP splits the bore at y = 0)
+#     is moved UY = +2 mm, X and Z free. The team's Workbench load was UX = -2 mm on the whole bore;
 #   - static, small deflection, auto time stepping 20 / 10 / 1000 substeps;
 #   - quadratic elements of 5 mm (swept, as the original hex/wedge mesh);
 #   - material: TB,USER at the study point, the same block as bracket/ansys_usermat/make_decks.py.
@@ -45,17 +47,19 @@ try:
     xmax = max(v.X for v in verts)
     xmin = min(v.X for v in verts)
     L = xmax - xmin
-    fix, bore = [], []
+    fix, bore_all = [], []
     for f in gb.Faces:
         fv = list(f.Vertices)
         c = f.Centroid
         if f.SurfaceType == GeoSurfaceTypeEnum.GeoSurfacePlane and fv and all(abs(v.X - xmax) < 1e-6 * L for v in fv):
             fix.append(f)
         elif f.SurfaceType == GeoSurfaceTypeEnum.GeoSurfaceCylinder and math.hypot(c[0], c[1]) < 0.05 * L:
-            bore.append(f)
-    log("x range %.6g..%.6g; fixed faces %s; bore faces %s" % (xmin, xmax, [f.Id for f in fix], [f.Id for f in bore]))
-    if not fix or not bore:
-        raise Exception("support or bore faces not found")
+            bore_all.append(f)
+    log("bore faces and centroids: %s" % [(f.Id, [round(v / L, 4) for v in f.Centroid]) for f in bore_all])
+    bore = [f for f in bore_all if f.Centroid[1] > 0.005 * L]  # upper half (centroid y > 0)
+    log("x range %.6g..%.6g; fixed faces %s; upper bore face %s" % (xmin, xmax, [f.Id for f in fix], [f.Id for f in bore]))
+    if not fix or len(bore_all) != 2 or len(bore) != 1:
+        raise Exception("expected the fixed faces, two bore half-faces and one upper half")
 
     def faces_sel(faces):
         s = ExtAPI.SelectionManager.CreateSelectionInfo(SelectionTypeEnum.GeometryEntities)
@@ -66,7 +70,7 @@ try:
     ns_fix.Name = "Fixed_mounting_faces_x210"
     ns_fix.Location = faces_sel(fix)
     ns_bore = Model.AddNamedSelection()
-    ns_bore.Name = "Bore_UX_minus2mm"
+    ns_bore.Name = "Bore_upper_half_UY_plus2mm"
     ns_bore.Location = faces_sel(bore)
 
     mesh = Model.Mesh
@@ -106,7 +110,7 @@ try:
     d = an.AddDisplacement()
     d.Location = ns_bore
     d.DefineBy = LoadDefineBy.Components
-    d.XComponent.Output.DiscreteValues = [Quantity("-2 [mm]")]
+    d.YComponent.Output.DiscreteValues = [Quantity("2 [mm]")]
 
     sol = an.Solution
     eqv = sol.AddEquivalentStress()
@@ -135,19 +139,20 @@ try:
     for t in times:
         rf.DisplayTime = Quantity(t, "s")
         sol.EvaluateAllResults()
-        hist.append((t, rf.XAxis.Value, rf.Total.Value))
+        hist.append((t, rf.YAxis.Value, rf.Total.Value))
     f = open(OUT + "\\reaction_history.csv", "w")
-    f.write("time,ux_mm,Fx_N,Ftotal_N\n")
-    for t, fx, ft in hist:
-        f.write("%.6g,%.6g,%.8g,%.8g\n" % (t, -2.0 * t, fx, ft))
+    f.write("time,uy_mm,Fy_reaction_N,Ftotal_N\n")
+    for t, fy, ft in hist:
+        f.write("%.6g,%.6g,%.8g,%.8g\n" % (t, 2.0 * t, fy, ft))
     f.close()
     rf.DisplayTime = Quantity(times[-1], "s")
     sol.EvaluateAllResults()
     peak = max(hist, key=lambda r: abs(r[1]))
     summary.update({
         "substeps": len(hist),
-        "peak_Fx_kN": abs(peak[1]) / 1000.0, "peak_ux_mm": -2.0 * peak[0],
-        "final_Fx_kN": abs(hist[-1][1]) / 1000.0,
+        "load": "UY = +2 mm on the upper half of the bore",
+        "peak_Fy_kN": abs(peak[1]) / 1000.0, "peak_uy_mm": 2.0 * peak[0],
+        "final_Fy_kN": abs(hist[-1][1]) / 1000.0,
         "max_von_mises_MPa_final": eqv.Maximum.Value,
         "max_total_deformation_mm_final": td.Maximum.Value,
         "max_SVAR1_final": sv.Maximum.Value,

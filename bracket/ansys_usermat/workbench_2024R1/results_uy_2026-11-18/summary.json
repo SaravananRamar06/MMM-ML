@@ -1,0 +1,17 @@
+{
+  "final_Fy_kN": 93.001280011183809, 
+  "load": "UY = +2 mm on the upper half of the bore", 
+  "max_SVAR1_final": 0.14788417518138885, 
+  "max_total_deformation_mm_final": 2.064782886944879, 
+  "max_von_mises_MPa_final": 136.05582131479287, 
+  "mesh": {
+    "elements": 6696, 
+    "method": "Sweep", 
+    "nodes": 32233
+  }, 
+  "peak_Fy_kN": 102.85748951216192, 
+  "peak_uy_mm": 1.22, 
+  "solve_status": "Done", 
+  "status": "solved", 
+  "substeps": 14
+}
