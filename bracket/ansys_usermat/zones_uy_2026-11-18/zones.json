@@ -1,0 +1,2004 @@
+{
+ "elastic": {
+  "zone_node_counts": {
+   "upper_arm": 9278,
+   "lower_bottom": 961,
+   "ligament": 525,
+   "support": 1125,
+   "lower_root": 584,
+   "bore_upper": 121,
+   "fillet": 165,
+   "bore_sides": 34
+  },
+  "sets": [
+   {
+    "set": 1,
+    "time": 0.05,
+    "u_mm": 0.1,
+    "F_kN": 14.075700000000001,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 4.975198,
+      "S3_min": -19.74125,
+      "SEQV_max": 19.74396,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 24.1152,
+      "S3_min": -4.245367,
+      "SEQV_max": 25.22773,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 33.17893,
+      "S3_min": -21.55399,
+      "SEQV_max": 31.53124,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 50.49807,
+      "S3_min": -69.93293,
+      "SEQV_max": 52.2398,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 29.81969,
+      "S3_min": -0.6840105,
+      "SEQV_max": 29.4738,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 25.05959,
+      "S3_min": -25.62221,
+      "SEQV_max": 30.25947,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 58.23362,
+      "S3_min": -36.28926,
+      "SEQV_max": 53.31708,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 25.05959,
+      "S3_min": -8.573957,
+      "SEQV_max": 29.8072,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 2,
+    "time": 0.1,
+    "u_mm": 0.2,
+    "F_kN": 28.15141,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 9.950395,
+      "S3_min": -39.48251,
+      "SEQV_max": 39.48791,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 48.23041,
+      "S3_min": -8.490734,
+      "SEQV_max": 50.45546,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 66.35785,
+      "S3_min": -43.10798,
+      "SEQV_max": 63.06248,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 100.9961,
+      "S3_min": -139.8659,
+      "SEQV_max": 104.4796,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 59.63939,
+      "S3_min": -1.368021,
+      "SEQV_max": 58.94759,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 50.11917,
+      "S3_min": -51.24443,
+      "SEQV_max": 60.51894,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 116.4672,
+      "S3_min": -72.57852,
+      "SEQV_max": 106.6342,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 50.11917,
+      "S3_min": -17.14791,
+      "SEQV_max": 59.6144,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 3,
+    "time": 0.2,
+    "u_mm": 0.4,
+    "F_kN": 56.30282,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 19.90079,
+      "S3_min": -78.96502,
+      "SEQV_max": 78.97583,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 96.46081,
+      "S3_min": -16.98147,
+      "SEQV_max": 100.9109,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 132.7157,
+      "S3_min": -86.21596,
+      "SEQV_max": 126.125,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 201.9923,
+      "S3_min": -279.7317,
+      "SEQV_max": 208.9592,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 119.2788,
+      "S3_min": -2.736042,
+      "SEQV_max": 117.8952,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 100.2383,
+      "S3_min": -102.4889,
+      "SEQV_max": 121.0379,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 232.9345,
+      "S3_min": -145.157,
+      "SEQV_max": 213.2683,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 100.2383,
+      "S3_min": -34.29583,
+      "SEQV_max": 119.2288,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 4,
+    "time": 0.3,
+    "u_mm": 0.6,
+    "F_kN": 84.45423,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 29.85119,
+      "S3_min": -118.4475,
+      "SEQV_max": 118.4637,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 144.6912,
+      "S3_min": -25.4722,
+      "SEQV_max": 151.3664,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 199.0736,
+      "S3_min": -129.3239,
+      "SEQV_max": 189.1874,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 302.9884,
+      "S3_min": -419.5976,
+      "SEQV_max": 313.4388,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 178.9182,
+      "S3_min": -4.104063,
+      "SEQV_max": 176.8428,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 150.3575,
+      "S3_min": -153.7333,
+      "SEQV_max": 181.5568,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 349.4017,
+      "S3_min": -217.7356,
+      "SEQV_max": 319.9025,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 150.3575,
+      "S3_min": -51.44374,
+      "SEQV_max": 178.8432,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 5,
+    "time": 0.4,
+    "u_mm": 0.8,
+    "F_kN": 112.60560000000001,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 39.80158,
+      "S3_min": -157.93,
+      "SEQV_max": 157.9517,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 192.9216,
+      "S3_min": -33.96294,
+      "SEQV_max": 201.8218,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 265.4314,
+      "S3_min": -172.4319,
+      "SEQV_max": 252.2499,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 403.9846,
+      "S3_min": -559.4635,
+      "SEQV_max": 417.9184,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 238.5576,
+      "S3_min": -5.472084,
+      "SEQV_max": 235.7904,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 200.4767,
+      "S3_min": -204.9777,
+      "SEQV_max": 242.0758,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 465.869,
+      "S3_min": -290.3141,
+      "SEQV_max": 426.5366,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 200.4767,
+      "S3_min": -68.59165,
+      "SEQV_max": 238.4576,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 6,
+    "time": 0.5,
+    "u_mm": 1.0,
+    "F_kN": 140.757,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 49.75198,
+      "S3_min": -197.4125,
+      "SEQV_max": 197.4396,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 241.152,
+      "S3_min": -42.45367,
+      "SEQV_max": 252.2773,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 331.7893,
+      "S3_min": -215.5399,
+      "SEQV_max": 315.3124,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 504.9807,
+      "S3_min": -699.3293,
+      "SEQV_max": 522.398,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 298.1969,
+      "S3_min": -6.840105,
+      "SEQV_max": 294.738,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 250.5959,
+      "S3_min": -256.2221,
+      "SEQV_max": 302.5947,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 582.3362,
+      "S3_min": -362.8926,
+      "SEQV_max": 533.1708,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 250.5959,
+      "S3_min": -85.73957,
+      "SEQV_max": 298.072,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 7,
+    "time": 0.6,
+    "u_mm": 1.2,
+    "F_kN": 168.9085,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 59.70237,
+      "S3_min": -236.8951,
+      "SEQV_max": 236.9275,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 289.3824,
+      "S3_min": -50.94441,
+      "SEQV_max": 302.7327,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 398.1471,
+      "S3_min": -258.6479,
+      "SEQV_max": 378.3749,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 605.9769,
+      "S3_min": -839.1952,
+      "SEQV_max": 626.8776,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 357.8363,
+      "S3_min": -8.208127,
+      "SEQV_max": 353.6855,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 300.715,
+      "S3_min": -307.4666,
+      "SEQV_max": 363.1137,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 698.8034,
+      "S3_min": -435.4711,
+      "SEQV_max": 639.805,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 300.715,
+      "S3_min": -102.8875,
+      "SEQV_max": 357.6864,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 8,
+    "time": 0.7,
+    "u_mm": 1.4,
+    "F_kN": 197.0599,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 69.65277,
+      "S3_min": -276.3776,
+      "SEQV_max": 276.4154,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 337.6128,
+      "S3_min": -59.43514,
+      "SEQV_max": 353.1882,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 464.505,
+      "S3_min": -301.7559,
+      "SEQV_max": 441.4374,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 706.973,
+      "S3_min": -979.0611,
+      "SEQV_max": 731.3572,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 417.4757,
+      "S3_min": -9.576148,
+      "SEQV_max": 412.6331,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 350.8342,
+      "S3_min": -358.711,
+      "SEQV_max": 423.6326,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 815.2707,
+      "S3_min": -508.0497,
+      "SEQV_max": 746.4391,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 350.8342,
+      "S3_min": -120.0354,
+      "SEQV_max": 417.3008,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 9,
+    "time": 0.8,
+    "u_mm": 1.6,
+    "F_kN": 225.2113,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 79.60316,
+      "S3_min": -315.8601,
+      "SEQV_max": 315.9033,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 385.8433,
+      "S3_min": -67.92587,
+      "SEQV_max": 403.6437,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 530.8628,
+      "S3_min": -344.8638,
+      "SEQV_max": 504.4998,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 807.9691,
+      "S3_min": -1118.927,
+      "SEQV_max": 835.8368,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 477.1151,
+      "S3_min": -10.94417,
+      "SEQV_max": 471.5807,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 400.9534,
+      "S3_min": -409.9554,
+      "SEQV_max": 484.1515,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 931.7379,
+      "S3_min": -580.6282,
+      "SEQV_max": 853.0733,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 400.9534,
+      "S3_min": -137.1833,
+      "SEQV_max": 476.9152,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 10,
+    "time": 0.9,
+    "u_mm": 1.8,
+    "F_kN": 253.36270000000002,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 89.55356,
+      "S3_min": -355.3426,
+      "SEQV_max": 355.3912,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 434.0737,
+      "S3_min": -76.41661,
+      "SEQV_max": 454.0991,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 597.2207,
+      "S3_min": -387.9718,
+      "SEQV_max": 567.5623,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 908.9653,
+      "S3_min": -1258.793,
+      "SEQV_max": 940.3164,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 536.7545,
+      "S3_min": -12.31219,
+      "SEQV_max": 530.5283,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 451.0725,
+      "S3_min": -461.1998,
+      "SEQV_max": 544.6705,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 1048.205,
+      "S3_min": -653.2067,
+      "SEQV_max": 959.7074,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 451.0725,
+      "S3_min": -154.3312,
+      "SEQV_max": 536.5296,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 11,
+    "time": 1.0,
+    "u_mm": 2.0,
+    "F_kN": 281.5141,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 99.50396,
+      "S3_min": -394.8251,
+      "SEQV_max": 394.8791,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 482.3041,
+      "S3_min": -84.90734,
+      "SEQV_max": 504.5546,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 663.5785,
+      "S3_min": -431.0798,
+      "SEQV_max": 630.6248,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 1009.961,
+      "S3_min": -1398.659,
+      "SEQV_max": 1044.796,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 596.3939,
+      "S3_min": -13.68021,
+      "SEQV_max": 589.4759,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 501.1917,
+      "S3_min": -512.4443,
+      "SEQV_max": 605.1894,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 1164.672,
+      "S3_min": -725.7853,
+      "SEQV_max": 1066.342,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 501.1917,
+      "S3_min": -171.4791,
+      "SEQV_max": 596.144,
+      "EPPL_max": 0.0
+     }
+    }
+   }
+  ]
+ },
+ "ep_miso": {
+  "zone_node_counts": {
+   "upper_arm": 9278,
+   "lower_bottom": 961,
+   "ligament": 525,
+   "support": 1125,
+   "lower_root": 584,
+   "bore_upper": 121,
+   "fillet": 165,
+   "bore_sides": 34
+  },
+  "sets": [
+   {
+    "set": 1,
+    "time": 0.05,
+    "u_mm": 0.1,
+    "F_kN": 14.075700000000001,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 4.975196,
+      "S3_min": -19.74125,
+      "SEQV_max": 19.74396,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 24.1152,
+      "S3_min": -4.245367,
+      "SEQV_max": 25.22773,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 33.17892,
+      "S3_min": -21.55399,
+      "SEQV_max": 31.53124,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 50.49807,
+      "S3_min": -69.93293,
+      "SEQV_max": 52.2398,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 29.8197,
+      "S3_min": -0.6840079,
+      "SEQV_max": 29.4738,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 25.05958,
+      "S3_min": -25.62222,
+      "SEQV_max": 30.25947,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 58.23362,
+      "S3_min": -36.28926,
+      "SEQV_max": 53.31708,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 25.05958,
+      "S3_min": -8.573951,
+      "SEQV_max": 29.8072,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 2,
+    "time": 0.1,
+    "u_mm": 0.2,
+    "F_kN": 28.15141,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 9.950393,
+      "S3_min": -39.48251,
+      "SEQV_max": 39.48791,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 48.23041,
+      "S3_min": -8.490735,
+      "SEQV_max": 50.45545,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 66.35785,
+      "S3_min": -43.10798,
+      "SEQV_max": 63.06248,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 100.9961,
+      "S3_min": -139.8659,
+      "SEQV_max": 104.4796,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 59.6394,
+      "S3_min": -1.368016,
+      "SEQV_max": 58.94759,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 50.11917,
+      "S3_min": -51.24444,
+      "SEQV_max": 60.51894,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 116.4672,
+      "S3_min": -72.57853,
+      "SEQV_max": 106.6342,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 50.11917,
+      "S3_min": -17.1479,
+      "SEQV_max": 59.61439,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 3,
+    "time": 0.175,
+    "u_mm": 0.35,
+    "F_kN": 49.26496,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 17.41319,
+      "S3_min": -69.09439,
+      "SEQV_max": 69.10385,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 84.40321,
+      "S3_min": -14.85879,
+      "SEQV_max": 88.29705,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 116.1262,
+      "S3_min": -75.43896,
+      "SEQV_max": 110.3593,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 176.7432,
+      "S3_min": -244.7653,
+      "SEQV_max": 182.8393,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 104.3689,
+      "S3_min": -2.394028,
+      "SEQV_max": 103.1583,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 87.70855,
+      "S3_min": -89.67776,
+      "SEQV_max": 105.9081,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 203.8177,
+      "S3_min": -127.0124,
+      "SEQV_max": 186.6098,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 87.70855,
+      "S3_min": -30.00883,
+      "SEQV_max": 104.3252,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 4,
+    "time": 0.275,
+    "u_mm": 0.55,
+    "F_kN": 77.41637,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 27.36358,
+      "S3_min": -108.5769,
+      "SEQV_max": 108.5918,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 132.6336,
+      "S3_min": -23.34952,
+      "SEQV_max": 138.7525,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 182.4841,
+      "S3_min": -118.5469,
+      "SEQV_max": 173.4218,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 277.7394,
+      "S3_min": -384.6311,
+      "SEQV_max": 287.3189,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 164.0083,
+      "S3_min": -3.762043,
+      "SEQV_max": 162.1059,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 137.8277,
+      "S3_min": -140.9222,
+      "SEQV_max": 166.4271,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 320.2849,
+      "S3_min": -199.5909,
+      "SEQV_max": 293.2439,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 137.8277,
+      "S3_min": -47.15673,
+      "SEQV_max": 163.9396,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 5,
+    "time": 0.375,
+    "u_mm": 0.75,
+    "F_kN": 105.321,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 37.28399,
+      "S3_min": -148.1544,
+      "SEQV_max": 148.1716,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 180.417,
+      "S3_min": -31.75956,
+      "SEQV_max": 188.7434,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 229.9807,
+      "S3_min": -161.5931,
+      "SEQV_max": 206.5236,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 378.887,
+      "S3_min": -429.7518,
+      "SEQV_max": 304.4223,
+      "EPPL_max": 0.0006545637
+     },
+     "lower_root": {
+      "S1_max": 222.2954,
+      "S3_min": -5.413426,
+      "SEQV_max": 218.4453,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 188.1924,
+      "S3_min": -193.1542,
+      "SEQV_max": 227.2393,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 309.3587,
+      "S3_min": -272.1633,
+      "SEQV_max": 264.9866,
+      "EPPL_max": 0.001210312
+     },
+     "bore_sides": {
+      "S1_max": 188.1924,
+      "S3_min": -64.46212,
+      "SEQV_max": 223.8961,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 6,
+    "time": 0.475,
+    "u_mm": 0.95,
+    "F_kN": 132.5819,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 47.3588,
+      "S3_min": -187.3761,
+      "SEQV_max": 187.381,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 227.4608,
+      "S3_min": -26.75611,
+      "SEQV_max": 230.3415,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 268.9969,
+      "S3_min": -204.1879,
+      "SEQV_max": 250.8803,
+      "EPPL_max": 0.000133178
+     },
+     "support": {
+      "S1_max": 483.4828,
+      "S3_min": -394.232,
+      "SEQV_max": 345.649,
+      "EPPL_max": 0.002106975
+     },
+     "lower_root": {
+      "S1_max": 257.8178,
+      "S3_min": -11.00173,
+      "SEQV_max": 257.3456,
+      "EPPL_max": 0.0001893832
+     },
+     "bore_upper": {
+      "S1_max": 238.8513,
+      "S3_min": -246.8275,
+      "SEQV_max": 287.7655,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 334.8902,
+      "S3_min": -310.5576,
+      "SEQV_max": 285.3462,
+      "EPPL_max": 0.003018456
+     },
+     "bore_sides": {
+      "S1_max": 238.8513,
+      "S3_min": -81.94201,
+      "SEQV_max": 284.2483,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 7,
+    "time": 0.575,
+    "u_mm": 1.15,
+    "F_kN": 158.1072,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 57.88018,
+      "S3_min": -224.4779,
+      "SEQV_max": 224.4752,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 267.6455,
+      "S3_min": -10.02096,
+      "SEQV_max": 255.0501,
+      "EPPL_max": 0.0002554011
+     },
+     "ligament": {
+      "S1_max": 294.6083,
+      "S3_min": -242.188,
+      "SEQV_max": 276.2508,
+      "EPPL_max": 0.0005596844
+     },
+     "support": {
+      "S1_max": 386.9182,
+      "S3_min": -427.6965,
+      "SEQV_max": 290.0691,
+      "EPPL_max": 0.004031911
+     },
+     "lower_root": {
+      "S1_max": 272.8942,
+      "S3_min": -15.42287,
+      "SEQV_max": 266.8365,
+      "EPPL_max": 0.001277911
+     },
+     "bore_upper": {
+      "S1_max": 290.7934,
+      "S3_min": -306.9183,
+      "SEQV_max": 315.0117,
+      "EPPL_max": 0.000868955
+     },
+     "fillet": {
+      "S1_max": 355.2709,
+      "S3_min": -304.836,
+      "SEQV_max": 290.108,
+      "EPPL_max": 0.005269595
+     },
+     "bore_sides": {
+      "S1_max": 290.7934,
+      "S3_min": -72.65959,
+      "SEQV_max": 315.0117,
+      "EPPL_max": 4.20758e-05
+     }
+    }
+   },
+   {
+    "set": 8,
+    "time": 0.675,
+    "u_mm": 1.35,
+    "F_kN": 179.36720000000003,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 67.99603,
+      "S3_min": -253.9217,
+      "SEQV_max": 253.9775,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 277.0753,
+      "S3_min": -10.38595,
+      "SEQV_max": 263.3391,
+      "EPPL_max": 0.0009985481
+     },
+     "ligament": {
+      "S1_max": 335.8143,
+      "S3_min": -245.8881,
+      "SEQV_max": 303.1054,
+      "EPPL_max": 0.001699872
+     },
+     "support": {
+      "S1_max": 430.3428,
+      "S3_min": -460.5287,
+      "SEQV_max": 303.3274,
+      "EPPL_max": 0.006180365
+     },
+     "lower_root": {
+      "S1_max": 287.088,
+      "S3_min": -20.56779,
+      "SEQV_max": 278.6956,
+      "EPPL_max": 0.002437271
+     },
+     "bore_upper": {
+      "S1_max": 198.5031,
+      "S3_min": -295.3883,
+      "SEQV_max": 271.9589,
+      "EPPL_max": 0.002290799
+     },
+     "fillet": {
+      "S1_max": 372.4607,
+      "S3_min": -320.4236,
+      "SEQV_max": 303.8961,
+      "EPPL_max": 0.007797248
+     },
+     "bore_sides": {
+      "S1_max": 198.5031,
+      "S3_min": -79.37513,
+      "SEQV_max": 236.1137,
+      "EPPL_max": 0.001469892
+     }
+    }
+   },
+   {
+    "set": 9,
+    "time": 0.775,
+    "u_mm": 1.55,
+    "F_kN": 195.4071,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 76.50708,
+      "S3_min": -255.421,
+      "SEQV_max": 255.0427,
+      "EPPL_max": 0.0002950933
+     },
+     "lower_bottom": {
+      "S1_max": 284.8393,
+      "S3_min": -11.87301,
+      "SEQV_max": 271.0261,
+      "EPPL_max": 0.001664959
+     },
+     "ligament": {
+      "S1_max": 309.472,
+      "S3_min": -256.4732,
+      "SEQV_max": 284.527,
+      "EPPL_max": 0.00372902
+     },
+     "support": {
+      "S1_max": 459.8038,
+      "S3_min": -488.6702,
+      "SEQV_max": 315.3938,
+      "EPPL_max": 0.008379554
+     },
+     "lower_root": {
+      "S1_max": 299.3207,
+      "S3_min": -18.65533,
+      "SEQV_max": 287.0995,
+      "EPPL_max": 0.003635927
+     },
+     "bore_upper": {
+      "S1_max": 234.9616,
+      "S3_min": -328.1215,
+      "SEQV_max": 287.9633,
+      "EPPL_max": 0.005270194
+     },
+     "fillet": {
+      "S1_max": 389.0162,
+      "S3_min": -337.0121,
+      "SEQV_max": 317.817,
+      "EPPL_max": 0.010543
+     },
+     "bore_sides": {
+      "S1_max": 234.9616,
+      "S3_min": -92.11353,
+      "SEQV_max": 276.5885,
+      "EPPL_max": 0.004052643
+     }
+    }
+   },
+   {
+    "set": 10,
+    "time": 0.875,
+    "u_mm": 1.75,
+    "F_kN": 207.97889999999998,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 84.31864,
+      "S3_min": -260.8368,
+      "SEQV_max": 259.7486,
+      "EPPL_max": 0.0006816112
+     },
+     "lower_bottom": {
+      "S1_max": 292.3649,
+      "S3_min": -13.21328,
+      "SEQV_max": 277.3136,
+      "EPPL_max": 0.002364603
+     },
+     "ligament": {
+      "S1_max": 326.4328,
+      "S3_min": -265.5445,
+      "SEQV_max": 297.9455,
+      "EPPL_max": 0.005846275
+     },
+     "support": {
+      "S1_max": 483.3677,
+      "S3_min": -514.5838,
+      "SEQV_max": 327.1201,
+      "EPPL_max": 0.01065147
+     },
+     "lower_root": {
+      "S1_max": 308.8707,
+      "S3_min": -23.27814,
+      "SEQV_max": 294.7472,
+      "EPPL_max": 0.004767641
+     },
+     "bore_upper": {
+      "S1_max": 263.8759,
+      "S3_min": -349.0937,
+      "SEQV_max": 302.2914,
+      "EPPL_max": 0.00813753
+     },
+     "fillet": {
+      "S1_max": 403.7385,
+      "S3_min": -352.8485,
+      "SEQV_max": 329.7377,
+      "EPPL_max": 0.01335653
+     },
+     "bore_sides": {
+      "S1_max": 263.8759,
+      "S3_min": -99.5472,
+      "SEQV_max": 302.2914,
+      "EPPL_max": 0.006829502
+     }
+    }
+   },
+   {
+    "set": 11,
+    "time": 0.9375,
+    "u_mm": 1.875,
+    "F_kN": 214.61870000000002,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 89.4464,
+      "S3_min": -264.2499,
+      "SEQV_max": 262.8145,
+      "EPPL_max": 0.0009334256
+     },
+     "lower_bottom": {
+      "S1_max": 296.856,
+      "S3_min": -13.95426,
+      "SEQV_max": 281.0469,
+      "EPPL_max": 0.00281717
+     },
+     "ligament": {
+      "S1_max": 335.3898,
+      "S3_min": -280.5307,
+      "SEQV_max": 304.8566,
+      "EPPL_max": 0.007139551
+     },
+     "support": {
+      "S1_max": 498.2068,
+      "S3_min": -529.7724,
+      "SEQV_max": 333.6326,
+      "EPPL_max": 0.01213076
+     },
+     "lower_root": {
+      "S1_max": 313.8695,
+      "S3_min": -22.82375,
+      "SEQV_max": 299.1968,
+      "EPPL_max": 0.005489834
+     },
+     "bore_upper": {
+      "S1_max": 281.0474,
+      "S3_min": -359.9745,
+      "SEQV_max": 317.8152,
+      "EPPL_max": 0.009807757
+     },
+     "fillet": {
+      "S1_max": 413.0312,
+      "S3_min": -361.8686,
+      "SEQV_max": 337.4165,
+      "EPPL_max": 0.01516142
+     },
+     "bore_sides": {
+      "S1_max": 281.0474,
+      "S3_min": -102.0952,
+      "SEQV_max": 317.8152,
+      "EPPL_max": 0.008682185
+     }
+    }
+   },
+   {
+    "set": 12,
+    "time": 1.0,
+    "u_mm": 2.0,
+    "F_kN": 220.5312,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 94.31758,
+      "S3_min": -267.4707,
+      "SEQV_max": 265.9038,
+      "EPPL_max": 0.001187165
+     },
+     "lower_bottom": {
+      "S1_max": 301.2243,
+      "S3_min": -14.52888,
+      "SEQV_max": 284.3841,
+      "EPPL_max": 0.003297704
+     },
+     "ligament": {
+      "S1_max": 342.8868,
+      "S3_min": -293.1759,
+      "SEQV_max": 311.5942,
+      "EPPL_max": 0.00841982
+     },
+     "support": {
+      "S1_max": 512.3959,
+      "S3_min": -544.5185,
+      "SEQV_max": 340.2774,
+      "EPPL_max": 0.01363989
+     },
+     "lower_root": {
+      "S1_max": 318.4684,
+      "S3_min": -18.38276,
+      "SEQV_max": 303.3742,
+      "EPPL_max": 0.00622737
+     },
+     "bore_upper": {
+      "S1_max": 265.8401,
+      "S3_min": -369.7146,
+      "SEQV_max": 315.2931,
+      "EPPL_max": 0.01153047
+     },
+     "fillet": {
+      "S1_max": 422.2771,
+      "S3_min": -369.2616,
+      "SEQV_max": 345.0825,
+      "EPPL_max": 0.01695701
+     },
+     "bore_sides": {
+      "S1_max": 265.8401,
+      "S3_min": -103.5926,
+      "SEQV_max": 275.6275,
+      "EPPL_max": 0.01058686
+     }
+    }
+   }
+  ]
+ },
+ "usermat": {
+  "zone_node_counts": {
+   "upper_arm": 9278,
+   "lower_bottom": 961,
+   "ligament": 525,
+   "support": 1125,
+   "lower_root": 584,
+   "bore_upper": 121,
+   "fillet": 165,
+   "bore_sides": 34
+  },
+  "sets": [
+   {
+    "set": 1,
+    "time": 0.05,
+    "u_mm": 0.1,
+    "F_kN": 11.99541,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 4.108575,
+      "S3_min": -16.41283,
+      "SEQV_max": 16.41813,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 20.5062,
+      "S3_min": -0.5370383,
+      "SEQV_max": 20.21318,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 23.70396,
+      "S3_min": -16.35263,
+      "SEQV_max": 21.49512,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 31.42284,
+      "S3_min": -43.59306,
+      "SEQV_max": 34.03199,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 25.38889,
+      "S3_min": -0.351812,
+      "SEQV_max": 25.03398,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 12.2311,
+      "S3_min": -18.71873,
+      "SEQV_max": 21.37938,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 40.57594,
+      "S3_min": -25.57231,
+      "SEQV_max": 35.55713,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 12.2311,
+      "S3_min": -4.629062,
+      "SEQV_max": 14.75536,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 2,
+    "time": 0.1,
+    "u_mm": 0.2,
+    "F_kN": 23.990830000000003,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 8.21715,
+      "S3_min": -32.82567,
+      "SEQV_max": 32.83625,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 41.01241,
+      "S3_min": -1.074077,
+      "SEQV_max": 40.42636,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 47.40793,
+      "S3_min": -32.70526,
+      "SEQV_max": 42.99023,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 62.84568,
+      "S3_min": -87.18612,
+      "SEQV_max": 68.06398,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 50.77779,
+      "S3_min": -0.7036241,
+      "SEQV_max": 50.06796,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 24.4622,
+      "S3_min": -37.43747,
+      "SEQV_max": 42.75876,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 81.15188,
+      "S3_min": -51.14463,
+      "SEQV_max": 71.11426,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 24.4622,
+      "S3_min": -9.258124,
+      "SEQV_max": 29.51072,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 3,
+    "time": 0.175,
+    "u_mm": 0.35,
+    "F_kN": 41.98395,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 14.38001,
+      "S3_min": -57.44492,
+      "SEQV_max": 57.46344,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 71.77171,
+      "S3_min": -1.879634,
+      "SEQV_max": 70.74613,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 82.96387,
+      "S3_min": -57.2342,
+      "SEQV_max": 75.23291,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 109.9799,
+      "S3_min": -152.5757,
+      "SEQV_max": 119.112,
+      "EPPL_max": 0.0
+     },
+     "lower_root": {
+      "S1_max": 88.86113,
+      "S3_min": -1.231342,
+      "SEQV_max": 87.61892,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 42.80886,
+      "S3_min": -65.51557,
+      "SEQV_max": 74.82783,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 142.0158,
+      "S3_min": -89.5031,
+      "SEQV_max": 124.45,
+      "EPPL_max": 0.0
+     },
+     "bore_sides": {
+      "S1_max": 42.80886,
+      "S3_min": -16.20172,
+      "SEQV_max": 51.64375,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 4,
+    "time": 0.275,
+    "u_mm": 0.55,
+    "F_kN": 65.50611,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 22.5997,
+      "S3_min": -90.32033,
+      "SEQV_max": 90.34481,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 112.0159,
+      "S3_min": -2.93407,
+      "SEQV_max": 110.4217,
+      "EPPL_max": 0.0
+     },
+     "ligament": {
+      "S1_max": 112.2978,
+      "S3_min": -89.69346,
+      "SEQV_max": 113.612,
+      "EPPL_max": 0.0
+     },
+     "support": {
+      "S1_max": 171.619,
+      "S3_min": -199.1471,
+      "SEQV_max": 135.7811,
+      "EPPL_max": 0.001174714
+     },
+     "lower_root": {
+      "S1_max": 126.4839,
+      "S3_min": -5.177081,
+      "SEQV_max": 127.6102,
+      "EPPL_max": 0.0
+     },
+     "bore_upper": {
+      "S1_max": 67.39506,
+      "S3_min": -102.5882,
+      "SEQV_max": 117.7977,
+      "EPPL_max": 0.0
+     },
+     "fillet": {
+      "S1_max": 159.3114,
+      "S3_min": -140.9826,
+      "SEQV_max": 135.1401,
+      "EPPL_max": 0.00196466
+     },
+     "bore_sides": {
+      "S1_max": 67.39506,
+      "S3_min": -25.51706,
+      "SEQV_max": 81.21751,
+      "EPPL_max": 0.0
+     }
+    }
+   },
+   {
+    "set": 5,
+    "time": 0.375,
+    "u_mm": 0.75,
+    "F_kN": 86.56924000000001,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 31.31745,
+      "S3_min": -120.7152,
+      "SEQV_max": 120.7176,
+      "EPPL_max": 0.0
+     },
+     "lower_bottom": {
+      "S1_max": 144.9905,
+      "S3_min": -5.781539,
+      "SEQV_max": 136.0555,
+      "EPPL_max": 0.0002573941
+     },
+     "ligament": {
+      "S1_max": 130.5063,
+      "S3_min": -121.9365,
+      "SEQV_max": 135.8983,
+      "EPPL_max": 0.0004140669
+     },
+     "support": {
+      "S1_max": 213.8908,
+      "S3_min": -212.7077,
+      "SEQV_max": 136.0354,
+      "EPPL_max": 0.004021222
+     },
+     "lower_root": {
+      "S1_max": 138.1894,
+      "S3_min": -12.42586,
+      "SEQV_max": 136.0549,
+      "EPPL_max": 0.001114842
+     },
+     "bore_upper": {
+      "S1_max": 93.90439,
+      "S3_min": -143.2251,
+      "SEQV_max": 135.0229,
+      "EPPL_max": 0.001006464
+     },
+     "fillet": {
+      "S1_max": 159.0009,
+      "S3_min": -156.9658,
+      "SEQV_max": 135.021,
+      "EPPL_max": 0.005245788
+     },
+     "bore_sides": {
+      "S1_max": 93.90439,
+      "S3_min": -36.55171,
+      "SEQV_max": 108.0421,
+      "EPPL_max": 0.0001153616
+     }
+    }
+   },
+   {
+    "set": 6,
+    "time": 0.475,
+    "u_mm": 0.95,
+    "F_kN": 98.08969,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 37.74173,
+      "S3_min": -136.0137,
+      "SEQV_max": 136.0558,
+      "EPPL_max": 2.796215e-05
+     },
+     "lower_bottom": {
+      "S1_max": 147.4158,
+      "S3_min": -5.617115,
+      "SEQV_max": 136.0559,
+      "EPPL_max": 0.001097049
+     },
+     "ligament": {
+      "S1_max": 146.9621,
+      "S3_min": -118.4806,
+      "SEQV_max": 135.3684,
+      "EPPL_max": 0.005787385
+     },
+     "support": {
+      "S1_max": 231.6652,
+      "S3_min": -219.901,
+      "SEQV_max": 135.6872,
+      "EPPL_max": 0.0071525
+     },
+     "lower_root": {
+      "S1_max": 140.9618,
+      "S3_min": -15.43053,
+      "SEQV_max": 136.0106,
+      "EPPL_max": 0.002294592
+     },
+     "bore_upper": {
+      "S1_max": 104.5037,
+      "S3_min": -145.2226,
+      "SEQV_max": 133.0901,
+      "EPPL_max": 0.009228461
+     },
+     "fillet": {
+      "S1_max": 152.6078,
+      "S3_min": -160.2415,
+      "SEQV_max": 134.1818,
+      "EPPL_max": 0.009735466
+     },
+     "bore_sides": {
+      "S1_max": 104.5037,
+      "S3_min": -47.40725,
+      "SEQV_max": 112.0281,
+      "EPPL_max": 0.006627955
+     }
+    }
+   },
+   {
+    "set": 7,
+    "time": 0.575,
+    "u_mm": 1.15,
+    "F_kN": 100.4987,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 39.84295,
+      "S3_min": -136.3591,
+      "SEQV_max": 136.0559,
+      "EPPL_max": 0.0001175596
+     },
+     "lower_bottom": {
+      "S1_max": 147.7097,
+      "S3_min": -5.862318,
+      "SEQV_max": 136.0559,
+      "EPPL_max": 0.001538626
+     },
+     "ligament": {
+      "S1_max": 129.92,
+      "S3_min": -139.1283,
+      "SEQV_max": 134.1374,
+      "EPPL_max": 0.02002213
+     },
+     "support": {
+      "S1_max": 234.4627,
+      "S3_min": -222.0851,
+      "SEQV_max": 135.8884,
+      "EPPL_max": 0.008606915
+     },
+     "lower_root": {
+      "S1_max": 135.7276,
+      "S3_min": -15.44384,
+      "SEQV_max": 134.5471,
+      "EPPL_max": 0.002294592
+     },
+     "bore_upper": {
+      "S1_max": 96.56528,
+      "S3_min": -128.8318,
+      "SEQV_max": 126.7641,
+      "EPPL_max": 0.03274673
+     },
+     "fillet": {
+      "S1_max": 147.1544,
+      "S3_min": -162.3328,
+      "SEQV_max": 133.6716,
+      "EPPL_max": 0.01313721
+     },
+     "bore_sides": {
+      "S1_max": 96.56528,
+      "S3_min": -37.56174,
+      "SEQV_max": 110.7806,
+      "EPPL_max": 0.0256747
+     }
+    }
+   },
+   {
+    "set": 8,
+    "time": 0.675,
+    "u_mm": 1.35,
+    "F_kN": 97.13924,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 41.54648,
+      "S3_min": -132.6402,
+      "SEQV_max": 132.3377,
+      "EPPL_max": 0.0001175596
+     },
+     "lower_bottom": {
+      "S1_max": 148.1363,
+      "S3_min": -5.87219,
+      "SEQV_max": 136.0466,
+      "EPPL_max": 0.001638705
+     },
+     "ligament": {
+      "S1_max": 118.3968,
+      "S3_min": -150.9988,
+      "SEQV_max": 123.3376,
+      "EPPL_max": 0.04179299
+     },
+     "support": {
+      "S1_max": 233.6641,
+      "S3_min": -217.4581,
+      "SEQV_max": 135.8665,
+      "EPPL_max": 0.008606915
+     },
+     "lower_root": {
+      "S1_max": 119.1567,
+      "S3_min": -15.32282,
+      "SEQV_max": 118.0888,
+      "EPPL_max": 0.002294592
+     },
+     "bore_upper": {
+      "S1_max": 86.08669,
+      "S3_min": -135.5013,
+      "SEQV_max": 119.4099,
+      "EPPL_max": 0.06810599
+     },
+     "fillet": {
+      "S1_max": 112.1261,
+      "S3_min": -152.5734,
+      "SEQV_max": 133.6153,
+      "EPPL_max": 0.02809507
+     },
+     "bore_sides": {
+      "S1_max": 86.08669,
+      "S3_min": -36.70117,
+      "SEQV_max": 102.8854,
+      "EPPL_max": 0.05514817
+     }
+    }
+   },
+   {
+    "set": 9,
+    "time": 0.775,
+    "u_mm": 1.55,
+    "F_kN": 92.30758,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 48.40762,
+      "S3_min": -126.2222,
+      "SEQV_max": 125.5633,
+      "EPPL_max": 0.0001175596
+     },
+     "lower_bottom": {
+      "S1_max": 147.8463,
+      "S3_min": -5.880243,
+      "SEQV_max": 136.0555,
+      "EPPL_max": 0.001652856
+     },
+     "ligament": {
+      "S1_max": 103.3318,
+      "S3_min": -154.9916,
+      "SEQV_max": 116.1529,
+      "EPPL_max": 0.0656157
+     },
+     "support": {
+      "S1_max": 230.2394,
+      "S3_min": -207.0239,
+      "SEQV_max": 136.0559,
+      "EPPL_max": 0.008606915
+     },
+     "lower_root": {
+      "S1_max": 100.4088,
+      "S3_min": -15.2747,
+      "SEQV_max": 99.43349,
+      "EPPL_max": 0.002294592
+     },
+     "bore_upper": {
+      "S1_max": 74.32839,
+      "S3_min": -146.29,
+      "SEQV_max": 111.1984,
+      "EPPL_max": 0.1068705
+     },
+     "fillet": {
+      "S1_max": 95.96713,
+      "S3_min": -140.4915,
+      "SEQV_max": 129.5306,
+      "EPPL_max": 0.04347877
+     },
+     "bore_sides": {
+      "S1_max": 74.32839,
+      "S3_min": -33.99989,
+      "SEQV_max": 90.71757,
+      "EPPL_max": 0.0872483
+     }
+    }
+   },
+   {
+    "set": 10,
+    "time": 0.875,
+    "u_mm": 1.75,
+    "F_kN": 88.50191000000001,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 54.30378,
+      "S3_min": -128.9797,
+      "SEQV_max": 128.2943,
+      "EPPL_max": 0.0001175596
+     },
+     "lower_bottom": {
+      "S1_max": 148.3394,
+      "S3_min": -5.934211,
+      "SEQV_max": 136.0543,
+      "EPPL_max": 0.001728948
+     },
+     "ligament": {
+      "S1_max": 91.48348,
+      "S3_min": -158.357,
+      "SEQV_max": 112.0062,
+      "EPPL_max": 0.08943742
+     },
+     "support": {
+      "S1_max": 227.5257,
+      "S3_min": -198.8323,
+      "SEQV_max": 135.9485,
+      "EPPL_max": 0.008606915
+     },
+     "lower_root": {
+      "S1_max": 85.44325,
+      "S3_min": -15.25759,
+      "SEQV_max": 84.55111,
+      "EPPL_max": 0.002294592
+     },
+     "bore_upper": {
+      "S1_max": 66.38229,
+      "S3_min": -148.8497,
+      "SEQV_max": 102.8843,
+      "EPPL_max": 0.1439415
+     },
+     "fillet": {
+      "S1_max": 91.46462,
+      "S3_min": -130.8613,
+      "SEQV_max": 123.529,
+      "EPPL_max": 0.05788583
+     },
+     "bore_sides": {
+      "S1_max": 66.38229,
+      "S3_min": -29.74497,
+      "SEQV_max": 79.47442,
+      "EPPL_max": 0.1182847
+     }
+    }
+   },
+   {
+    "set": 11,
+    "time": 0.9375,
+    "u_mm": 1.875,
+    "F_kN": 87.12371,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 57.81778,
+      "S3_min": -131.483,
+      "SEQV_max": 130.7789,
+      "EPPL_max": 0.0001175596
+     },
+     "lower_bottom": {
+      "S1_max": 149.222,
+      "S3_min": -6.082217,
+      "SEQV_max": 136.0543,
+      "EPPL_max": 0.001828685
+     },
+     "ligament": {
+      "S1_max": 90.50278,
+      "S3_min": -160.2145,
+      "SEQV_max": 109.1106,
+      "EPPL_max": 0.1033324
+     },
+     "support": {
+      "S1_max": 227.9282,
+      "S3_min": -197.8126,
+      "SEQV_max": 135.8315,
+      "EPPL_max": 0.008606915
+     },
+     "lower_root": {
+      "S1_max": 78.58601,
+      "S3_min": -15.25715,
+      "SEQV_max": 77.7398,
+      "EPPL_max": 0.002294592
+     },
+     "bore_upper": {
+      "S1_max": 66.08268,
+      "S3_min": -151.0046,
+      "SEQV_max": 98.40169,
+      "EPPL_max": 0.1653295
+     },
+     "fillet": {
+      "S1_max": 90.50278,
+      "S3_min": -127.2205,
+      "SEQV_max": 121.3918,
+      "EPPL_max": 0.06610733
+     },
+     "bore_sides": {
+      "S1_max": 66.08268,
+      "S3_min": -27.12657,
+      "SEQV_max": 73.59211,
+      "EPPL_max": 0.135977
+     }
+    }
+   },
+   {
+    "set": 12,
+    "time": 1.0,
+    "u_mm": 2.0,
+    "F_kN": 86.29182,
+    "zones": {
+     "upper_arm": {
+      "S1_max": 61.25269,
+      "S3_min": -134.4631,
+      "SEQV_max": 133.7389,
+      "EPPL_max": 0.0001175596
+     },
+     "lower_bottom": {
+      "S1_max": 150.0461,
+      "S3_min": -6.306915,
+      "SEQV_max": 135.9913,
+      "EPPL_max": 0.001962048
+     },
+     "ligament": {
+      "S1_max": 90.22084,
+      "S3_min": -161.8771,
+      "SEQV_max": 105.8993,
+      "EPPL_max": 0.1167529
+     },
+     "support": {
+      "S1_max": 228.6263,
+      "S3_min": -197.9788,
+      "SEQV_max": 136.0081,
+      "EPPL_max": 0.008606915
+     },
+     "lower_root": {
+      "S1_max": 73.14594,
+      "S3_min": -15.27253,
+      "SEQV_max": 72.34294,
+      "EPPL_max": 0.002294592
+     },
+     "bore_upper": {
+      "S1_max": 65.73164,
+      "S3_min": -152.1246,
+      "SEQV_max": 94.71034,
+      "EPPL_max": 0.1859967
+     },
+     "fillet": {
+      "S1_max": 90.22084,
+      "S3_min": -125.1002,
+      "SEQV_max": 120.3569,
+      "EPPL_max": 0.07376295
+     },
+     "bore_sides": {
+      "S1_max": 65.73164,
+      "S3_min": -25.04994,
+      "SEQV_max": 69.31331,
+      "EPPL_max": 0.15295
+     }
+    }
+   }
+  ]
+ }
+}

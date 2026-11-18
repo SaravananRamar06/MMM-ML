@@ -1,0 +1,53 @@
+! ======================================================================
+! Dump nodal results of a solved bracket run for zone analysis (zone_results.py), MAPDL 2024 R1 POST1.
+! Writes nodes_xyz.csv (node, x, y, z) once, sets.csv (set, time), and for every saved substep
+! ns<N>.csv (node, S1, S3, SEQV, EPPL_EQV), nodal averages as in PLNSOL.
+! ======================================================================
+/POST1
+FILE,bracket,rst
+*GET,_NS,ACTIVE,0,SET,NSET
+SET,FIRST
+ALLSEL,ALL
+*GET,_NMX,NODE,0,NUM,MAX
+*DEL,_M,,NOPR
+*DEL,_X,,NOPR
+*DEL,_Y,,NOPR
+*DEL,_Z,,NOPR
+*DIM,_M,ARRAY,_NMX
+*DIM,_X,ARRAY,_NMX
+*DIM,_Y,ARRAY,_NMX
+*DIM,_Z,ARRAY,_NMX
+*DIM,_S1,ARRAY,_NMX
+*DIM,_S3,ARRAY,_NMX
+*DIM,_SE,ARRAY,_NMX
+*DIM,_EP,ARRAY,_NMX
+*VGET,_M(1),NODE,1,NSEL
+*VGET,_X(1),NODE,1,LOC,X
+*VGET,_Y(1),NODE,1,LOC,Y
+*VGET,_Z(1),NODE,1,LOC,Z
+*CFOPEN,nodes_xyz,csv
+*VMASK,_M(1)
+*VWRITE,SEQU,_X(1),_Y(1),_Z(1)
+(F9.0,',',E15.7,',',E15.7,',',E15.7)
+*CFCLOS
+*CFOPEN,sets,csv
+*DO,_I,1,_NS
+  SET,,,,,,,_I
+  *GET,_T,ACTIVE,0,SET,TIME
+  *VWRITE,_I,_T
+(F5.0,',',E15.7)
+*ENDDO
+*CFCLOS
+*DO,_I,1,_NS
+  SET,,,,,,,_I
+  *VGET,_S1(1),NODE,1,S,1
+  *VGET,_S3(1),NODE,1,S,3
+  *VGET,_SE(1),NODE,1,S,EQV
+  *VGET,_EP(1),NODE,1,EPPL,EQV
+  *CFOPEN,ns%_I%,csv
+  *VMASK,_M(1)
+  *VWRITE,SEQU,_S1(1),_S3(1),_SE(1),_EP(1)
+(F9.0,',',E15.7,',',E15.7,',',E15.7,',',E15.7)
+  *CFCLOS
+*ENDDO
+FINISH
