@@ -6,6 +6,7 @@
 - **Result (post-hoc re-run, `results_2026-11-18/`):** peak reaction 190.0 kN at UX = -0.455 mm, against 190.4 kN in the batch deck (0.2 %); 134.0 kN against 136.7 kN at -2 mm (2.0 %; the meshes differ and the response after yield is mesh dependent). Contour pictures are exported.
 - **Study handbook:** the removed ensemble baseline (`EnsTest`) is dropped. The study PDFs were rebuilt after the ANSYS-only clean-up and no longer mention Abaqus or `JC-PINN.pptx`.
 - **Submission:** `build_submission.py` adds the Workbench 2024 R1 project (without solver scratch) and its results.
+- **Submission rebuilt** from commit `1772ea1` (this branch: main 92f472d plus the study-PDF fix and the Workbench project), without Abaqus: no file name or text file in either upload or in `submission files/` mentions Abaqus or `jc_pinn_umat`. The Canva deck was re-exported after slide 11 was fixed (stat card: 2e-15 offline relative error; ANSYS USERMAT only); slide 11's speaker notes were rewritten in the exported PPTX, because the Canva tool cannot edit notes (the Canva design keeps the old notes). 17 slides with notes on every slide; every number on the slides and in the notes was checked against `report/numbers.json`, with no mismatch. Report: 21 pages, team names on the title page.
 
 ## 18 November 2026: Team 8 end-semester submission
 - **Report:** a title page with the course, Team 8's names and roll numbers, the instructor and IIITDM Kancheepuram (21 pages).
