@@ -1,5 +1,12 @@
 # Changelog
 
+## 18 November 2026: the USERMAT bracket as a Workbench 2024 R1 project
+- **Why:** the USERMAT runs were MAPDL batch decks, so there was no Workbench file to open. The team's `Elastic.wbpj` is 2026 R1, and the USERMAT DLL is built for 2024 R1.
+- **New:** `bracket/ansys_usermat/workbench_2024R1/` builds, meshes and solves `Bracket_USERMAT_2024R1.wbpj` in batch (`build_project.bat` runs `build_project.wbjn` and `mech_setup.py`). It has the team model's supports and load, a swept 5 mm SOLID186 mesh and the `TB,USER` block as a command snippet. `open_project.bat` opens it with `ANS_USER_PATH` set. The result file is not committed.
+- **Result (post-hoc re-run, `results_2026-11-18/`):** peak reaction 190.0 kN at UX = -0.455 mm, against 190.4 kN in the batch deck (0.2 %); 134.0 kN against 136.7 kN at -2 mm (2.0 %; the meshes differ and the response after yield is mesh dependent). Contour pictures are exported.
+- **Study handbook:** the removed ensemble baseline (`EnsTest`) is dropped. The study PDFs were rebuilt after the ANSYS-only clean-up and no longer mention Abaqus or `JC-PINN.pptx`.
+- **Submission:** `build_submission.py` adds the Workbench 2024 R1 project (without solver scratch) and its results.
+
 ## 18 November 2026: Team 8 end-semester submission
 - **Report:** a title page with the course, Team 8's names and roll numbers, the instructor and IIITDM Kancheepuram (21 pages).
 - **Submission deck:** `scripts/make_submission_deck.py` keeps the cover, 15 content slides and the thank-you slide of the 24-slide corrected deck, renumbers them and fixes the cached slide numbers. It was imported into Canva, where the cover's team names were set to one size, and exported as `Team8_Presentation.pptx` / `.pdf` (17 slides, speaker notes on all of them). Every decimal number on the slides and notes was checked against `report/numbers.json`: no mismatch. The values not in `numbers.json` come from the team's Ansys screenshots (595.27, 320.79, 323.81 MPa and their ratio 1.86), the training trace (0.171 to 0.0028), the test summary (0.4386 = 0.439 unrounded; pooled point RMSE 0.504), 6.23 (`SelGroups` 6.235 rounded) and the 2.5 mm mesh size.

@@ -112,6 +112,10 @@ def build_upload1(snap, out, commit, N):
 
     c = u1 / '03_FE_model_ANSYS'
     copy(snap / 'bracket/ansys', c / 'workbench_project', skip_scratch=True)
+    wb = snap / 'bracket/ansys_usermat/workbench_2024R1'
+    for f in sorted(wb.iterdir()):
+        if f.name != 'results_2026-11-18':
+            copy(f, c / 'workbench_2024R1_USERMAT' / f.name, skip_scratch=f.suffix.lower() != '.bat')
     copy(snap / 'bracket/cad', c / 'cad')
     for f in sorted((snap / 'bracket/ansys_usermat').glob('*')):
         if f.is_file() and f.suffix in ('.py', '.mac'):
@@ -132,6 +136,7 @@ def build_upload1(snap, out, commit, N):
     d = u1 / '04_Results'
     for name in ('results_2026-11-17', 'porosity_2026-11-17', 'porosity_gphi_2026-11-17', 'mesh_2026-11-17', 'mesh_ep_2026-11-17'):
         copy(snap / 'bracket/ansys_usermat' / name, d / name)
+    copy(wb / 'results_2026-11-18', d / 'workbench_usermat_2026-11-18')
     write(d / 'README.md', README_RESULTS)
 
     e = u1 / '05_ML_model'
@@ -353,6 +358,9 @@ README_FE = """# ANSYS FE model of the wing-rib bracket
 - `workbench_project/`: the team's Workbench 2026 R1 project (`Elastic.wbpj` with `Elastic_files/`), as committed.
   - Solver scratch files (`.rst`, `.err`) were left out, so Workbench will ask to re-solve before showing results.
   - Open it in Workbench 2026 R1 or later.
+- `workbench_2024R1_USERMAT/`: the bracket with the JC-PINN USERMAT as a Workbench 2024 R1 project (`Bracket_USERMAT_2024R1.wbpj`, added 18 Nov 2026, post-hoc re-run).
+  - Same supports, load and material block as the batch decks; swept 5 mm mesh. The material is the `TB,USER` command snippet under the body.
+  - Open it with `open_project.bat`, which sets `ANS_USER_PATH`; the result file is left out, so solve once (about two minutes) to see contours. Its README has the settings and the comparison with the batch run.
 - `cad/`: `Rib Bracket.STEP` and `Bracket support.STEP`.
 - `scripts/`: the deck generator, mesh refinement and post-processing (`make_decks.py`, `refine_mesh.py`, `post_bracket.mac`, plot scripts).
 - `mapdl_decks/`: batch decks regenerated from the Workbench solver input, for MAPDL 2024 R1. The 2026 R1 `eblock,COMPACT` element block is rewritten in the standard layout, with the same elements.
@@ -390,6 +398,7 @@ README_RESULTS = """# Results (committed evidence, unchanged)
 | `porosity_gphi_2026-11-17/` | Porosity with density and G coupled by decision D5, G = 25300 (1 - phi) |
 | `mesh_2026-11-17/` | Mesh study: 5 mm against the 2x2x2 refinement (JC-PINN) |
 | `mesh_ep_2026-11-17/` | The same refinement with the hardening EP material |
+| `workbench_usermat_2026-11-18/` | The Workbench 2024 R1 USERMAT project solved (post-hoc): reaction history, summary, contour pictures, solver output |
 
 Each folder has its own README with the run commands, a results table and its limits. Bracket forces after yield are mesh dependent, and nothing is experimentally validated.
 """
@@ -417,7 +426,7 @@ Everything important in one place. The files are copies of the two upload folder
 | `1_Report/` | `Team8_Report.pdf` and its LaTeX source (zip, compiles on its own) |
 | `2_Presentation/` | `Team8_Presentation.pptx` and `.pdf` (exported from Canva; 1 intro, 15 content, 1 outro slide) |
 | `3_FEA_simulations/A_Team_JC_comparison_study/` | The team's Workbench comparison project (`Comparison Study - Final.wbpj`, project file only) and its equivalent-stress screenshots: elastic, built-in JC, user-defined JC |
-| `3_FEA_simulations/B_Bracket_FE_model_ANSYS/` | The bracket Workbench project (solver scratch removed), CAD, MAPDL decks (elastic, EP, USERMAT, porosity, 2.5 mm mesh) and scripts |
+| `3_FEA_simulations/B_Bracket_FE_model_ANSYS/` | The teams bracket Workbench project and the Workbench 2024 R1 USERMAT project (workbench_2024R1_USERMAT/, open with open_project.bat), both without solver scratch; CAD, MAPDL decks (elastic, EP, USERMAT, porosity, 2.5 mm mesh) and scripts |
 | `3_FEA_simulations/C_Bracket_results_USERMAT_EP_porosity_mesh/` | Results of every bracket run: histories (CSV), summaries (JSON), plots and READMEs |
 | `4_USERMAT_UMAT_code/` | The ANSYS USERMAT (UPF) used in every run, with generator, build log, single-element test and verification |
 | `5_ML_model_weights/` | The locked run `jc_pinn_20261107` (`equation.json` holds Equation 1's constants and all network weights; `selection_lock.json` is its fingerprint), with `jc_pinn.py` and `jc_pinn.json` |

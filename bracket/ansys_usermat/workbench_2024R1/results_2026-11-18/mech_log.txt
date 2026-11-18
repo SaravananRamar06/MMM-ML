@@ -1,0 +1,7 @@
+body Rib Bracket-FreeParts|Boss-Extrude1, faces 17
+x range -21.5335..210; fixed faces [76, 81]; bore faces [72, 86]
+mesh {'method': 'Sweep', 'elements': 6696, 'nodes': 32233}
+set up done; solving
+solve status Done
+summary {'peak_ux_mm': -0.45499999999999996, 'final_Fx_kN': 133.95137765645552, 'max_SVAR1_final': 0.64474548399448395, 'peak_Fx_kN': 190.04607930461631, 'max_von_mises_MPa_final': 134.90025671707502, 'max_total_deformation_mm_final': 2.9761160692143833, 'substeps': 14, 'status': 'started', 'mesh': {'method': 'Sweep', 'elements': 6696, 'nodes': 32233}, 'solve_status': 'Done'}
+images exported

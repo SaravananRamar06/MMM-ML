@@ -1,0 +1,180 @@
+# Mechanical (2024 R1) script, run by build_project.wbjn through SendCommand.
+# Sets up the wing-rib bracket with the JC-PINN USERMAT, as in the team's Workbench model
+# (bracket/ansys/Elastic_files/dp0/SYS-2/MECH/ds.dat):
+#   - both mounting faces at x = max fixed (CMBLOCK _FIXEDSU: all nodes at x = 210 mm);
+#   - the whole bore (r = 5 mm at the origin) moved UX = -2 mm (CMBLOCK _CM..UX_XP), Y and Z free;
+#   - static, small deflection, auto time stepping 20 / 10 / 1000 substeps;
+#   - quadratic elements of 5 mm (swept, as the original hex/wedge mesh);
+#   - material: TB,USER at the study point, the same block as bracket/ansys_usermat/make_decks.py.
+# It solves, writes a reaction-force history and a summary to __OUT__, and exports contour images.
+import json
+import math
+import traceback
+
+OUT = r"__OUT__"
+LOG = []
+
+
+def log(msg):
+    LOG.append(str(msg))
+    f = open(OUT + "\\mech_log.txt", "w")
+    f.write("\n".join(LOG) + "\n")
+    f.close()
+
+
+USERMAT = """/com,*********** JC-PINN USERMAT (bracket/ansys_usermat/workbench_2024R1) ***********
+! Study point: 100 degC, 1e-4 /s, density 2592 kg/m3 (phi = 4 %), G 24541 MPa, nu 0.33 (assumed).
+! The solver uses the USERMAT stiffness (E = 2G(1+nu) = 65279 MPa); Engineering Data only labels it.
+! Needs ANS_USER_PATH = folder with usermatLib.dll (built for MAPDL 2024 R1).
+TB,USER,matid,1,7
+TBTEMP,0
+TBDATA,1,100,1.0E-4,2592,24541,0.33,0
+TBDATA,7,0
+TB,STATE,matid,,4
+"""
+
+summary = {"status": "started"}
+try:
+    ExtAPI.Application.ActiveUnitSystem = MechanicalUnitSystem.StandardNMM
+    body = Model.Geometry.GetChildren(DataModelObjectCategory.Body, True)[0]
+    gb = body.GetGeoBody()
+    body.Material = "AlSi10Mg JC-PINN USERMAT"
+    log("body %s, faces %d" % (body.Name, len(gb.Faces)))
+
+    verts = [v for f in gb.Faces for v in f.Vertices]
+    xmax = max(v.X for v in verts)
+    xmin = min(v.X for v in verts)
+    L = xmax - xmin
+    fix, bore = [], []
+    for f in gb.Faces:
+        fv = list(f.Vertices)
+        c = f.Centroid
+        if f.SurfaceType == GeoSurfaceTypeEnum.GeoSurfacePlane and fv and all(abs(v.X - xmax) < 1e-6 * L for v in fv):
+            fix.append(f)
+        elif f.SurfaceType == GeoSurfaceTypeEnum.GeoSurfaceCylinder and math.hypot(c[0], c[1]) < 0.05 * L:
+            bore.append(f)
+    log("x range %.6g..%.6g; fixed faces %s; bore faces %s" % (xmin, xmax, [f.Id for f in fix], [f.Id for f in bore]))
+    if not fix or not bore:
+        raise Exception("support or bore faces not found")
+
+    def faces_sel(faces):
+        s = ExtAPI.SelectionManager.CreateSelectionInfo(SelectionTypeEnum.GeometryEntities)
+        s.Ids = [f.Id for f in faces]
+        return s
+
+    ns_fix = Model.AddNamedSelection()
+    ns_fix.Name = "Fixed_mounting_faces_x210"
+    ns_fix.Location = faces_sel(fix)
+    ns_bore = Model.AddNamedSelection()
+    ns_bore.Name = "Bore_UX_minus2mm"
+    ns_bore.Location = faces_sel(bore)
+
+    mesh = Model.Mesh
+    mesh.ElementOrder = ElementOrder.Quadratic
+    mesh.ElementSize = Quantity("5 [mm]")
+    bsel = ExtAPI.SelectionManager.CreateSelectionInfo(SelectionTypeEnum.GeometryEntities)
+    bsel.Ids = [gb.Id]
+    meth = mesh.AddAutomaticMethod()
+    meth.Location = bsel
+    meth.Method = MethodType.Sweep
+    mesh.GenerateMesh()
+    if mesh.Elements == 0:
+        log("sweep failed, using the automatic method")
+        meth.Method = MethodType.Automatic
+        mesh.GenerateMesh()
+    summary["mesh"] = {"elements": mesh.Elements, "nodes": mesh.Nodes, "method": str(meth.Method)}
+    log("mesh %s" % summary["mesh"])
+
+    an = Model.Analyses[0]
+    st = an.AnalysisSettings
+    st.AutomaticTimeStepping = AutomaticTimeStepping.On
+    st.DefineBy = TimeStepDefineByType.Substeps
+    st.InitialSubsteps = 20
+    st.MinimumSubsteps = 10
+    st.MaximumSubsteps = 1000
+    st.LargeDeflection = False
+
+    cmd = body.AddCommandSnippet()
+    cmd.Name = "JC-PINN USERMAT (TB,USER)"
+    cmd.Input = USERMAT
+    cmd2 = an.AddCommandSnippet()
+    cmd2.Name = "Write USERMAT state variables"
+    cmd2.Input = "outres,svar,all     ! USERMAT state variables (SVAR1 = EQPS)\n"
+
+    fs = an.AddFixedSupport()
+    fs.Location = ns_fix
+    d = an.AddDisplacement()
+    d.Location = ns_bore
+    d.DefineBy = LoadDefineBy.Components
+    d.XComponent.Output.DiscreteValues = [Quantity("-2 [mm]")]
+
+    sol = an.Solution
+    eqv = sol.AddEquivalentStress()
+    td = sol.AddTotalDeformation()
+    sv = sol.AddUserDefinedResult()
+    sv.Expression = "SVAR1"
+    sv.Name = "EQPS (USERMAT SVAR1)"
+    rf = sol.AddForceReaction()
+    rf.BoundaryConditionSelection = fs
+    log("set up done; solving")
+
+    an.Solve(True)
+    summary["solve_status"] = str(sol.Status)
+    log("solve status %s" % sol.Status)
+
+    hist = []
+    times = []
+    try:
+        reader = an.GetResultsData()
+        times = list(reader.ListTimeFreq)
+        reader.Dispose()
+    except Exception as e:
+        log("no result-set list (%s); final time only" % e)
+    if not times:
+        times = [1.0]
+    for t in times:
+        rf.DisplayTime = Quantity(t, "s")
+        sol.EvaluateAllResults()
+        hist.append((t, rf.XAxis.Value, rf.Total.Value))
+    f = open(OUT + "\\reaction_history.csv", "w")
+    f.write("time,ux_mm,Fx_N,Ftotal_N\n")
+    for t, fx, ft in hist:
+        f.write("%.6g,%.6g,%.8g,%.8g\n" % (t, -2.0 * t, fx, ft))
+    f.close()
+    rf.DisplayTime = Quantity(times[-1], "s")
+    sol.EvaluateAllResults()
+    peak = max(hist, key=lambda r: abs(r[1]))
+    summary.update({
+        "substeps": len(hist),
+        "peak_Fx_kN": abs(peak[1]) / 1000.0, "peak_ux_mm": -2.0 * peak[0],
+        "final_Fx_kN": abs(hist[-1][1]) / 1000.0,
+        "max_von_mises_MPa_final": eqv.Maximum.Value,
+        "max_total_deformation_mm_final": td.Maximum.Value,
+        "max_SVAR1_final": sv.Maximum.Value,
+    })
+    log("summary %s" % summary)
+
+    try:
+        Graphics.Camera.SetSpecificViewOrientation(ViewOrientationType.Iso)
+        Graphics.Camera.SetFit()
+        img = Ansys.Mechanical.Graphics.GraphicsImageExportSettings()
+        img.CurrentGraphicsDisplay = False
+        img.Resolution = GraphicsResolutionType.EnhancedResolution
+        img.Background = GraphicsBackgroundType.White
+        img.Width = 1600
+        img.Height = 1000
+        for obj, name in ((eqv, "equivalent_stress"), (sv, "eqps_svar1"), (td, "total_deformation")):
+            obj.Activate()
+            Graphics.ExportImage(OUT + "\\" + name + ".png", GraphicsImageExportFormat.PNG, img)
+        log("images exported")
+    except Exception as e:
+        log("image export failed: %s" % e)
+    summary["status"] = "solved"
+except Exception:
+    summary["status"] = "error"
+    summary["error"] = traceback.format_exc()
+    log(summary["error"])
+
+f = open(OUT + "\\summary.json", "w")
+f.write(json.dumps(summary, indent=2, sort_keys=True))
+f.close()
