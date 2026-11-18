@@ -1,0 +1,16 @@
+{
+  "final_Fx_kN": 133.95137765645552, 
+  "max_SVAR1_final": 0.64474548399448395, 
+  "max_total_deformation_mm_final": 2.9761160692143833, 
+  "max_von_mises_MPa_final": 134.90025671707502, 
+  "mesh": {
+    "elements": 6696, 
+    "method": "Sweep", 
+    "nodes": 32233
+  }, 
+  "peak_Fx_kN": 190.04607930461631, 
+  "peak_ux_mm": -0.45499999999999996, 
+  "solve_status": "Done", 
+  "status": "solved", 
+  "substeps": 14
+}

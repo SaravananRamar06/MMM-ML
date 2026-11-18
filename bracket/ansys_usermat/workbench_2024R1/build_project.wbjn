@@ -1,0 +1,38 @@
+# encoding: utf-8
+# Workbench 2024 R1 journal: builds Bracket_USERMAT_2024R1.wbpj (static structural, JC-PINN USERMAT).
+# Run it through build_project.bat, which sets ANS_USER_PATH and the folders below.
+SetScriptVersion(Version="24.1")
+import codecs
+import os
+
+HERE = os.environ["JCPINN_WB_SCRIPTS"]
+OUT = os.environ["JCPINN_WB_DIR"]
+# repository: bracket/cad; submission folder: 03_FE_model_ANSYS/cad
+STEP = os.path.normpath(os.path.join(HERE, "..", "..", "cad", "Rib Bracket.STEP"))
+if not os.path.exists(STEP):
+    STEP = os.path.normpath(os.path.join(HERE, "..", "cad", "Rib Bracket.STEP"))
+PROJ = os.path.join(OUT, "Bracket_USERMAT_2024R1.wbpj")
+
+template1 = GetTemplate(TemplateName="Static Structural", Solver="ANSYS")
+system1 = template1.CreateSystem()
+system1.DisplayText = "Bracket - JC-PINN USERMAT"
+
+eng = system1.GetContainer(ComponentName="Engineering Data")
+mat = eng.CreateMaterial(Name="AlSi10Mg JC-PINN USERMAT")
+mat.Description = "Label only. The solver uses TB,USER (JC-PINN USERMAT) from the command snippet under the body."
+el = mat.CreateProperty(Name="Elasticity", Behavior="Isotropic", Qualifiers={"Definition": "", "Behavior": "Isotropic"})
+el.SetData(Index=-1, Variables=["Young's Modulus"], Values=[["65279 [MPa]"]])
+el.SetData(Variables=["Poisson's Ratio"], Values=[["0.33"]])
+de = mat.CreateProperty(Name="Density", Qualifiers={"Definition": "", "Behavior": ""})
+de.SetData(Variables=["Density"], Values=[["2592 [kg m^-3]"]])
+
+geometry1 = system1.GetContainer(ComponentName="Geometry")
+geometry1.SetFile(FilePath=STEP)
+system1.GetComponent(Name="Model").Refresh()
+
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Edit()
+cmd = codecs.open(os.path.join(HERE, "mech_setup.py"), "r", "utf-8").read().replace("__OUT__", OUT)
+model1.SendCommand(Language="Python", Command=cmd)
+model1.Exit()
+Save(FilePath=PROJ, Overwrite=True)
