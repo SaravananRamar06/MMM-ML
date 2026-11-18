@@ -1,0 +1,95 @@
+{
+  "ep_miso": {
+    "5mm": {
+      "element_size_mm": 5.0,
+      "initial_stiffness_N_per_mm": 140757.0,
+      "peak_F_N": 220531.2,
+      "peak_at_u_mm": 2.0,
+      "F_at_final_N": 220531.2,
+      "F_at_u_peak5mm_N": 158107.2,
+      "F_at_u_1mm_N": 138963.225,
+      "max_elem_eppl_eqv": 0.01192521,
+      "substeps": 12,
+      "bisections": 0,
+      "wall_time_s": 27.0,
+      "pct_vs_5mm": {
+        "initial_stiffness_N_per_mm": 0.0,
+        "peak_F_N": 0.0,
+        "F_at_final_N": 0.0,
+        "max_elem_eppl_eqv": 0.0,
+        "F_at_u_peak5mm_N": 0.0,
+        "F_at_u_1mm_N": 0.0
+      }
+    },
+    "2p5mm": {
+      "element_size_mm": 2.5,
+      "initial_stiffness_N_per_mm": 140597.9,
+      "peak_F_N": 218997.9,
+      "peak_at_u_mm": 2.0,
+      "F_at_final_N": 218997.9,
+      "F_at_u_peak5mm_N": 157621.5,
+      "F_at_u_1mm_N": 138651.975,
+      "max_elem_eppl_eqv": 0.01805157,
+      "substeps": 12,
+      "bisections": 0,
+      "wall_time_s": 221.0,
+      "pct_vs_5mm": {
+        "initial_stiffness_N_per_mm": -0.113,
+        "peak_F_N": -0.695,
+        "F_at_final_N": -0.695,
+        "max_elem_eppl_eqv": 51.373,
+        "F_at_u_peak5mm_N": -0.307,
+        "F_at_u_1mm_N": -0.224
+      }
+    }
+  },
+  "usermat": {
+    "5mm": {
+      "element_size_mm": 5.0,
+      "initial_stiffness_N_per_mm": 119954.09999999999,
+      "peak_F_N": 100498.7,
+      "peak_at_u_mm": 1.15,
+      "F_at_final_N": 86291.82,
+      "F_at_u_peak5mm_N": 100498.7,
+      "F_at_u_1mm_N": 98691.9425,
+      "max_elem_eppl_eqv": 0.118456,
+      "substeps": 12,
+      "bisections": 0,
+      "wall_time_s": 46.0,
+      "pct_vs_5mm": {
+        "initial_stiffness_N_per_mm": 0.0,
+        "peak_F_N": 0.0,
+        "F_at_final_N": 0.0,
+        "max_elem_eppl_eqv": 0.0,
+        "F_at_u_peak5mm_N": 0.0,
+        "F_at_u_1mm_N": 0.0
+      }
+    },
+    "2p5mm": {
+      "element_size_mm": 2.5,
+      "initial_stiffness_N_per_mm": 119818.5,
+      "peak_F_N": 90649.67,
+      "peak_at_u_mm": 0.8445,
+      "F_at_final_N": 77372.06,
+      "F_at_u_peak5mm_N": 81236.39423713236,
+      "F_at_u_1mm_N": 84548.51085418506,
+      "max_elem_eppl_eqv": 0.3150248,
+      "substeps": 19,
+      "bisections": 3,
+      "wall_time_s": 3635.0,
+      "pct_vs_5mm": {
+        "initial_stiffness_N_per_mm": -0.113,
+        "peak_F_N": -9.8,
+        "F_at_final_N": -10.337,
+        "max_elem_eppl_eqv": 165.942,
+        "F_at_u_peak5mm_N": -19.167,
+        "F_at_u_1mm_N": -14.331
+      }
+    }
+  },
+  "probe_u_mm": {
+    "peak5mm": 1.15,
+    "1mm": 1.0
+  },
+  "load": "UY = +2 mm on the upper half of the bore (pin load +P_y)"
+}

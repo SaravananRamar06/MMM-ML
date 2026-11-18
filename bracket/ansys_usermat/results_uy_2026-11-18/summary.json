@@ -1,0 +1,38 @@
+{
+  "elastic": {
+    "substeps_saved": 11,
+    "final_u_mm": 2.0,
+    "final_F_N": 281514.1,
+    "peak_F_N": 281514.1,
+    "peak_at_u_mm": 2.0,
+    "initial_stiffness_N_per_mm": 140757.0,
+    "final_seqv_max_elem_MPa": 690.2841,
+    "final_eppl_eqv_max_elem": 0.0,
+    "final_svar1_max_elem": 0.0,
+    "final_n_elem_flag": 0
+  },
+  "ep_miso": {
+    "substeps_saved": 12,
+    "final_u_mm": 2.0,
+    "final_F_N": 220531.2,
+    "peak_F_N": 220531.2,
+    "peak_at_u_mm": 2.0,
+    "initial_stiffness_N_per_mm": 140757.0,
+    "final_seqv_max_elem_MPa": 321.0045,
+    "final_eppl_eqv_max_elem": 0.01192521,
+    "final_svar1_max_elem": 0.0,
+    "final_n_elem_flag": 0
+  },
+  "usermat": {
+    "substeps_saved": 12,
+    "final_u_mm": 2.0,
+    "final_F_N": 86291.82,
+    "peak_F_N": 100498.7,
+    "peak_at_u_mm": 1.15,
+    "initial_stiffness_N_per_mm": 119954.09999999999,
+    "final_seqv_max_elem_MPa": 135.987,
+    "final_eppl_eqv_max_elem": 0.118456,
+    "final_svar1_max_elem": 0.1187586,
+    "final_n_elem_flag": 102
+  }
+}

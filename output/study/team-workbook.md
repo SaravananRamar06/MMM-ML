@@ -34,7 +34,7 @@ Using displayed values, 0.5*(2.098+6.235)=4.1665 MPa, close to the saved display
 
 ### H. Mesh effect
 
-Using rounded peaks, (175.6-190.4)/190.4*100=-7.77%. The authoritative saved result is -7.7% because it uses unrounded values. Element count grows by (5/2.5)^3=8, giving 7304*8=58432. This geometric count does not imply a known convergence order for the softening solution.
+Using rounded peaks, (90.6-100.5)/100.5*100=-9.85%. The authoritative saved result is -9.8% because it uses unrounded values. Element count grows by (5/2.5)^3=8, giving 7304*8=58432. This geometric count does not imply a known convergence order for the softening solution.
 
 ### I. Partial versus coupled porosity sensitivity
 
@@ -116,7 +116,7 @@ Slide 15, Porosity (40 s): Explain density-only sensitivity, the small observed 
 
 Slide 16, Finite-element material (65 s): Separate scalar predictor from J2 wrapper. State strain mapping, radial return, consistent tangent, fixed rate and held endpoints. Distinguish offline and single-element verification from validation.
 
-Slide 17, Bracket (65 s): State small strain, prescribed -2 mm displacement and study conditions. Quote 190.4 kN as a numerical reaction peak. Explain different E in the Workbench comparison and avoid calling it strength.
+Slide 17, Bracket (65 s): State small strain, prescribed -2 mm displacement and study conditions. Quote 100.5 kN as a numerical reaction peak. Explain different E in the Workbench comparison and avoid calling it strength.
 
 Slide 18, G coupled to porosity (45 s): State D5 as an assumed upper stiffness bound. At 4%, G=24288. Explain why the coupled effect differs from density-only, and why a stiffness bound is not a formal bound on nonlinear strength loss.
 

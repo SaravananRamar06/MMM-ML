@@ -1,0 +1,8 @@
+body Rib Bracket-FreeParts|Boss-Extrude1, faces 17
+bore faces and centroids: [(72, [0.0, -0.0137, 0.086400000000000005]), (86, [0.0, 0.0137, 0.086400000000000005])]
+x range -21.5335..210; fixed faces [76, 81]; upper bore face [86]
+mesh {'method': 'Sweep', 'elements': 6696, 'nodes': 32233}
+set up done; solving
+solve status Done
+summary {'peak_Fy_kN': 102.85748951216192, 'max_SVAR1_final': 0.14788417518138885, 'max_von_mises_MPa_final': 136.05582131479287, 'final_Fy_kN': 93.001280011183809, 'max_total_deformation_mm_final': 2.064782886944879, 'peak_uy_mm': 1.22, 'substeps': 14, 'load': 'UY = +2 mm on the upper half of the bore', 'status': 'started', 'mesh': {'method': 'Sweep', 'elements': 6696, 'nodes': 32233}, 'solve_status': 'Done'}
+images exported

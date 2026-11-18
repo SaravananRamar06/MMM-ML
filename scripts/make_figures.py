@@ -304,13 +304,14 @@ ax.set(ylabel='mean stress drop (%)', title='One variable changed at a time', yl
 save(fig, 'fig_porosity')
 
 # Post-hoc finite-element figures. They are the committed plots written by the bracket scripts in
-# bracket/ansys_usermat/ from the saved MAPDL histories; they are copied here, not redrawn.
+# bracket/ansys_usermat/ from the saved MAPDL histories (load +P_y as UY = +2 mm on the upper half of the
+# bore, 18 Nov 2026); they are copied here, not redrawn.
 FE_FIGURES = {
-    'fig_bracket': 'bracket/ansys_usermat/results_2026-11-17/force_displacement.png',
-    'fig_bracket_porosity': 'bracket/ansys_usermat/porosity_2026-11-17/porosity_force_displacement.png',
-    'fig_bracket_porosity_gphi': 'bracket/ansys_usermat/porosity_gphi_2026-11-17/porosity_gphi_force_displacement.png',
-    'fig_mesh': 'bracket/ansys_usermat/mesh_2026-11-17/mesh_force_displacement.png',
-    'fig_mesh_ep': 'bracket/ansys_usermat/mesh_ep_2026-11-17/mesh_ep_force_displacement.png',
+    'fig_bracket': 'bracket/ansys_usermat/results_uy_2026-11-18/force_displacement.png',
+    'fig_bracket_porosity': 'bracket/ansys_usermat/porosity_uy_2026-11-18/porosity_force_displacement.png',
+    'fig_bracket_porosity_gphi': 'bracket/ansys_usermat/porosity_gphi_uy_2026-11-18/porosity_gphi_force_displacement.png',
+    'fig_mesh': 'bracket/ansys_usermat/mesh_uy_2026-11-18/mesh_force_displacement.png',
+    'fig_mesh_ep': 'bracket/ansys_usermat/mesh_ep_uy_2026-11-18/mesh_ep_force_displacement.png',
 }
 for name, src in FE_FIGURES.items():
     shutil.copyfile(root / src, OUT / f'{name}.png')
