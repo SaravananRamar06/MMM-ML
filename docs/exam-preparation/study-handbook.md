@@ -56,7 +56,7 @@ An unconstrained 3D body has six rigid-body modes. Supports must remove the unwa
 
 ## 5. ANSYS setup: what actually ran
 
-The archived Workbench project was used to construct MAPDL 2024 R1 batch decks. The baseline has 7304 SOLID186 elements, fixed support and imposed UX = -2 mm, small-strain kinematics (NLGEOM off), PCG and automatic substepping. The reported 14 substeps, 40 equilibrium iterations and one bisection for USERMAT are numerical history, not physical experiments. The source deck's compact element block was converted to a compatible standard block without changing connectivity or attributes.
+The archived Workbench project was used to construct MAPDL 2024 R1 batch decks. The baseline has 7304 SOLID186 elements, fixed support and the pin load +P_y imposed as UY = +2 mm on the upper half of the bore, small-strain kinematics (NLGEOM off), PCG and automatic substepping. The reported 12 substeps, 24 equilibrium iterations and no bisection for USERMAT are numerical history, not physical experiments. The source deck's compact element block was converted to a compatible standard block without changing connectivity or attributes.
 
 The baseline and mesh-study writeups report inconsistent node/support counts; the reason is not established by those summaries. For a detailed defence use the actual deck and counted active sets; this preparation uses element counts and the verified load/support descriptions. No invented contact coefficient, service load, bolt preload or gravitational load is part of the explanation. A bracket title alone establishes none of them.
 
@@ -116,7 +116,7 @@ The strain-rate feature is prescribed at 1e-4 s^-1 in the bracket; it is not com
 
 ## 9. Interpret the bracket and mesh study
 
-The coarse USERMAT bracket peaks at {{BrUsermatPeakkN}} kN at |UX| = {{BrUsermatPeakUX}} mm and reaches {{BrUsermatFinalkN}} kN at -2 mm. These are imposed-displacement reactions, not prescribed service forces. Elastic and hardening material curves are different comparisons. The numerical peak cannot be called ultimate load, failure load or a design allowable: there is no damage/fracture criterion, no experimental validation and no converged post-yield response.
+The coarse USERMAT bracket peaks at {{BrUsermatPeakkN}} kN at UY = {{BrUsermatPeakU}} mm and reaches {{BrUsermatFinalkN}} kN at 2 mm. These are imposed-displacement reactions, not prescribed service forces. Elastic and hardening material curves are different comparisons. The numerical peak cannot be called ultimate load, failure load or a design allowable: there is no damage/fracture criterion, no experimental validation and no converged post-yield response.
 
 Uniform h-refinement changes 5 mm to 2.5 mm and {{MeshElemCoarse}} to {{MeshElemFine}} elements. This is subdivision of the same discretised geometry, not a new CAD remesh. Initial stiffness changes {{MeshStiffChangePct}}%, while the peak's signed change is {{BrMeshPeakChangePct}}%, reaching {{MeshPeakFinekN}} kN, and max element EQPS rises from {{MeshEqpsCoarse}} to {{MeshEqpsFine}}. The hardening EP force comparison changes at most {{MeshEpMaxChangePct}}%, although its peak local strain still increases. This supports softening as the main source of the large force dependence, while the displacement patch also affects local concentration.
 

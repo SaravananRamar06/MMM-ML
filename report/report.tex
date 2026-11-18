@@ -404,25 +404,25 @@ The USERMAT was then built for MAPDL~2024~R1 and run on one SOLID185 element pul
 %=====================================================================
 \section{Bracket results}
 \label{sec:bracket}
-The wing-rib bracket is the project's ANSYS Workbench model, used unchanged:
+The wing-rib bracket is the project's ANSYS Workbench model, with its mesh, supports and solver settings unchanged and the pin load in the corrected direction:
 \begin{itemize}
 \item \nMeshElemCoarse{} quadratic SOLID186 elements of about 5~mm;
 \item a fixed support on the mounting faces;
-\item an imposed displacement $U_X=-2$~mm on a small patch at the bore;
+\item an imposed displacement $U_Y=+2$~mm on the upper half of the 10~mm-diameter bore, the half that bears the pin load $+P_y$ (the wing-normal upload); $U_X$ and $U_Z$ are free;
 \item small strain.
 \end{itemize}
-We ran its solver input in MAPDL~2024~R1 batch three times, changing only the material. All three runs converged to $-2$~mm. The scripts and evidence are in \file{bracket/ansys_usermat/}.
+The Workbench file itself imposed $U_X=-2$~mm on the whole bore. On 18~November~2026 the team corrected the load to $+P_y$ bearing on the upper half of the bore, as the pin carries it, and every bracket result below uses that corrected load; the earlier $-X$ runs are kept in the repository as evidence only. We ran the solver input in MAPDL~2024~R1 batch three times, changing only the material. All three runs converged to $U_Y=2$~mm. The scripts and evidence are in \file{bracket/ansys_usermat/}.
 
 \subsection{Three materials on the bracket}
 Fig.~\ref{fig:bracket} compares the reaction at the support:
 \begin{itemize}
-\item \textbf{Elastic} (the project's ``AlSi10Mg -- E''): linear, \nBrElasticFinalkN~kN at $-2$~mm.
+\item \textbf{Elastic} (the project's ``AlSi10Mg -- E''): linear, \nBrElasticFinalkN~kN at 2~mm.
 \item \textbf{Elastic-plastic} (the project's ``AlSi10Mg -- EP'' multilinear card): hardens to \nBrEpFinalkN~kN.
-\item \textbf{JC-PINN USERMAT} at the study point: peaks at \nBrUsermatPeakkN~kN at $U_X=-\nBrUsermatPeakUX$~mm, then softens to \nBrUsermatFinalkN~kN.
+\item \textbf{JC-PINN USERMAT} at the study point: peaks at \nBrUsermatPeakkN~kN at $U_Y=\nBrUsermatPeakU$~mm, then softens to \nBrUsermatFinalkN~kN.
 \end{itemize}
 Two checks tie the bracket run to the material. The initial stiffness ratio, \nBrStiffRatio, equals the USERMAT's $E=2G(1+\nu)$ divided by the Workbench modulus. The peak element stress, \nBrUsermatPeakStress~MPa, matches the single-element peak of the flow curve.
 
-The EP card is a \emph{different material condition}: yield 251~MPa, hardening, and no recorded source. The comparison only shows that the three decks behave alike apart from the material. It is not a validation of the JC-PINN. At $-2$~mm, \nBrUsermatFlagged{} elements are beyond the data's plastic-strain range (peak \nBrUsermatEqps). There the flow stress is held flat, which is extrapolation.
+The EP card is a \emph{different material condition}: yield 251~MPa, hardening, and no recorded source. The comparison only shows that the three decks behave alike apart from the material. It is not a validation of the JC-PINN. At 2~mm, \nBrUsermatFlagged{} elements are beyond the data's plastic-strain range (peak \nBrUsermatEqps). There the flow stress is held flat, which is extrapolation.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{fig_bracket}
@@ -431,7 +431,7 @@ The EP card is a \emph{different material condition}: yield 251~MPa, hardening, 
 \end{figure}
 
 \subsection{Porosity on the bracket: density only}
-Five USERMAT runs differ only in density and $G$ (Fig.~\ref{fig:brporosity}). At fixed $G=24541$~MPa, going from $\phi=0$ to 7.85\,\% changes the peak reaction by $\nPorDensPeakChangePct\,\%$ (\nPorBrPhiZeroPeakkN{} to \nPorBrDensMinPeakkN~kN), and $\phi=4\,\%$ alone by $\nPorFourPeakChangePct\,\%$. This matches the model's single-element change near first yield, $\nPorSeDensYieldPct\,\%$. At $-2$~mm the change is $\nPorDensFinalChangePct\,\%$, inside the single-element range at large strain (up to $\nPorSeDensLimitPct\,\%$).
+Five USERMAT runs differ only in density and $G$ (Fig.~\ref{fig:brporosity}). At fixed $G=24541$~MPa, going from $\phi=0$ to 7.85\,\% changes the peak reaction by $\nPorDensPeakChangePct\,\%$ (\nPorBrPhiZeroPeakkN{} to \nPorBrDensMinPeakkN~kN), and $\phi=4\,\%$ alone by $\nPorFourPeakChangePct\,\%$. This matches the model's single-element change near first yield, $\nPorSeDensYieldPct\,\%$. At 2~mm the change is $\nPorDensFinalChangePct\,\%$, inside the single-element range at large strain (up to $\nPorSeDensLimitPct\,\%$).
 
 At $\phi=4\,\%$, the data's range of $G$ ($\nPorGLowStepPct$ and $\nPorGHighStepPct\,\%$ in $G$) moves the peak by $\nPorGLowPeakChangePct$ and $\nPorGHighPeakChangePct\,\%$. Part of this comes from elastic stiffness, which also scales with $G$. Per percent change of the input, $G$ acts about \nPorBrGOverDens{} times more strongly than density.
 
@@ -455,9 +455,9 @@ Three USERMAT runs couple density and $G$ this way: $\phi=0$, 4 and 7.85\,\%, wi
 \begin{itemize}
 \item the elastic stiffness changes by $\nGphiStiffChangePct\,\%$, exactly the $G$ ratio;
 \item the peak reaction changes by $\nGphiPeakChangePct\,\%$ (\nGphiPeakZerokN{} to \nGphiPeakMaxPorkN~kN), and by $\nGphiFourPeakChangePct\,\%$ at the study point $\phi=4\,\%$;
-\item the reaction at $-2$~mm changes by $\nGphiFinalChangePct\,\%$.
+\item the reaction at 2~mm changes by $\nGphiFinalChangePct\,\%$.
 \end{itemize}
-For comparison, density alone gives $\nPorDensPeakChangePct\,\%$, so the porosity effect on the bracket acts almost entirely through $G$. The model's single-element change is $\nGphiSeYieldPct\,\%$ near yield and $\nGphiSeLimitPct\,\%$ at the end of the data. The bracket's change at $-2$~mm lies inside that range. Its peak change is larger than the near-yield value because the elastic stiffness falls too. The force at $-2$~mm is after the peak, so it depends on the mesh, like every value after yield.
+For comparison, density alone gives $\nPorDensPeakChangePct\,\%$, so the porosity effect on the bracket acts almost entirely through $G$. The model's single-element change is $\nGphiSeYieldPct\,\%$ near yield and $\nGphiSeLimitPct\,\%$ at the end of the data. The bracket's change at 2~mm lies inside that range. Its peak change is larger than the near-yield value because the elastic stiffness falls too. The force at 2~mm is after the peak, so it depends on the mesh, like every value after yield.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{fig_bracket_porosity_gphi}
@@ -470,13 +470,13 @@ To test how the result depends on the mesh, each element was split 2$\times$2$\t
 
 With the JC-PINN USERMAT (Fig.~\ref{fig:mesh}), the finer mesh changes:
 \begin{itemize}
-\item the peak reaction by $\nBrMeshPeakChangePct\,\%$ (to \nMeshPeakFinekN~kN, reached earlier at $-\nMeshPeakFineUX$~mm);
-\item the reaction at $-\nBrUsermatPeakUX$~mm (the coarse mesh's peak) and at $-1$~mm by $\nMeshForceMidChangePct$ and $\nMeshForceOneChangePct\,\%$;
+\item the peak reaction by $\nBrMeshPeakChangePct\,\%$ (to \nMeshPeakFinekN~kN, reached at $U_Y=\nMeshPeakFineU$~mm);
+\item the reaction at $U_Y=\nBrUsermatPeakU$~mm (the coarse mesh's peak) and at 1~mm by $\nMeshForceMidChangePct$ and $\nMeshForceOneChangePct\,\%$;
 \item the peak plastic strain from \nMeshEqpsCoarse{} to \nMeshEqpsFine. It is still rising, and \nMeshFlagFine{} elements are now beyond the data.
 \end{itemize}
-The two meshes meet again at $-2$~mm ($\nMeshFinalChangePct\,\%$) only because most of the yielded zone is then on the flat stress beyond the data.
+At 2~mm the finer mesh is still $\nMeshFinalChangePct\,\%$ lower, so under this load the two meshes do not settle onto a common plateau.
 
-The same refinement with the hardening EP material changes the force by at most \nMeshEpMaxChangePct\,\% (Fig.~\ref{fig:meshep}). So \nMeshSofteningShareMin--\nMeshSofteningShareMax\,\% of the JC-PINN's change comes from its softening. The peak plastic strain sits next to the loaded patch for both materials. It grows $\times\nMeshEpStrainRatio$ with EP and $\times\nMeshUmStrainRatio$ with the JC-PINN, so the patch edge adds a strain concentration of its own.
+The same refinement with the hardening EP material changes the force by at most \nMeshEpMaxChangePct\,\% (Fig.~\ref{fig:meshep}). So \nMeshSofteningShareMin--\nMeshSofteningShareMax\,\% of the JC-PINN's change comes from its softening. The peak plastic strain sits at the R10 crotch fillet for EP and at the loaded half of the bore for the JC-PINN. Under refinement it grows $\times\nMeshEpStrainRatio$ with EP and $\times\nMeshUmStrainRatio$ with the JC-PINN.
 
 The conclusion is plain: the bracket forces after yield, including the peak, are specific to the mesh. They are not a converged strength. A regularised softening law, with a length scale or a non-local or gradient form, would be needed for a result that does not depend on the mesh. That is future work.
 

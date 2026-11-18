@@ -34,7 +34,7 @@ Using displayed values, 0.5*({{SelCV}}+{{SelGroups}})=4.1665 MPa, close to the s
 
 ### H. Mesh effect
 
-Using rounded peaks, (175.6-190.4)/190.4*100=-7.77%. The authoritative saved result is {{BrMeshPeakChangePct}}% because it uses unrounded values. Element count grows by (5/2.5)^3=8, giving 7304*8=58432. This geometric count does not imply a known convergence order for the softening solution.
+Using rounded peaks, (90.6-100.5)/100.5*100=-9.85%. The authoritative saved result is {{BrMeshPeakChangePct}}% because it uses unrounded values. Element count grows by (5/2.5)^3=8, giving 7304*8=58432. This geometric count does not imply a known convergence order for the softening solution.
 
 ### I. Partial versus coupled porosity sensitivity
 

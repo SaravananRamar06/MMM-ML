@@ -114,7 +114,7 @@ def build_upload1(snap, out, commit, N):
     copy(snap / 'bracket/ansys', c / 'workbench_project', skip_scratch=True)
     wb = snap / 'bracket/ansys_usermat/workbench_2024R1'
     for f in sorted(wb.iterdir()):
-        if f.name != 'results_2026-11-18':
+        if not f.name.startswith('results_'):
             copy(f, c / 'workbench_2024R1_USERMAT' / f.name, skip_scratch=f.suffix.lower() != '.bat')
     copy(snap / 'bracket/cad', c / 'cad')
     for f in sorted((snap / 'bracket/ansys_usermat').glob('*')):
@@ -122,21 +122,23 @@ def build_upload1(snap, out, commit, N):
             copy(f, c / 'scripts' / f.name)
     decks = c / 'mapdl_decks'
     tool = snap / 'bracket/ansys_usermat'
-    py(str(tool / 'make_decks.py'), str(decks / '5mm'), cwd=snap)
-    py(str(tool / 'make_decks.py'), '--porosity', str(decks / 'porosity_density_only'), cwd=snap)
-    py(str(tool / 'make_decks.py'), '--porosity-gphi', str(decks / 'porosity_G_coupled_D5'), cwd=snap)
+    py(str(tool / 'make_decks.py'), '--load', 'plus_y', str(decks / '5mm'), cwd=snap)
+    py(str(tool / 'make_decks.py'), '--load', 'plus_y', '--porosity', str(decks / 'porosity_density_only'), cwd=snap)
+    py(str(tool / 'make_decks.py'), '--load', 'plus_y', '--porosity-gphi', str(decks / 'porosity_G_coupled_D5'), cwd=snap)
     with tempfile.TemporaryDirectory() as tmp:
         fine, fine_ep = Path(tmp) / 'ds_fine.dat', Path(tmp) / 'ds_fine_ep.dat'
         py(str(tool / 'refine_mesh.py'), str(fine), cwd=snap)
         py(str(tool / 'refine_mesh.py'), str(fine_ep), str(snap / 'bracket/ansys/Elastic_files/dp0/SYS/MECH/ds.dat'), cwd=snap)
-        py(str(tool / 'make_decks.py'), '--source', str(fine), '--label', 'fine', str(decks / '2p5mm'), cwd=snap)
-        py(str(tool / 'make_decks.py'), '--source', str(fine_ep), '--label', 'fine', '--kinds', 'ep_miso', str(decks / '2p5mm'), cwd=snap)
+        py(str(tool / 'make_decks.py'), '--load', 'plus_y', '--source', str(fine), '--label', 'fine', str(decks / '2p5mm'), cwd=snap)
+        py(str(tool / 'make_decks.py'), '--load', 'plus_y', '--source', str(fine_ep), '--label', 'fine', '--kinds', 'ep_miso', str(decks / '2p5mm'), cwd=snap)
     write(c / 'README.md', README_FE.format(**N))
 
     d = u1 / '04_Results'
-    for name in ('results_2026-11-17', 'porosity_2026-11-17', 'porosity_gphi_2026-11-17', 'mesh_2026-11-17', 'mesh_ep_2026-11-17'):
-        copy(snap / 'bracket/ansys_usermat' / name, d / name)
-    copy(wb / 'results_2026-11-18', d / 'workbench_usermat_2026-11-18')
+    for name in ('results', 'porosity', 'porosity_gphi', 'mesh', 'mesh_ep'):
+        copy(snap / 'bracket/ansys_usermat' / f'{name}_uy_2026-11-18', d / f'{name}_uy_2026-11-18')
+        copy(snap / 'bracket/ansys_usermat' / f'{name}_2026-11-17', d / 'superseded_load_minus_x' / f'{name}_2026-11-17')
+    copy(wb / 'results_uy_2026-11-18', d / 'workbench_usermat_uy_2026-11-18')
+    copy(wb / 'results_2026-11-18', d / 'superseded_load_minus_x' / 'workbench_usermat_2026-11-18')
     write(d / 'README.md', README_RESULTS)
 
     e = u1 / '05_ML_model'
@@ -266,7 +268,7 @@ README_TOP = """# Team 8: UMAT/UPF code and FE model files
 
 ## Overview
 
-- **Component:** an additively manufactured (LPBF) AlSi10Mg aircraft wing-rib bracket. It is the team's ANSYS Workbench model: fixed mounting faces, an imposed displacement UX = -2 mm at the bore, and quadratic SOLID186 elements of about 5 mm ({MeshElemCoarse} elements).
+- **Component:** an additively manufactured (LPBF) AlSi10Mg aircraft wing-rib bracket. It is the team's ANSYS Workbench model: fixed mounting faces, the pin load +P_y imposed as UY = +2 mm on the upper half of the bore (corrected on 18 Nov 2026 from the Workbench file's UX = -2 mm on the whole bore), and quadratic SOLID186 elements of about 5 mm ({MeshElemCoarse} elements).
 - **Material and porosity:**
   - porosity phi = 1 - density/2700 (user decision);
   - study point phi = 4 % (density 2592 kg/m3), 100 degC, strain rate 1e-4 /s;
@@ -279,10 +281,10 @@ README_TOP = """# Team 8: UMAT/UPF code and FE model files
   - Offline it reproduces the model to {VerStressErr} (relative).
   - In MAPDL 2024 R1, a single element matches to {SeMaxDiff} MPa (tolerance {SeTol} MPa): final S11 {SeSFinal} MPa, EQPS {SeEqpsFinal}.
 - **Results on the bracket** (`04_Results`):
-  - **Peak and softening:** the reaction peaks at {BrUsermatPeakkN} kN at UX = -{BrUsermatPeakUX} mm, then softens to {BrUsermatFinalkN} kN at -2 mm.
+  - **Peak and softening:** the reaction peaks at {BrUsermatPeakkN} kN at UY = {BrUsermatPeakU} mm, then softens to {BrUsermatFinalkN} kN at 2 mm.
   - **Porosity, phi 0 -> 7.85 %:**
     - density alone changes the peak by {PorDensPeakChangePct} %;
-    - with G coupled (D5), the peak changes by {GphiPeakChangePct} % and the force at -2 mm by {GphiFinalChangePct} %.
+    - with G coupled (D5), the peak changes by {GphiPeakChangePct} % and the force at 2 mm by {GphiFinalChangePct} %.
   - **Mesh:** halving the element size changes the peak by {BrMeshPeakChangePct} % and later forces by {MeshForceOneChangePct} %, against at most {MeshEpMaxChangePct} % for a hardening material. The response after yield is therefore mesh dependent.
 
 ## Limits (all apply)
@@ -364,6 +366,7 @@ README_FE = """# ANSYS FE model of the wing-rib bracket
 - `cad/`: `Rib Bracket.STEP` and `Bracket support.STEP`.
 - `scripts/`: the deck generator, mesh refinement and post-processing (`make_decks.py`, `refine_mesh.py`, `post_bracket.mac`, plot scripts).
 - `mapdl_decks/`: batch decks regenerated from the Workbench solver input, for MAPDL 2024 R1. The 2026 R1 `eblock,COMPACT` element block is rewritten in the standard layout, with the same elements.
+  - Load: all decks are built with `make_decks.py --load plus_y`, the pin load +P_y as UY = +2 mm on the bore nodes with y >= 0 (the upper half of the bore), UX and UZ free. The Workbench file itself has UX = -2 mm on the whole bore (`--load minus_x`, superseded on 18 Nov 2026).
   - `5mm/`: `elastic`, `ep_miso` (the Workbench elastic-plastic card) and `usermat` (JC-PINN at the study point).
   - `porosity_density_only/`: phi0, phi4, phi785 (G fixed) and G_lo, G_hi.
   - `porosity_G_coupled_D5/`: gphi0, gphi4, gphi785 (G = 25300 (1 - phi)).
@@ -384,23 +387,27 @@ set "ANS_USER_PATH=<folder with usermatLib.dll>" && "C:\\Program Files\\ANSYS In
 
 ## Limits
 
-- **Boundary conditions.** Imposed displacement, as in the Workbench project. No service load magnitude exists.
+- **Boundary conditions.** Imposed displacement (UY = +2 mm on the upper half of the bore). No service load magnitude exists.
 - **Mesh dependence.** Results after yield depend on the mesh.
 - **Material condition.** The EP card is a different material condition (yield 251 MPa, hardening). It is used only as a reference and to test the mesh.
 """
 
 README_RESULTS = """# Results (committed evidence, unchanged)
 
+All runs below use the corrected load: the pin load +P_y as UY = +2 mm on the upper half of the bore (18 Nov 2026).
+
 | Folder | Study |
 |---|---|
-| `results_2026-11-17/` | Bracket on the 5 mm mesh: elastic, EP (MISO) and the JC-PINN USERMAT |
-| `porosity_2026-11-17/` | Porosity, density only (G fixed), plus G sensitivity at phi = 4 % |
-| `porosity_gphi_2026-11-17/` | Porosity with density and G coupled by decision D5, G = 25300 (1 - phi) |
-| `mesh_2026-11-17/` | Mesh study: 5 mm against the 2x2x2 refinement (JC-PINN) |
-| `mesh_ep_2026-11-17/` | The same refinement with the hardening EP material |
-| `workbench_usermat_2026-11-18/` | The Workbench 2024 R1 USERMAT project solved (post-hoc): reaction history, summary, contour pictures, solver output |
+| `results_uy_2026-11-18/` | Bracket on the 5 mm mesh: elastic, EP (MISO) and the JC-PINN USERMAT |
+| `porosity_uy_2026-11-18/` | Porosity, density only (G fixed), plus G sensitivity at phi = 4 % |
+| `porosity_gphi_uy_2026-11-18/` | Porosity with density and G coupled by decision D5, G = 25300 (1 - phi) |
+| `mesh_uy_2026-11-18/` | Mesh study: 5 mm against the 2x2x2 refinement (JC-PINN) |
+| `mesh_ep_uy_2026-11-18/` | The same refinement with the hardening EP material |
+| `workbench_usermat_uy_2026-11-18/` | The Workbench 2024 R1 USERMAT project solved (post-hoc): reaction history, summary, contour pictures, solver output |
 
 Each folder has its own README with the run commands, a results table and its limits. Bracket forces after yield are mesh dependent, and nothing is experimentally validated.
+
+`superseded_load_minus_x/` holds the 17 Nov 2026 runs with the Workbench file's original load (UX = -2 mm on the whole bore). They are kept as evidence only; the report and slides use the runs above.
 """
 
 README_ML = """# The locked ML model (JC-PINN)

@@ -72,9 +72,9 @@ Follow-up: What about a zero-error solver log? Useful execution evidence, but no
 
 ### 12. Why displacement control?
 
-The inherited project prescribes UX = -2 mm, and the reaction is an output. Displacement control can trace some descending force branches that simple load control cannot. It does not guarantee passage through snap-back or eliminate instability/localisation.
+The project imposes the pin load +P_y as UY = +2 mm on the upper half of the bore (the Workbench file's original UX = -2 mm on the whole bore was corrected on 18 Nov 2026), and the reaction is an output. Displacement control can trace some descending force branches that simple load control cannot. It does not guarantee passage through snap-back or eliminate instability/localisation.
 
-Follow-up: Is 190 kN the applied service force? No. It is a reaction peak for this imposed displacement, mesh and material model; no service loading was established.
+Follow-up: Is 100 kN the applied service force? No. It is a reaction peak for this imposed displacement, mesh and material model; no service loading was established.
 
 ### 13. Why is USERMAT initially softer than the Workbench elastic run?
 
@@ -230,7 +230,7 @@ For a finite softening interval in a band of width h, dissipated energy per area
 
 Follow-up: Is artificial numerical damping equivalent? No. It changes the problem and requires quantification; it is not a substitute for a justified spatial/physical formulation.
 
-### 39. Can you quote 190.4 kN as bracket strength?
+### 39. Can you quote 100.5 kN as bracket strength?
 
 Only as the numerical reaction peak in the stated coarse-mesh run. It is not a converged strength, allowable or experimentally validated failure load. The peak changes with mesh, the source strain mapping is approximate, and no failure criterion was identified.
 

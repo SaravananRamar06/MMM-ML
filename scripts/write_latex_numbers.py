@@ -117,7 +117,9 @@ def read_csv(rel):
 def collect_fe():
     """Post-hoc finite-element work (the model is unchanged): UMAT/USERMAT checks and the bracket runs.
 
-    Sources: umat/verification.json, umat/ansys_test/, bracket/ansys_usermat/{results,porosity,mesh,mesh_ep}_2026-11-17/.
+    Sources: umat/verification.json, umat/ansys_test/, bracket/ansys_usermat/{results,porosity,porosity_gphi,mesh,mesh_ep}_uy_2026-11-18/
+    (load UY = +2 mm on the upper half of the bore, the pin load +P_y; user decision of 18 Nov 2026). The
+    17 Nov 2026 folders (team Workbench load UX = -2 mm) are kept as evidence and not read here.
     Macro names use letters only (LaTeX). Signed changes keep their sign, e.g. -7.7.
     """
     import numpy as np
@@ -149,74 +151,74 @@ def collect_fe():
     n['SeSFinal'], n['SeEqpsFinal'], n['SeFlagFinal'] = f"{got[-1]['S11_MPa']:.2f}", f"{got[-1]['EQPS']:.4f}", f"{got[-1]['FLAG']:.0f}"
 
     # Bracket on the 5 mm Workbench mesh: elastic, Workbench EP (MISO) and the USERMAT at the study point.
-    br = read_json('bracket/ansys_usermat/results_2026-11-17/summary.json')
+    br = read_json('bracket/ansys_usermat/results_uy_2026-11-18/summary.json')
     el, ep, um = br['elastic'], br['ep_miso'], br['usermat']
     n['BrElasticStiff'] = f"{el['initial_stiffness_N_per_mm'] / 1e3:.1f}"
     n['BrUsermatStiff'] = f"{um['initial_stiffness_N_per_mm'] / 1e3:.1f}"
     n['BrStiffRatio'] = f"{um['initial_stiffness_N_per_mm'] / el['initial_stiffness_N_per_mm']:.3f}"
-    n['BrElasticFinalkN'], n['BrEpFinalkN'] = kN(el['final_RFX_N']), kN(ep['final_RFX_N'])
-    n['BrUsermatPeakkN'], n['BrUsermatPeakUX'] = kN(um['peak_RFX_N']), f"{-um['peak_at_ux_mm']:.3f}"
-    n['BrUsermatFinalkN'] = kN(um['final_RFX_N'])
+    n['BrElasticFinalkN'], n['BrEpFinalkN'] = kN(el['final_F_N']), kN(ep['final_F_N'])
+    n['BrUsermatPeakkN'], n['BrUsermatPeakU'] = kN(um['peak_F_N']), f"{um['peak_at_u_mm']:.3f}"
+    n['BrUsermatFinalkN'] = kN(um['final_F_N'])
     n['BrEpEqps'], n['BrUsermatEqps'] = f"{ep['final_eppl_eqv_max_elem']:.3f}", f"{um['final_svar1_max_elem']:.2f}"
     n['BrUsermatFlagged'] = str(um['final_n_elem_flag'])
-    hist = read_csv('bracket/ansys_usermat/results_2026-11-17/usermat_history.csv')
+    hist = read_csv('bracket/ansys_usermat/results_uy_2026-11-18/usermat_history.csv')
     n['BrUsermatPeakStress'] = f"{max(h['seqv_max_elem_MPa'] for h in hist):.1f}"
     n['BrElasticFinalStress'] = f"{el['final_seqv_max_elem_MPa']:.0f}"
     n['BrEpFinalStress'] = f"{ep['final_seqv_max_elem_MPa']:.0f}"
 
-    # Porosity on the bracket: density only at fixed G, plus the G sensitivity (porosity_2026-11-17).
-    po = read_json('bracket/ansys_usermat/porosity_2026-11-17/porosity_summary.json')
-    n['PorBrPhiZeroPeakkN'] = kN(po['phi0']['peak_RFX_N'])
-    n['PorBrDensMinPeakkN'] = kN(po['phi785']['peak_RFX_N'])
-    n['PorFourPeakChangePct'] = f"{po['phi4']['peak_RFX_change_vs_phi0_pct']:+.2f}"
-    n['PorDensPeakChangePct'] = f"{po['phi785']['peak_RFX_change_vs_phi0_pct']:+.2f}"
-    n['PorDensFinalChangePct'] = f"{po['phi785']['RFX_at_final_change_vs_phi0_pct']:+.2f}"
-    n['PorGLowPeakChangePct'], n['PorGHighPeakChangePct'] = (f"{po[c]['peak_RFX_change_vs_phi0_pct'] - po['phi4']['peak_RFX_change_vs_phi0_pct']:+.2f}" for c in ('G_lo', 'G_hi'))
+    # Porosity on the bracket: density only at fixed G, plus the G sensitivity (porosity_uy_2026-11-18).
+    po = read_json('bracket/ansys_usermat/porosity_uy_2026-11-18/porosity_summary.json')
+    n['PorBrPhiZeroPeakkN'] = kN(po['phi0']['peak_F_N'])
+    n['PorBrDensMinPeakkN'] = kN(po['phi785']['peak_F_N'])
+    n['PorFourPeakChangePct'] = f"{po['phi4']['peak_F_change_vs_phi0_pct']:+.2f}"
+    n['PorDensPeakChangePct'] = f"{po['phi785']['peak_F_change_vs_phi0_pct']:+.2f}"
+    n['PorDensFinalChangePct'] = f"{po['phi785']['F_at_final_change_vs_phi0_pct']:+.2f}"
+    n['PorGLowPeakChangePct'], n['PorGHighPeakChangePct'] = (f"{po[c]['peak_F_change_vs_phi0_pct'] - po['phi4']['peak_F_change_vs_phi0_pct']:+.2f}" for c in ('G_lo', 'G_hi'))
     n['PorGLowStepPct'] = f"{100 * (po['G_lo']['G_MPa'] / po['phi4']['G_MPa'] - 1):+.1f}"
     n['PorGHighStepPct'] = f"{100 * (po['G_hi']['G_MPa'] / po['phi4']['G_MPa'] - 1):+.1f}"
     n['PorDensStepPct'] = f"{100 * (po['phi785']['density_kg_m3'] / po['phi0']['density_kg_m3'] - 1):+.2f}"
     # change in peak force per 1 % change of the input: G (G_lo vs phi4) against density (phi785 vs phi0)
-    g_per = abs((po['G_lo']['peak_RFX_N'] / po['phi4']['peak_RFX_N'] - 1) / (po['G_lo']['G_MPa'] / po['phi4']['G_MPa'] - 1))
-    d_per = abs((po['phi785']['peak_RFX_N'] / po['phi0']['peak_RFX_N'] - 1) / (po['phi785']['density_kg_m3'] / po['phi0']['density_kg_m3'] - 1))
+    g_per = abs((po['G_lo']['peak_F_N'] / po['phi4']['peak_F_N'] - 1) / (po['G_lo']['G_MPa'] / po['phi4']['G_MPa'] - 1))
+    d_per = abs((po['phi785']['peak_F_N'] / po['phi0']['peak_F_N'] - 1) / (po['phi785']['density_kg_m3'] / po['phi0']['density_kg_m3'] - 1))
     n['PorBrGOverDens'] = f'{g_per / d_per:.0f}'
-    exp = read_csv_mixed('bracket/ansys_usermat/porosity_2026-11-17/expected_flow_stress.csv')
+    exp = read_csv_mixed('bracket/ansys_usermat/porosity_uy_2026-11-18/expected_flow_stress.csv')
     pick = lambda case, e: next(r for r in exp if r['case'] == case and abs(float(r['eqps']) - e) < 1e-12)
     n['PorSeDensYieldPct'] = f"{float(pick('phi785', 0.0002)['change_vs_phi0_pct']):+.2f}"
     n['PorSeDensLimitPct'] = f"{float(pick('phi785', 0.0999)['change_vs_phi0_pct']):+.2f}"
 
-    # Mesh study: 5 mm vs uniform 2x2x2 refinement (mesh_2026-11-17, mesh_ep_2026-11-17).
-    ms = read_json('bracket/ansys_usermat/mesh_2026-11-17/mesh_summary.json')
-    me = read_json('bracket/ansys_usermat/mesh_ep_2026-11-17/mesh_ep_summary.json')
+    # Mesh study: 5 mm vs uniform 2x2x2 refinement (mesh_uy_2026-11-18, mesh_ep_uy_2026-11-18).
+    ms = read_json('bracket/ansys_usermat/mesh_uy_2026-11-18/mesh_summary.json')
+    me = read_json('bracket/ansys_usermat/mesh_ep_uy_2026-11-18/mesh_ep_summary.json')
     c, f = ms['5mm'], ms['2p5mm']
     n['MeshElemCoarse'], n['MeshElemFine'] = (f"{s['elements']:,}".replace(',', '{,}') for s in (c, f))
     n['MeshNodesFine'] = f"{f['nodes']:,}".replace(',', '{,}')
     n['MeshStiffChangePct'] = f"{f['pct_vs_5mm']['initial_stiffness_N_per_mm']:+.2f}"
-    n['BrMeshPeakChangePct'] = pct1(f['pct_vs_5mm']['peak_RFX_N'])
-    n['MeshPeakFinekN'], n['MeshPeakFineUX'] = kN(f['peak_RFX_N']), f"{-f['peak_at_ux_mm']:.3f}"
+    n['BrMeshPeakChangePct'] = pct1(f['pct_vs_5mm']['peak_F_N'])
+    n['MeshPeakFinekN'], n['MeshPeakFineU'] = kN(f['peak_F_N']), f"{f['peak_at_u_mm']:.3f}"
     um_p = me['usermat']['2p5mm']['pct_vs_5mm']
-    n['MeshForceMidChangePct'] = pct1(um_p['RFX_at_ux_0.455mm_N'])
-    n['MeshForceOneChangePct'] = pct1(um_p['RFX_at_ux_1mm_N'])
-    n['MeshFinalChangePct'] = pct1(f['pct_vs_5mm']['RFX_at_final_N'])
+    n['MeshForceMidChangePct'] = pct1(um_p['F_at_u_peak5mm_N'])
+    n['MeshForceOneChangePct'] = pct1(um_p['F_at_u_1mm_N'])
+    n['MeshFinalChangePct'] = pct1(f['pct_vs_5mm']['F_at_final_N'])
     n['MeshEqpsCoarse'], n['MeshEqpsFine'] = f"{c['max_elem_eqps_svar1']:.2f}", f"{f['max_elem_eqps_svar1']:.2f}"
     n['MeshFlagFine'] = f"{f['n_elem_flagged']:,}".replace(',', '{,}')
     ep_p = me['ep_miso']['2p5mm']['pct_vs_5mm']
-    ep_force = [k for k in ep_p if k.startswith('RFX') or k == 'peak_RFX_N']
+    ep_force = [k for k in ep_p if k.startswith('F_at_') or k == 'peak_F_N']
     n['MeshEpMaxChangePct'] = f"{max(abs(ep_p[k]) for k in ep_force):.1f}"
     n['MeshEpStrainRatio'] = f"{me['ep_miso']['2p5mm']['max_elem_eppl_eqv'] / me['ep_miso']['5mm']['max_elem_eppl_eqv']:.2f}"
     n['MeshUmStrainRatio'] = f"{me['usermat']['2p5mm']['max_elem_eppl_eqv'] / me['usermat']['5mm']['max_elem_eppl_eqv']:.2f}"
-    share = [100 * (1 - abs(ep_p[k]) / abs(um_p[k])) for k in ('peak_RFX_N', 'RFX_at_ux_0.455mm_N', 'RFX_at_ux_1mm_N')]
+    share = [100 * (1 - abs(ep_p[k]) / abs(um_p[k])) for k in ('peak_F_N', 'F_at_u_peak5mm_N', 'F_at_u_1mm_N')]
     n['MeshSofteningShareMin'], n['MeshSofteningShareMax'] = f'{min(share):.0f}', f'{max(share):.0f}'
     n['MeshFineWallMin'] = f"{f['wall_time_s'] / 60:.0f}"
 
-    # Porosity with density and G coupled by decision D5, G = 25300 (1 - phi) (porosity_gphi_2026-11-17).
-    gp = read_json('bracket/ansys_usermat/porosity_gphi_2026-11-17/porosity_gphi_summary.json')
+    # Porosity with density and G coupled by decision D5, G = 25300 (1 - phi) (porosity_gphi_uy_2026-11-18).
+    gp = read_json('bracket/ansys_usermat/porosity_gphi_uy_2026-11-18/porosity_gphi_summary.json')
     n['GphiGFour'] = f"{gp['gphi4']['G_MPa']:.0f}"
-    n['GphiPeakZerokN'], n['GphiPeakMaxPorkN'] = kN(gp['gphi0']['peak_RFX_N']), kN(gp['gphi785']['peak_RFX_N'])
+    n['GphiPeakZerokN'], n['GphiPeakMaxPorkN'] = kN(gp['gphi0']['peak_F_N']), kN(gp['gphi785']['peak_F_N'])
     n['GphiStiffChangePct'] = f"{gp['gphi785']['pct_vs_gphi0']['initial_stiffness_N_per_mm']:+.2f}"
-    n['GphiPeakChangePct'] = f"{gp['gphi785']['pct_vs_gphi0']['peak_RFX_N']:+.2f}"
-    n['GphiFourPeakChangePct'] = f"{gp['gphi4']['pct_vs_gphi0']['peak_RFX_N']:+.2f}"
-    n['GphiFinalChangePct'] = f"{gp['gphi785']['pct_vs_gphi0']['RFX_at_final_N']:+.2f}"
-    gexp = read_csv_mixed('bracket/ansys_usermat/porosity_gphi_2026-11-17/expected_flow_stress.csv')
+    n['GphiPeakChangePct'] = f"{gp['gphi785']['pct_vs_gphi0']['peak_F_N']:+.2f}"
+    n['GphiFourPeakChangePct'] = f"{gp['gphi4']['pct_vs_gphi0']['peak_F_N']:+.2f}"
+    n['GphiFinalChangePct'] = f"{gp['gphi785']['pct_vs_gphi0']['F_at_final_N']:+.2f}"
+    gexp = read_csv_mixed('bracket/ansys_usermat/porosity_gphi_uy_2026-11-18/expected_flow_stress.csv')
     gpick = lambda e: next(r for r in gexp if r['case'] == 'gphi785' and abs(float(r['eqps']) - e) < 1e-12)
     n['GphiSeYieldPct'] = f"{float(gpick(0.0002)['change_vs_phi0_pct']):+.2f}"
     n['GphiSeLimitPct'] = f"{float(gpick(0.0999)['change_vs_phi0_pct']):+.2f}"

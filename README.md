@@ -44,10 +44,10 @@ The model was chosen on the 36 training simulations only, then locked before the
 - **As a finite-element material** (post-hoc; the model is unchanged):
   - An ANSYS user material (USERMAT) is generated from the locked weights ([`umat/`](umat/README.md)). It reproduces the model offline to 2e-15.
   - In MAPDL 2024 R1, a single element matches the offline result to 1.2e-5 MPa.
-  - On the wing-rib bracket at φ = 4 %, the reaction peaks at 190.4 kN and then softens.
-  - Density alone (φ 0 → 7.85 %, G fixed) changes that peak by −0.16 %. G acts about 17 times more strongly per percent.
-  - With G coupled by the assumed upper bound G = 25300 (1 − φ) (decision D5; the data's G levels follow it exactly), the peak changes by −2.86 % and the force at −2 mm by −6.04 %. This is a lower estimate of the porosity effect.
-  - Halving the element size changes the peak by −7.7 %, against at most 0.3 % for a hardening material. The response after yield is therefore mesh dependent, and the bracket forces are not a converged strength.
+  - On the wing-rib bracket at φ = 4 %, with the pin load +P_y imposed as UY = +2 mm on the upper half of the bore, the reaction peaks at 100.5 kN and then softens.
+  - Density alone (φ 0 → 7.85 %, G fixed) changes that peak by −0.17 %. G acts about 19 times more strongly per percent.
+  - With G coupled by the assumed upper bound G = 25300 (1 − φ) (decision D5; the data's G levels follow it exactly), the peak changes by −3.38 % and the force at 2 mm by −5.12 %. This is a lower estimate of the porosity effect.
+  - Halving the element size changes the peak by −9.8 %, against at most 0.7 % for a hardening material. The response after yield is therefore mesh dependent, and the bracket forces are not a converged strength.
   - See [`bracket/ansys_usermat/`](bracket/README.md).
 - **Limits:**
   - the test cases were explored in earlier project stages, so this is not a blind test;
