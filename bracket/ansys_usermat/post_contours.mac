@@ -1,0 +1,43 @@
+! ======================================================================
+! Contour pictures from a solved bracket run (bracket.rst), MAPDL 2024 R1 batch.
+! Run in the run folder:  ANSYS241 -b -j bracket -i post_contours.mac -o post_contours.out
+! Set _TPEAK (time of the peak reaction, from bracket_history.csv), _UM (1 = USERMAT run) and _PL (1 = any plastic strain) before it,
+! e.g. with -par:  write  _TPEAK = 0.575  and  _UM = 1  in a small driver (see make_contours.py).
+! Front view = the x-y plane, looking along -z (the load figure's panel A). True-scale deformation.
+! Each plot becomes bracket<NNN>.png in the order below; make_contours.py renames them.
+! ======================================================================
+/POST1
+FILE,bracket,rst
+/SHOW,PNG,,0
+/GFILE,1400
+/RGB,INDEX,100,100,100,0
+/RGB,INDEX,0,0,0,15
+/PLOPTS,INFO,3
+/PLOPTS,DATE,0
+/PLOPTS,FILE,0
+/PLOPTS,LOGO,0
+/TRIAD,LBOT
+/VIEW,1,0,0,1
+/ANG,1
+/AUTO,1
+/DSCALE,1,1.0
+/EDGE,1,1
+*DO,_K,1,2
+  *IF,_K,EQ,1,THEN
+    SET,,,,,_TPEAK
+  *ELSE
+    SET,LAST
+  *ENDIF
+  PLNSOL,U,Y
+  PLNSOL,S,EQV
+  PLNSOL,S,1
+  PLNSOL,S,3
+  *IF,_PL,EQ,1,THEN
+    PLNSOL,EPPL,EQV
+  *ENDIF
+  *IF,_UM,EQ,1,THEN
+    PLESOL,SVAR,3
+    PLESOL,SVAR,2
+  *ENDIF
+*ENDDO
+FINISH

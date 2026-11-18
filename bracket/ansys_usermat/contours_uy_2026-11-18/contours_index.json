@@ -1,0 +1,61 @@
+{
+  "usermat": {
+    "run": "C:\\Users\\amitn\\jcpinn_uy_run\\bracket\\usermat",
+    "peak_time": 0.575,
+    "peak_u_mm": 1.15,
+    "peak_F_kN": 100.4987,
+    "final_F_kN": 86.29182,
+    "pictures": [
+      "usermat_peak_uy.png",
+      "usermat_peak_von_mises.png",
+      "usermat_peak_max_principal.png",
+      "usermat_peak_min_principal.png",
+      "usermat_peak_eppl.png",
+      "usermat_peak_flag_svar3.png",
+      "usermat_peak_flow_stress_svar2.png",
+      "usermat_final_uy.png",
+      "usermat_final_von_mises.png",
+      "usermat_final_max_principal.png",
+      "usermat_final_min_principal.png",
+      "usermat_final_eppl.png",
+      "usermat_final_flag_svar3.png",
+      "usermat_final_flow_stress_svar2.png"
+    ]
+  },
+  "elastic": {
+    "run": "C:\\Users\\amitn\\jcpinn_uy_run\\bracket\\elastic",
+    "peak_time": 1.0,
+    "peak_u_mm": 2.0,
+    "peak_F_kN": 281.5141,
+    "final_F_kN": 281.5141,
+    "pictures": [
+      "elastic_peak_uy.png",
+      "elastic_peak_von_mises.png",
+      "elastic_peak_max_principal.png",
+      "elastic_peak_min_principal.png",
+      "elastic_final_uy.png",
+      "elastic_final_von_mises.png",
+      "elastic_final_max_principal.png",
+      "elastic_final_min_principal.png"
+    ]
+  },
+  "ep_miso": {
+    "run": "C:\\Users\\amitn\\jcpinn_uy_run\\bracket\\ep_miso",
+    "peak_time": 1.0,
+    "peak_u_mm": 2.0,
+    "peak_F_kN": 220.5312,
+    "final_F_kN": 220.5312,
+    "pictures": [
+      "ep_miso_peak_uy.png",
+      "ep_miso_peak_von_mises.png",
+      "ep_miso_peak_max_principal.png",
+      "ep_miso_peak_min_principal.png",
+      "ep_miso_peak_eppl.png",
+      "ep_miso_final_uy.png",
+      "ep_miso_final_von_mises.png",
+      "ep_miso_final_max_principal.png",
+      "ep_miso_final_min_principal.png",
+      "ep_miso_final_eppl.png"
+    ]
+  }
+}
