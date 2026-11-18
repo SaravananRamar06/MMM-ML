@@ -1,0 +1,46 @@
+{
+  "5mm": {
+    "element_size_mm": 5.0,
+    "elements": 7304,
+    "nodes": 34763,
+    "initial_stiffness_N_per_mm": 119954.09999999999,
+    "peak_F_N": 100498.7,
+    "peak_at_u_mm": 1.15,
+    "F_at_final_N": 86291.82,
+    "final_u_mm": 2.0,
+    "max_elem_eqps_svar1": 0.1187586,
+    "n_elem_flagged": 102,
+    "flagged_volume_note": "element count, not volume: a finer mesh has smaller elements",
+    "substeps": 12,
+    "bisections": 0,
+    "wall_time_s": 46.0,
+    "pct_vs_5mm": {
+      "initial_stiffness_N_per_mm": 0.0,
+      "peak_F_N": 0.0,
+      "F_at_final_N": 0.0,
+      "max_elem_eqps_svar1": 0.0
+    }
+  },
+  "2p5mm": {
+    "element_size_mm": 2.5,
+    "elements": 58432,
+    "nodes": 255111,
+    "initial_stiffness_N_per_mm": 119818.5,
+    "peak_F_N": 90649.67,
+    "peak_at_u_mm": 0.8445,
+    "F_at_final_N": 77372.06,
+    "final_u_mm": 2.0,
+    "max_elem_eqps_svar1": 0.3160468,
+    "n_elem_flagged": 648,
+    "flagged_volume_note": "element count, not volume: a finer mesh has smaller elements",
+    "substeps": 19,
+    "bisections": 3,
+    "wall_time_s": 3635.0,
+    "pct_vs_5mm": {
+      "initial_stiffness_N_per_mm": -0.113,
+      "peak_F_N": -9.8,
+      "F_at_final_N": -10.337,
+      "max_elem_eqps_svar1": 166.125
+    }
+  }
+}

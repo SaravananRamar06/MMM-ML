@@ -1,0 +1,101 @@
+# bracket.out (usermat), MAPDL 2024 R1 batch - deck headers, key lines, then the last 60 lines
+# full file: 1127 lines
+deck: nblock,3,,38239
+deck: eblock,19,solid,,7304     ! rewritten from COMPACT by make_decks.py
+deck: TBDATA,1,100,1.0E-4,2592,24541,0.33,0
+deck: TBDATA,7,0
+deck: CMBLOCK,_FIXEDSU,NODE,       31
+deck: CMBLOCK,_CM32UX_XP,NODE,       12
+deck: nsel,r,loc,y,-1.0e-6,1.0e6   ! bore nodes with y >= 0: the half of the bore facing +P_y
+deck: d,all,uy,2.                  ! imposed UY = +2 mm; UX and UZ free (bearing in y only)
+
+   120:  User Link path (ANS_USER_PATH): C:\Users\amitn\jcpinn_usermat_build                                                                                                                                                                                                                     
+   124:  Note - This MAPDL version was linked by Licensee
+   274:  49638  /com,--- Total number of nodes = %_numnode% 
+   275:  49639  /com,--- Total number of elements = %_numelem%  
+   429:  Note - This MAPDL version was linked by Licensee
+   597:  Note - This MAPDL version was linked by Licensee
+   746:  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
+   755:  *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      3
+   764:  *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      4
+   776:  *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =      6
+   789:  *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =      8
+   805:  *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     11
+   821:  *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =     14
+   837:  *** LOAD STEP     1   SUBSTEP     8  COMPLETED.    CUM ITER =     17
+   850:  *** LOAD STEP     1   SUBSTEP     9  COMPLETED.    CUM ITER =     19
+   863:  *** LOAD STEP     1   SUBSTEP    10  COMPLETED.    CUM ITER =     21
+   876:  *** LOAD STEP     1   SUBSTEP    11  COMPLETED.    CUM ITER =     23
+   886:  *** LOAD STEP     1   SUBSTEP    12  COMPLETED.    CUM ITER =     24
+   920:  Note - This MAPDL version was linked by Licensee
+   974:  --- Total number of nodes = 34763
+   975:  --- Total number of elements = 7304
+   994:  Note - This MAPDL version was linked by Licensee
+  1012:  Note - This MAPDL version was linked by Licensee
+  1055:  NUMBER OF WARNING MESSAGES ENCOUNTERED=          3
+  1056:  NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+  1060: Release: 2024 R1            Build: 24.1       Update: UP20231106   Platform: WINDOWS x64 
+  1066: Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+  1124:  |        Elapsed Time (sec) =         46.000       Date  =  11/18/2026        |
+
+# last 60 lines
+          Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191125
+          BLAS Library supplied by Intel(R) MKL
+
+Number of machines requested            :    1
+Total number of cores available         :   32
+Number of physical cores available      :   24
+Number of processes requested           :    1
+Number of threads per process requested :    4
+Total number of cores requested         :    4 (Shared Memory Parallel)                    
+
+GPU Acceleration: Not Requested
+
+Job Name: bracket
+Input File: bracket.dat
+Working Directory: C:\Users\amitn\jcpinn_uy_run\bracket\usermat
+
+Total CPU time for main thread                    :       40.9 seconds
+Total CPU time summed for all threads             :      133.7 seconds
+
+Elapsed time spent obtaining a license            :        1.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.1 seconds
+Elapsed time spent solution - preprocessing       :        0.1 seconds
+Elapsed time spent computing solution             :       41.0 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        1.4 seconds
+ 
+Equation solver used                              :            PCG (symmetric)
+Equation solver computational rate                :       12.8 Gflops
+
+Sum of disk space used on all processes           :      156.3 MB
+
+Sum of memory used on all processes               :      226.0 MB
+Sum of memory allocated on all processes          :     2112.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        2.7 GB
+Total amount of I/O read from disk                :        3.1 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2024 R1         Build 24.1         UP20231106    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used      43 MB     Maximum Scratch Memory Used    183 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =        133.688       Time  =  13:29:45          |
+ |        Elapsed Time (sec) =         46.000       Date  =  11/18/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
+

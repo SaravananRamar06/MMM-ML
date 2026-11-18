@@ -1,0 +1,61 @@
+{
+  "gphi0": {
+    "density_kg_m3": 2700.0,
+    "phi_pct": 0.0,
+    "G_MPa": 25300.0,
+    "substeps_saved": 12,
+    "final_u_mm": 2.0,
+    "initial_stiffness_N_per_mm": 123664.09999999999,
+    "peak_F_N": 101887.6,
+    "peak_at_u_mm": 1.15,
+    "F_at_final_N": 88111.19,
+    "max_elem_eqps_svar1": 0.1184082,
+    "n_elem_flagged": 102,
+    "pct_vs_gphi0": {
+      "initial_stiffness_N_per_mm": 0.0,
+      "peak_F_N": 0.0,
+      "F_at_final_N": 0.0
+    }
+  },
+  "gphi4": {
+    "density_kg_m3": 2592.0,
+    "phi_pct": 4.0,
+    "G_MPa": 24288.0,
+    "substeps_saved": 12,
+    "final_u_mm": 2.0,
+    "initial_stiffness_N_per_mm": 118717.5,
+    "peak_F_N": 100063.1,
+    "peak_at_u_mm": 1.15,
+    "F_at_final_N": 85745.79,
+    "max_elem_eqps_svar1": 0.1188198,
+    "n_elem_flagged": 102,
+    "pct_vs_gphi0": {
+      "initial_stiffness_N_per_mm": -4.0,
+      "peak_F_N": -1.7907,
+      "F_at_final_N": -2.6846
+    }
+  },
+  "gphi785": {
+    "density_kg_m3": 2488.05,
+    "phi_pct": 7.85,
+    "G_MPa": 23313.95,
+    "substeps_saved": 13,
+    "final_u_mm": 2.0,
+    "initial_stiffness_N_per_mm": 113956.4,
+    "peak_F_N": 98439.22,
+    "peak_at_u_mm": 1.15,
+    "F_at_final_N": 83598.11,
+    "max_elem_eqps_svar1": 0.1188298,
+    "n_elem_flagged": 102,
+    "pct_vs_gphi0": {
+      "initial_stiffness_N_per_mm": -7.8501,
+      "peak_F_N": -3.3845,
+      "F_at_final_N": -5.122
+    }
+  },
+  "density_only_reference": {
+    "source": "bracket/ansys_usermat/porosity_uy_2026-11-18/ (G fixed at 24541 MPa)",
+    "peak_F_change_phi0_to_phi785_pct": -0.1668,
+    "F_at_final_change_phi0_to_phi785_pct": -0.2697
+  }
+}

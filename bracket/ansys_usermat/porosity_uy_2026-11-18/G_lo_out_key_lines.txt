@@ -1,0 +1,104 @@
+# bracket.out (G_lo), MAPDL 2024 R1 batch - deck headers, key lines, then the last 60 lines
+# full file: 1160 lines
+deck: nblock,3,,38239
+deck: eblock,19,solid,,7304     ! rewritten from COMPACT by make_decks.py
+deck: TBDATA,1,100,1.0E-4,2592,23313.95,0.33,0
+deck: TBDATA,7,0
+deck: CMBLOCK,_FIXEDSU,NODE,       31
+deck: CMBLOCK,_CM32UX_XP,NODE,       12
+deck: nsel,r,loc,y,-1.0e-6,1.0e6   ! bore nodes with y >= 0: the half of the bore facing +P_y
+deck: d,all,uy,2.                  ! imposed UY = +2 mm; UX and UZ free (bearing in y only)
+
+   120:  User Link path (ANS_USER_PATH): C:\Users\amitn\jcpinn_usermat_build                                                                                                                                                                                                                     
+   124:  Note - This MAPDL version was linked by Licensee
+   274:  49638  /com,--- Total number of nodes = %_numnode% 
+   275:  49639  /com,--- Total number of elements = %_numelem%  
+   429:  Note - This MAPDL version was linked by Licensee
+   597:  Note - This MAPDL version was linked by Licensee
+   746:  *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
+   755:  *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      3
+   764:  *** LOAD STEP     1   SUBSTEP     3  COMPLETED.    CUM ITER =      4
+   776:  *** LOAD STEP     1   SUBSTEP     4  COMPLETED.    CUM ITER =      6
+   789:  *** LOAD STEP     1   SUBSTEP     5  COMPLETED.    CUM ITER =      8
+   805:  *** LOAD STEP     1   SUBSTEP     6  COMPLETED.    CUM ITER =     11
+   824:  *** LOAD STEP     1   SUBSTEP     7  COMPLETED.    CUM ITER =     15
+   843:  *** LOAD STEP     1   SUBSTEP     8  NOT COMPLETED.  CUM ITER =     20
+   844:  *** BEGIN BISECTION NUMBER   1    NEW TIME INCREMENT=  0.45000E-01
+   854:  *** LOAD STEP     1   SUBSTEP     8  COMPLETED.    CUM ITER =     21
+   867:  *** LOAD STEP     1   SUBSTEP     9  COMPLETED.    CUM ITER =     23
+   880:  *** LOAD STEP     1   SUBSTEP    10  COMPLETED.    CUM ITER =     25
+   893:  *** LOAD STEP     1   SUBSTEP    11  COMPLETED.    CUM ITER =     27
+   906:  *** LOAD STEP     1   SUBSTEP    12  COMPLETED.    CUM ITER =     29
+   919:  *** LOAD STEP     1   SUBSTEP    13  COMPLETED.    CUM ITER =     31
+   953:  Note - This MAPDL version was linked by Licensee
+  1007:  --- Total number of nodes = 34763
+  1008:  --- Total number of elements = 7304
+  1027:  Note - This MAPDL version was linked by Licensee
+  1045:  Note - This MAPDL version was linked by Licensee
+  1088:  NUMBER OF WARNING MESSAGES ENCOUNTERED=          3
+  1089:  NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+  1093: Release: 2024 R1            Build: 24.1       Update: UP20231106   Platform: WINDOWS x64 
+  1099: Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+  1157:  |        Elapsed Time (sec) =         61.000       Date  =  11/18/2026        |
+
+# last 60 lines
+          Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191125
+          BLAS Library supplied by Intel(R) MKL
+
+Number of machines requested            :    1
+Total number of cores available         :   32
+Number of physical cores available      :   24
+Number of processes requested           :    1
+Number of threads per process requested :    4
+Total number of cores requested         :    4 (Shared Memory Parallel)                    
+
+GPU Acceleration: Not Requested
+
+Job Name: bracket
+Input File: bracket.dat
+Working Directory: C:\Users\amitn\jcpinn_uy_run\porosity\G_lo
+
+Total CPU time for main thread                    :       55.4 seconds
+Total CPU time summed for all threads             :      181.7 seconds
+
+Elapsed time spent obtaining a license            :        1.4 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.1 seconds
+Elapsed time spent solution - preprocessing       :        0.1 seconds
+Elapsed time spent computing solution             :       56.8 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        1.5 seconds
+ 
+Equation solver used                              :            PCG (symmetric)
+Equation solver computational rate                :       17.2 Gflops
+
+Sum of disk space used on all processes           :      162.0 MB
+
+Sum of memory used on all processes               :      226.0 MB
+Sum of memory allocated on all processes          :     2112.0 MB
+Physical memory available                         :         32 GB
+Total amount of I/O written to disk               :        3.3 GB
+Total amount of I/O read from disk                :        3.8 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2024 R1         Build 24.1         UP20231106    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used      43 MB     Maximum Scratch Memory Used    183 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =        181.719       Time  =  13:32:57          |
+ |        Elapsed Time (sec) =         61.000       Date  =  11/18/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*
+
