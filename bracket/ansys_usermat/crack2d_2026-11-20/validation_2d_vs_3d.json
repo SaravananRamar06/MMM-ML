@@ -1,0 +1,23 @@
+{
+ "elastic_stiffness_2D_kN_per_mm": 154.29888,
+ "elastic_stiffness_3D_kN_per_mm": 140.8,
+ "usermat_phi4_initial_stiffness_2D_kN_per_mm": 130.13896,
+ "usermat_phi4_stiffness_3D_kN_per_mm": 120.0,
+ "usermat_phi4_peak_2D_kN": 88.01388,
+ "usermat_phi4_peak_3D_kN": 100.5,
+ "fillet_S1_2D_MPa_per_kN": 3.9307634248544123,
+ "fillet_S1_3D_MPa_per_kN": 4.137,
+ "fillet_S1_2D_location_mm": [
+  32.7261986,
+  13.6030738
+ ],
+ "fillet_S1_3D_location_mm": [
+  31.1,
+  14.3
+ ],
+ "source_3D": "bracket/ansys_usermat results of 18 Nov (bracket_uy, elastic_uy, zones_uy_2026-11-18/zones.json)",
+ "elastic_stiffness_2D_vs_3D_pct": 9.587272727272712,
+ "usermat_phi4_initial_stiffness_2D_vs_3D_pct": 8.449133333333325,
+ "usermat_phi4_peak_2D_vs_3D_pct": -12.424000000000001,
+ "fillet_S1_2D_vs_3D_pct": -4.985172229770052
+}
