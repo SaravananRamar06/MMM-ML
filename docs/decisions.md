@@ -70,4 +70,11 @@ This file records the decisions behind the final JC-PINN model and this reposito
 | C2 | The only earlier model quoted on `main` is the 2 Nov plain MLP, as a baseline. The five-network ensemble, Model Studio and the history page are removed. | User | `docs/history.md` and `scripts/freeze_baselines.py` are deleted. The frozen numbers stay in the locked `reports/` folder, which is not edited. |
 | C3 | One slide deck: the corrected final deck. `JC-PINN.pptx`, the uncorrected final deck, the October deck and their build scripts are removed. | User | `presentation/build/build_corrected.js` is the only deck build. |
 
+## Critical flaw length (20 November 2026)
+
+| ID | Decision | Made by | Effect |
+|---|---|---|---|
+| F1 | K_mat for the critical-flaw-length check is the literature band 36, 40 and 50 MPa√m, the same at every porosity. No published K_IC(φ) relation for LPBF AlSi10Mg was found, so none is invented. | User, after the literature search (Hitzler et al.; Int. J. Fract. 2024, doi 10.1007/s10704-024-00787-2) | Porosity acts on CL only through stiffness (D5) and the collapse load. The band is reported as a range. |
+| F2 | CL is assessed at the bracket's capability-based limit pin load, 35.9 kN (first yield at the R10 fillet, 136.06 / 3.788), as a damage-tolerance residual-strength check (14 CFR 25.571(b)): the cracked bracket must carry limit load, with no extra 1.5 factor. 41.3 kN (limit × 1.15 fitting factor) is a sensitivity load. The load is not changed to bring CL inside the modelled crack range. | User | Checked by `scripts/check_limit_load.py` (PR #13): 35.92 kN on the 5 mm mesh, 28.5 kN on the 2.5 mm mesh, P_L(φ) = 36.25 / 35.82 / 35.43 kN. Result: CL > 30 mm at every porosity and K_mat (`bracket/ansys_usermat/crack2d_2026-11-20/`). |
+
 Append new decisions with the date, who made them, and the evidence.

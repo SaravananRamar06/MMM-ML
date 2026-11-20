@@ -57,7 +57,7 @@ The model was chosen on the 36 training simulations only, then locked before the
   - the strain is total, not plastic;
   - G(φ) is an assumed upper bound (D5), not measured;
   - bracket results after yield depend on the mesh;
-  - critical flaw length is not predicted.
+  - critical flaw length (CL) is assessed post-hoc at the capability-based limit pin load of 35.9 kN (decision F2), a damage-tolerance residual-strength check. CL > 30 mm at every porosity for K_mat 36–50 MPa√m. 35.9 kN is not a service load, first yield is not mesh converged (28.5 kN on the 2.5 mm mesh), the 2D section collapses about 12 % below 3D, and no K_IC(φ) relation is known (see [Q5](docs/open-questions.md) and [`crack2d_2026-11-20/`](bracket/ansys_usermat/crack2d_2026-11-20/README.md)).
 
 ## Start here
 
