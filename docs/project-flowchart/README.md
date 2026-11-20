@@ -4,6 +4,8 @@
 
 Every figure in the chart comes from [README.md](../../README.md), [decisions.md](../decisions.md) and [umat/README.md](../../umat/README.md). The USERMAT detail is in [../ansys-flowchart/](../ansys-flowchart/README.md).
 
+`simple.png` / `simple.svg` / `simple.dot` is a plain-language eight-step version of the same chart.
+
 Rebuild (needs Node with `@viz-js/viz` and `sharp`):
 
 ```bash
