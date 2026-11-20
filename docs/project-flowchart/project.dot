@@ -1,0 +1,74 @@
+digraph PROJECT {
+  graph [rankdir=TB, bgcolor="white", pad=0.35, nodesep=0.35, ranksep=0.5, compound=true,
+    fontname="Arial", fontsize=24, labelloc=t, newrank=true,
+    label="JC-PINN project: from instructor data to ANSYS bracket and documents\nTeam 8 · AlSi10Mg · locked model of 7 November 2026"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef3f8", color="#42566b",
+    fontname="Arial", fontsize=13, margin="0.18,0.12", penwidth=1.2];
+  edge [fontname="Arial", fontsize=11, color="#42566b", arrowsize=0.8];
+
+  subgraph cluster_data { label="1 · Data"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
+    raw [shape=cylinder, fillcolor="#fff5df", color="#936818",
+      label="Instructor's simulations\nTEAM_8_extracted_results_set_1\n73 cases · kept out of Git"];
+    manifest [label="data/manifest.json\n73 cases with hashes"];
+    split [label="data/split.json\nrandom split by case, seed 42\n36 training · 37 test"];
+    curves [label="Target curves\nSvm vs E11 resampled to 120 strains\n0.0002 to 0.0999 · inputs T, rate, ρ, G"];
+    raw -> manifest; raw -> curves; manifest -> split; curves -> split;
+  }
+
+  subgraph cluster_model { label="2 · Model (src/jc_pinn.py, configs/jc_pinn.json)"; style="rounded,filled"; fillcolor="#f2faf6"; color="#28735d"; fontname="Arial"; fontsize=15;
+    eq1 [fillcolor="#e9f5f0", color="#28735d",
+      label="Equation 1 backbone (Johnson–Cook, user's notes)\nσ_JC = [A−Bεⁿ][1+C ln ε̇*][1−T*ᵐ][G/G₀]^q[1−φ]^r\nconstants ε̇₀, T_r, T_M, G₀, ρ₀ fixed · φ = 1 − ρ/2700"];
+    net [fillcolor="#e9f5f0", color="#28735d",
+      label="Correction network δ\n5–16–16–1 tanh, 385 weights, starts at zero\nso the untrained model is Equation 1"];
+    prod [fillcolor="#e9f5f0", color="#28735d",
+      label="σ_pred = σ_JC × exp(δ)\nensemble of five trained copies, geometric mean"];
+    eq1 -> prod; net -> prod;
+  }
+
+  subgraph cluster_select { label="3 · Training and selection: training cases only"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
+    train [label="Train candidate settings\nphysics-loss weight λ, constants trained jointly"];
+    score [label="Balanced score\n½ (case cross-validation + nine temperature/rate group holdouts)"];
+    pick [label="Selected: λ = 0, constants trained jointly\nscore 4.166, every physics weight scored worse"];
+    train -> score -> pick;
+  }
+
+  lock [shape=box, style="rounded,filled,bold", fillcolor="#fff5df", color="#936818", penwidth=2,
+    label="LOCK (decision M7)\nequation.json + selection_lock.json fingerprint\nwritten before any test file is read · final: not retrained or tuned (A3)"];
+
+  subgraph cluster_test { label="4 · Scoring and checks"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
+    test [label="Score once on the 37 test cases\n(read only after the lock)\nmean curve RMSE 0.439 MPa · R² 0.99952\n(not blind: disclosed)"];
+    controls [label="Comparisons\nEquation 1 alone 7.37 · no-equation control 0.338\nplain MLP baseline 0.143 (worse on unseen groups)"];
+    verify [label="Independent checks\nscripts/verify_jc_pinn.py · pytest\nNumPy rebuild agrees with PyTorch to ~1e-13"];
+    por [label="Porosity analysis\nscripts/porosity_analysis.py"];
+    test -> controls; test -> verify; test -> por;
+  }
+
+  subgraph cluster_fe { label="5 · Finite-element use (post-hoc, model unchanged)"; style="rounded,filled"; fillcolor="#f2f6fc"; color="#2c5d9a"; fontname="Arial"; fontsize=15;
+    gen [fillcolor="#e3ecf8", color="#2c5d9a", label="scripts/write_umat.py\ngenerates the Fortran from the saved weights"];
+    umat [fillcolor="#e3ecf8", color="#2c5d9a", label="ANSYS USERMAT (umat/jc_pinn_usermat3d.F)\nJ2 radial return + JC-PINN flow stress + consistent tangent"];
+    uver [fillcolor="#e3ecf8", color="#2c5d9a", label="Checks: offline vs Python 2e-15\nMAPDL 2024 R1 single element, 1.2e-5 MPa"];
+    bracket [fillcolor="#e3ecf8", color="#2c5d9a", label="Wing-rib bracket in ANSYS (bracket/)\nφ = 4 % study point, pin load as UY = +2 mm\nporosity sweep, G(φ) coupling D5, mesh study"];
+    fres [fillcolor="#fceeed", color="#a43d36", label="Result: peak reaction 100.5 kN then softens\nmesh dependent after yield, so not a converged strength"];
+    gen -> umat -> uver -> bracket -> fres;
+  }
+
+  subgraph cluster_out { label="6 · Deliverables, all numbers read from saved files"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
+    nums [label="scripts/write_latex_numbers.py → numbers.tex / numbers.json\nscripts/make_figures.py → figures/"];
+    docs [label="Report (21 pp) · IEEE paper (5 pp)\nSlides (build_corrected.js) · notebooks · videos · viewers"];
+    errata [label="ERRATA.md\ncorrections go here, never into the locked run", fillcolor="#fff5df", color="#936818"];
+    nums -> docs;
+  }
+
+  limits [shape=note, fillcolor="#fceeed", color="#a43d36", fontsize=12,
+    label="Limits carried through everything\nsimulated data, nothing experimentally validated · units user-confirmed\nnothing validated above 200 °C · strain is total (M4) · test not blind\nG(φ) is an assumed bound · critical flaw length is not predicted"];
+
+  split -> train [lhead=cluster_select, label="36 training cases"];
+  prod -> train [ltail=cluster_model, lhead=cluster_select, label="model form"];
+  pick -> lock;
+  lock -> test [lhead=cluster_test];
+  lock -> gen [lhead=cluster_fe, label="saved weights"];
+  test -> nums [ltail=cluster_test, lhead=cluster_out];
+  fres -> nums [ltail=cluster_fe, lhead=cluster_out];
+  docs -> errata [style=dotted, label="if a fault is found"];
+  errata -> limits [style=invis];
+}
