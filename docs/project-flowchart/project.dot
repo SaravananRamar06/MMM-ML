@@ -1,74 +1,49 @@
 digraph PROJECT {
-  graph [rankdir=TB, bgcolor="white", pad=0.35, nodesep=0.35, ranksep=0.5, compound=true,
-    fontname="Arial", fontsize=24, labelloc=t, newrank=true,
-    label="JC-PINN project: from instructor data to ANSYS bracket and documents\nTeam 8 · AlSi10Mg · locked model of 7 November 2026"];
+  graph [rankdir=TB, bgcolor="white", pad=0.35, nodesep=0.4, ranksep=0.5, compound=true, newrank=true,
+    fontname="Arial", fontsize=24, labelloc=t,
+    label="JC-PINN project: order of work\nCAD → ANSYS JC model → ML model → USERMAT in ANSYS → critical length"];
   node [shape=box, style="rounded,filled", fillcolor="#eef3f8", color="#42566b",
     fontname="Arial", fontsize=13, margin="0.18,0.12", penwidth=1.2];
   edge [fontname="Arial", fontsize=11, color="#42566b", arrowsize=0.8];
 
-  subgraph cluster_data { label="1 · Data"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
-    raw [shape=cylinder, fillcolor="#fff5df", color="#936818",
-      label="Instructor's simulations\nTEAM_8_extracted_results_set_1\n73 cases · kept out of Git"];
-    manifest [label="data/manifest.json\n73 cases with hashes"];
-    split [label="data/split.json\nrandom split by case, seed 42\n36 training · 37 test"];
-    curves [label="Target curves\nSvm vs E11 resampled to 120 strains\n0.0002 to 0.0999 · inputs T, rate, ρ, G"];
-    raw -> manifest; raw -> curves; manifest -> split; curves -> split;
+  subgraph cluster_cad { label="1 · CAD model"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
+    cad [label="Wing-rib bracket and its support\nbracket/cad/*.STEP\ngeometry measured: bracket/geometry_report/"];
   }
 
-  subgraph cluster_model { label="2 · Model (src/jc_pinn.py, configs/jc_pinn.json)"; style="rounded,filled"; fillcolor="#f2faf6"; color="#28735d"; fontname="Arial"; fontsize=15;
-    eq1 [fillcolor="#e9f5f0", color="#28735d",
-      label="Equation 1 backbone (Johnson–Cook, user's notes)\nσ_JC = [A−Bεⁿ][1+C ln ε̇*][1−T*ᵐ][G/G₀]^q[1−φ]^r\nconstants ε̇₀, T_r, T_M, G₀, ρ₀ fixed · φ = 1 − ρ/2700"];
-    net [fillcolor="#e9f5f0", color="#28735d",
-      label="Correction network δ\n5–16–16–1 tanh, 385 weights, starts at zero\nso the untrained model is Equation 1"];
-    prod [fillcolor="#e9f5f0", color="#28735d",
-      label="σ_pred = σ_JC × exp(δ)\nensemble of five trained copies, geometric mean"];
-    eq1 -> prod; net -> prod;
+  subgraph cluster_jc { label="2 · ANSYS Johnson–Cook (JC) material, three stages"; style="rounded,filled"; fillcolor="#f2f6fc"; color="#2c5d9a"; fontname="Arial"; fontsize=15;
+    el [fillcolor="#e3ecf8", color="#2c5d9a", label="Elastic\nWorkbench static structural\nbracket/ansys/Elastic.wbpj"];
+    ep [fillcolor="#e3ecf8", color="#2c5d9a", label="Elasto-plastic\nhardening baseline, same mesh and load\n(bracket/ansys_usermat/)"];
+    ud [fillcolor="#e3ecf8", color="#2c5d9a", label="User-defined JC material\ncustom material law in ANSYS"];
+    el -> ep -> ud;
   }
 
-  subgraph cluster_select { label="3 · Training and selection: training cases only"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
-    train [label="Train candidate settings\nphysics-loss weight λ, constants trained jointly"];
-    score [label="Balanced score\n½ (case cross-validation + nine temperature/rate group holdouts)"];
-    pick [label="Selected: λ = 0, constants trained jointly\nscore 4.166, every physics weight scored worse"];
-    train -> score -> pick;
+  subgraph cluster_ml { label="3 · ML model (JC-PINN)"; style="rounded,filled"; fillcolor="#f2faf6"; color="#28735d"; fontname="Arial"; fontsize=15;
+    data [shape=cylinder, fillcolor="#fff5df", color="#936818", label="73 instructor simulations\nsplit 36 training / 37 test, seed 42"];
+    model [fillcolor="#e9f5f0", color="#28735d", label="Equation 1 (Johnson–Cook) × exp(δ)\nδ: 5–16–16–1 network, five copies averaged"];
+    sel [label="Train and select on the 36 training cases only"];
+    lock [style="rounded,filled,bold", fillcolor="#fff5df", color="#936818", penwidth=2, label="LOCK: equation.json + selection_lock.json\nfinal, never retrained on test cases"];
+    test [label="Scored once on the 37 test cases\nRMSE 0.439 MPa · R² 0.99952 · verified independently"];
+    data -> model -> sel -> lock -> test;
   }
 
-  lock [shape=box, style="rounded,filled,bold", fillcolor="#fff5df", color="#936818", penwidth=2,
-    label="LOCK (decision M7)\nequation.json + selection_lock.json fingerprint\nwritten before any test file is read · final: not retrained or tuned (A3)"];
-
-  subgraph cluster_test { label="4 · Scoring and checks"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
-    test [label="Score once on the 37 test cases\n(read only after the lock)\nmean curve RMSE 0.439 MPa · R² 0.99952\n(not blind: disclosed)"];
-    controls [label="Comparisons\nEquation 1 alone 7.37 · no-equation control 0.338\nplain MLP baseline 0.143 (worse on unseen groups)"];
-    verify [label="Independent checks\nscripts/verify_jc_pinn.py · pytest\nNumPy rebuild agrees with PyTorch to ~1e-13"];
-    por [label="Porosity analysis\nscripts/porosity_analysis.py"];
-    test -> controls; test -> verify; test -> por;
+  subgraph cluster_um { label="4 · USERMAT and its ANSYS simulation"; style="rounded,filled"; fillcolor="#f2f6fc"; color="#2c5d9a"; fontname="Arial"; fontsize=15;
+    um [fillcolor="#e3ecf8", color="#2c5d9a", label="USERMAT generated from the locked weights\nJ2 radial return + JC-PINN flow stress + tangent\nchecked offline (2e-15) and in MAPDL single element"];
+    sim [fillcolor="#e3ecf8", color="#2c5d9a", label="Bracket simulation, φ = 4 % study point\nUY = +2 mm on the pin bore · porosity sweep · mesh study"];
+    res [fillcolor="#fceeed", color="#a43d36", label="Peak reaction 100.5 kN, then softens\nafter yield it depends on the mesh"];
+    um -> sim -> res;
   }
 
-  subgraph cluster_fe { label="5 · Finite-element use (post-hoc, model unchanged)"; style="rounded,filled"; fillcolor="#f2f6fc"; color="#2c5d9a"; fontname="Arial"; fontsize=15;
-    gen [fillcolor="#e3ecf8", color="#2c5d9a", label="scripts/write_umat.py\ngenerates the Fortran from the saved weights"];
-    umat [fillcolor="#e3ecf8", color="#2c5d9a", label="ANSYS USERMAT (umat/jc_pinn_usermat3d.F)\nJ2 radial return + JC-PINN flow stress + consistent tangent"];
-    uver [fillcolor="#e3ecf8", color="#2c5d9a", label="Checks: offline vs Python 2e-15\nMAPDL 2024 R1 single element, 1.2e-5 MPa"];
-    bracket [fillcolor="#e3ecf8", color="#2c5d9a", label="Wing-rib bracket in ANSYS (bracket/)\nφ = 4 % study point, pin load as UY = +2 mm\nporosity sweep, G(φ) coupling D5, mesh study"];
-    fres [fillcolor="#fceeed", color="#a43d36", label="Result: peak reaction 100.5 kN then softens\nmesh dependent after yield, so not a converged strength"];
-    gen -> umat -> uver -> bracket -> fres;
-  }
-
-  subgraph cluster_out { label="6 · Deliverables, all numbers read from saved files"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
-    nums [label="scripts/write_latex_numbers.py → numbers.tex / numbers.json\nscripts/make_figures.py → figures/"];
-    docs [label="Report (21 pp) · IEEE paper (5 pp)\nSlides (build_corrected.js) · notebooks · videos · viewers"];
-    errata [label="ERRATA.md\ncorrections go here, never into the locked run", fillcolor="#fff5df", color="#936818"];
-    nums -> docs;
+  subgraph cluster_cl { label="5 · Critical length (critical flaw length, CL)"; style="rounded,dashed,filled"; fillcolor="#fffaf0"; color="#936818"; fontname="Arial"; fontsize=15;
+    cl [style="rounded,dashed,filled", fillcolor="#fff5df", color="#936818",
+      label="PLANNED, NOT DONE YET\nPredict the critical length from the bracket results\nmethod and inputs still to be decided\nthe repository has no flaw or toughness data so far"];
   }
 
   limits [shape=note, fillcolor="#fceeed", color="#a43d36", fontsize=12,
-    label="Limits carried through everything\nsimulated data, nothing experimentally validated · units user-confirmed\nnothing validated above 200 °C · strain is total (M4) · test not blind\nG(φ) is an assumed bound · critical flaw length is not predicted"];
+    label="Limits\nsimulated data, nothing experimentally validated · units user-confirmed\nnothing validated above 200 °C · strain is total (M4) · test is not blind\nG(φ) is an assumed bound (D5)"];
 
-  split -> train [lhead=cluster_select, label="36 training cases"];
-  prod -> train [ltail=cluster_model, lhead=cluster_select, label="model form"];
-  pick -> lock;
-  lock -> test [lhead=cluster_test];
-  lock -> gen [lhead=cluster_fe, label="saved weights"];
-  test -> nums [ltail=cluster_test, lhead=cluster_out];
-  fres -> nums [ltail=cluster_fe, lhead=cluster_out];
-  docs -> errata [style=dotted, label="if a fault is found"];
-  errata -> limits [style=invis];
+  cad -> el [lhead=cluster_jc];
+  ud -> data [ltail=cluster_jc, lhead=cluster_ml, label="material data needed"];
+  test -> um [ltail=cluster_ml, lhead=cluster_um, label="saved weights"];
+  res -> cl [ltail=cluster_um, lhead=cluster_cl];
+  cl -> limits [style=invis];
 }

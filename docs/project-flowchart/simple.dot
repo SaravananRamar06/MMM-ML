@@ -3,19 +3,16 @@ digraph SIMPLE {
     fontname="Arial", fontsize=26, labelloc=t,
     label="Our project in simple terms\nCan we predict how strong a 3D-printed aluminium part is?"];
   node [shape=box, style="rounded,filled", fillcolor="#eef3f8", color="#42566b",
-    fontname="Arial", fontsize=16, margin="0.3,0.18", penwidth=1.4, width=5.2];
+    fontname="Arial", fontsize=16, margin="0.3,0.18", penwidth=1.4, width=5.4];
   edge [color="#42566b", arrowsize=0.9, penwidth=1.4];
 
-  a [label="1. Get the data\n73 computer simulations of the metal being pulled\nat different temperatures, speeds and porosity (tiny holes)", fillcolor="#fff5df", color="#936818"];
-  b [label="2. Split it in half\n36 simulations to teach the model\n37 kept hidden to test it later"];
-  c [label="3. Build the model\nA known strength formula (Johnson–Cook)\nplus a small neural network that fixes its errors", fillcolor="#e9f5f0", color="#28735d"];
-  d [label="4. Teach it and pick the best version\nusing only the 36 teaching simulations"];
-  e [label="5. Lock it\nNo more changes after this, so the test is fair", fillcolor="#fff5df", color="#936818"];
-  f [label="6. Test it once on the 37 hidden simulations\nTypical error: 0.44 MPa. It matches the simulations very closely."];
-  g [label="7. Use it in ANSYS on a wing bracket\nWe turned the model into an ANSYS material\nand pulled the bracket with different amounts of porosity", fillcolor="#e3ecf8", color="#2c5d9a"];
-  h [label="8. Write it up\nReport, paper, slides and videos, with every number\ntaken from the saved results"];
+  a [label="1. Draw the part (CAD)\nA 3D model of the aircraft wing bracket", fillcolor="#fff5df", color="#936818"];
+  b [label="2. Test it in ANSYS with a standard metal model\nFirst elastic (springs back), then elasto-plastic (bends for good),\nthen a user-defined Johnson–Cook material", fillcolor="#e3ecf8", color="#2c5d9a"];
+  c [label="3. Teach a machine-learning model\nIt learns from 36 computer simulations of the metal\nand is tested once on 37 hidden ones.\nTypical error: 0.44 MPa", fillcolor="#e9f5f0", color="#28735d"];
+  d [label="4. Put the ML model into ANSYS (USERMAT)\nThe bracket is pulled with different amounts of\nporosity (tiny holes) to see how strength changes", fillcolor="#e3ecf8", color="#2c5d9a"];
+  e [label="5. Last step: predict the critical length\nHow long a flaw can get before the part fails\nNOT DONE YET: the method and the data still have to be decided", style="rounded,dashed,filled", fillcolor="#fff5df", color="#936818"];
   note [shape=note, fillcolor="#fceeed", color="#a43d36", fontsize=14,
     label="What to remember\nThe data are simulations, not real experiments.\nNothing is checked above 200 °C.\nBracket results after yielding depend on the mesh, so they are estimates."];
 
-  a -> b -> c -> d -> e -> f -> g -> h -> note;
+  a -> b -> c -> d -> e -> note;
 }
