@@ -1,0 +1,19 @@
+! Highest nodal S1 on the R10 fillet (radius 10 about (36.1464, 23)) of a solved 2D elastic run (crack.rst).
+! Used on elastic_a0 for validation_2d_vs_3d.json; output lines saved as runs/elastic_a0/fillet_s1.txt.
+/POST1
+FILE,crack,rst
+SET,LAST
+LOCAL,12,1,36.1464,23
+NSEL,S,LOC,X,9.99,10.01
+CSYS,0
+NSORT,S,1
+*GET,_S1,SORT,0,MAX
+*GET,_N,SORT,0,IMAX
+*STATUS,_S1
+*STATUS,_N
+ALLSEL
+*GET,_X,NODE,_N,LOC,X
+*GET,_Y,NODE,_N,LOC,Y
+*STATUS,_X
+*STATUS,_Y
+FINISH
