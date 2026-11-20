@@ -1,0 +1,49 @@
+digraph PROJECT {
+  graph [rankdir=TB, bgcolor="white", pad=0.35, nodesep=0.4, ranksep=0.5, compound=true, newrank=true,
+    fontname="Arial", fontsize=24, labelloc=t,
+    label="JC-PINN project: order of work\nCAD → ANSYS JC model → ML model → USERMAT in ANSYS → critical length"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef3f8", color="#42566b",
+    fontname="Arial", fontsize=13, margin="0.18,0.12", penwidth=1.2];
+  edge [fontname="Arial", fontsize=11, color="#42566b", arrowsize=0.8];
+
+  subgraph cluster_cad { label="1 · CAD model"; style="rounded,filled"; fillcolor="#f6f8fa"; color="#8a939c"; fontname="Arial"; fontsize=15;
+    cad [label="Wing-rib bracket and its support\nbracket/cad/*.STEP\ngeometry measured: bracket/geometry_report/"];
+  }
+
+  subgraph cluster_jc { label="2 · ANSYS Johnson–Cook (JC) material, three stages"; style="rounded,filled"; fillcolor="#f2f6fc"; color="#2c5d9a"; fontname="Arial"; fontsize=15;
+    el [fillcolor="#e3ecf8", color="#2c5d9a", label="Elastic\nWorkbench static structural\nbracket/ansys/Elastic.wbpj"];
+    ep [fillcolor="#e3ecf8", color="#2c5d9a", label="Elasto-plastic\nhardening baseline, same mesh and load\n(bracket/ansys_usermat/)"];
+    ud [fillcolor="#e3ecf8", color="#2c5d9a", label="User-defined JC material\ncustom material law in ANSYS"];
+    el -> ep -> ud;
+  }
+
+  subgraph cluster_ml { label="3 · ML model (JC-PINN)"; style="rounded,filled"; fillcolor="#f2faf6"; color="#28735d"; fontname="Arial"; fontsize=15;
+    data [shape=cylinder, fillcolor="#fff5df", color="#936818", label="73 instructor simulations\nsplit 36 training / 37 test, seed 42"];
+    model [fillcolor="#e9f5f0", color="#28735d", label="Equation 1 (Johnson–Cook) × exp(δ)\nδ: 5–16–16–1 network, five copies averaged"];
+    sel [label="Train and select on the 36 training cases only"];
+    lock [style="rounded,filled,bold", fillcolor="#fff5df", color="#936818", penwidth=2, label="LOCK: equation.json + selection_lock.json\nfinal, never retrained on test cases"];
+    test [label="Scored once on the 37 test cases\nRMSE 0.439 MPa · R² 0.99952 · verified independently"];
+    data -> model -> sel -> lock -> test;
+  }
+
+  subgraph cluster_um { label="4 · USERMAT and its ANSYS simulation"; style="rounded,filled"; fillcolor="#f2f6fc"; color="#2c5d9a"; fontname="Arial"; fontsize=15;
+    um [fillcolor="#e3ecf8", color="#2c5d9a", label="USERMAT generated from the locked weights\nJ2 radial return + JC-PINN flow stress + tangent\nchecked offline (2e-15) and in MAPDL single element"];
+    sim [fillcolor="#e3ecf8", color="#2c5d9a", label="Bracket simulation, φ = 4 % study point\nUY = +2 mm on the pin bore · porosity sweep · mesh study"];
+    res [fillcolor="#fceeed", color="#a43d36", label="Peak reaction 100.5 kN, then softens\nafter yield it depends on the mesh"];
+    um -> sim -> res;
+  }
+
+  subgraph cluster_cl { label="5 · Critical length (critical flaw length, CL)"; style="rounded,dashed,filled"; fillcolor="#fffaf0"; color="#936818"; fontname="Arial"; fontsize=15;
+    cl [style="rounded,dashed,filled", fillcolor="#fff5df", color="#936818",
+      label="PLANNED, NOT DONE YET\nPredict the critical length from the bracket results\nmethod and inputs still to be decided\nthe repository has no flaw or toughness data so far"];
+  }
+
+  limits [shape=note, fillcolor="#fceeed", color="#a43d36", fontsize=12,
+    label="Limits\nsimulated data, nothing experimentally validated · units user-confirmed\nnothing validated above 200 °C · strain is total (M4) · test is not blind\nG(φ) is an assumed bound (D5)"];
+
+  cad -> el [lhead=cluster_jc];
+  ud -> data [ltail=cluster_jc, lhead=cluster_ml, label="material data needed"];
+  test -> um [ltail=cluster_ml, lhead=cluster_um, label="saved weights"];
+  res -> cl [ltail=cluster_um, lhead=cluster_cl];
+  cl -> limits [style=invis];
+}

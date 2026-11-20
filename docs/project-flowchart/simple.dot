@@ -1,0 +1,18 @@
+digraph SIMPLE {
+  graph [rankdir=TB, bgcolor="white", pad=0.4, nodesep=0.4, ranksep=0.55,
+    fontname="Arial", fontsize=26, labelloc=t,
+    label="Our project in simple terms\nCan we predict how strong a 3D-printed aluminium part is?"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef3f8", color="#42566b",
+    fontname="Arial", fontsize=16, margin="0.3,0.18", penwidth=1.4, width=5.4];
+  edge [color="#42566b", arrowsize=0.9, penwidth=1.4];
+
+  a [label="1. Draw the part (CAD)\nA 3D model of the aircraft wing bracket", fillcolor="#fff5df", color="#936818"];
+  b [label="2. Test it in ANSYS with a standard metal model\nFirst elastic (springs back), then elasto-plastic (bends for good),\nthen a user-defined Johnson–Cook material", fillcolor="#e3ecf8", color="#2c5d9a"];
+  c [label="3. Teach a machine-learning model\nIt learns from 36 computer simulations of the metal\nand is tested once on 37 hidden ones.\nTypical error: 0.44 MPa", fillcolor="#e9f5f0", color="#28735d"];
+  d [label="4. Put the ML model into ANSYS (USERMAT)\nThe bracket is pulled with different amounts of\nporosity (tiny holes) to see how strength changes", fillcolor="#e3ecf8", color="#2c5d9a"];
+  e [label="5. Last step: predict the critical length\nHow long a flaw can get before the part fails\nNOT DONE YET: the method and the data still have to be decided", style="rounded,dashed,filled", fillcolor="#fff5df", color="#936818"];
+  note [shape=note, fillcolor="#fceeed", color="#a43d36", fontsize=14,
+    label="What to remember\nThe data are simulations, not real experiments.\nNothing is checked above 200 °C.\nBracket results after yielding depend on the mesh, so they are estimates."];
+
+  a -> b -> c -> d -> e -> note;
+}
