@@ -1,8 +1,13 @@
 # Porosity in an additively manufactured wing-rib bracket
 
-PowerPoint authoring guide for Team 8. The sequence has one opening slide, 15 content slides and one closing slide. It assumes an engineering course audience familiar with stress–strain curves and basic finite-element analysis.
+Canva authoring guide for Team 8. The sequence has one opening slide, 15 content slides and one closing slide. It assumes an engineering course audience familiar with stress–strain curves and basic finite-element analysis.
 
-Use a 16:9 layout with a white background, navy text, teal for JC-PINN and amber for assumptions or limits. Use one main visual per slide, usually occupying about 60% of the width. Keep the original axes, units and legends when importing plots. The copy under each title is ready to paste. Where a visual needs drawing, the guide specifies the labels and arrangement.
+## Quick setup in Canva
+
+1. Keep your existing 16:9 theme. Duplicate a content page with a clean layout and use it for the remaining slides.
+2. Paste each numbered title at the top and its slide copy into a body text box. Use the visual instructions to place the graphic.
+3. For each linked figure, open the PNG and copy it into Canva, or use **Uploads → Upload files**. Give plots about 60% of the slide width and keep the axes, units and legends visible.
+4. Before presenting, confirm the deck has 17 pages. Use the numbered sequence below to replace any leftover template pages.
 
 ### 1. Porosity in an additively manufactured wing-rib bracket
 
@@ -12,17 +17,19 @@ Use a 16:9 layout with a white background, navy text, teal for JC-PINN and amber
 
 Team 8 · Multiscale Modelling of Materials using Machine Learning
 
+Pranav Parasuram C · R Saravanan · Dinesh Y · Amit Narayan K
+
 **Visual.** Use the actual [bracket CAD planform](assets/cad_planform.png) on the right. Leave room for the title and presenter names on the left.
 
-### 2. How much does porosity change the bracket response?
+### 2. How does porosity affect the response of an AlSi10Mg wing-rib bracket?
 
 **Slide copy**
 
-- Learn the simulated stress response of AlSi10Mg.
-- Transfer the locked material model into ANSYS.
-- Compare bracket response and assess a crack at the R10 fillet.
+- **Material model** · Fit JC-PINN to simulated curves.
+- **Bracket response** · Compare reaction forces in ANSYS.
+- **Flaw assessment** · Assess critical flaw length.
 
-**Visual.** Draw three boxes across the slide labelled **Material curves**, **Bracket response** and **Fillet crack assessment**. Join them with two horizontal arrows. Reveal the three steps as you introduce the project.
+**Visual.** Center the [ready-to-paste workflow graphic with captions](assets/porosity-study-workflow-captioned.png) beneath your title. If you already placed the [unlabelled workflow graphic](assets/porosity-study-workflow.png), paste the three captions above beneath the icons instead.
 
 ### 3. The dataset contains 73 simulated material curves
 
