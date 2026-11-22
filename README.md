@@ -108,7 +108,7 @@ python scripts/verify_jc_pinn.py reports/jc_pinn_20261107
 The verifier is an independent NumPy re-implementation. It:
 - checks the lock fingerprint;
 - confirms the test set was read after selection;
-- rebuilds every prediction from the saved weights, agreeing with PyTorch to about 1e-13;
+- rebuilds every prediction from the saved weights, agreeing with PyTorch to within 3e-13 MPa;
 - recomputes every metric.
 
 The notebook's FAST mode retrained the model and reproduced the locked weights exactly.
