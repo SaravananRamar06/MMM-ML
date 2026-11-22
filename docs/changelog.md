@@ -1,5 +1,39 @@
 # Changelog
 
+## 22 November 2026: final check of the repository, the report and the paper
+- **Checks run (no model or locked file changed):**
+  - `pytest`: 33 passed, with the stand-in raw folder from `build_raw_from_committed_curves.py`;
+  - `verify_jc_pinn.py`: every check passes, predictions reproduced to 2.6e-13;
+  - `test_report_jc_pinn.py`: JSON, CSV and README unchanged (its three PNGs differ only in bytes on this Matplotlib and were restored);
+  - `verify_umat.py` (gfortran): passes and rewrites `umat/verification.json` unchanged;
+  - `run_notebooks.py` on a copy of the repository: both notebooks run with 0 errors, and FAST mode reproduces the locked weights and constants exactly;
+  - `fad_cl.py` and `check_limit_load.py`: every CL output and quoted limit-load value reproduces; `validate_2d.py` gives the same values;
+  - `write_latex_numbers.py`: all 172 earlier macros unchanged. The hard-coded numbers in the report, paper and deck (data counts and ranges, the condition table, the selection table, r = −0.027 without the bound, 2579 points, the EP yield, the stiffness ratio, the deck's EDA and geometry numbers) were recomputed and agree.
+- **Report (21 → 24 pages):** the 20 Nov critical-flaw-length assessment was missing, and the limitations still said CL was not predicted. New section "Critical flaw length" (load and toughness, method, result, caveats), with 51 new macros read from `crack2d_2026-11-20/` and the limit-load inputs, the two CL charts (`fig_crack_residual`, `fig_crack_cl_load`, copied by `make_figures.py`) and two references (BS 7910:2019; 14 CFR Part 25). Abstract, introduction, limitations and conclusion updated. Corrections: "Two caveats apply" listed one (the second, the removed ensemble, went in C2); case 60 rises again after it collapses; the 14 settings are seven physics options × two constant modes; the report covers the bracket too; ANSYS was run at one temperature and rate, not one material condition; Fig. 7 is now referenced.
+- **Paper (5 pages):** the abstract said five seeds were compared (selection used three; five is the final ensemble). New CL paragraph, limit and conclusion. The unreferenced test-RMSE bar chart (the same numbers as Table II) was removed, and two full-width figures were narrowed, to stay at 5 pages.
+- **CL sensitivity added:** the 2D section's fillet tension per kN is 5.0 % below the 3D model's, which is not conservative for K_I. Scaling every K_I up by 5.2 % still leaves the weakest case at 43.3 kN, above 41.3 kN (`write_latex_numbers.py`, `ClKScaledWeakkN`).
+- **Documentation fixes:**
+  - `crack2d_2026-11-20/README.md`: 10 of the 15 residual-strength values were 0.01–0.035 kN off `residual_strength.csv`; the crack line leaves the section at about 39 mm (keypoint 31 of every `crack.dat`), not 33 mm (also in the limit-load note);
+  - Q5: CL at K = 20 MPa√m is 23.4–23.5 mm at every porosity (was "about 23 mm, φ = 7.85 %"), and the 2D/3D fillet-tension caveat;
+  - the limit-load note no longer says the FAD run is uncommitted; `decisions.md` no longer links the deleted `history.md`; `umat/README.md` and the ANSYS flowchart README no longer say CL is not predicted; README and `report/README.md` page counts.
+- **Slides:** the 24-slide deck (`build_corrected.js`) still showed CL as planned and the model-to-ANSYS coupling as proposed. Slides 1, 3, 4, 8, 21, 22 and 23 now state what exists, with CL numbers from `numbers.json`; slide 15 quotes ±1 MPa; two speaker notes no longer say "lowers … by −x %". Rebuilt and exported with LibreOffice (Carlito / Liberation Sans). Still 24 slides.
+- **Exam preparation pack:** the CL answers (handbook §10, viva Q40 and drill E, workbook K, mock Q6, slide notes), viva Q37 and mock Q5 (built on the superseded −X mesh result) and the evidence map were updated, and the resolved Markdown and practice page regenerated. Its five PDFs need Windows fonts and still date from 18 Nov; rebuild them on Windows.
+- **Submission builder:** ships `crack2d_2026-11-20/`, the crack scripts and `check_limit_load.py`, and describes the CL result instead of "no critical flaw length".
+
+## 21 November 2026: 17-slide presentation guide
+- `presentation/17-slide-authoring-guide.md`: the Canva authoring guide for the team's 17-slide presentation (cover, 15 content slides, questions), with the critical flaw length on slides 15–16. New slide graphics in `presentation/assets/`: the porosity-study workflow (with and without captions), the model-selection workflow and the bracket boundary-condition illustration.
+
+## 20 November 2026: critical flaw length (decisions F1, F2)
+- **Decisions (user):** K_mat is the literature band 36, 40 and 50 MPa√m at every porosity (F1); CL is assessed at the capability-based limit pin load of 35.9 kN as a damage-tolerance residual-strength check, with 41.3 kN (× 1.15 fitting factor) as a sensitivity (F2).
+- **Model and runs** (`bracket/ansys_usermat/crack2d/`, `crack2d_2026-11-20/`): 2D plane-strain section with a through-thickness edge crack at the R10 fillet (a = 1–30 mm), K_I by interaction integral, collapse loads from JC-PINN USERMAT runs at φ = 0 / 4 / 7.85 % (G coupled, D5), BS 7910 Option 1 failure assessment diagram.
+- **Result:** at 35.9 kN no modelled crack fails at any porosity or K_mat, so CL > 30 mm; the weakest case (30 mm, φ = 7.85 %, K_mat = 36) carries 44.80 kN. Porosity lowers the limit load by 2.3 % and the residual strength at 30 mm by 2.0 %. Q5 restated.
+- **Limit-load check (PR #13):** `scripts/check_limit_load.py` and `docs/proposals/limit-load-check-2026-11-20.md`: 35.92 kN on the 5 mm mesh, about 28.5 kN on the 2.5 mm mesh, and P_L(φ) = 36.25 / 35.82 / 35.43 kN.
+- **Project flowcharts (PR #12):** `docs/project-flowchart/`, in the team's order of work.
+
+## 18 November 2026: contours, zone results and the ANSYS workflow flowchart
+- `bracket/ansys_usermat/contours_uy_2026-11-18/`: MAPDL contour pictures of the corrected-load runs. `zones_uy_2026-11-18/`: zone-by-zone stresses and plastic strain (`zones.json`), which give the 3.788 MPa/kN fillet stress used for the limit load.
+- `docs/ansys-flowchart/`: the ANSYS, USERMAT, JC-PINN and return-mapping flowcharts.
+
 ## 18 November 2026: bracket load corrected to the pin load +P_y on the upper half of the bore
 - **Decision (user, from the load figure):** the pin load is +P_y (wing-normal upload) and bears only on the half of the bore that faces it. Every bracket run used the Workbench file's load, UX = -2 mm on the whole bore; that is superseded.
 - **Tools:** `make_decks.py --load plus_y` imposes UY = +2 mm on the bore nodes with y >= 0 (the STEP splits the bore at y = 0). `post_bracket.mac` writes the displacement and reaction along the load axis; `history.py` reads both formats; the plot scripts reproduce all 236 values of the 17 Nov summaries unchanged. `extract_key_lines.py` writes the solver-log evidence.
