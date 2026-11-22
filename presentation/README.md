@@ -2,7 +2,9 @@
 
 The project's full slide deck is **`Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx`** and its PDF (24 slides). The shorter submission deck below is cut from it. It is 16:9, with speaker notes on every slide, and is built by `build/build_corrected.js`.
 
-The numbers on the finite-element slides (16–19) are read from `report/numbers.json`. Their figures come from `figures/`.
+The numbers on the finite-element slides (16–19), and the critical-flaw-length result on the objective, deployment, limits and conclusion slides, are read from `report/numbers.json`. The figures come from `figures/`.
+
+**22 November 2026:** slides 1, 3, 4, 8, 15, 19 and 21–23 were brought up to date: the critical flaw length is now assessed (post-hoc, CL > 30 mm at the 35.9 kN capability-based limit load) rather than planned, the model-to-ANSYS coupling exists rather than being proposed, and the accuracy slide quotes MPa (units confirmed by the user). The deck still has 24 slides, so the slide selection in `scripts/make_submission_deck.py` is unchanged. The PDF was exported with LibreOffice on Linux, where the metric-compatible Carlito and Liberation Sans replace Calibri and Arial.
 
 ## Slides
 
