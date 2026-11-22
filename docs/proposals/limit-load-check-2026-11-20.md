@@ -37,12 +37,12 @@ A crack check of an aircraft structure is a damage-tolerance residual-strength c
 
 ## What this means for the CL result
 
-- **The failure assessment's result at 35.9 kN stands.** The 2D failure assessment run on 20 Nov (not committed; on the team PC in `jcpinn_crack2d`) gives CL > 30 mm at every porosity. Its weakest case is a 30 mm crack at φ = 7.85 % with K_IC = 36 MPa√m, which still carries 44.8 kN.
+- **The failure assessment's result at 35.9 kN stands.** The 2D failure assessment run on 20 Nov (committed afterwards in [`bracket/ansys_usermat/crack2d_2026-11-20/`](../../bracket/ansys_usermat/crack2d_2026-11-20/README.md)) gives CL > 30 mm at every porosity. Its weakest case is a 30 mm crack at φ = 7.85 % with K_IC = 36 MPa√m, which still carries 44.8 kN.
 - **The finding holds up:**
   - 44.8 kN is above the limit load (35.9 kN) and above the limit load with the fitting factor (41.3 kN).
   - A mesh-refined limit load would be lower (about 28.5 kN), which makes CL longer, not shorter.
   - The 2D slice collapses about 12 % below the 3D model, so it is already conservative.
-- **What to report:** at its own limit load, the bracket tolerates any fillet crack up to 30 mm (the crack line leaves the section at about 33 mm) at every porosity. The bracket is limited by yield, not by fracture.
+- **What to report:** at its own limit load, the bracket tolerates any fillet crack up to 30 mm (the crack line leaves the section at about 39 mm) at every porosity. The bracket is limited by yield, not by fracture.
 - **The porosity effect** then shows up in three ways, not as one CL value:
   1. In the limit load: −2.3 % from φ 0 to 7.85 %.
   2. In the residual strength at each crack length: about −2 % at 30 mm.

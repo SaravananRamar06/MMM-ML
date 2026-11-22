@@ -28,7 +28,7 @@ This is a diagram of the current small-strain implementation. It does not depict
 - The history flag is merged from the initial evaluation and, for plastic loading, the converged final evaluation. Rejected intermediate Newton iterates are not committed as physical history.
 - Local nonconvergence sets `keycut = 1`. Interface errors and core status 2–4 use ANSYS error reporting; they are not described as automatic cutback requests.
 - The final selected training penalty is λ = 0. The Johnson–Cook backbone remains, with each member's own constants. Inference involves no training or physics-loss evaluation.
-- Softening is unregularised and the post-yield bracket response is mesh dependent. The test was not blind; units are user-confirmed without generator documentation. Nothing is experimentally validated or validated above 200 °C. Critical flaw length is not predicted.
+- Softening is unregularised and the post-yield bracket response is mesh dependent. The test was not blind; units are user-confirmed without generator documentation. Nothing is experimentally validated or validated above 200 °C. The USERMAT does not itself predict critical flaw length; the post-hoc bracket check is in [`bracket/ansys_usermat/crack2d_2026-11-20/`](../../bracket/ansys_usermat/crack2d_2026-11-20/README.md).
 
 ## Rebuild
 

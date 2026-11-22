@@ -4,7 +4,7 @@ Post-hoc analysis. The locked JC-PINN is used unchanged as the USERMAT; nothing 
 
 ## Result
 
-At the bracket's capability-based limit pin load of **35.9 kN**, **no fillet crack up to 30 mm fails, at any porosity**, for K_mat = 36–50 MPa√m. So the critical flaw length (CL) is greater than 30 mm. The crack line leaves the section at about 33 mm. The bracket is limited by yield, not by fracture.
+At the bracket's capability-based limit pin load of **35.9 kN**, **no fillet crack up to 30 mm fails, at any porosity**, for K_mat = 36–50 MPa√m. So the critical flaw length (CL) is greater than 30 mm. The crack line leaves the section at about 39 mm (keypoint 31 in each `crack.dat`, 39.2 mm from the crack mouth). The bracket is limited by yield, not by fracture.
 
 - **Weakest case:** a = 30 mm, φ = 7.85 %, K_mat = 36 MPa√m. It carries **44.80 kN** with the first collapse peak and 44.36 kN with the second.
 - **Check against the loads:** both values are above the limit load (35.9 kN) and above the limit load times the 1.15 fitting factor (41.3 kN).
@@ -17,9 +17,9 @@ At the bracket's capability-based limit pin load of **35.9 kN**, **no fillet cra
 
    | a (mm) | 0 | 8 | 16 | 25 | 30 |
    |---|---|---|---|---|---|
-   | φ = 0 % | 89.26 | 83.50 | 73.00 | 57.98 | 47.81 |
-   | φ = 4 % | 88.01 | 82.65 | 72.50 | 57.45 | 47.30 |
-   | φ = 7.85 % | 87.27 | 81.90 | 72.04 | 56.95 | 46.87 |
+   | φ = 0 % | 89.26 | 83.48 | 72.98 | 57.96 | 47.79 |
+   | φ = 4 % | 88.01 | 82.64 | 72.49 | 57.44 | 47.29 |
+   | φ = 7.85 % | 87.27 | 81.86 | 72.02 | 56.94 | 46.85 |
 
 3. **CL against load, a sensitivity study above the limit load** (K_mat 40, first peak, mm). The table is `cl_vs_load.csv` and the chart is `cl_vs_load.png`.
 
@@ -68,7 +68,7 @@ At the bracket's capability-based limit pin load of **35.9 kN**, **no fillet cra
 
 - **The load:** 35.9 kN is a capability bound, not a service load. No aircraft or wing-loads analysis exists.
 - **First yield is not mesh converged:** the 2.5 mm mesh gives about 28.5 kN. A lower limit load only lengthens CL, so the conclusion is conservative.
-- **The 2D section collapses about 12 % below the 3D model**, which is also conservative.
+- **The 2D section collapses about 12 % below the 3D model**, which is also conservative. Its fillet tension per kN is 5.0 % below the 3D model's, which is not: scaling every K_I up by 5.2 % (the 3D/2D ratio) still leaves the weakest case at 43.3 kN, above 41.3 kN (computed in `scripts/write_latex_numbers.py`, macro `ClKScaledWeakkN`).
 - **The collapse loads scatter by about ±3 %** because the material softens. For example, at a = 1–2 mm P_C is slightly above the uncracked value. At a = 8–20 mm the peak moves from about 0.8 mm to 1.5–1.8 mm of pin displacement.
 - **Unconverged runs:**
   - Five runs stopped converging after their peak: a = 30 mm at every φ, and a = 25 mm at φ = 4 and 7.85 %.

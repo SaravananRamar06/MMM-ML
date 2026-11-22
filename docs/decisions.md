@@ -1,6 +1,6 @@
 # Decisions
 
-This file records the decisions behind the final JC-PINN model and this repository, with the date, who made each one, and its effect. Earlier decisions about superseded models are kept on branch `archive/pre-final-2026-11-07` (`docs/decisions.md`), and are summarised in [history.md](history.md).
+This file records the decisions behind the final JC-PINN model and this repository, with the date, who made each one, and its effect. Earlier decisions about superseded models are kept on branch `archive/pre-final-2026-11-07` (`docs/decisions.md`, with its summary `docs/history.md`, which decision C2 removed from `main`).
 
 ## Project scope
 
@@ -8,7 +8,7 @@ This file records the decisions behind the final JC-PINN model and this reposito
 |---|---|---|---|---|
 | S1 | Oct 2026 | Use the instructor's AlSi10Mg simulations (`TEAM_8_extracted_results_set_1`, 73 of 108 planned cases) as complete as supplied. | User | The 35 missing conditions are not requested again. |
 | S2 | Oct 2026 | Random 50/50 split by simulation: 36 training and 37 test cases, seed 42 (`data/split.json`). | Instructor, via user | The same split is used for every model, so results are comparable. |
-| S3 | 27 Oct 2026 | CL means **critical flaw length**, not coefficient of lift. | User | The bracket workflow has no lift path. The material model does not predict CL (no flaw or toughness data). |
+| S3 | 27 Oct 2026 | CL means **critical flaw length**, not coefficient of lift. | User | The bracket workflow has no lift path. The material model does not predict CL (no flaw or toughness data). CL is assessed post-hoc on the bracket (decisions F1, F2). |
 | S4 | Oct 2026 | Target: von Mises stress `Svm` along axial strain `E11`, resampled to 120 strains from 0.0002 to 0.0999. | Agreed | Each curve counts equally. |
 
 ## The final model (7 November 2026)
