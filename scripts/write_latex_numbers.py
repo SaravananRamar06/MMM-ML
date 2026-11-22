@@ -237,6 +237,88 @@ def read_csv_mixed(rel):
         return list(csv.DictReader(f))
 
 
+def collect_cl():
+    """Critical flaw length (CL) of the cracked bracket, post-hoc (20 Nov 2026; decisions F1, F2; the model is unchanged).
+
+    Sources: bracket/ansys_usermat/crack2d_2026-11-20/{fad_cl.json, validation_2d_vs_3d.json} (written by
+    crack2d/fad_cl.py and crack2d/validate_2d.py from the committed MAPDL runs), and the limit-load inputs that
+    scripts/check_limit_load.py prints: zones_uy_2026-11-18/zones.json, the 2.5 mm elastic history,
+    porosity_gphi_uy_2026-11-18/*_history.csv and the study-point flow stress in umat/ansys_test/expected_single_element.csv.
+    """
+    import math
+    import sys
+    sys.path.insert(0, str(ROOT / 'bracket/ansys_usermat/crack2d'))
+    import fad_cl
+    import make_crack_decks
+    n = {}
+    cl_dir = 'bracket/ansys_usermat/crack2d_2026-11-20'
+    fad, val = read_json(f'{cl_dir}/fad_cl.json'), read_json(f'{cl_dir}/validation_2d_vs_3d.json')
+
+    # Limit pin load: first yield at the R10 fillet = flow stress / elastic fillet von Mises per kN (5 mm mesh).
+    sy = read_csv('umat/ansys_test/expected_single_element.csv')[0]['SIGY_MPa']
+    z = read_json('bracket/ansys_usermat/zones_uy_2026-11-18/zones.json')['elastic']['sets'][0]
+    k_vm = z['zones']['fillet']['SEQV_max'] / z['F_kN']
+    n['ClStudyFlowStress'], n['ClFilletVM'], n['ClFirstYieldkN'] = f'{sy:.2f}', f'{k_vm:.3f}', f'{sy / k_vm:.2f}'
+    # the other bound of the capability-based limit load: the 5 mm USERMAT peak / (1.5 factor of safety x 1.15 fitting factor)
+    peak = read_json('bracket/ansys_usermat/results_uy_2026-11-18/summary.json')['usermat']['peak_F_N'] / 1e3
+    n['ClCapabilitykN'] = f'{peak / (1.5 * 1.15):.1f}'
+    fine = read_csv('bracket/ansys_usermat/mesh_uy_2026-11-18/elastic_2p5mm_history.csv')[0]
+    n['ClFirstYieldFinekN'] = f"{sy / (fine['seqv_max_node_MPa'] / (fine['F_load_N'] / 1e3)):.1f}"
+    p_l = {}
+    for case, key in (('gphi0', 'Zero'), ('gphi4', 'Four'), ('gphi785', 'Max')):
+        s = max(h['seqv_max_node_MPa'] for h in read_csv(f'bracket/ansys_usermat/porosity_gphi_uy_2026-11-18/{case}_history.csv'))
+        p_l[case] = s / k_vm
+        n[f'ClLimitPhi{key}kN'] = f'{p_l[case]:.2f}'
+        n[f'ClFlowStressPhi{key}'] = f'{s:.2f}'
+    n['ClLimitDropPct'] = f"{100 * (p_l['gphi785'] / p_l['gphi0'] - 1):+.1f}"
+    loads = fad['loads_kN']
+    n['ClLimitkN'], n['ClLimitFFkN'] = f"{loads['limit']:.1f}", f"{loads['limit_x_1.15']:.1f}"
+    band = fad['K_mat_band_MPa_sqrtm']
+    n['ClKmatLow'], n['ClKmatMid'], n['ClKmatHigh'] = (f'{k:g}' for k in band)
+    lengths = sorted(float(a) for a in fad['elastic'] if float(a) > 0)
+    n['ClCrackMin'], n['ClCrackMax'], n['ClCrackCount'] = f'{lengths[0]:g}', f'{lengths[-1]:g}', str(len(lengths))
+    ex, ey = make_crack_decks.exit_point()
+    n['ClCrackExit'] = f'{math.hypot(ex - make_crack_decks.MOUTH[0], ey - make_crack_decks.MOUTH[1]):.0f}'
+
+    # Result at the limit load: CL beyond the modelled range for every porosity, K_mat and peak definition.
+    cases = fad['cases']
+    cl_at = [v for c in cases.values() for k, v in c['CL_mm'].items() if k.endswith(f"_P{loads['limit']:g}") or k.endswith(f"_P{loads['limit_x_1.15']:g}")]
+    assert cl_at and all(v is None for v in cl_at), 'a modelled crack fails at the limit load: rewrite the CL text'
+    n['ClUnconverged'] = str(sum(not p['run_reached_2mm'] for c in cases.values() for p in c['per_a'].values()))
+    rf = {pk: min(v for c in cases.values() for k, v in c['min_reserve_factor_at_limit'].items() if k.startswith(pk)) for pk in ('first', 'second')}
+    n['ClMinRF'], n['ClMinRFSecond'] = f"{rf['first']:.3f}", f"{rf['second']:.3f}"
+    weak = cases['gphi785']['per_a'][f'{lengths[-1]:g}']
+    kl = f'K{band[0]:g}'
+    assert math.isclose(weak[f'P_f_first_{kl}'] / loads['limit'], rf['first']), 'weakest case is no longer a = 30, phi = 7.85 %, lowest K'
+    n['ClWeakPfkN'], n['ClWeakPfSecondkN'] = f"{weak[f'P_f_first_{kl}']:.2f}", f"{weak[f'P_f_second_{kl}']:.2f}"
+    w = fad['worked_example']
+    n['ClWeakk'], n['ClWeakPC'], n['ClWeakMu'] = f"{w['k_MPa_sqrtm_per_kN']:.4f}", f"{w['P_C_kN']:.2f}", f"{w['mu']:.3f}"
+    for tag, key in (('at_limit', 'Lim'), ('at_failure', 'Fail')):
+        n[f'ClWeakKI{key}'] = f"{w[tag]['K_I_MPa_sqrtm']:.2f}"
+        n[f'ClWeakKr{key}'], n[f'ClWeakLr{key}'], n[f'ClWeakf{key}'] = (f"{w[tag][q]:.3f}" for q in ('Kr', 'Lr', 'f_Lr'))
+
+    # How porosity acts: residual strength at the longest crack (K_mat 40, first peak) and CL above the limit load.
+    km = f'K{band[1]:g}'
+    pf0, pf785 = cases['gphi0']['per_a'][f'{lengths[-1]:g}'][f'P_f_first_{km}'], weak[f'P_f_first_{km}']
+    n['ClPfLongZerokN'], n['ClPfLongMaxkN'], n['ClPfLongDropPct'] = f'{pf0:.2f}', f'{pf785:.2f}', f'{100 * (pf785 / pf0 - 1):+.1f}'
+    for load, key in ((60.0, 'Sixty'), (80.0, 'Eighty')):
+        for case, ck in (('gphi0', 'Zero'), ('gphi785', 'Max')):
+            n[f'ClAt{key}{ck}'] = f"{cases[case]['CL_mm'][f'first_{km}_P{load:g}']:.2f}"
+    low = [v['CL_mm_at_limit'] for k, v in fad['low_K_sensitivity'].items() if k.endswith('_K20')]
+    n['ClLowKMin'], n['ClLowKMax'] = f'{min(low):.1f}', f'{max(low):.1f}'
+
+    # 2D section against the 3D model, and a sensitivity: K_I per kN scaled up by the 3D/2D fillet tension ratio.
+    n['ClTwoDStiffPct'] = f"{val['elastic_stiffness_2D_vs_3D_pct']:+.1f}"
+    n['ClTwoDPeakPct'] = f"{val['usermat_phi4_peak_2D_vs_3D_pct']:+.1f}"
+    n['ClTwoDSOnePct'] = f"{val['fillet_S1_2D_vs_3D_pct']:+.1f}"
+    scale = val['fillet_S1_3D_MPa_per_kN'] / val['fillet_S1_2D_MPa_per_kN']
+    scaled = min(fad_cl.failure_load(fad['elastic'][a]['k_MPa_sqrtm_per_kN'] * scale, p[f'P_C_{pk}_kN'], k, c['mu'])[0]
+                 for c in cases.values() for a, p in c['per_a'].items() if fad['elastic'][a]['k_MPa_sqrtm_per_kN']
+                 for pk in ('first', 'second') for k in band)
+    n['ClKScalePct'], n['ClKScaledWeakkN'] = f'{100 * (scale - 1):.1f}', f'{scaled:.1f}'
+    return n
+
+
 def main():
     n = collect()
     fe = collect_fe()
@@ -244,6 +326,10 @@ def main():
     assert not clash, f'macro names used twice: {clash}'
     assert all(k.isalpha() for k in fe), [k for k in fe if not k.isalpha()]
     n.update(fe)
+    cl = collect_cl()
+    assert not set(n) & set(cl), f'macro names used twice: {set(n) & set(cl)}'
+    assert all(k.isalpha() for k in cl), [k for k in cl if not k.isalpha()]
+    n.update(cl)
     lines = ['% Generated by scripts/write_latex_numbers.py from reports/jc_pinn_20261107/. Do not edit by hand.']
     lines += [f'\\newcommand{{\\n{k}}}{{{v}}}' for k, v in sorted(n.items())]
     out = ROOT / 'report/numbers.tex'

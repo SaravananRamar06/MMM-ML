@@ -44,9 +44,9 @@ D5 gives d rho/d phi=-2700 kg/m^3 and dG/dphi=-25300 MPa per unit porosity fract
 
 Take an illustrative finite inelastic work density of 10 MPa=10 MJ/m^3. A 5 mm band gives 0.005*10 MJ/m^3=50 kJ/m^2; a 2.5 mm band gives 25 kJ/m^2. Using the same strain law halves the represented energy per area. This is a teaching example; no fracture energy has been measured in this project.
 
-### K. Critical flaw length: symbolic exercise only
+### K. Critical flaw length: symbolic exercise
 
-For constant Y, from K_IC=Y*sigma*sqrt(pi*a_c), square and rearrange to get a_c=K_IC^2/(pi*Y^2*sigma^2). If stress doubles with all assumptions and Y unchanged, a_c falls by a factor of four. When Y depends on a, solve the geometry-dependent equation instead. Toughness in MPa*sqrt(m) and stress in MPa yield a in metres. No project-specific numerical flaw length can be filled in without justified geometry, service stress, toughness and validity checks.
+For constant Y, from K_IC=Y*sigma*sqrt(pi*a_c), square and rearrange to get a_c=K_IC^2/(pi*Y^2*sigma^2). If stress doubles with all assumptions and Y unchanged, a_c falls by a factor of four. When Y depends on a, solve the geometry-dependent equation instead. Toughness in MPa*sqrt(m) and stress in MPa yield a in metres. This hand formula is not how the project's CL was assessed: there is no service stress or validated Y, so the project used a 2D FE crack model and the BS 7910 failure assessment diagram (CL > {{ClCrackMax}} mm at the {{ClLimitkN}} kN capability-based limit load).
 
 ## 2. A demanding 90-minute mock exam (100 marks)
 
@@ -60,9 +60,9 @@ Question 3 (20 marks, 18 minutes): Derive the J2 radial-return residual, its New
 
 Question 4 (20 marks, 17 minutes): Explain the five factors in Equation 1, prove the strain positivity bound and separability limitation, derive the parameter count and geometric ensemble, and interpret lambda=0 and the no-equation control.
 
-Question 5 (15 marks, 15 minutes): Given converged elastic stiffness, a 7.7% peak change, rising EQPS and final-force agreement, assess mesh convergence. Explain the energy argument and propose a regularisation strategy and its missing physical inputs.
+Question 5 (15 marks, 15 minutes): Given converged elastic stiffness, a {{BrMeshPeakChangePct}}% peak change, rising EQPS and a final force still {{MeshFinalChangePct}}% apart, assess mesh convergence. Explain the energy argument and propose a regularisation strategy and its missing physical inputs.
 
-Question 6 (15 marks, 15 minutes): Derive the D5 total porosity derivative and critical flaw expression. Explain why the porosity study cannot establish certified strength, fatigue life or critical flaw length. Include at least five limitations specific to our project.
+Question 6 (15 marks, 15 minutes): Derive the D5 total porosity derivative and critical flaw expression. Explain why the porosity study cannot establish certified strength or fatigue life, and what the critical-flaw-length check does and does not show. Include at least five limitations specific to our project.
 
 ## 3. Marking guide: use after your attempt
 
@@ -116,15 +116,15 @@ Slide 15, Porosity (40 s): Explain density-only sensitivity, the small observed 
 
 Slide 16, Finite-element material (65 s): Separate scalar predictor from J2 wrapper. State strain mapping, radial return, consistent tangent, fixed rate and held endpoints. Distinguish offline and single-element verification from validation.
 
-Slide 17, Bracket (65 s): State small strain, prescribed -2 mm displacement and study conditions. Quote {{BrUsermatPeakkN}} kN as a numerical reaction peak. Explain different E in the Workbench comparison and avoid calling it strength.
+Slide 17, Bracket (65 s): State small strain, the prescribed UY = +2 mm on the upper half of the bore and the study conditions. Quote {{BrUsermatPeakkN}} kN as a numerical reaction peak. Explain different E in the Workbench comparison and avoid calling it strength.
 
 Slide 18, G coupled to porosity (45 s): State D5 as an assumed upper stiffness bound. At 4%, G=24288. Explain why the coupled effect differs from density-only, and why a stiffness bound is not a formal bound on nonlinear strength loss.
 
 Slide 19, Mesh dependence (70 s): Read the coarse/fine curves and point out peak change, growing strain and misleading endpoint agreement. Explain localisation and absent length scale. State that the hardening comparison supports the softening diagnosis.
 
-Slide 20, Limits (45 s): Prioritise test exposure, simulation-only validation, provenance, total/plastic mapping, prescribed rate, assumed nu/G(phi), extrapolation and mesh dependence. No CL or certified load claim.
+Slide 20, Limits (45 s): Prioritise test exposure, simulation-only validation, provenance, total/plastic mapping, prescribed rate, assumed nu/G(phi), extrapolation and mesh dependence. CL only as a bound (> {{ClCrackMax}} mm at a capability-based load); no certified load claim.
 
-Slide 21, Conclusion (40 s): "We delivered a reproducible locked material surrogate and verified its ANSYS implementation. The control and mesh studies define the limits. Experimental calibration and regularised softening are needed before strength or fracture assessment."
+Slide 21, Conclusion (40 s): "We delivered a reproducible locked material surrogate and verified its ANSYS implementation. The control and mesh studies define the limits. A 2D failure assessment bounds the critical flaw length above {{ClCrackMax}} mm at the capability-based limit load. Experimental calibration, regularised softening and a service load are needed before a certified strength or fracture assessment."
 
 The timings sum to 15 minutes. For an 8-minute slot, prioritise slides 1-6, 8-9, 12, 16-21 and compress background/comparisons; retain the control and mesh limitations. Do not silently hide unfavourable evidence. For a longer slot, use the blackboard derivations and take questions rather than reading more text from slides.
 
@@ -144,7 +144,7 @@ Day 1 (about 3 hours): Everyone reads handbook sections 1-5, draws the mechanics
 
 Day 2 (about 3 hours): Study mesh, porosity and fracture. Run the 90-minute mock exam individually, then mark using the guide. Review errors as a team. Practise viva chains C-E, especially the strain mapping, local/global convergence and lack of strength validation.
 
-Day 3 (about 2.5 hours): Two timed full rehearsals with slide handoffs. Between them hold a 30-minute hostile-but-constructive viva: choose the control, lambda=0, mesh dependence, E mismatch and CL omissions. Check that every member can answer outside their speaking block. End with a 15-minute facts-and-units round and prepare offline backups.
+Day 3 (about 2.5 hours): Two timed full rehearsals with slide handoffs. Between them hold a 30-minute hostile-but-constructive viva: choose the control, lambda=0, mesh dependence, E mismatch, and the CL bound and its load. Check that every member can answer outside their speaking block. End with a 15-minute facts-and-units round and prepare offline backups.
 
 If only one evening remains: spend 30 minutes on the complete chain, 45 on the J2/model derivations, 30 on control/mesh/limits, 30 on the timed deck and 30 on cross-questioning. This prioritises understanding under pressure; it cannot substitute for a full mechanics course.
 

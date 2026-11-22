@@ -6,6 +6,11 @@ const pptxgen = require("pptxgenjs");
 const { applyTheme } = require(path.join(process.argv[2], "scripts/apply_theme.js"));
 
 const A = (f) => path.join(__dirname, "..", "assets", f);
+// Numbers quoted on the slides come from report/numbers.json (scripts/write_latex_numbers.py); figures from figures/.
+const N = Object.fromEntries(Object.entries(require(path.join(__dirname, "..", "..", "report", "numbers.json")))
+  .map(([k, v]) => [k, String(v).replace(/\{,\}/g, ",")]));
+const sgn = (v) => String(v).replace("-", "−");
+const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
 const OUT = path.join(__dirname, "..", "Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx");
 
 const THEME = {
@@ -115,7 +120,7 @@ pres.addSection({ title: "Opening" });
   });
   text(s, [B("Course instructor  ", { color: CYAN }), R("Prof. Arul Kumar Mariyappan", { color: WHITE })], { x: 0.7, y: 6.05, w: 7.5, h: 0.32, fontSize: 15 });
   text(s, "Indian Institute of Information Technology, Design and Manufacturing (IIITDM) Kancheepuram", { x: 0.7, y: 6.45, w: 8.5, h: 0.32, fontSize: 14, color: LINE });
-  s.addNotes("Good morning. We are presenting our course project on how porosity from 3D printing affects an aluminium aircraft wing bracket: a neural material model built on a Johnson-Cook backbone, which we call the JC-PINN, the team's Ansys bracket runs, and the fracture step we still plan to add.");
+  s.addNotes("Good morning. We are presenting our course project on how porosity from 3D printing affects an aluminium aircraft wing bracket: a neural material model built on a Johnson-Cook backbone, which we call the JC-PINN; that model running as an Ansys user material on the bracket; and a check of the bracket's critical flaw length.");
 }
 
 // ================================================================== 2 Problem statement
@@ -148,8 +153,8 @@ pres.addSection({ title: "Problem" });
   const s = content("Problem", 0, "02 · Objective", "Estimate the critical flaw size as porosity rises");
   const obj = [
     ["Learn the material", "Train a neural network on the 73 supplied AlSi10Mg simulations to predict the stress history within the sampled temperature, strain-rate, density, G and strain ranges. Sparse conditions need extra caution."],
-    ["Load the bracket", "Pass those curves into Ansys and find the stress field around the bracket's critical location. This coupling is proposed, not yet validated."],
-    ["Estimate the critical flaw size", [R("For a specified crack geometry and orientation, compute K"), sub("I"), R("(a) and solve K"), sub("I"), R("(a"), sub("c"), R(") = K"), sub("IC"), R(" across porosity. Planned.")]],
+    ["Load the bracket", "Generate the locked model into an Ansys user material and solve the bracket. Done: verified against the model, not validated by experiment."],
+    ["Estimate the critical flaw size", [R("Edge crack at the R10 fillet: K"), sub("I"), R("(a) by FE, collapse load from the USERMAT, BS 7910 failure assessment across porosity. Done in 2D, post-hoc.")]],
   ];
   obj.forEach(([h, b], i) => {
     const y = 1.8 + i * 1.3;
@@ -159,21 +164,21 @@ pres.addSection({ title: "Problem" });
     text(s, b, { x: 1.55, y: y + 0.45, w: 5.6, h: 0.7, fontSize: 13.5, color: MUTED });
   });
   card(s, 7.7, 1.8, 5.0, 3.85, NAVY);
-  text(s, "TARGET QUANTITY (PLANNED)", { x: 8.0, y: 1.98, w: 4.4, h: 0.26, fontSize: 11, bold: true, color: CYAN, charSpacing: 3 });
+  text(s, "TARGET QUANTITY", { x: 8.0, y: 1.98, w: 4.4, h: 0.26, fontSize: 11, bold: true, color: CYAN, charSpacing: 3 });
   text(s, [R("K"), sub("I"), R("(a"), sub("c"), R(")  =  K"), sub("IC")], { x: 8.0, y: 2.3, w: 4.5, h: 0.6, fontSize: 28, bold: true, color: WHITE });
   const terms = [
     ["a", "crack size for the chosen crack model (depth, radius or half-length); a CT pore needs a pore-to-crack convention", 3.0],
     ["K", [R("K"), sub("I"), R(" from a handbook solution or FE fracture analysis, using the stress that opens that crack, not peak von Mises")], 3.68],
-    ["K", [R("K"), sub("IC"), R(": source and porosity dependence still to be defined (no toughness data supplied)")], 4.36],
+    ["K", [R("K"), sub("IC"), R(`: literature band ${N.ClKmatLow}–${N.ClKmatHigh} MPa√m, the same at every porosity (no K`), sub("IC"), R("(φ) is known)")], 4.36],
   ];
   terms.forEach(([sy, d, y]) => {
     text(s, sy, { x: 8.0, y, w: 0.4, h: 0.4, fontSize: 17, bold: true, color: ORANGE });
     text(s, d, { x: 8.45, y: y + 0.02, w: 4.05, h: 0.64, fontSize: 12.5, color: WHITE });
   });
-  text(s, [R("Simple Mode-I case: a"), sub("c"), R(" = (1/π)(K"), sub("IC"), R(" ⁄ Yσ)², σ = crack-opening stress. Check LEFM validity; use J if plasticity is significant.")], { x: 8.0, y: 5.02, w: 4.5, h: 0.55, fontSize: 11.5, color: LINE });
+  text(s, [R("With yielding at the crack, K"), sub("I"), R(" = K"), sub("IC"), R(" becomes the BS 7910 failure assessment K"), sub("r"), R(" = f(L"), sub("r"), R("), where L"), sub("r"), R(" = load ÷ collapse load.")], { x: 8.0, y: 5.02, w: 4.5, h: 0.55, fontSize: 11.5, color: LINE });
   text(s, [R("CL here is a "), B("static critical crack size"), R(": the largest crack of the specified type that does not fracture under the given load. It is not a fatigue-life or airworthiness criterion. Study point: porosity φ = 4 % (assumed; ρ = 2592 kg/m³).")],
     { x: 0.6, y: 5.85, w: 12.1, h: 0.85, fontSize: 15 });
-  s.addNotes("We have three objectives. First, learn the material behaviour from the 73 supplied simulations with a neural network, within the ranges those simulations cover. Second, pass that behaviour into Ansys and find the stress around the bracket's critical location; that coupling is proposed, not yet validated. Third, and still planned: estimate the critical flaw size. That needs a specified crack geometry and orientation, a stress intensity K-one of a computed from a handbook solution or a finite-element fracture analysis using the stress that opens the crack, not the peak von Mises stress, and a toughness K-I-C we have not yet sourced. The familiar formula a-c equals one over pi times K-I-C over Y sigma squared is only the simple Mode-I special case. The result is a static critical crack size, not a fatigue or airworthiness criterion.");
+  s.addNotes(`We have three objectives. First, learn the material behaviour from the 73 supplied simulations with a neural network, within the ranges those simulations cover. Second, generate the locked model into an Ansys user material and solve the bracket; that works, and it is verified against the model, though not validated against experiments. Third, estimate the critical flaw size. We modelled an edge crack at the R10 fillet, computed its stress intensity K-one by finite elements and the collapse load with our user material, and combined them in the BS 7910 failure assessment diagram, which allows for yielding. The toughness K-I-C comes from the literature, ${N.ClKmatLow} to ${N.ClKmatHigh}, because no porosity-dependent value is known. The result is a static critical crack size, not a fatigue or airworthiness criterion.`);
 }
 
 // ================================================================== 4 Roadmap / life cycle
@@ -185,7 +190,7 @@ pres.addSection({ title: "Problem" });
     ["EDA", "73 simulations explored: coverage, trends, key inputs", STEEL],
     ["Model", "JC-backbone hybrid (JC-PINN, λ = 0) selected and trained", CYAN],
     ["Evaluate", "Scored after locking on 37 held-out simulations", CYAN],
-    ["Deploy", "Planned: a bracket-check concept", ORANGE],
+    ["Deploy", "USERMAT bracket and CL check done; decision tool planned", ORANGE],
   ];
   s.addShape(pres.shapes.LINE, { x: 1.2, y: 2.62, w: 10.9, h: 0, line: { color: PALE, width: 3 }, objectName: "life_line" });
   st.forEach(([h, b, col], i) => {
@@ -197,9 +202,9 @@ pres.addSection({ title: "Problem" });
   });
   card(s, 0.6, 5.0, 12.1, 1.75, ICE);
   text(s, "WHY IT IS MULTISCALE", { x: 0.9, y: 5.15, w: 4, h: 0.26, fontSize: 11, bold: true, color: STEEL, charSpacing: 3 });
-  text(s, [B("Material scale: "), R("the network learns how the simulated AlSi10Mg stress varies with temperature, rate, density and G.   "), B("Part scale: "), R("the team's Ansys runs load the bracket; feeding our curves into Ansys is proposed.   "), B("Decision (planned): "), R("fracture mechanics with a specified crack model turns the local stress into a critical crack size.")],
+  text(s, [B("Material scale: "), R("the network learns how the simulated AlSi10Mg stress varies with temperature, rate, density and G.   "), B("Part scale: "), R("the locked network runs inside Ansys as a user material on the bracket.   "), B("Decision: "), R("a failure assessment of a fillet crack turns the bracket response into a critical flaw length.")],
     { x: 0.9, y: 5.47, w: 11.5, h: 1.2, fontSize: 15 });
-  s.addNotes("This is the path through the talk, following the data science life cycle. The first five stages are done: the problem, the team's Ansys runs, the data exploration, the model and its evaluation. Deployment is planned, not built. The model is a Johnson-Cook-backbone hybrid; its selected physics-loss weight is zero. It is multiscale in intent: the network works at the material scale, Ansys at the part scale, and a fracture model would turn local stress into a critical crack size. The material-to-Ansys coupling and the fracture step are still proposed.");
+  s.addNotes("This is the path through the talk, following the data science life cycle. The first five stages are done: the problem, the team's Ansys runs, the data exploration, the model and its evaluation. Deployment is partly built: the model runs as an Ansys user material on the bracket, and a critical-flaw-length check uses it; the decision tool is planned. The model is a Johnson-Cook-backbone hybrid; its selected physics-loss weight is zero. It is multiscale: the network works at the material scale, Ansys at the part scale, and a failure assessment turns the bracket response into a critical flaw length.");
 }
 
 // ================================================================== 5 CAD + loads + supports
@@ -289,7 +294,7 @@ pres.addSection({ title: "CAD and Ansys" });
     text(s, h, { x: 8.55, y: y + 0.12, w: 4.0, h: 0.36, fontSize: 16.5, bold: true });
     text(s, b, { x: 8.55, y: y + 0.5, w: 4.0, h: 0.85, fontSize: 13, color: MUTED });
   });
-  text(s, "JC-U is the proposed route for our material curves into Ansys; the table's provenance and full response remain to be checked.", { x: 0.6, y: 6.25, w: 12.1, h: 0.35, fontSize: 15, bold: true, color: ORANGE });
+  text(s, "Our model now enters Ansys through its own USERMAT (Deploy section); the JC-U table's provenance remains unchecked.", { x: 0.6, y: 6.25, w: 12.1, h: 0.35, fontSize: 15, bold: true, color: ORANGE });
   text(s, "Ansys contours supplied by the team; not independently re-run. Set-up (load, mesh, energy balance) not archived.", { x: 0.6, y: 6.68, w: 12.1, h: 0.28, fontSize: 11, color: MUTED });
   s.addNotes("Three observations from the team's screenshots. The elastic run's peak is 1.86 times the built-in Johnson-Cook peak, 595.27 against 320.79; plasticity lowers the peak by about 46 percent. That elastic peak sits at a fixed corner, which may be a mesh-dependent singularity. The user-defined run's peak differs from the built-in one by 0.94 percent. That is a single number at a single instant: it does not validate the material law, the full response, or any coupling from our model to Ansys, and we do not know where the user-defined table came from. In the plastic runs the peak sits at the bore. For a fracture check we would need the stress that opens a specified crack there, not the peak von Mises value.");
 }
@@ -487,7 +492,7 @@ pres.addSection({ title: "Evaluate" });
   const s = content("Evaluate", 4, "14 · Evaluation", "Scored on 37 simulations held out from fitting");
   s.addImage({ path: A("gif_test.gif"), x: 0.5, y: 1.7, w: 7.6, h: 7.6 / 2.4, altText: "Animated: JC-PINN prediction against each of the 37 held-out test curves, with the parity plot filling in to R² = 0.9995", objectName: "gif_test" });
   text(s, "Animated in Slide Show: each frame is one held-out case; the right panel collects every point.", { x: 0.6, y: 4.95, w: 7.4, h: 0.3, fontSize: 11, color: MUTED });
-  const stats = [["0.4386", "mean of the 37 curve RMSEs (MPa)"], ["0.9995", "R² over 4 440 test points"], ["94.9 %", "of points within ±1 source stress unit"], ["37 / 37", "cases better than the JC law alone"]];
+  const stats = [["0.4386", "mean of the 37 curve RMSEs (MPa)"], ["0.9995", "R² over 4 440 test points"], ["94.9 %", "of points within ±1 MPa"], ["37 / 37", "cases better than the JC law alone"]];
   stats.forEach(([v, l], i) => {
     const x = 8.5 + (i % 2) * 2.15, y = 1.8 + Math.floor(i / 2) * 1.55;
     card(s, x, y, 2.0, 1.38, i === 0 ? NAVY : ICE);
@@ -497,7 +502,7 @@ pres.addSection({ title: "Evaluate" });
   card(s, 0.6, 5.35, 12.1, 1.5, ICE);
   text(s, [B("How to read it: "), R("37 simulations held out from fitting; scored after the model was locked. "), B("Not a blind test: ", { color: ORANGE }), R("the test cases were explored in earlier project stages. Worst curve 0.84 (case 10); pooled point RMSE 0.504. The JC law alone scores 7.37, so the correction cuts the error about 17-fold. The physics-disabled control scored 0.338 on the same cases.")],
     { x: 0.85, y: 5.45, w: 11.6, h: 1.3, fontSize: 14, valign: "middle" });
-  s.addNotes("These 37 simulations were held out from fitting and scored after the model was locked. It is not a blind test: the same cases were explored in earlier project stages. The animation steps through every held-out case: the orange line is the prediction, the dots are the simulation. The mean of the 37 per-curve RMSEs is 0.4386 in megapascals; the pooled point RMSE is 0.504; the worst curve is 0.84, case 10. R squared is 0.9995 over 4,440 points, and 94.9 percent of points are within one source stress unit. Every one of the 37 cases beats the JC law alone, which averages 7.37. For balance: the physics-disabled control scored 0.338 on the same cases.");
+  s.addNotes("These 37 simulations were held out from fitting and scored after the model was locked. It is not a blind test: the same cases were explored in earlier project stages. The animation steps through every held-out case: the orange line is the prediction, the dots are the simulation. The mean of the 37 per-curve RMSEs is 0.4386 in megapascals; the pooled point RMSE is 0.504; the worst curve is 0.84, case 10. R squared is 0.9995 over 4,440 points, and 94.9 percent of points are within one megapascal. Every one of the 37 cases beats the JC law alone, which averages 7.37. For balance: the physics-disabled control scored 0.338 on the same cases.");
 }
 
 // ================================================================== 16 Evaluation: by condition and limits
@@ -528,10 +533,6 @@ pres.addSection({ title: "Evaluate" });
 // ================================================================== 17-19 The locked model as an Ansys material (post-hoc)
 // Added 17 Nov 2026. Numbers come from report/numbers.json (scripts/write_latex_numbers.py); figures from figures/.
 pres.addSection({ title: "Deploy" });
-const N = Object.fromEntries(Object.entries(require(path.join(__dirname, "..", "..", "report", "numbers.json")))
-  .map(([k, v]) => [k, String(v).replace(/\{,\}/g, ",")]));
-const sgn = (v) => String(v).replace("-", "−");
-const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
 {
   const s = content("Deploy", 5, "16 · From model to Ansys material", "The locked JC-PINN, generated into an Ansys user material");
   const steps = [
@@ -586,7 +587,7 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
     B("So this is a lower estimate. ", { color: ORANGE }), R("Real pores lower G faster; a measured G(φ) for LPBF AlSi10Mg would replace it.", { breakLine: true }),
     R(`φ = 0 / 4 / 7.85 %: ρ 2700 / 2592 / 2488.05, G 25300 / ${N.GphiGFour} / 23313.95 MPa · 5 mm mesh · values after the peak are mesh dependent.`, { color: MUTED }),
   ], { x: 0.85, y: 5.05, w: 11.6, h: 1.7, fontSize: 14.5, paraSpaceAfter: 5, valign: "middle" });
-  s.addNotes(`The data's three shear-modulus levels are exactly 25300 times one minus porosity at its three densities, so we adopted that linear rule as an assumption. It is the upper bound on G for any pore shape, so what follows is a lower estimate of the porosity effect. Coupling density and G, going from 0 to 7.85 percent porosity lowers the bracket's elastic stiffness by ${N.GphiStiffChangePct} percent, its peak force by ${N.GphiPeakChangePct} percent and its force at 2 millimetres by ${N.GphiFinalChangePct} percent. Density alone gave only ${N.PorDensPeakChangePct} percent. So porosity acts on the bracket almost entirely through G. Real pores lower G faster than this bound, and a measured relation would replace it.`);
+  s.addNotes(`The data's three shear-modulus levels are exactly 25300 times one minus porosity at its three densities, so we adopted that linear rule as an assumption. It is the upper bound on G for any pore shape, so what follows is a lower estimate of the porosity effect. Coupling density and G, going from 0 to 7.85 percent porosity changes the bracket's elastic stiffness by ${N.GphiStiffChangePct} percent, its peak force by ${N.GphiPeakChangePct} percent and its force at 2 millimetres by ${N.GphiFinalChangePct} percent. Density alone gave only ${N.PorDensPeakChangePct} percent. So porosity acts on the bracket almost entirely through G. Real pores lower G faster than this bound, and a measured relation would replace it.`);
 }
 {
   const s = content("Deploy", 5, "19 · Mesh study", "The softening makes the bracket result mesh dependent");
@@ -609,13 +610,13 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
 
 // ================================================================== 20 Deployment (planned)
 {
-  const s = content("Deploy", 5, "20 · Deployment · partly built, mostly planned", "Planned: a bracket-check concept for aerospace companies");
+  const s = content("Deploy", 5, "20 · Deployment · partly built, partly planned", "Planned: a bracket-check concept for aerospace companies");
   const flow = [
     ["Company inputs", "CT-scan porosity and largest pore (needs a pore-to-crack convention) · temperature · load rate", NAVY, "PLANNED"],
     ["JC-PINN inference", "Predicts Svm(E11) for given conditions, with range warnings", CYAN, "EXISTS"],
     ["Material card", "Writer exists (CSV / APDL / XML), untested template; E11 → εp needs a confirmed E", STEEL, "EXISTS"],
     ["Bracket analysis", "USERMAT runs the bracket in MAPDL (verified, not validated; mesh dependent after yield)", STEEL, "EXISTS"],
-    ["Fracture check", [R("Specify crack geometry and orientation; K"), sub("I"), R("(a) from the crack-opening stress; solve K"), sub("I"), R("(a"), sub("c"), R(") = K"), sub("IC"), R("; check LEFM or use J")], ORANGE, "PLANNED"],
+    ["Fracture check", [R("2D fillet crack, K"), sub("I"), R(`(a) by FE, BS 7910 failure assessment: CL > ${N.ClCrackMax} mm at the ${N.ClLimitkN} kN limit load`)], ORANGE, "EXISTS"],
   ];
   flow.forEach(([h, b, col, tag], i) => {
     const x = 0.6 + i * 2.48, w = 2.25;
@@ -640,10 +641,10 @@ const FIG = (f) => path.join(__dirname, "..", "..", "figures", f);
   card(s, 8.05, 4.5, 4.65, 2.4, ICE);
   text(s, "STATUS ON MAIN", { x: 8.3, y: 4.63, w: 4.2, h: 0.26, fontSize: 11, bold: true, color: STEEL, charSpacing: 3 });
   text(s, [
-    B("Exists: ", { color: GREEN }), R("locked JC-PINN inference with range warnings; porosity material-study workflow; material-card writer; ANSYS USERMAT (verified, not validated).", { breakLine: true }),
-    B("Planned: ", { color: ORANGE }), R("regularised softening, crack model and K"), sub("IC"), R(", fatigue assessment and the decision tool."),
+    B("Exists: ", { color: GREEN }), R("locked JC-PINN inference with range warnings; porosity material-study workflow; material-card writer; ANSYS USERMAT (verified, not validated); 2D critical-flaw-length check.", { breakLine: true }),
+    B("Planned: ", { color: ORANGE }), R("regularised softening, a service load, measured K"), sub("IC"), R("(φ), a 3D crack model, fatigue and the decision tool."),
   ], { x: 8.3, y: 4.95, w: 4.25, h: 1.9, fontSize: 12.5, paraSpaceAfter: 6 });
-  s.addNotes("This slide separates what exists from what is planned. On the main branch today: the locked JC-PINN can be run for given conditions with range warnings; a porosity material-study workflow uses it; and a material-card writer can export CSV, APDL or XML tables, though it is an unvalidated template, and converting total axial strain to plastic strain needs a confirmed Young's modulus. The JC-PINN now runs in the Ansys bracket model as a user material: it is verified, not validated, and its results after yield depend on the mesh. Still planned: a regularised softening law; a fracture check with a specified crack geometry and orientation, a stress intensity from the crack-opening stress, and a toughness source; and the decision tool. Accept, inspect or reject is a concept only: a static critical crack size is not a fatigue or airworthiness criterion.");
+  s.addNotes(`This slide separates what exists from what is planned. On the main branch today: the locked JC-PINN can be run for given conditions with range warnings; a porosity material-study workflow uses it; and a material-card writer can export CSV, APDL or XML tables, though it is an unvalidated template, and converting total axial strain to plastic strain needs a confirmed Young's modulus. The JC-PINN now runs in the Ansys bracket model as a user material: it is verified, not validated, and its results after yield depend on the mesh. A two-dimensional fracture check also exists: an edge crack at the R10 fillet, assessed with the BS 7910 failure assessment diagram, shows that at the ${N.ClLimitkN} kilonewton limit load no crack up to ${N.ClCrackMax} millimetres fails at any porosity. Still planned: a regularised softening law; a service load, a measured porosity-dependent toughness and a three-dimensional crack model; and the decision tool. Accept, inspect or reject is a concept only: a static critical crack size is not a fatigue or airworthiness criterion.`);
 }
 
 // ================================================================== 18 Limits and open questions
@@ -654,7 +655,7 @@ pres.addSection({ title: "Limits" });
     ["Evidence", "The test set is not blind. Case 60 (200 °C, 10⁻⁵ /s) is a single irregular case. The team's Ansys comparison set-up is not archived. No experimental validation. Bracket results after yield depend on the mesh (softening): not a converged strength.", ORANGE],
     ["Definitions", "Units (MPa etc.) and density-as-porosity confirmed by the user, but no generator documentation: Svm's spatial averaging and generating solver are unknown; Evm is not established as accumulated plastic strain; why every curve ends below its start is unexplained.", STEEL],
     ["Porosity", "Represented through density, φ = 1 − ρ/2700 (confirmed by the user; cases at 0, 3 and 7.85 %; 4 % study point = 2592 kg/m³). G(φ) = 25300 (1 − φ) is an assumed upper bound. Backbone exponent r ≈ 0, but the correction also sees density; this does not show real pores are harmless.", NAVY],
-    ["CL not yet computed", [R("Needs crack geometry and orientation, a pore-to-crack convention, a K"), sub("IC"), R(" source, K"), sub("I"), R(`(a) from the crack-opening stress, an LEFM check (or J), and fatigue for cyclic loads. No service load exists, and LEFM is not valid at the yielding peak (plastic zone ${N.ClPlasticZoneMin}–${N.ClPlasticZoneMax} mm).`)], CYAN],
+    ["CL is a bounded check", [R(`2D section at the ${N.ClLimitkN} kN capability-based limit load (first yield; ${N.ClFirstYieldFinekN} kN on the 2.5 mm mesh; no service load exists), literature K`), sub("mat"), R(` ${N.ClKmatLow}–${N.ClKmatHigh} MPa√m, no K`), sub("IC"), R(`(φ): CL > ${N.ClCrackMax} mm, not a value. Static, not fatigue.`)], CYAN],
   ];
   blocks.forEach(([h, b, col], i) => {
     const x = 0.6 + (i % 2) * 6.15, y = 1.75 + Math.floor(i / 2) * 2.6;
@@ -663,7 +664,7 @@ pres.addSection({ title: "Limits" });
     text(s, h, { x: x + 0.9, y: y + 0.28, w: 4.85, h: 0.4, fontSize: 19, bold: true });
     text(s, b, { x: x + 0.9, y: y + 0.78, w: 4.85, h: 1.6, fontSize: 14, color: MUTED });
   });
-  s.addNotes("Before concluding, what we have not shown. Evidence: the test set is not blind, case 60 is a single irregular case the model cannot fully reproduce, the team's Ansys comparison set-up was not archived, and nothing is validated against experiments. On the bracket, the softening makes results after yield depend on the mesh, so the bracket forces are not a converged strength. Definitions: the user confirmed the units and that density stands for porosity, but we have not seen the generator's documentation, so Svm's spatial averaging and the solver that generated it are unknown; Evm is not established as accumulated plastic strain; and we do not know why every curve ends below its start. Porosity: it enters through density, using the user-confirmed mapping phi equals one minus rho over 2700, which gives 0, 3 and 7.85 percent for the cases and 2592 for our 4 percent study point. The backbone's porosity exponent is about zero, but the correction also sees density, and this says nothing about whether real pores are harmless. Finally, the critical flaw size is not computed: it needs a crack model, a toughness source, a stress intensity from the crack-opening stress, a validity check, and a fatigue assessment.");
+  s.addNotes(`Before concluding, what we have not shown. Evidence: the test set is not blind, case 60 is a single irregular case the model cannot fully reproduce, the team's Ansys comparison set-up was not archived, and nothing is validated against experiments. On the bracket, the softening makes results after yield depend on the mesh, so the bracket forces are not a converged strength. Definitions: the user confirmed the units and that density stands for porosity, but we have not seen the generator's documentation, so Svm's spatial averaging and the solver that generated it are unknown; Evm is not established as accumulated plastic strain; and we do not know why every curve ends below its start. Porosity: it enters through density, using the user-confirmed mapping phi equals one minus rho over 2700, which gives 0, 3 and 7.85 percent for the cases and 2592 for our 4 percent study point. The backbone's porosity exponent is about zero, but the correction also sees density, and this says nothing about whether real pores are harmless. Finally, the critical flaw length is a bounded check, not a value: a two-dimensional section, at a capability-based limit load of ${N.ClLimitkN} kilonewtons because no service load exists, which falls to about ${N.ClFirstYieldFinekN} on the finer mesh, with toughness from the literature and no porosity-dependent toughness. It shows the critical flaw length is above ${N.ClCrackMax} millimetres. It is a static check, not a fatigue assessment.`);
 }
 
 // ================================================================== 19 Conclusion
@@ -676,7 +677,7 @@ pres.addSection({ title: "Close" });
     ["The team's Ansys runs", "With an upper-half bore load the plastic runs peak at the bore; the elastic peak is 1.86× the built-in JC peak, and JC-U is within 0.94 % of it: a single-peak agreement, not a validation (set-up not archived)."],
     ["The JC-PINN as an Ansys material", `USERMAT matches the model to ${N.SeMaxDiff} MPa; bracket peak ${N.BrUsermatPeakkN} kN. φ 0 → 7.85 % with G coupled: ${sgn(N.GphiPeakChangePct)} % peak. After yield the result is mesh dependent (${sgn(N.BrMeshPeakChangePct)} % peak at half the element size).`],
     ["An accurate JC-backbone hybrid", "0.4386 mean curve RMSE on 37 held-out cases (R² 0.9995; 37/37 better than the JC law alone). λ = 0, and the physics-disabled control did better: no accuracy benefit from physics is shown."],
-    ["Next: critical flaw size · PLANNED", [R("Define crack geometry, orientation and K"), sub("IC"), R("; compute K"), sub("I"), R("(a) at a service load (none exists yet); regularise the softening (mesh dependence); measure G(φ) (ours is an assumed upper bound); add fatigue before any decision tool.")]],
+    ["Critical flaw length, and next", [R(`At the ${N.ClLimitkN} kN limit load no fillet crack up to ${N.ClCrackMax} mm fails at any porosity (K`), sub("mat"), R(` ${N.ClKmatLow}–${N.ClKmatHigh} MPa√m): CL > ${N.ClCrackMax} mm. Next: a service load, measured K`), sub("IC"), R("(φ) and G(φ), a regularised softening law, fatigue.")]],
   ];
   pts.forEach(([h, b], i) => {
     const x = 0.6 + (i % 2) * 6.15, y = 1.75 + Math.floor(i / 2) * 2.42;
@@ -686,7 +687,7 @@ pres.addSection({ title: "Close" });
     text(s, b, { x: x + 0.3, y: y + 1.08, w: 5.4, h: 1.1, fontSize: 13.5, color: PALE });
   });
   text(s, "Ansys results: team screenshots, not independently re-run. Material-data units confirmed by the user (no generator documentation). No experimental validation.", { x: 0.6, y: 6.68, w: 11, h: 0.3, fontSize: 11, color: LINE });
-  s.addNotes(`To conclude. With the upper-half bore load, the team's plastic Ansys runs peak at the bore; the elastic peak is 1.86 times the built-in Johnson-Cook peak, and the user-defined run is within 0.94 percent of it, which is a single-peak agreement, not a validation. Our JC-backbone hybrid reproduces the 37 held-out simulations to a mean curve RMSE of 0.4386, R squared 0.9995, and beats the JC law alone on every case; its physics-loss weight is zero and the physics-disabled control did better, so we do not claim an accuracy benefit from physics. Generated into an Ansys user material, it matches the model to ${N.SeMaxDiff} megapascals and solves the bracket: the reaction peaks at ${N.BrUsermatPeakkN} kilonewtons; with G coupled to porosity, 0 to 7.85 percent lowers the peak by ${N.GphiPeakChangePct} percent; and because the model softens, the result after yield depends on the mesh. Next: a service load, toughness and crack model for the critical flaw size, a regularised softening law, a measured G of phi, and a fatigue assessment.`);
+  s.addNotes(`To conclude. With the upper-half bore load, the team's plastic Ansys runs peak at the bore; the elastic peak is 1.86 times the built-in Johnson-Cook peak, and the user-defined run is within 0.94 percent of it, which is a single-peak agreement, not a validation. Our JC-backbone hybrid reproduces the 37 held-out simulations to a mean curve RMSE of 0.4386, R squared 0.9995, and beats the JC law alone on every case; its physics-loss weight is zero and the physics-disabled control did better, so we do not claim an accuracy benefit from physics. Generated into an Ansys user material, it matches the model to ${N.SeMaxDiff} megapascals and solves the bracket: the reaction peaks at ${N.BrUsermatPeakkN} kilonewtons; with G coupled to porosity, 0 to 7.85 percent changes the peak by ${N.GphiPeakChangePct} percent; and because the model softens, the result after yield depends on the mesh. At the bracket's capability-based limit load of ${N.ClLimitkN} kilonewtons, no fillet crack up to ${N.ClCrackMax} millimetres fails at any porosity, for a toughness of ${N.ClKmatLow} to ${N.ClKmatHigh}: the critical flaw length is above ${N.ClCrackMax} millimetres, and the bracket is limited by yield. Next: a service load, a measured porosity-dependent toughness and G of phi, a regularised softening law, and a fatigue assessment.`);
 }
 
 // ================================================================== 20 Thank you

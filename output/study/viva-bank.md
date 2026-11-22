@@ -222,7 +222,7 @@ Follow-up: Could the load patch matter too? Yes. The hardening comparison indica
 
 ### 37. Does matching the final force prove convergence?
 
-No. Intermediate reactions and peak force differ and max EQPS grows strongly. At -2 mm both meshes are influenced by the constant flow-stress extension beyond the data limit. The endpoint coincidence hides disagreement over the response history.
+No, and under the corrected load they do not even match: at 2 mm the finer mesh is still -10.3% lower. Intermediate reactions and the peak differ, and max EQPS grows strongly. Even where two meshes' end forces agree (as they nearly did under the superseded UX = -2 mm load), both are using the constant flow-stress extension beyond the data limit, so an endpoint coincidence can hide disagreement over the response history.
 
 ### 38. Explain crack-band regularisation from energy.
 
@@ -234,11 +234,11 @@ Follow-up: Is artificial numerical damping equivalent? No. It changes the proble
 
 Only as the numerical reaction peak in the stated coarse-mesh run. It is not a converged strength, allowable or experimentally validated failure load. The peak changes with mesh, the source strain mapping is approximate, and no failure criterion was identified.
 
-### 40. Derive critical flaw length and state why you did not compute it.
+### 40. Derive critical flaw length and explain how you assessed it.
 
-For a specified mode-I LEFM geometry and a constant geometry factor Y, K_I=Y*sigma*sqrt(pi*a), so a_c=(K_IC/(Y*sigma))^2/pi. If Y varies with crack size, solve with Y(a_c) instead. We lack a justified service load, flaw definition and project-specific toughness, and extensive yielding can invalidate LEFM. Substituting peak von Mises stress would not supply the proper crack-opening remote stress.
+For a specified mode-I LEFM geometry and a constant geometry factor Y, K_I=Y*sigma*sqrt(pi*a), so a_c=(K_IC/(Y*sigma))^2/pi. If Y varies with crack size, solve with Y(a_c) instead. We had no service load or handbook Y for this geometry, extensive yielding can invalidate LEFM, and peak von Mises stress is not the crack-opening stress. So we modelled an edge crack at the R10 fillet in a 2D section, took K_I(a) from the interaction integral and the collapse load from USERMAT runs, and used the BS 7910 Option 1 failure assessment diagram. At the capability-based limit load of 35.9 kN and K_mat = 36-50 MPa*sqrt(m), no modelled crack up to 30 mm fails at any porosity, so CL > 30 mm: a bound, not a value at a service load.
 
-Follow-up: What replaces LEFM under large-scale yielding? An appropriate elastic-plastic fracture assessment such as J/CTOD with calibrated resistance and constraint considerations.
+Follow-up: What replaces LEFM under large-scale yielding? A failure assessment diagram, as used here, or an elastic-plastic J/CTOD assessment with calibrated resistance and constraint considerations.
 
 ### 41. Why is this not a complete multiscale material model?
 
@@ -258,4 +258,4 @@ Drill C: Derive weak equilibrium -> Distinguish material and global Newton -> De
 
 Drill D: Explain the reaction peak -> Compare two meshes -> Explain localisation energy -> Reject endpoint-only convergence -> Propose regularisation and its required calibration.
 
-Drill E: Define porosity -> Explain separate versus coupled G -> Differentiate along D5 -> Distinguish stiffness bound from structural bound -> Explain why no CL follows.
+Drill E: Define porosity -> Explain separate versus coupled G -> Differentiate along D5 -> Distinguish stiffness bound from structural bound -> Explain what the CL check shows and what it does not.

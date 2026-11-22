@@ -66,7 +66,7 @@ The model was chosen on the 36 training simulations only, then locked before the
 | 📓 **Run it** | [`notebooks/jc_pinn_colab.ipynb`](notebooks/jc_pinn_colab.ipynb) runs on Colab, Kaggle or locally. It has three modes: `PREDICT` (no data needed), `FAST` (retrains the final model in minutes) and `FULL` (the whole selection). [Open in Colab](https://colab.research.google.com/github/SaravananRamar06/MMM-ML/blob/main/notebooks/jc_pinn_colab.ipynb) |
 | 📖 **Understand it** | [`notebooks/jc_pinn_explained.ipynb`](notebooks/jc_pinn_explained.ipynb) covers the data, the equation, the model, training, selection, the test and the control. It computes every number live and is saved with its outputs. |
 | 🎬 **Watch it** | [Explainer video](reports/jc_pinn_20261107/video/jc_pinn_explainer.mp4) (3:02) and [test-results video](reports/jc_pinn_20261107/test_report/video/jc_pinn_test_results.mp4) (3:00), both narrated and captioned. |
-| 📄 **Read it** | [Course report](report/report.pdf) (21 pages), [IEEE-format paper](paper/paper.pdf) (5 pages), [slides](<presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pdf>) (24 slides; [PowerPoint](<presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx>), with speaker notes). |
+| 📄 **Read it** | [Course report](report/report.pdf) (24 pages), [IEEE-format paper](paper/paper.pdf) (5 pages), [slides](<presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pdf>) (24 slides; [PowerPoint](<presentation/Final Presentation - Porosity in an AM Wing Bracket (corrected).pptx>), with speaker notes). |
 | 🔍 **Explore it** | Interactive [model viewer](reports/jc_pinn_20261107/model_viewer.html), [structure](reports/jc_pinn_20261107/model_structure.html) and [training animation](reports/jc_pinn_20261107/model_motion.html). Download them and open in a browser. |
 | 🧾 **Check it** | [Model guide](docs/model-guide.md), [full specification](docs/spec.md), [run report](reports/jc_pinn_20261107/README.md), [test report for all 37 cases](reports/jc_pinn_20261107/test_report/README.md), [errata](reports/jc_pinn_20261107/ERRATA.md). |
 
@@ -108,7 +108,7 @@ python scripts/verify_jc_pinn.py reports/jc_pinn_20261107
 The verifier is an independent NumPy re-implementation. It:
 - checks the lock fingerprint;
 - confirms the test set was read after selection;
-- rebuilds every prediction from the saved weights, agreeing with PyTorch to about 1e-13;
+- rebuilds every prediction from the saved weights, agreeing with PyTorch to within 3e-13 MPa;
 - recomputes every metric.
 
 The notebook's FAST mode retrained the model and reproduced the locked weights exactly.

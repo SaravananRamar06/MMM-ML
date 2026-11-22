@@ -49,7 +49,7 @@ Amit Narayan K & ME24I1024\\\bottomrule
 
 \begin{abstract}
 \noindent
-We build a material model for the simulated von Mises stress $S_{vm}$ of additively manufactured AlSi10Mg as a function of axial strain $E_{11}$, temperature, strain rate, density and shear modulus. Its governing law is our customised Johnson--Cook equation (Equation~1). The model multiplies Equation~1 by $\exp(\delta)$, where $\delta$ is a small neural correction (5--16--16--1, \nParams{} weights) whose output starts at zero, so the untrained model \emph{is} Equation~1. We call it a JC-PINN. Physics residuals were tested at \nColloc{} collocation points. The setting was chosen on the \nTrainCases{} training simulations alone, using a score that balances case-wise cross-validation with whole temperature/rate groups held out. The model was locked before the \nTestCasesSplit{} test simulations were read, and then scored once. Its mean per-curve RMSE is \nTestMean{}~MPa (median \nTestMedian{}, worst \nTestWorst{}); $R^2=\nTestRsq$ over \nTestPoints{} points, and \nTestWithinOne\,\% of points lie within $\pm1$~MPa. That is \nImprovement{} times more accurate than Equation~1 alone (\nTestEq{}~MPa). With whole conditions hidden, it is also better than our earlier single MLP (\nSelGroups{} against \nSingleGroups{}~MPa). On the random test split, the purely data-driven single MLP remains more precise (\nSingleTest{}~MPa). A post-hoc control, the same network with Equation~1 switched off, scored better on every measure. Equation~1's separable form therefore buys interpretability and a physical backbone, not accuracy. After the lock, and without changing the model, we generated an ANSYS USERMAT (user material) from its weights. It reproduces the model offline to a relative error of \num{\nVerStressErr}. In MAPDL~2024~R1 a single element matches the offline result to \num{\nSeMaxDiff}~MPa. On the project's wing-rib bracket at $\phi=4\,\%$, the reaction peaks at \nBrUsermatPeakkN~kN and then softens. Density alone ($\phi=0$ to 7.85\,\% at fixed $G$) changes that peak by only $\nPorDensPeakChangePct\,\%$. With $G$ coupled to porosity by an assumed upper bound, $G=25300(1-\phi)$, it changes by $\nGphiPeakChangePct\,\%$. Halving the element size changes the peak by $\nBrMeshPeakChangePct\,\%$, while a hardening material changes by at most \nMeshEpMaxChangePct\,\%. The response after yield is therefore mesh dependent, and the bracket forces are not a converged strength. We state the limits throughout: the test set is not blind, the data are simulations rather than experiments, the units were confirmed by the user without documentation of the generator, nothing is validated above 200\,\textdegree C, and nothing is validated experimentally.
+We build a material model for the simulated von Mises stress $S_{vm}$ of additively manufactured AlSi10Mg as a function of axial strain $E_{11}$, temperature, strain rate, density and shear modulus. Its governing law is our customised Johnson--Cook equation (Equation~1). The model multiplies Equation~1 by $\exp(\delta)$, where $\delta$ is a small neural correction (5--16--16--1, \nParams{} weights) whose output starts at zero, so the untrained model \emph{is} Equation~1. We call it a JC-PINN. Physics residuals were tested at \nColloc{} collocation points. The setting was chosen on the \nTrainCases{} training simulations alone, using a score that balances case-wise cross-validation with whole temperature/rate groups held out. The model was locked before the \nTestCasesSplit{} test simulations were read, and then scored once. Its mean per-curve RMSE is \nTestMean{}~MPa (median \nTestMedian{}, worst \nTestWorst{}); $R^2=\nTestRsq$ over \nTestPoints{} points, and \nTestWithinOne\,\% of points lie within $\pm1$~MPa. That is \nImprovement{} times more accurate than Equation~1 alone (\nTestEq{}~MPa). With whole conditions hidden, it is also better than our earlier single MLP (\nSelGroups{} against \nSingleGroups{}~MPa). On the random test split, the purely data-driven single MLP remains more precise (\nSingleTest{}~MPa). A post-hoc control, the same network with Equation~1 switched off, scored better on every measure. Equation~1's separable form therefore buys interpretability and a physical backbone, not accuracy. After the lock, and without changing the model, we generated an ANSYS USERMAT (user material) from its weights. It reproduces the model offline to a relative error of \num{\nVerStressErr}. In MAPDL~2024~R1 a single element matches the offline result to \num{\nSeMaxDiff}~MPa. On the project's wing-rib bracket at $\phi=4\,\%$, the reaction peaks at \nBrUsermatPeakkN~kN and then softens. Density alone ($\phi=0$ to 7.85\,\% at fixed $G$) changes that peak by only $\nPorDensPeakChangePct\,\%$. With $G$ coupled to porosity by an assumed upper bound, $G=25300(1-\phi)$, it changes by $\nGphiPeakChangePct\,\%$. Halving the element size changes the peak by $\nBrMeshPeakChangePct\,\%$, while a hardening material changes by at most \nMeshEpMaxChangePct\,\%. The response after yield is therefore mesh dependent, and the bracket forces are not a converged strength. Finally, we assessed the bracket's critical flaw length with a 2D cracked-section model and the BS~7910 failure assessment diagram. At the bracket's capability-based limit pin load of \nClLimitkN~kN, no crack at the R10 fillet up to \nClCrackMax~mm fails at any porosity, for a fracture toughness of \nClKmatLow--\nClKmatHigh~MPa$\sqrt{\mathrm m}$. The critical flaw length therefore exceeds \nClCrackMax~mm, and the bracket is limited by yield rather than by fracture. We state the limits throughout: the test set is not blind, the data are simulations rather than experiments, the units were confirmed by the user without documentation of the generator, nothing is validated above 200\,\textdegree C, and nothing is validated experimentally.
 \end{abstract}
 
 \tableofcontents
@@ -57,7 +57,7 @@ We build a material model for the simulated von Mises stress $S_{vm}$ of additiv
 
 %=====================================================================
 \section{Introduction}
-The wider project asks how porosity in a laser-powder-bed-fused AlSi10Mg aircraft wing-rib bracket affects its structural integrity. Porosity in such parts lowers density and stiffness, and with them the flow stress~\cite{kempen2012}. A multiscale chain from material to component needs a material response that is fast to evaluate at any temperature, strain rate and porosity. This report covers that material link only.
+The wider project asks how porosity in a laser-powder-bed-fused AlSi10Mg aircraft wing-rib bracket affects its structural integrity. Porosity in such parts lowers density and stiffness, and with them the flow stress~\cite{kempen2012}. A multiscale chain from material to component needs a material response that is fast to evaluate at any temperature, strain rate and porosity. This report covers that material link, and its use on the bracket.
 
 Classic data-driven surrogates fit the simulations closely but carry no physics: nothing in them says that stress should fall with temperature or with porosity. Physics-informed neural networks (PINNs) add known equations to the training of a network~\cite{raissi2019,karniadakis2021,willard2022}. Here the known equation is not a differential equation but a constitutive law, our customised form of the Johnson--Cook model~\cite{johnson1983}. We therefore ask a concrete question:
 
@@ -70,7 +70,7 @@ Can our Equation~1 serve as the governing equation of a machine-learning materia
 \item a JC-PINN: Equation~1 multiplied by a bounded-input neural correction that starts as exactly Equation~1;
 \item a leakage-controlled protocol: selection on training cases only, a balanced score, a lock before testing, and an independent verifier;
 \item an honest account of the result, including a control that removes Equation~1, a screen for improvements, and the limits of the evidence;
-\item after the lock, a finite-element material generated from the locked weights, checked offline and in ANSYS. We used it on the project's bracket, to compare porosity levels and to test how the result depends on the mesh.
+\item after the lock, a finite-element material generated from the locked weights, checked offline and in ANSYS. We used it on the project's bracket, to compare porosity levels, to test how the result depends on the mesh, and to assess the bracket's critical flaw length.
 \end{enumerate}
 
 %=====================================================================
@@ -80,7 +80,7 @@ The instructor's design matrix planned 108 simulations over four temperatures, t
 
 The target is $S_{vm}$ along the axial strain $E_{11}$, which is monotonic in every case. Each history is interpolated onto a common grid of 120 strains from 0.0002 to 0.0999, so that long, slow-rate runs do not dominate by row count and each curve counts equally. Fig.~\ref{fig:data} shows the training curves. Two features shape the whole study:
 \begin{itemize}
-\item \textbf{Every history softens.} Stress falls with strain in all 73 cases. There is no elastic loading segment, so the strain axis cannot be split into elastic and plastic parts.
+\item \textbf{Every history softens.} Stress falls with strain in all 73 cases; only case~60 rises locally again after it collapses. There is no elastic loading segment, so the strain axis cannot be split into elastic and plastic parts.
 \item \textbf{The curve shape changes with condition.} At 30\,\textdegree C and $10^{-5}$\,s$^{-1}$ the stress at 10\,\% strain is 0.71 of its starting value. At 200\,\textdegree C and $10^{-4}$\,s$^{-1}$ it is 0.20, and case~60 (200\,\textdegree C, $10^{-5}$\,s$^{-1}$) collapses to 0.06.
 \end{itemize}
 
@@ -194,13 +194,13 @@ The weight decay $\alpha=1$ was fixed before the formal selection, by a developm
 \section{Selection without the test set}
 \label{sec:sel}
 \subsection{Protocol}
-The candidates were \nSettings{} settings:
+The candidates were \nSettings{} settings: seven physics options, each with frozen and with joint constants. The physics options were:
 \begin{itemize}
 \item no physics loss;
 \item level residual with $\lambda\in\{10^{-3},10^{-2},10^{-1}\}$;
 \item trend residual with $\lambda\in\{10^{-4},10^{-3},10^{-2}\}$.
 \end{itemize}
-Each setting was run with frozen and with joint constants, and three seeds per split. Each was scored on the \nTrainCases{} training cases only:
+Each setting was trained with three seeds per split, and scored on the \nTrainCases{} training cases only:
 \begin{itemize}
 \item \textbf{case CV:} three folds of whole cases (seed 42), giving the mean per-curve RMSE on the held-out cases;
 \item \textbf{groups:} each of the nine temperature/rate groups present in training is held out in turn. The score is the mean of the nine group-mean RMSEs. This tests prediction at a condition the model has never seen.
@@ -237,7 +237,7 @@ Single MLP of 2 Nov (same split, for reference) & \nSingleCV & \nSingleGroups & 
 %=====================================================================
 \section{Results on the test set}
 \subsection{Accuracy}
-Table~\ref{tab:test} gives the single, locked evaluation on the \nTestCases{} test cases (\nTestPoints{} points), and Fig.~\ref{fig:testpts} shows the point-wise picture:
+Table~\ref{tab:test} gives the single, locked evaluation on the \nTestCases{} test cases (\nTestPoints{} points). Fig.~\ref{fig:testpts} shows the point-wise picture, and Fig.~\ref{fig:testcases} every test curve:
 \begin{itemize}
 \item the mean per-curve RMSE is \nTestMean{}~MPa, the median \nTestMedian{};
 \item the worst case is case~\nTestWorstCase{} (\nTestWorst{}~MPa), the best is case~\nTestBestCase{} (\nTestBest{});
@@ -301,7 +301,7 @@ Fig.~\ref{fig:comparison} places the JC-PINN among the alternatives on the same 
 \end{itemize}
 The random split rewards close interpolation between neighbouring curves, which a pure MLP does best.
 
-Fig.~\ref{fig:groups} shows the harder question: prediction at conditions the model never saw. There the JC-PINN (\nSelGroups) is clearly better than the single MLP (\nSingleGroups), and much better than Equation~1 alone (\nEqGroups). Two caveats apply. Our group errors are slightly optimistic, because they were part of the selection score.
+Fig.~\ref{fig:groups} shows the harder question: prediction at conditions the model never saw. There the JC-PINN (\nSelGroups) is clearly better than the single MLP (\nSingleGroups), and much better than Equation~1 alone (\nEqGroups). One caveat applies: our group errors are slightly optimistic, because they were part of the selection score.
 
 \paragraph{Control.} After the lock, we trained the same network with the same recipe but with Equation~1 replaced by a constant. This control was not used for selection. It scored better everywhere:
 \begin{itemize}
@@ -381,7 +381,7 @@ None beat the locked model, so we submit it unchanged. The evidence is in \file{
 %=====================================================================
 \section{From model to finite-element material}
 \label{sec:fe}
-The work in this section and the next was done after the lock. It uses the locked weights as they are: nothing is refitted, and no test case is touched.
+The work in this section and the next two was done after the lock. It uses the locked weights as they are: nothing is refitted, and no test case is touched.
 
 \subsection{USERMAT}
 \file{scripts/write_umat.py} writes the locked JC-PINN into a Fortran user material for ANSYS (USERMAT, \file{umat/jc_pinn_usermat3d.F}), for 3D, plane-strain and axisymmetric elements. Its generated core holds the five networks' weights, Equation~1 and its constants, and evaluates the flow stress, with its analytic slope, as the model's prediction at the current equivalent plastic strain. Around that core is J2 plasticity with a radial return and a consistent tangent. Three choices follow the model's own definitions:
@@ -493,33 +493,16 @@ The conclusion is plain: the bracket forces after yield, including the peak, are
 \end{figure}
 
 %=====================================================================
-\section{Verification and reproducibility}
-\begin{itemize}
-\item \textbf{Independent re-implementation.} \file{scripts/verify_jc_pinn.py} rebuilds every prediction in plain NumPy~\cite{harris2020} from the saved weights. It agrees with PyTorch to \nNumpyTorchErr~MPa, checks the lock fingerprint, and recomputes every metric.
-\item \textbf{Deterministic rebuild.} The Colab/Kaggle notebook's FAST mode retrains the final model and reproduced the locked weights exactly. The full selection takes about \nRunMinutes~minutes on a 4-core CPU.
-\item \textbf{Provenance.} \file{scripts/write_latex_numbers.py} generates every number in this report. Model numbers come from the saved run. Finite-element numbers come from the saved verification file, MAPDL histories and summaries (\file{umat/verification.json}, \file{umat/ansys_test/}, \file{bracket/ansys_usermat/}). \file{scripts/make_figures.py} (Matplotlib~\cite{hunter2007}) generates every figure. It copies the bracket figures unchanged from the plots committed with those runs.
-\end{itemize}
+\section{Critical flaw length}
+\label{sec:cl}
+The project's last question is the bracket's critical flaw length (CL): the longest crack it can carry at its design load. This work was also done after the lock, with the locked model unchanged. The load and the fracture toughness were chosen by the user. The scripts, the MAPDL inputs and the output of every run are in \file{bracket/ansys_usermat/crack2d_2026-11-20/}.
 
-%=====================================================================
-\section{Limitations}
-\begin{itemize}
-\item \textbf{Not a blind test.} The 37 test cases were explored in earlier project stages, although nothing in this model's fitting or selection used them.
-\item \textbf{Simulations, not experiments.} Agreement is with the supplied simulations. Nothing here is experimentally validated, neither the model nor the bracket results.
-\item \textbf{Units confirmed by the user} (\textdegree C, s$^{-1}$, MPa, kg\,m$^{-3}$), but no documentation of the generator was seen. Which solver and constitutive model produced the histories, and why every one softens, is still open.
-\item \textbf{No data above 200\,\textdegree C,} and none will be added. No physics penalty acts there in the selected model, so 200--300\,\textdegree C is unvalidated extrapolation (flagged by the USERMAT).
-\item \textbf{Strain is total axial strain} $E_{11}$, read as plastic strain because the histories have no elastic segment. The finite-element material adds elasticity from $G$ and an assumed Poisson's ratio of 0.33.
-\item \textbf{Porosity mapping.} Density stands for porosity (confirmed by the user). Porosity and $G$ vary independently in the design, so the data do not define the relation $G(\phi)$ that a real part needs. Since $G$ acts about \nPorRatio{} times more strongly than density (about \nPorBrGOverDens{} times on the bracket), this relation dominates the porosity effect. The coupled results use an \emph{assumed} upper bound, $G=25300(1-\phi)$, so they are a lower estimate of that effect. A measured $G(\phi)$ for LPBF AlSi10Mg would replace it.
-\item \textbf{Mesh dependence.} The JC-PINN softens, so on the bracket the response after yield, including the peak force, depends on the mesh. Bracket forces are mesh-specific, not a converged strength. The finer mesh is a uniform split, not a Workbench remesh. A regularised softening law is future work.
-\item \textbf{Finite-element scope.} ANSYS was run at one material condition, with an imposed displacement and small strain.
-\item \textbf{No fracture prediction.} The bracket's critical flaw length is not predicted, for two reasons:
-  \begin{itemize}
-  \item there is no service load (the bracket is driven by an imposed displacement);
-  \item LEFM, $a_c=(1/\pi)\,(K_{IC}/Y\sigma)^2$, is not valid at the yielding peak. There the stress is the flow stress (\nBrUsermatPeakStress~MPa), and the Irwin plastic zone $(1/2\pi)(K_{IC}/\sigma_y)^2$ is about \nClPlasticZoneMin--\nClPlasticZoneMax~mm, comparable to any crack and to the 40~mm plate.
-  \end{itemize}
-  A valid estimate would need a service-load stress well below yield, taken from the element-centroid maximum principal stress and not the singular nodal peak, or else an elastic-plastic J-integral analysis. Table~\ref{tab:kic} lists the toughness values reported for LPBF AlSi10Mg.
-\item \textbf{Open choices.} Whether Equation~1 should depend on temperature and rate (its $B$ and $n$) is still a user decision; a screen showed no gain from the forms tried. The notebooks pass locally, but have not yet been run on hosted Colab or Kaggle.
-\item \textbf{Weak spot.} The model is weakest where training cases are scarce, notably at 30\,\textdegree C, $10^{-4}$\,s$^{-1}$.
-\end{itemize}
+\subsection{Load and toughness}
+No aircraft or wing-loads analysis exists, so no service load is known. We therefore use the largest limit load that the bracket itself can carry, its \emph{capability-based} limit pin load. On the 5~mm mesh, the elastic von Mises stress at the R10 fillet is \nClFilletVM~MPa per kN of pin load, and the flow stress at first yield at the study point is \nClStudyFlowStress~MPa. The fillet therefore first yields at $\nClStudyFlowStress/\nClFilletVM=\nClFirstYieldkN$~kN, and we take $P_L=\nClLimitkN$~kN. This bound governs: the other bound, the peak reaction divided by the factor of safety 1.5 and the fitting factor 1.15, is \nClCapabilitykN~kN.
+
+A crack check of an aircraft structure is a damage-tolerance residual-strength check. The cracked structure must carry limit load, considered as a static ultimate load, with no further factor of 1.5~\cite{cfr25}. We therefore assess CL at $P_L$, and use the limit load times the fitting factor, \nClLimitFFkN~kN, as a sensitivity. With $G$ coupled to porosity by $G=25300(1-\phi)$, the flow stress at first yield falls from \nClFlowStressPhiZero{} to \nClFlowStressPhiMax~MPa, so the limit load falls from \nClLimitPhiZerokN~kN at $\phi=0$ to \nClLimitPhiFourkN{} and \nClLimitPhiMaxkN~kN at 4 and 7.85\,\% ($\nClLimitDropPct\,\%$).
+
+The toughness is the literature band $K_{mat}=\nClKmatLow$, \nClKmatMid{} and \nClKmatHigh~MPa$\sqrt{\mathrm m}$ (Table~\ref{tab:kic}), the same at every porosity, because no relation $K_{IC}(\phi)$ for LPBF AlSi10Mg was found. Porosity therefore acts on CL only through the stiffness and the collapse load.
 
 \begin{table}[H]\centering\small
 \caption{Fracture toughness reported for LPBF AlSi10Mg (literature values, not results of this work).}
@@ -532,15 +515,85 @@ Paul et al.~\cite{paul2021} & several scan strategies; strongly anisotropic & ab
 \end{tabularx}
 \end{table}
 
+\subsection{Method}
+\begin{itemize}
+\item \textbf{Model.} The bracket is a straight 40~mm extrusion, so its section is modelled in 2D plane strain (PLANE183, profile from the CAD), with the same fixed mounting faces and the same imposed $U_Y$ on the upper half of the bore. A through-thickness edge crack starts at the point of highest tension on the R10 fillet and runs perpendicular to that tension, into the boss. The model covers \nClCrackCount{} crack lengths, $a=\nClCrackMin$ to \nClCrackMax~mm; the crack line leaves the section at about \nClCrackExit~mm.
+\item \textbf{Crack driving force.} Linear elastic runs give $K_I$ by the interaction integral, with quarter-point elements at the crack tip. The ratio $k(a)=K_I/P$ is the median of contours 2--6. It does not depend on $E$, and so not on porosity.
+\item \textbf{Collapse load.} JC-PINN USERMAT runs at 100\,\textdegree C and $10^{-4}$\,s$^{-1}$, with $\rho$ and $G$ at $\phi=0$, 4 and 7.85\,\% (coupled as above), give the collapse load $P_C(a,\phi)$ as the peak reaction. Where the reaction rises again after a first fall, the later peak is also assessed (the ``second peak'').
+\item \textbf{Assessment.} We use the BS~7910 Option~1 failure assessment diagram~\cite{bs7910}, with $K_r=k(a)P/K_{mat}$, $L_r=P/P_C$ and the failure curve
+\begin{equation}
+f(L_r)=\bigl(1+\tfrac12L_r^2\bigr)^{-1/2}\bigl[0.3+0.7\exp(-\mu L_r^6)\bigr],\qquad \mu=\min(0.001\,E/\sigma_y,\;0.6),
+\end{equation}
+cut off at $L_r=1$, because a softening material carries no load above its peak. The residual strength $P_f(a,\phi)$ is the load at which $(L_r,K_r)$ reaches the curve. CL at a load $P$ is the crack length at which $P_f$ falls to $P$. Unlike a pure linear-elastic estimate, the diagram stays valid when the ligament yields, because $L_r$ accounts for plastic collapse.
+\end{itemize}
+
+\subsection{Result}
+At $P_L=\nClLimitkN$~kN no modelled crack fails, at any porosity, for any $K_{mat}$ in the band and for either peak (Fig.~\ref{fig:clres}). The same holds at \nClLimitFFkN~kN. The critical flaw length therefore exceeds \nClCrackMax~mm, the longest crack modelled.
+
+The weakest case is $a=\nClCrackMax$~mm at $\phi=7.85\,\%$ with $K_{mat}=\nClKmatLow$~MPa$\sqrt{\mathrm m}$. There $k=\nClWeakk$~MPa$\sqrt{\mathrm m}$ per kN, $P_C=\nClWeakPC$~kN and $\mu=\nClWeakMu$. At \nClLimitkN~kN, $K_I=\nClWeakKILim$~MPa$\sqrt{\mathrm m}$, $K_r=\nClWeakKrLim$ and $L_r=\nClWeakLrLim$; $K_r$ is below $f(L_r)=\nClWeakfLim$, so the point lies inside the diagram. It reaches the curve only at $P_f=\nClWeakPfkN$~kN, where $K_r=f(L_r)=\nClWeakKrFail$ and $L_r=\nClWeakLrFail$ (\nClWeakPfSecondkN~kN with the second peak). The lowest reserve factor $P_f/P_L$ is therefore \nClMinRF{} (\nClMinRFSecond{} with the second peak). The bracket is limited by yield, not by fracture.
+
+Porosity acts in three small ways:
+\begin{itemize}
+\item the limit load changes by $\nClLimitDropPct\,\%$ from $\phi=0$ to 7.85\,\%;
+\item the residual strength at $a=\nClCrackMax$~mm ($K_{mat}=\nClKmatMid$) falls from \nClPfLongZerokN{} to \nClPfLongMaxkN~kN ($\nClPfLongDropPct\,\%$);
+\item above the limit load, where cracks inside the modelled range do fail, CL shortens with porosity: at 60~kN from \nClAtSixtyZero{} to \nClAtSixtyMax~mm, and at 80~kN from \nClAtEightyZero{} to \nClAtEightyMax~mm (Fig.~\ref{fig:clload}). These loads are a sensitivity study, not design loads.
+\end{itemize}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_crack_residual}
+\caption{Residual strength of the cracked bracket against crack length at the R10 fillet (BS~7910 Option~1, 2D plane strain, first collapse peak). Lines: $K_{mat}=\nClKmatMid$~MPa$\sqrt{\mathrm m}$; bands: \nClKmatLow--\nClKmatHigh~MPa$\sqrt{\mathrm m}$. At every porosity, every modelled crack carries more than the limit load (dashed) and the limit load times 1.15 (dotted).}
+\label{fig:clres}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{fig_crack_cl_load}
+\caption{Sensitivity above the limit load: critical flaw length against pin load ($K_{mat}=\nClKmatMid$~MPa$\sqrt{\mathrm m}$; bands \nClKmatLow--\nClKmatHigh). At 45~kN only the lowest toughness brings CL just inside the modelled range; at lower loads no modelled crack fails.}
+\label{fig:clload}
+\end{figure}
+
+\paragraph{Caveats.}
+\begin{itemize}
+\item \textbf{The load} is a capability bound at the study point, not a service load.
+\item \textbf{First yield is not mesh converged.} On the 2.5~mm mesh the fillet yields at about \nClFirstYieldFinekN~kN. A lower limit load only lengthens CL.
+\item \textbf{The 2D section} differs from the 3D model by $\nClTwoDStiffPct\,\%$ in stiffness and by $\nClTwoDPeakPct\,\%$ in collapse load; the lower collapse load is conservative. Its fillet tension per kN differs by $\nClTwoDSOnePct\,\%$, which is not conservative. Scaling every $K_I$ up by \nClKScalePct\,\% to remove that difference still leaves the weakest case at \nClKScaledWeakkN~kN, above \nClLimitFFkN~kN.
+\item \textbf{Softening} makes the collapse load vary irregularly with crack length; at $a=1$--2~mm it is slightly above the uncracked value. In \nClUnconverged{} runs the solution stopped converging after the peak. Their histories were read up to the last converged step, by which point the reaction had already fallen.
+\item \textbf{Toughness.} If $K_{IC}$ were as low as 20~MPa$\sqrt{\mathrm m}$, which one study reports~\cite{paul2021} but which lies outside the chosen band, CL at \nClLimitkN~kN would be \nClLowKMin--\nClLowKMax~mm.
+\item \textbf{Scope.} This is a static check on simulated material data, not a fatigue or crack-growth assessment, and nothing here is experimentally validated.
+\end{itemize}
+
+%=====================================================================
+\section{Verification and reproducibility}
+\begin{itemize}
+\item \textbf{Independent re-implementation.} \file{scripts/verify_jc_pinn.py} rebuilds every prediction in plain NumPy~\cite{harris2020} from the saved weights. It agrees with PyTorch to \nNumpyTorchErr~MPa, checks the lock fingerprint, and recomputes every metric.
+\item \textbf{Deterministic rebuild.} The Colab/Kaggle notebook's FAST mode retrains the final model and reproduced the locked weights exactly. The full selection takes about \nRunMinutes~minutes on a 4-core CPU.
+\item \textbf{Provenance.} \file{scripts/write_latex_numbers.py} generates every number in this report. Model numbers come from the saved run. Finite-element numbers come from the saved verification file, MAPDL histories and summaries (\file{umat/verification.json}, \file{umat/ansys_test/}, \file{bracket/ansys_usermat/}), and the critical-flaw-length numbers from the saved assessment (\file{bracket/ansys_usermat/crack2d_2026-11-20/}). \file{scripts/make_figures.py} (Matplotlib~\cite{hunter2007}) generates every figure. It copies the bracket and crack figures unchanged from the plots committed with those runs.
+\end{itemize}
+
+%=====================================================================
+\section{Limitations}
+\begin{itemize}
+\item \textbf{Not a blind test.} The 37 test cases were explored in earlier project stages, although nothing in this model's fitting or selection used them.
+\item \textbf{Simulations, not experiments.} Agreement is with the supplied simulations. Nothing here is experimentally validated, neither the model nor the bracket results.
+\item \textbf{Units confirmed by the user} (\textdegree C, s$^{-1}$, MPa, kg\,m$^{-3}$), but no documentation of the generator was seen. Which solver and constitutive model produced the histories, and why every one softens, is still open.
+\item \textbf{No data above 200\,\textdegree C,} and none will be added. No physics penalty acts there in the selected model, so 200--300\,\textdegree C is unvalidated extrapolation (flagged by the USERMAT).
+\item \textbf{Strain is total axial strain} $E_{11}$, read as plastic strain because the histories have no elastic segment. The finite-element material adds elasticity from $G$ and an assumed Poisson's ratio of 0.33.
+\item \textbf{Porosity mapping.} Density stands for porosity (confirmed by the user). Porosity and $G$ vary independently in the design, so the data do not define the relation $G(\phi)$ that a real part needs. Since $G$ acts about \nPorRatio{} times more strongly than density (about \nPorBrGOverDens{} times on the bracket), this relation dominates the porosity effect. The coupled results use an \emph{assumed} upper bound, $G=25300(1-\phi)$, so they are a lower estimate of that effect. A measured $G(\phi)$ for LPBF AlSi10Mg would replace it.
+\item \textbf{Mesh dependence.} The JC-PINN softens, so on the bracket the response after yield, including the peak force, depends on the mesh. Bracket forces are mesh-specific, not a converged strength. The finer mesh is a uniform split, not a Workbench remesh. A regularised softening law is future work.
+\item \textbf{Finite-element scope.} ANSYS was run at one temperature and strain rate (100\,\textdegree C, $10^{-4}$\,s$^{-1}$), with an imposed displacement and small strain.
+\item \textbf{Critical flaw length is a bounded check.} It is a static, 2D assessment on simulated material data, at a capability-based load rather than a service load, with literature toughness and no known $K_{IC}(\phi)$ (Section~\ref{sec:cl}). It shows that CL exceeds the modelled 30~mm; it does not give a CL value at that load. A wing-loads analysis, a measured $K_{IC}(\phi)$ and a 3D crack model with a mesh-converged limit load would firm it up.
+\item \textbf{Open choices.} Whether Equation~1 should depend on temperature and rate (its $B$ and $n$) is still a user decision; a screen showed no gain from the forms tried. The notebooks pass locally, but have not yet been run on hosted Colab or Kaggle.
+\item \textbf{Weak spot.} The model is weakest where training cases are scarce, notably at 30\,\textdegree C, $10^{-4}$\,s$^{-1}$.
+\end{itemize}
+
 %=====================================================================
 \section{Conclusion}
 Equation~1 works as the governing law of a neural material model. Multiplying it by a zero-initialised correction gives a model that starts as the equation and keeps its named constants. It reaches \nTestMean~MPa on 37 locked test curves, \nImprovement{} times better than the equation alone. Its error on unseen conditions is roughly half that of our earlier single MLP. The data's small but consistent porosity effect (\nPorData\,\% over 0--7.85\,\%) is missed by Equation~1's porosity term ($r=0$) but captured by the correction. The physics residuals did not help on this data. A control without the equation is slightly more accurate, so the equation's contribution is interpretability and structure rather than accuracy.
 
-The locked model now runs as a finite-element material. Generated from its weights, the USERMAT reproduces it offline and in MAPDL, and it solves the project's bracket. There, density alone changes the peak reaction by only $\nPorDensPeakChangePct\,\%$ over 0--7.85\,\% porosity. With $G$ coupled by the assumed upper bound $G=25300(1-\phi)$, the change is $\nGphiPeakChangePct\,\%$, a lower estimate of the porosity effect. Because the model softens, the bracket's response after yield depends on the mesh: the peak changes by $\nBrMeshPeakChangePct\,\%$ when the elements are halved, against at most \nMeshEpMaxChangePct\,\% for a hardening material. The next steps that would make the model useful for the bracket are:
+The locked model now runs as a finite-element material. Generated from its weights, the USERMAT reproduces it offline and in MAPDL, and it solves the project's bracket. There, density alone changes the peak reaction by only $\nPorDensPeakChangePct\,\%$ over 0--7.85\,\% porosity. With $G$ coupled by the assumed upper bound $G=25300(1-\phi)$, the change is $\nGphiPeakChangePct\,\%$, a lower estimate of the porosity effect. Because the model softens, the bracket's response after yield depends on the mesh: the peak changes by $\nBrMeshPeakChangePct\,\%$ when the elements are halved, against at most \nMeshEpMaxChangePct\,\% for a hardening material. At its capability-based limit pin load of \nClLimitkN~kN, the cracked bracket carries every modelled fillet crack up to \nClCrackMax~mm at every porosity, for a toughness of \nClKmatLow--\nClKmatHigh~MPa$\sqrt{\mathrm m}$: its critical flaw length exceeds \nClCrackMax~mm, and it is limited by yield rather than by fracture. Porosity changes that limit load by $\nClLimitDropPct\,\%$. The next steps that would make the model useful for the bracket are:
 \begin{itemize}
 \item a measured relation $G(\phi)$, to replace the assumed upper bound;
 \item a regularised softening law, for results that do not depend on the mesh;
-\item a service load and a method (LEFM below yield, or J-integral) for the critical flaw length;
+\item a service load from a wing-loads analysis, a measured $K_{IC}(\phi)$ and a 3D crack model, to turn the critical-flaw-length bound into a value;
 \item an experimental check.
 \end{itemize}
 

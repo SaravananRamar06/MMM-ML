@@ -103,7 +103,7 @@ TB,STATE,matid,,4
 - **Fixed strain rate:** the rate is a fixed constant, not computed from the analysis.
 - **Thermal coupling:** the thermal tangent terms are zero, so the routine is not meant for coupled thermal–structural steps.
 - **ANSYS coverage:** only `usermat3d` is provided. Plane stress, beams and shells are not.
-- **Shared project limits:** the units are confirmed by the user (no generator documentation), the data are simulations, nothing is experimentally validated, and critical flaw length is not predicted.
+- **Shared project limits:** the units are confirmed by the user (no generator documentation), the data are simulations, nothing is experimentally validated, and the USERMAT does not itself predict critical flaw length (the post-hoc bracket check is in [`bracket/ansys_usermat/crack2d_2026-11-20/`](../bracket/ansys_usermat/crack2d_2026-11-20/README.md)).
 
 ## Rebuild and check
 

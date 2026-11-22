@@ -13,7 +13,7 @@
 \maketitle
 
 \begin{abstract}
-We embed a customised Johnson--Cook law as the backbone of a neural material model for the simulated von Mises stress of additively manufactured AlSi10Mg. The law covers strain, strain rate, temperature, shear modulus and porosity. The model multiplies the law by $\exp(\delta)$, where $\delta$ is a 5--16--16--1 tanh correction (\nParams{} weights) whose output layer starts at zero, so training begins from the law itself. Physics residuals at \nColloc{} collocation points, frozen against jointly fitted constants and five seeds were compared using training data only, with a score balancing case-wise cross-validation and held-out temperature/rate groups. The model was locked before testing. On \nTestCasesSplit{} test simulations the mean per-curve RMSE is \nTestMean{}~MPa ($R^2=\nTestRsq$, \nTestWithinOne\,\% of points within $\pm1$~MPa). This is \nImprovement{} times better than the law alone and roughly half the single-MLP error on unseen conditions. Data-driven MLPs remain more precise on the random split, and a control without the law was slightly better, so the law contributes structure and interpretability rather than accuracy. After the lock, we generated an ANSYS user material from the weights. It matches the model in MAPDL to \num{\nSeMaxDiff}~MPa and solves a wing-rib bracket. There, density alone changes the peak force by $\nPorDensPeakChangePct\,\%$. The softening makes the response after yield mesh dependent: the peak changes by $\nBrMeshPeakChangePct\,\%$, against at most \nMeshEpMaxChangePct\,\% for a hardening material. Nothing is experimentally validated.
+We embed a customised Johnson--Cook law as the backbone of a neural material model for the simulated von Mises stress of additively manufactured AlSi10Mg. The law covers strain, strain rate, temperature, shear modulus and porosity. The model multiplies the law by $\exp(\delta)$, where $\delta$ is a 5--16--16--1 tanh correction (\nParams{} weights) whose output layer starts at zero, so training begins from the law itself. Physics residuals at \nColloc{} collocation points, and frozen against jointly fitted constants, were compared on training data only (three seeds each), with a score balancing case-wise cross-validation and held-out temperature/rate groups. The model was locked before testing. On \nTestCasesSplit{} test simulations the mean per-curve RMSE is \nTestMean{}~MPa ($R^2=\nTestRsq$, \nTestWithinOne\,\% of points within $\pm1$~MPa). This is \nImprovement{} times better than the law alone and roughly half the single-MLP error on unseen conditions. Data-driven MLPs remain more precise on the random split, and a control without the law was slightly better, so the law contributes structure and interpretability rather than accuracy. After the lock, we generated an ANSYS user material from the weights. It matches the model in MAPDL to \num{\nSeMaxDiff}~MPa and solves a wing-rib bracket. There, density alone changes the peak force by $\nPorDensPeakChangePct\,\%$. The softening makes the response after yield mesh dependent: the peak changes by $\nBrMeshPeakChangePct\,\%$, against at most \nMeshEpMaxChangePct\,\% for a hardening material. A 2D crack assessment (BS~7910 failure assessment diagram) at the bracket's capability-based limit load of \nClLimitkN~kN finds no fillet crack up to \nClCrackMax~mm critical at any porosity. Nothing is experimentally validated.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -28,7 +28,7 @@ Purely data-driven surrogates fit such simulations closely but encode no physics
 \item a JC-PINN model that starts as the law and learns only a correction;
 \item a leakage-controlled protocol, with selection on training data only and a lock before testing;
 \item a candid evaluation that includes a control without the law and a screen for improvements;
-\item a finite-element material generated from the locked weights, used on a bracket for porosity and mesh studies.
+\item a finite-element material generated from the locked weights, used on a bracket for porosity, mesh and critical-flaw-length studies.
 \end{enumerate}
 
 \section{Related work}
@@ -95,7 +95,7 @@ We compared \nSettings{} settings on the training cases only, each with three se
 The score is $\tfrac12$(three-fold case CV $+$ the mean RMSE over nine held-out temperature/rate groups). The best was \emph{no physics loss, joint constants}: CV \nSelCV, groups \nSelGroups, score \nSelScore. Every stronger physics weight scored worse (Table~\ref{tab:sel}, Fig.~\ref{fig:sel}).
 
 \begin{figure*}[t]\centering
-\includegraphics[width=.86\textwidth]{fig_selection}
+\includegraphics[width=.80\textwidth]{fig_selection}
 \caption{Training-only selection of the \nSettings{} settings: case-CV error and the error on each hidden group (MPa), with the score in brackets. Row~1 was selected.}
 \label{fig:sel}
 \end{figure*}
@@ -129,7 +129,7 @@ The worst eight cases share one condition (30\,\textdegree C, $10^{-4}$\,s$^{-1}
 \end{figure}
 
 \begin{figure*}[t]\centering
-\includegraphics[width=.8\textwidth]{fig_test_examples}
+\includegraphics[width=.74\textwidth]{fig_test_examples}
 \caption{Best, median and worst test cases: simulation, Equation~1 alone and the JC-PINN.}
 \label{fig:ex}
 \end{figure*}
@@ -155,12 +155,6 @@ Single MLP & \nSingleCV & \nSingleGroups & \nSingleTest\\\bottomrule
 \includegraphics[width=\columnwidth]{fig_groups}
 \caption{Error when a whole temperature/rate group is hidden (training cases only).}
 \label{fig:groups}
-\end{figure}
-
-\begin{figure}[t]\centering
-\includegraphics[width=\columnwidth]{fig_comparison}
-\caption{Mean curve RMSE on the 37 test cases (log scale).}
-\label{fig:cmp}
 \end{figure}
 
 \subsection{Physical behaviour}
@@ -194,6 +188,8 @@ On the project's bracket (\nMeshElemCoarse{} SOLID186, pin load $+P_y$ as $U_Y=+
 
 A uniform 2$\times$2$\times$2 split of the mesh changes the peak by $\nBrMeshPeakChangePct\,\%$, the force at the coarse mesh's peak displacement by $\nMeshForceMidChangePct\,\%$ and the force at 2~mm by $\nMeshFinalChangePct\,\%$. The same split with the project's hardening card changes the force by at most \nMeshEpMaxChangePct\,\%. The softening therefore makes the response after yield mesh dependent: bracket forces are specific to the mesh, not a converged strength. A regularised softening law is future work.
 
+\textbf{Critical flaw length.} No service load exists, so we use the bracket's capability-based limit pin load, first yield at the R10 fillet: $P_L=\nClLimitkN$~kN. A damage-tolerance check requires the cracked part to carry it~\cite{cfr25}. A 2D plane-strain model of the extruded section with an edge crack at the fillet ($a=\nClCrackMin$--\nClCrackMax~mm) gives $K_I$ by interaction integral, and USERMAT runs at $\phi=0$, 4 and 7.85\,\% ($G$ coupled) give the collapse load. With the BS~7910 Option~1 failure assessment diagram~\cite{bs7910} and $K_{mat}=\nClKmatLow$--\nClKmatHigh~MPa$\sqrt{\mathrm m}$, no modelled crack fails at $P_L$: CL exceeds \nClCrackMax~mm. The weakest case ($a=\nClCrackMax$~mm, $\phi=7.85\,\%$, $K_{mat}=\nClKmatLow$) carries \nClWeakPfkN~kN, so the bracket is limited by yield. Porosity changes $P_L$ by $\nClLimitDropPct\,\%$.
+
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{fig_mesh_ep}
 \caption{Bracket reaction and peak plastic strain on the 5~mm mesh (solid) and its 2$\times$2$\times$2 refinement (dashed). Red: JC-PINN USERMAT. Blue: the project's hardening card, a different material condition used only to test the mesh.}
@@ -216,11 +212,11 @@ A uniform 2$\times$2$\times$2 split of the mesh changes the peak by $\nBrMeshPea
 \item The strain is total, read as plastic. $\nu=0.33$ is assumed.
 \item $G(\phi)$ is an assumed upper bound, not measured.
 \item Bracket forces after yield depend on the mesh. The finer mesh is a uniform split, not a remesh.
-\item Fracture (critical flaw length) is not predicted.
+\item CL is a 2D static check at a capability-based load, not a service load, with literature toughness and no known $K_{IC}(\phi)$.
 \end{itemize}
 
 \section{Conclusion}
-A customised JC law works as the governing backbone of a neural material model. The model is \nImprovement{} times more accurate than the law alone and clearly better than a plain MLP on unseen conditions. It keeps physically named constants. Physics residuals did not help here, and a law-free control matched or beat it. The locked model runs as an ANSYS material on a real bracket, where its softening makes the response after yield mesh dependent. The next steps are a measured $G(\phi)$, a regularised softening law, a fracture criterion and experimental validation.
+A customised JC law works as the governing backbone of a neural material model. The model is \nImprovement{} times more accurate than the law alone and clearly better than a plain MLP on unseen conditions. It keeps physically named constants. Physics residuals did not help here, and a law-free control beat it. The locked model runs as an ANSYS material on a real bracket, where its softening makes the response after yield mesh dependent, and the cracked bracket carries any modelled fillet crack (up to \nClCrackMax~mm) at its limit load. The next steps are a measured $G(\phi)$, a regularised softening law, a service load and measured $K_{IC}(\phi)$ for the flaw check, and experimental validation.
 
 \bibliographystyle{IEEEtran}
 \bibliography{../report/refs}

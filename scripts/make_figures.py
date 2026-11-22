@@ -312,6 +312,9 @@ FE_FIGURES = {
     'fig_bracket_porosity_gphi': 'bracket/ansys_usermat/porosity_gphi_uy_2026-11-18/porosity_gphi_force_displacement.png',
     'fig_mesh': 'bracket/ansys_usermat/mesh_uy_2026-11-18/mesh_force_displacement.png',
     'fig_mesh_ep': 'bracket/ansys_usermat/mesh_ep_uy_2026-11-18/mesh_ep_force_displacement.png',
+    # critical flaw length (20 Nov 2026), written by bracket/ansys_usermat/crack2d/plot_cl.py from fad_cl.json
+    'fig_crack_residual': 'bracket/ansys_usermat/crack2d_2026-11-20/residual_strength.png',
+    'fig_crack_cl_load': 'bracket/ansys_usermat/crack2d_2026-11-20/cl_vs_load.png',
 }
 for name, src in FE_FIGURES.items():
     shutil.copyfile(root / src, OUT / f'{name}.png')
