@@ -120,6 +120,8 @@ def build_upload1(snap, out, commit, N):
     for f in sorted((snap / 'bracket/ansys_usermat').glob('*')):
         if f.is_file() and f.suffix in ('.py', '.mac'):
             copy(f, c / 'scripts' / f.name)
+    copy(snap / 'bracket/ansys_usermat/crack2d', c / 'scripts' / 'crack2d')
+    copy(snap / 'scripts/check_limit_load.py', c / 'scripts' / 'check_limit_load.py')
     decks = c / 'mapdl_decks'
     tool = snap / 'bracket/ansys_usermat'
     py(str(tool / 'make_decks.py'), '--load', 'plus_y', str(decks / '5mm'), cwd=snap)
@@ -139,6 +141,7 @@ def build_upload1(snap, out, commit, N):
         copy(snap / 'bracket/ansys_usermat' / f'{name}_2026-11-17', d / 'superseded_load_minus_x' / f'{name}_2026-11-17')
     copy(wb / 'results_uy_2026-11-18', d / 'workbench_usermat_uy_2026-11-18')
     copy(wb / 'results_2026-11-18', d / 'superseded_load_minus_x' / 'workbench_usermat_2026-11-18')
+    copy(snap / 'bracket/ansys_usermat/crack2d_2026-11-20', d / 'crack2d_2026-11-20')
     write(d / 'README.md', README_RESULTS)
 
     e = u1 / '05_ML_model'
@@ -286,6 +289,7 @@ README_TOP = """# Team 8: UMAT/UPF code and FE model files
     - density alone changes the peak by {PorDensPeakChangePct} %;
     - with G coupled (D5), the peak changes by {GphiPeakChangePct} % and the force at 2 mm by {GphiFinalChangePct} %.
   - **Mesh:** halving the element size changes the peak by {BrMeshPeakChangePct} % and later forces by {MeshForceOneChangePct} %, against at most {MeshEpMaxChangePct} % for a hardening material. The response after yield is therefore mesh dependent.
+  - **Critical flaw length (post-hoc, 20 Nov 2026; `04_Results/crack2d_2026-11-20/`):** a 2D plane-strain model of the section with an edge crack at the R10 fillet ({ClCrackMin}-{ClCrackMax} mm) and the BS 7910 Option 1 failure assessment diagram, with K_mat = {ClKmatLow}-{ClKmatHigh} MPa*sqrt(m). At the capability-based limit pin load of {ClLimitkN} kN (first yield at the fillet), no modelled crack fails at any porosity, so CL > {ClCrackMax} mm; the weakest case (a = {ClCrackMax} mm, phi = 7.85 %, K_mat = {ClKmatLow}) carries {ClWeakPfkN} kN.
 
 ## Limits (all apply)
 
@@ -294,7 +298,7 @@ README_TOP = """# Team 8: UMAT/UPF code and FE model files
 - **Temperature range.** Nothing is validated above 200 degC.
 - **Mesh dependence.** Bracket forces after yield are mesh dependent; they are not a converged strength.
 - **G(phi).** It is an assumed upper bound, not measured, so porosity effects are a lower estimate.
-- **No critical flaw length.** No service load exists, and LEFM is not valid at the yielding peak.
+- **Critical flaw length is a bounded check.** No service load exists, so it uses a capability-based limit load ({ClLimitkN} kN; {ClFirstYieldFinekN} kN on the 2.5 mm mesh), a 2D section, literature toughness and no known K_IC(phi). It shows CL > {ClCrackMax} mm, not a CL value.
 - **Assumptions.** nu = 0.33 is assumed; small strain; one material condition (the study point).
 
 ## Folder map
@@ -404,6 +408,7 @@ All runs below use the corrected load: the pin load +P_y as UY = +2 mm on the up
 | `mesh_uy_2026-11-18/` | Mesh study: 5 mm against the 2x2x2 refinement (JC-PINN) |
 | `mesh_ep_uy_2026-11-18/` | The same refinement with the hardening EP material |
 | `workbench_usermat_uy_2026-11-18/` | The Workbench 2024 R1 USERMAT project solved (post-hoc): reaction history, summary, contour pictures, solver output |
+| `crack2d_2026-11-20/` | Critical flaw length (post-hoc): 2D cracked-section runs, K_I, collapse loads, the BS 7910 failure assessment and its charts |
 
 Each folder has its own README with the run commands, a results table and its limits. Bracket forces after yield are mesh dependent, and nothing is experimentally validated.
 
