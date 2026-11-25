@@ -1,5 +1,9 @@
 # Changelog
 
+## 25 November 2026: project flowcharts show the critical flaw length as done
+- `docs/project-flowchart/project.dot` and `simple.dot` still drew step 5 (CL) dashed as "not done yet". Step 5 now reads as assessed post-hoc on 20 Nov (decisions F1, F2): 2D fillet crack, K_I by FE, BS 7910 failure assessment, CL > 30 mm at the 35.9 kN capability-based limit load, at every porosity, for K_mat 36–50 MPa√m; a bound, not a value; static, not fatigue. Drawn solid like the other steps. Both limits notes add that 35.9 kN is a capability bound, not a service load. The numbers are those of `report/numbers.json` (`ClLimitkN`, `ClCrackMin`, `ClCrackMax`, `ClKmatLow`, `ClKmatHigh`).
+- `build.cjs` now stops if the CL numbers in either `.dot` file no longer match `numbers.json`. PNG and SVG rebuilt (Graphviz 16.1.0 via `@viz-js/viz`; an unchanged rebuild reproduced the old files byte for byte). The folder README no longer says step 5 is planned.
+
 ## 22 November 2026: final check of the repository, the report and the paper
 - **Checks run (no model or locked file changed):**
   - `pytest`: 33 passed, with the stand-in raw folder from `build_raw_from_committed_curves.py`;
