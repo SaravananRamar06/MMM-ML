@@ -82,7 +82,7 @@ The CAD file `bracket/cad/Rib Bracket.STEP`, measured with Gmsh (`bracket/geomet
 
 - **gas pores:** small, roughly spherical, from gas trapped in the powder or melt;
 - **lack-of-fusion voids:** irregular, between layers or tracks, when too little energy melts the powder;
-- **keyhole pores:** from too much energy, when the melt pool becomes a deep vapour cavity.
+- **keyhole pores:** from too much energy: the melt pool forms a deep vapour cavity (a keyhole) that can collapse and trap gas.
 
 **Porosity** φ is the pore volume divided by the total volume. Pores lower the density and the stiffness, and they act as ready-made flaws from which cracks can grow under repeated flight loads.
 
@@ -149,7 +149,7 @@ The instructor's design matrix planned **108** simulations: 4 temperatures × 3 
 | 200 °C | **1** (case 60) | 9 | 9 | 19 |
 | 300 °C | 0 | 0 | 0 | **0** |
 
-Each filled cell holds all 9 combinations of three densities and three shear moduli.
+Every cell except 200 °C, 10⁻⁵ s⁻¹ holds all 9 combinations of three densities and three shear moduli; that cell holds only case 60.
 
 ### 5.2 Inputs and output
 
@@ -544,7 +544,7 @@ $$
 \text{score}=\tfrac12\left(\text{case-CV mean RMSE}+\text{mean of the nine group-holdout RMSEs}\right)
 $$
 
-The lowest score wins. Exact ties prefer the larger λ, then frozen constants (decision M6). A setting therefore had to interpolate **and** generalise.
+The lowest score wins (decision M6); exact ties would prefer the larger λ, then frozen constants. A setting therefore had to interpolate **and** generalise.
 
 ### 20.3 The candidates
 
@@ -761,7 +761,7 @@ There are no data above 200 °C, and none will be added (decision D3). With λ =
 | 200 | 10⁻³ | 142.27 | 46.03 | ×1.174 |
 | 300 (extrapolation) | 10⁻⁴ | 67.60 | 4.28 | ×0.142 |
 
-The study point (100 °C, 10⁻⁴ s⁻¹) starts at **136.06 MPa**; this is the USERMAT's initial yield stress in all the bracket runs.
+The study point (100 °C, 10⁻⁴ s⁻¹) starts at **136.06 MPa**; this is the USERMAT's initial yield stress in the study-point bracket runs (the porosity runs change ρ and G, and so the yield stress slightly).
 
 ![Predicted curves at the study porosity φ = 4 %. The 300 °C curves (dashed) have no supporting data and are unvalidated.](../../figures/fig_study_point.png)
 
@@ -1223,7 +1223,7 @@ Each element was split 2 × 2 × 2 in its own shape functions (`refine_mesh.py`)
 | F at 2 mm | −0.69 % | −10.3 % |
 | Max local plastic strain | ×1.51 (at the R10 fillet) | ×2.66 (at the bore) |
 
-With the hardening EP card the force changes by **at most 0.7 %**, so **93–98 % of the JC-PINN's change comes from its softening**. The local peak plastic strain is not converged for either material (it also grows ×1.51 for EP), because of the stress concentration at the load patch and fillet.
+With the hardening EP card the force changes by **at most 0.7 %**, so **93–98 % of the JC-PINN's change comes from its softening**. The local peak plastic strain is not converged for either material: it also grows ×1.51 for EP, at the R10 fillet. Local peak strains at stress concentrations need a finer mesh study than this one.
 
 ![JC-PINN USERMAT on the 5 mm mesh and its uniform 2×2×2 refinement. Left: reaction (elastic runs dashed). Right: peak element plastic strain against the data's limit of 0.0999.](../../figures/fig_mesh.png)
 
@@ -1235,8 +1235,8 @@ With the hardening EP card the force changes by **at most 0.7 %**, so **93–98 
 
 Consequences:
 
-- The energy dissipated in the band is roughly (band width h) × ∫σ dε_p, so it **falls with the element size**. Refining the mesh makes failure "cheaper", and the post-peak force drops.
-- The peak force and the post-peak branch therefore depend on the element size, and the local plastic strain grows without limit under refinement.
+- The energy dissipated per unit area of the band is roughly (band width h) × ∫σ dε_p, so it **falls with the element size**. Refining the mesh makes failure "cheaper", and the post-peak force drops.
+- The peak force and the post-peak branch therefore depend on the element size. In theory the local plastic strain grows without bound as the mesh is refined; here it rose from 0.12 to 0.32.
 - Smaller load increments can help the local solve converge, but cannot fix this: it is a property of the continuum model, not of the numerics.
 
 **Regularisation (future work)** gives the model a **length scale**:
@@ -1273,7 +1273,7 @@ a_c=\frac1\pi\left(\frac{K_{IC}}{Y\sigma}\right)^2
 $$
 
   If Y depends on a, solve $Y(a_c)\,\sigma\sqrt{\pi a_c}=K_{IC}$ instead.
-- **Energy view:** $J=G=K_I^2/E'$ for a linear elastic body, with E' = E (plane stress) or E/(1 − ν²) (plane strain).
+- **Energy view:** for a linear elastic body the J-integral equals the energy release rate, $J=K_I^2/E'$, with E' = E (plane stress) or E/(1 − ν²) (plane strain). (Here the energy release rate is not written G, to avoid confusion with the shear modulus.)
 
 ### 44.2 When LEFM is valid: small-scale yielding
 
@@ -1302,7 +1302,7 @@ So the right load for a critical-flaw-length check is the **limit load** itself,
 
 ## 46. Why simple LEFM at the bracket's peak was rejected (17 Nov)
 
-The first proposal used $a_c=(1/\pi)(K_{IC}/Y\sigma)^2$ at the bracket's peak element stress, 136 MPa. That was rejected because:
+A first proposal (17 Nov, `docs/proposals/open-items-2026-11-17.md`) considered $a_c=(1/\pi)(K_{IC}/Y\sigma)^2$ at the bracket's peak element stress, 136 MPa, as an illustration only. It showed why that cannot give a valid CL:
 
 - **No service load exists**, so there was no physical σ.
 - At σ_y ≈ 136 MPa the Irwin plastic zone is **3–31 mm** for K = 20–60 MPa√m. That is as large as the critical crack sizes themselves and as the 40 mm plate, so **small-scale yielding does not hold**; LEFM is not valid at the yielding peak.
@@ -1335,7 +1335,7 @@ So **35.9 kN means "the R10 fillet just reaches yield"**. First yield governs, b
 
 **Checks of the limit load** (`scripts/check_limit_load.py`):
 
-- **Not mesh converged.** On the 2.5 mm mesh the peak nodal stress per kN rises from 3.788 to 4.775 MPa/kN (+26 %), giving 136.06/4.775 = **28.5 kN**. A lower limit load only **lengthens** CL, so using 35.9 kN is conservative for CL.
+- **Not mesh converged.** On the 2.5 mm mesh the peak nodal stress per kN rises from 3.788 to 4.775 MPa/kN (+26 %), giving 136.06/4.775 = **28.5 kN**. The saved files do not say where that 2.5 mm peak sits, so it could be the support singularity; but the USERMAT runs show the same trend (the 5 mm run has no plastic strain at 42.0 kN, while the 2.5 mm run already has plastic strain at 41.9 kN). First yield is therefore at or below 35.9 kN. A lower limit load only **lengthens** CL, so using 35.9 kN is conservative for CL.
 - **Porosity** (G coupled by D5): the flow stress at first yield falls from 137.32 to 135.69 and 134.20 MPa, so **P_L = 36.25 / 35.82 / 35.43 kN at φ = 0 / 4 / 7.85 %, a −2.3 % drop**.
 - **Do not change the load just to bring CL inside the modelled crack range.** That would choose the input from the answer.
 
@@ -1363,7 +1363,7 @@ So **35.9 kN means "the R10 fillet just reaches yield"**. First yield governs, b
 
 - **Linear elastic** runs at UY = 0.1 mm give K_I by the **interaction integral** (CINT, 6 contours).
 - **k(a) = K_I / P** is the median of contours 2–6. The contours agree within 0.3 %, except at a = 1 mm, where contour 6 reaches the fillet.
-- k(a) **does not depend on E**, and so not on porosity: in a linear elastic body with a given load, K_I does not depend on the modulus.
+- k(a) **does not depend on E**, and so not on porosity: in a linear elastic body under a given load (at fixed ν), K_I does not depend on the modulus.
 
 | a (mm) | 1 | 2 | 4 | 8 | 16 | 25 | 30 |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -1792,7 +1792,7 @@ So no trend can have the wrong sign. Without the bound the fit gave r = −0.027
 A 148.77, B 526.23, n 0.828, C 0.0292, m 1.113, q 0.717, r 0 (at its bound). Bounded nonlinear least squares (SciPy, trust-region reflective), 8 starts, on the 36 training cases.
 
 **Q15. How good is Equation 1 alone?**
-Test 7.37 MPa, case CV 10.24, unseen groups 13.95 (about 10 % of the stress). Even fitting A − Bεⁿ to each curve separately leaves 0.84 MPa, so the strain law itself is a floor.
+Test 7.37 MPa (about 7 % of the stress), case CV 10.24, unseen groups 13.95. Even fitting A − Bεⁿ to each curve separately leaves 0.84 MPa, so the strain law itself is a floor.
 
 ### 60.4 The JC-PINN
 
