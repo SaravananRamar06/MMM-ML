@@ -1,5 +1,11 @@
 # Changelog
 
+## 25 November 2026: complete study guide for the end-semester examination
+- **New:** `docs/exam-preparation/complete-study-guide.md` and its PDF `output/pdf/complete-study-guide.pdf` (61 pages). It covers the whole project in order, from the problem and data to the critical flaw length, with background theory marked as such, the decisions, limits and open questions, a formula sheet, key numbers, a glossary, 75 practice questions with model answers, 17 worked numerical problems and a list of common mistakes.
+- **Sources:** every project number was read from `report/numbers.json`, the locked run, the bracket and crack result folders and `umat/`; the worked examples (Equation 1 at the study point, the shape ratio 0.476, the FAD weakest case, the limit load, μ, plastic-zone and a_c examples) were recomputed from `equation.json`, `equation_only.json` and `fad_cl.json`. Nothing in `reports/` or any saved result was changed, and the model is unchanged.
+- **Build:** `scripts/build_study_guide.cjs` (pandoc to HTML with MathML, then Chromium print via Playwright for Node).
+- **Pointers:** README and the exam-preparation README now point to the guide first.
+
 ## 22 November 2026: final check of the repository, the report and the paper
 - **Checks run (no model or locked file changed):**
   - `pytest`: 33 passed, with the stand-in raw folder from `build_raw_from_committed_curves.py`;
