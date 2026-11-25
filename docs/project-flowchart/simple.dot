@@ -10,9 +10,9 @@ digraph SIMPLE {
   b [label="2. Test it in ANSYS with a standard metal model\nFirst elastic (springs back), then elasto-plastic (bends for good),\nthen a user-defined Johnson–Cook material", fillcolor="#e3ecf8", color="#2c5d9a"];
   c [label="3. Teach a machine-learning model\nIt learns from 36 computer simulations of the metal\nand is tested once on 37 hidden ones.\nTypical error: 0.44 MPa", fillcolor="#e9f5f0", color="#28735d"];
   d [label="4. Put the ML model into ANSYS (USERMAT)\nThe bracket is pulled with different amounts of\nporosity (tiny holes) to see how strength changes", fillcolor="#e3ecf8", color="#2c5d9a"];
-  e [label="5. Last step: predict the critical length\nHow long a flaw can get before the part fails\nNOT DONE YET: the method and the data still have to be decided", style="rounded,dashed,filled", fillcolor="#fff5df", color="#936818"];
+  e [label="5. Last step: the critical flaw length (done, 20 Nov 2026)\nHow long a crack at the bracket's corner fillet can get before it breaks.\nA 2D crack model in ANSYS, checked with the BS 7910 method:\nno crack up to 30 mm breaks it at the 35.9 kN limit load,\nfor every porosity and a toughness of 36–50 MPa√m.\nSo CL > 30 mm: a bound, not an exact value.\nIt is one static load, not fatigue.", fillcolor="#fff5df", color="#936818"];
   note [shape=note, fillcolor="#fceeed", color="#a43d36", fontsize=14,
-    label="What to remember\nThe data are simulations, not real experiments.\nNothing is checked above 200 °C.\nBracket results after yielding depend on the mesh, so they are estimates."];
+    label="What to remember\nThe data are simulations, not real experiments.\nNothing is checked above 200 °C.\nBracket results after yielding depend on the mesh, so they are estimates.\nThe 35.9 kN load is what the bracket carries before it first yields,\nnot a measured service load."];
 
   a -> b -> c -> d -> e -> note;
 }
