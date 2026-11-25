@@ -1,5 +1,12 @@
 # Changelog
 
+## 25 November 2026: complete study guide for the end-semester examination
+- **New:** `docs/exam-preparation/complete-study-guide.md` and its PDF `output/pdf/complete-study-guide.pdf` (61 pages). It covers the whole project in order, from the problem and data to the critical flaw length, with background theory marked as such, the decisions, limits and open questions, a formula sheet, key numbers, a glossary, 75 practice questions with model answers, 17 worked numerical problems and a list of common mistakes.
+- **Sources:** every project number was read from `report/numbers.json`, the locked run, the bracket and crack result folders and `umat/`; the worked examples (Equation 1 at the study point, the shape ratio 0.476, the FAD weakest case, the limit load, μ, plastic-zone and a_c examples) were recomputed from `equation.json`, `equation_only.json` and `fad_cl.json`. Nothing in `reports/` or any saved result was changed, and the model is unchanged.
+- **Build:** `scripts/build_study_guide.cjs` (pandoc to HTML with MathML, then Chromium print via Playwright for Node).
+- **Pointers:** README and the exam-preparation README now point to the guide first.
+- **Second check (same day, before merging):** `scripts/check_study_guide.py` cross-checks 234 quoted values against `numbers.json`, the locked run, the bracket and crack result folders (0 failures); the pooled test RMSE (0.504), R² and the Equation 1 shape ratio were recomputed from `test_predictions.csv`. A full reread found no wrong number but corrected the wording in 11 places. Examples: the 200 °C/10⁻⁵ cell holds 1 case, not 9. The 136.06 MPa initial yield applies to the study-point runs only. The 17 Nov LEFM estimate was an illustration, not a method that was used. The 2.5 mm first-yield location is unknown. The energy release rate is no longer written G.
+
 ## 22 November 2026: final check of the repository, the report and the paper
 - **Checks run (no model or locked file changed):**
   - `pytest`: 33 passed, with the stand-in raw folder from `build_raw_from_committed_curves.py`;

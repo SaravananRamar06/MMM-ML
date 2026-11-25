@@ -2,6 +2,12 @@
 
 Prepared 17 November 2026 for the entire JC-PINN / ANSYS bracket project. This is teaching material, not a new experiment or a change to the submitted model.
 
+## Start here: the complete study guide (25 November 2026)
+
+[`complete-study-guide.md`](complete-study-guide.md) ([printable PDF](../../output/pdf/complete-study-guide.pdf), 61 pages) is the most complete and most current guide. It follows the project in order (problem, data, Equation 1, the JC-PINN, selection and lock, test results and the control, porosity, the USERMAT and return mapping, the bracket and mesh studies, and the critical flaw length) and includes the 22 Nov results. It ends with a formula sheet, a key-number table, a glossary, 75 practice questions with model answers, 17 worked numerical problems and a list of common mistakes. Every project number in it was read from the saved result files, and its worked examples were recomputed from the locked model. Rebuild the PDF on Linux with `node scripts/build_study_guide.cjs` (needs pandoc and Playwright for Node).
+
+The guides below, from 17–18 November, remain useful for wider background theory and viva practice.
+
 ## Read in this order
 
 For a book layout, start with the [textbook edition](../../output/pdf/project-textbook.pdf): numbered chapters and equations, linked contents, PDF bookmarks, notation, figures, viva and exercises. It uses the same audited lesson sources as the shorter guides below.

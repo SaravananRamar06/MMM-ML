@@ -72,7 +72,7 @@ The model was chosen on the 36 training simulations only, then locked before the
 
 ## Quick start
 
-**Exam, viva and presentation preparation:** the [team preparation pack](docs/exam-preparation/README.md) covers material science, continuum mechanics, FEA/ANSYS, the JC-PINN, advanced questions, worked examples, a mock exam and a timed team rehearsal. It includes printable PDFs and offline viva practice.
+**Exam, viva and presentation preparation:** start with the [complete study guide](docs/exam-preparation/complete-study-guide.md) ([PDF](output/pdf/complete-study-guide.pdf)): the whole project in order, with a formula sheet, key numbers, practice questions and worked problems. The [team preparation pack](docs/exam-preparation/README.md) covers material science, continuum mechanics, FEA/ANSYS, the JC-PINN, advanced questions, worked examples, a mock exam and a timed team rehearsal. It includes printable PDFs and offline viva practice.
 
 **Colab:**
 1. Open the notebook with the link above. Colab asks for GitHub access if the repository is private.
