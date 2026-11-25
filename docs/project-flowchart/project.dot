@@ -33,17 +33,17 @@ digraph PROJECT {
     um -> sim -> res;
   }
 
-  subgraph cluster_cl { label="5 · Critical length (critical flaw length, CL)"; style="rounded,dashed,filled"; fillcolor="#fffaf0"; color="#936818"; fontname="Arial"; fontsize=15;
-    cl [style="rounded,dashed,filled", fillcolor="#fff5df", color="#936818",
-      label="PLANNED, NOT DONE YET\nPredict the critical length from the bracket results\nmethod and inputs still to be decided\nthe repository has no flaw or toughness data so far"];
+  subgraph cluster_cl { label="5 · Critical length (critical flaw length, CL)"; style="rounded,filled"; fillcolor="#fffaf0"; color="#936818"; fontname="Arial"; fontsize=15;
+    cl [fillcolor="#fff5df", color="#936818",
+      label="Done post-hoc, 20 Nov 2026 (decisions F1, F2)\n2D fillet crack, a = 1–30 mm · K_I by FE · collapse load with the USERMAT\nBS 7910 failure assessment\nCL > 30 mm at the 35.9 kN capability-based limit load\nevery porosity, K_mat 36–50 MPa√m\na bound, not a value · static, not fatigue\nbracket/ansys_usermat/crack2d_2026-11-20/"];
   }
 
   limits [shape=note, fillcolor="#fceeed", color="#a43d36", fontsize=12,
-    label="Limits\nsimulated data, nothing experimentally validated · units user-confirmed\nnothing validated above 200 °C · strain is total (M4) · test is not blind\nG(φ) is an assumed bound (D5)"];
+    label="Limits\nsimulated data, nothing experimentally validated · units user-confirmed\nnothing validated above 200 °C · strain is total (M4) · test is not blind\nG(φ) is an assumed bound (D5) · 35.9 kN is a capability bound, not a service load"];
 
   cad -> el [lhead=cluster_jc];
   ud -> data [ltail=cluster_jc, lhead=cluster_ml, label="material data needed"];
   test -> um [ltail=cluster_ml, lhead=cluster_um, label="saved weights"];
-  res -> cl [ltail=cluster_um, lhead=cluster_cl];
+  res -> cl [ltail=cluster_um, lhead=cluster_cl, label="locked model unchanged"];
   cl -> limits [style=invis];
 }

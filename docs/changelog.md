@@ -1,5 +1,9 @@
 # Changelog
 
+## 25 November 2026: project flowcharts show the critical flaw length as done
+- `docs/project-flowchart/project.dot` and `simple.dot` still drew step 5 (CL) dashed as "not done yet". Step 5 now reads as assessed post-hoc on 20 Nov (decisions F1, F2): 2D fillet crack, K_I by FE, BS 7910 failure assessment, CL > 30 mm at the 35.9 kN capability-based limit load, at every porosity, for K_mat 36–50 MPa√m; a bound, not a value; static, not fatigue. Drawn solid like the other steps. Both limits notes add that 35.9 kN is a capability bound, not a service load. The numbers are those of `report/numbers.json` (`ClLimitkN`, `ClCrackMin`, `ClCrackMax`, `ClKmatLow`, `ClKmatHigh`).
+- `build.cjs` now stops if the CL numbers in either `.dot` file no longer match `numbers.json`. PNG and SVG rebuilt (Graphviz 16.1.0 via `@viz-js/viz`; an unchanged rebuild reproduced the old files byte for byte). The folder README no longer says step 5 is planned.
+
 ## 25 November 2026: complete study guide for the end-semester examination
 - **New:** `docs/exam-preparation/complete-study-guide.md` and its PDF `output/pdf/complete-study-guide.pdf` (61 pages). It covers the whole project in order, from the problem and data to the critical flaw length, with background theory marked as such, the decisions, limits and open questions, a formula sheet, key numbers, a glossary, 75 practice questions with model answers, 17 worked numerical problems and a list of common mistakes.
 - **Sources:** every project number was read from `report/numbers.json`, the locked run, the bracket and crack result folders and `umat/`; the worked examples (Equation 1 at the study point, the shape ratio 0.476, the FAD weakest case, the limit load, μ, plastic-zone and a_c examples) were recomputed from `equation.json`, `equation_only.json` and `fad_cl.json`. Nothing in `reports/` or any saved result was changed, and the model is unchanged.
